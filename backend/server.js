@@ -43,6 +43,52 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+// Тестовый endpoint для проверки API Poster
+app.get('/api/test-poster', async (req, res) => {
+  try {
+    const token = process.env.POSTER_API_TOKEN;
+    if (!token) {
+      return res.status(500).json({ error: 'POSTER_API_TOKEN not configured' });
+    }
+
+    console.log('🧪 Testing Poster API...');
+
+    // Тестируем категории
+    const categoriesResponse = await axios.get('https://joinposter.com/api/menu.getCategories', {
+      params: { token },
+      httpsAgent: httpsAgent,
+      timeout: 10000
+    });
+
+    // Тестируем продукты
+    const productsResponse = await axios.get('https://joinposter.com/api/menu.getProducts', {
+      params: { token },
+      httpsAgent: httpsAgent,
+      timeout: 10000
+    });
+
+    res.json({
+      success: true,
+      categories: {
+        count: categoriesResponse.data.response?.length || 0,
+        sample: categoriesResponse.data.response?.slice(0, 2) || [],
+        fullResponse: categoriesResponse.data
+      },
+      products: {
+        count: productsResponse.data.response?.length || 0,
+        sample: productsResponse.data.response?.slice(0, 2) || [],
+        fullResponse: productsResponse.data
+      }
+    });
+  } catch (error) {
+    console.error('❌ Poster API test error:', error.message);
+    res.status(500).json({ 
+      error: error.message,
+      details: error.response?.data || 'No response data'
+    });
+  }
+});
+
 // Poster API прокси
 app.use('/api/poster', async (req, res) => {
   try {
