@@ -37,7 +37,7 @@ app.get('/api/health', (req, res) => {
   res.json({ 
     status: 'OK', 
     timestamp: new Date().toISOString(),
-    version: '2.1.0',
+    version: '2.1.1',
     buildDate: '2025-08-19',
     features: ['price-normalization']
   });
@@ -205,7 +205,7 @@ app.use((error, req, res, next) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`🚀 RestPublic Backend v2.1.0 running on port ${PORT}`);
+  console.log(`🚀 RestPublic Backend v2.1.1 running on port ${PORT}`);
   console.log(`📡 Poster API proxy: /api/poster/*`);
   console.log(`📋 Menu cache: /api/menu (with price normalization)`);
   console.log(`🌐 Frontend: /dist/*`);
