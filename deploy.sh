@@ -6,7 +6,7 @@ set -e  # Остановить выполнение при ошибке
 
 echo "🚀 Начинаем деплой RestPublic v2.0..."
 
-cd /var/www/restbublic_z_usr/data/www/goodzone.zapleo.com
+cd /var/www/goodzone_zap_usr/data/www/goodzone.zapleo.com
 echo "📁 Рабочая директория: $(pwd)"
 
 # Настройки Git для предотвращения открытия редактора
