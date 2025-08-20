@@ -32,11 +32,11 @@ echo "🔧 Собираем и запускаем Backend..."
 cd backend
 npm install
 mkdir -p ../logs
-echo "🚀 Запускаем backend..."
-nohup node server.js > ../logs/backend.log 2>&1 &
-BACKEND_PID=$!
-echo "Backend запущен с PID: $BACKEND_PID"
 cd ..
+
+echo "🚀 Запускаем процессы через PM2..."
+pm2 start ecosystem.config.js --update-env
+echo "✅ Процессы запущены через PM2"
 
 echo "🔨 Собираем Frontend..."
 cd frontend
@@ -46,15 +46,12 @@ echo "📋 Копируем собранные файлы frontend..."
 cp -r dist/* ../
 cd ..
 
-echo "🤖 Собираем и запускаем Telegram Bot..."
+echo "🤖 Собираем Telegram Bot..."
 cd bot
 npm install
 npm run build
-echo "🚀 Запускаем бота..."
-nohup node dist/bot.js > ../logs/bot.log 2>&1 &
-BOT_PID=$!
-echo "Бот запущен с PID: $BOT_PID"
 cd ..
+echo "✅ Бот собран и готов к запуску через PM2"
 
 echo "🔐 Настраиваем права доступа..."
 chmod +x bot/dist/bot.js
@@ -63,8 +60,9 @@ chown -R goodzone_zap_usr:goodzone_zap_usr .
 echo "✅ Проверяем статус деплоя..."
 sleep 3
 
-if ps -p $BACKEND_PID > /dev/null; then
-    echo "✅ Backend успешно запущен (PID: $BACKEND_PID)"
+# Проверяем статус PM2 процессов
+if pm2 list | grep -q "restpublic-backend.*online"; then
+    echo "✅ Backend успешно запущен через PM2"
 else
     echo "❌ Ошибка: backend не запущен"
     echo "📋 Последние логи backend:"
@@ -72,8 +70,8 @@ else
     exit 1
 fi
 
-if ps -p $BOT_PID > /dev/null; then
-    echo "✅ Бот успешно запущен (PID: $BOT_PID)"
+if pm2 list | grep -q "restpublic-bot.*online"; then
+    echo "✅ Бот успешно запущен через PM2"
 else
     echo "❌ Ошибка: бот не запущен"
     echo "📋 Последние логи бота:"
@@ -91,6 +89,6 @@ fi
 echo "🎉 Деплой завершен успешно!"
 echo "🌐 Сайт доступен по адресу: https://goodzone.zapleo.com"
 echo "📡 Backend API: http://localhost:3001/api/health"
-echo "📋 Логи backend: tail -f logs/backend.log"
-echo "📋 Логи бота: tail -f logs/bot.log"
-echo "🔍 Проверить процессы: ps aux | grep node"
+echo "📋 Логи backend: pm2 logs restpublic-backend"
+echo "📋 Логи бота: pm2 logs restpublic-bot"
+echo "🔍 Проверить процессы: pm2 list"
