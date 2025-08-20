@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import HomePage from './components/HomePage';
 import MenuPage from './components/MenuPage';
+import OrderPage from './components/OrderPage';
 import LoadingSpinner from './components/LoadingSpinner';
 import ErrorBoundary from './components/ErrorBoundary';
 import './App.css';
@@ -73,8 +74,9 @@ function App() {
         <div className="min-h-screen bg-gray-50">
           <main>
             <Routes>
-              <Route path="/" element={<HomePage menuData={menuData} />} />
-              <Route path="/menu/:categoryId?" element={<MenuPage menuData={menuData} />} />
+              <Route path="/" element={<HomePage />} />
+              <Route path="/m" element={<MenuPage menuData={menuData} />} />
+              <Route path="/m2" element={<OrderPage menuData={menuData} />} />
             </Routes>
           </main>
         </div>
