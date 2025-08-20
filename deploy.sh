@@ -58,7 +58,7 @@ cd ..
 
 echo "🔐 Настраиваем права доступа..."
 chmod +x bot/dist/bot.js
-chown -R restbublic_z_usr:restbublic_z_usr .
+chown -R goodzone_zap_usr:goodzone_zap_usr .
 
 echo "✅ Проверяем статус деплоя..."
 sleep 3
