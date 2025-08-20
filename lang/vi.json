@@ -1,0 +1,29 @@
+{
+  "welcome": {
+    "title": "Chào mừng đến RestPublic",
+    "subtitle": "Khám phá thực đơn ngon của chúng tôi với hương vị chân thực"
+  },
+  "menu": "Thực đơn",
+  "menu.subtitle": "Chọn từ bộ sưu tập ngon của chúng tôi",
+  "categories": "Danh mục",
+  "all_products": "Tất cả món ăn",
+  "price": "Giá",
+  "weight": "Trọng lượng",
+  "description": "Mô tả",
+  "loading": "Đang tải...",
+  "error": "Lỗi tải dữ liệu",
+  "no_products": "Không tìm thấy món ăn",
+  "no_categories": "Không tìm thấy danh mục",
+  "footer": {
+    "description": "Nhà hàng chân thực với món ăn ngon và không khí tuyệt vời",
+    "contact": "Liên hệ",
+    "websites": "Trang web",
+    "rights": "Tất cả quyền được bảo lưu"
+  },
+  "categories": {
+    "food": "Món ăn",
+    "bar": "Quầy bar",
+    "drinks": "Đồ uống",
+    "desserts": "Tráng miệng"
+  }
+}

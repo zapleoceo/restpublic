@@ -1,0 +1,21 @@
+{
+  "welcome": {
+    "title": "Chào mừng đến với",
+    "subtitle": "Không gian ấm cúng và món ăn tinh tế cho buổi tối của bạn"
+  },
+  "menu": {
+    "title": "Thực đơn của chúng tôi",
+    "dishes": "món"
+  },
+  "contacts": {
+    "title": "Liên hệ",
+    "location": "Vị trí của chúng tôi",
+    "phone": "Điện thoại",
+    "group": "Nhóm của chúng tôi",
+    "view_on_map": "Xem trên bản đồ"
+  },
+  "loading": "Đang tải...",
+  "error": "Lỗi tải dữ liệu",
+  "no_products": "Không tìm thấy món ăn",
+  "no_categories": "Không tìm thấy danh mục"
+}

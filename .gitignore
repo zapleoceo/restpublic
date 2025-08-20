@@ -1,0 +1,208 @@
+# ===========================================
+# GoodZone Project - Root .gitignore
+# ===========================================
+
+# ===========================================
+# Dependencies
+# ===========================================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# ===========================================
+# Environment Variables
+# ===========================================
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.staging
+.env.*.local
+
+# ===========================================
+# Build Outputs
+# ===========================================
+dist/
+build/
+out/
+.next/
+.nuxt/
+.vuepress/dist
+.serverless/
+.fusebox/
+.dynamodb/
+
+# ===========================================
+# IDE and Editor Files
+# ===========================================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+.metadata/
+*.sublime-project
+*.sublime-workspace
+
+# ===========================================
+# OS Generated Files
+# ===========================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# ===========================================
+# Logs
+# ===========================================
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+
+# ===========================================
+# Runtime Data
+# ===========================================
+pids/
+*.pid
+*.seed
+*.pid.lock
+lib-cov/
+coverage/
+*.lcov
+.nyc_output
+.grunt
+bower_components
+
+# ===========================================
+# Temporary Folders
+# ===========================================
+tmp/
+temp/
+.tmp/
+.temp/
+
+# ===========================================
+# Cache Directories
+# ===========================================
+.npm
+.eslintcache
+.stylelintcache
+.parcel-cache
+.cache
+.rollup.cache
+
+# ===========================================
+# TypeScript
+# ===========================================
+*.tsbuildinfo
+next-env.d.ts
+
+# ===========================================
+# Testing
+# ===========================================
+coverage/
+.nyc_output
+junit.xml
+test-results/
+playwright-report/
+test-results.xml
+
+# ===========================================
+# Documentation with secrets
+# ===========================================
+TZ*.md
+TZ_*.md
+*.TZ
+*.tz
+technical_assignment*.md
+requirements*.md
+specification*.md
+README.md
+
+# ===========================================
+# Temporary API response files
+# ===========================================
+*_response.json
+*_sales.json
+*_statistics.json
+products_*.json
+analytics_*.json
+
+# ===========================================
+# Git commands (accidentally created files)
+# ===========================================
+et --hard c200f2e
+
+# ===========================================
+# Cursor AI files with secrets
+# ===========================================
+.cursor/
+cursor/
+.cursor/
+
+# ===========================================
+# Project Specific
+# ===========================================
+# Poster API cache files
+poster_cache/
+api_cache/
+
+# Deployment files
+deploy_backup.sh
+*.backup
+
+# SSL certificates
+*.pem
+*.key
+*.crt
+*.csr
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Backup files
+*.bak
+*.backup
+*.old
+
+# ===========================================
+# Package Manager Files
+# ===========================================
+# package-lock.json - НЕ исключаем, нужен для воспроизводимых сборок
+yarn.lock
+pnpm-lock.yaml
+.npmrc
+.yarnrc
+.yarnrc.yml
+
+# ===========================================
+# Local Development
+# ===========================================
+.local/
+local/
+dev/
+development/
+
+# ===========================================
+# Production Build Artifacts
+# ===========================================
+# assets/ - НЕ исключаем, могут быть важные статические файлы
+# public/assets/ - НЕ исключаем, могут быть важные статические файлы
+static/

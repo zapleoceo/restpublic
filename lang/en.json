@@ -1,0 +1,29 @@
+{
+  "welcome": {
+    "title": "Welcome to RestPublic",
+    "subtitle": "Discover our delicious menu with authentic flavors"
+  },
+  "menu": "Menu",
+  "menu.subtitle": "Choose from our delicious selection",
+  "categories": "Categories",
+  "all_products": "All Products",
+  "price": "Price",
+  "weight": "Weight",
+  "description": "Description",
+  "loading": "Loading...",
+  "error": "Error loading data",
+  "no_products": "No products found",
+  "no_categories": "No categories found",
+  "footer": {
+    "description": "Authentic restaurant with delicious food and great atmosphere",
+    "contact": "Contact",
+    "websites": "Websites",
+    "rights": "All rights reserved"
+  },
+  "categories": {
+    "food": "Food",
+    "bar": "Bar",
+    "drinks": "Drinks",
+    "desserts": "Desserts"
+  }
+}

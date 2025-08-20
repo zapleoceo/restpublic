@@ -1,0 +1,21 @@
+{
+  "welcome": {
+    "title": "Welcome to",
+    "subtitle": "Cozy atmosphere and exquisite dishes for your evening"
+  },
+  "menu": {
+    "title": "Our Menu",
+    "dishes": "dishes"
+  },
+  "contacts": {
+    "title": "Contacts",
+    "location": "Our Location",
+    "phone": "Phone",
+    "group": "Our Group",
+    "view_on_map": "View on map"
+  },
+  "loading": "Loading...",
+  "error": "Error loading data",
+  "no_products": "No products found",
+  "no_categories": "No categories found"
+}
