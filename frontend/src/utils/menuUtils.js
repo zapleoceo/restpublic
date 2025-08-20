@@ -1,15 +1,22 @@
 // Утилита для работы с меню в соответствии с API Poster
 export const groupProductsByCategory = (categories = [], products = []) => {
-  return categories.map(category => {
+  console.log('🔍 groupProductsByCategory input:', { categories: categories.length, products: products.length });
+  
+  const result = categories.map(category => {
     const categoryProducts = products.filter(product => 
       product && product.menu_category_id === category.category_id
     ) || [];
+    
+    console.log(`🔍 Category ${category.category_name}: ${categoryProducts.length} products`);
     
     return {
       ...category,
       products: categoryProducts
     };
   }).filter(category => category && category.products && category.products.length > 0);
+  
+  console.log('🔍 groupProductsByCategory result:', result.length, 'categories with products');
+  return result;
 };
 
 // Получение продуктов для конкретной категории

@@ -120,12 +120,16 @@ app.get('/api/menu', async (req, res) => {
       timeout: 10000
     });
 
+    console.log('📋 Categories response:', JSON.stringify(categoriesResponse.data, null, 2));
+
     // Получаем продукты
     const productsResponse = await axios.get('https://joinposter.com/api/menu.getProducts', {
       params: { token },
       httpsAgent: httpsAgent,
       timeout: 10000
     });
+
+    console.log('🍽️ Products response sample:', JSON.stringify(productsResponse.data.response?.slice(0, 2), null, 2));
 
     // Фильтруем только видимые товары (hidden !== "1")
     const rawProducts = productsResponse.data.response || [];

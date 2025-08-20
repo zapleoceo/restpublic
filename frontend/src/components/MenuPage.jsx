@@ -12,8 +12,17 @@ const MenuPage = ({ menuData }) => {
   const categories = menuData?.categories || [];
   const products = menuData?.products || [];
 
+  console.log('🔍 MenuPage debug:', {
+    categories: categories.length,
+    products: products.length,
+    categoriesData: categories,
+    productsSample: products.slice(0, 2)
+  });
+
   // Группируем продукты по категориям
   const groupedCategories = groupProductsByCategory(categories, products);
+
+  console.log('🔍 Grouped categories:', groupedCategories);
 
   // Если нет категорий, показываем сообщение
   if (groupedCategories.length === 0) {
