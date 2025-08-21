@@ -63,7 +63,7 @@ const HomePage = () => {
             Добро пожаловать в GoodZone
           </h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Развлекательный комплекс с рестораном, лазертагом, стрельбой из лука, кинотеатром и арендой беседок (тест автодеплоя)
+            Развлекательный комплекс с рестораном, лазертагом, стрельбой из лука, кинотеатром и арендой беседок
           </p>
         </div>
 
@@ -89,16 +89,30 @@ const HomePage = () => {
         </div>
 
         {/* Contact Section */}
-        <div className="mt-16 text-center">
-          <div className="bg-white rounded-xl shadow-md p-8 max-w-2xl mx-auto">
-            <h3 className="text-2xl font-bold text-gray-900 mb-4">Контакты</h3>
-            <div className="space-y-3 text-gray-600">
-              <p>📍 <a href="https://maps.app.goo.gl/Hgbn5n83PA11NcqLA" target="_blank" rel="noopener noreferrer" className="text-orange-600 hover:text-orange-700">Наша локация</a></p>
-              <p>📞 +84 349 338 758</p>
-              <p>🌐 <a href="https://t.me/goodzone_vn" target="_blank" rel="noopener noreferrer" className="text-orange-600 hover:text-orange-700">Telegram группа</a></p>
+        <div className="mt-16">
+          <div className="bg-white rounded-xl shadow-md p-6 max-w-4xl mx-auto">
+            <h3 className="text-xl font-bold text-gray-900 mb-4 text-center">Контакты</h3>
+            <div className="flex flex-col sm:flex-row justify-center items-center space-y-3 sm:space-y-0 sm:space-x-8 text-gray-600">
+              <div className="flex items-center">
+                <span className="mr-2">📍</span>
+                <a href="https://maps.app.goo.gl/Hgbn5n83PA11NcqLA" target="_blank" rel="noopener noreferrer" className="text-orange-600 hover:text-orange-700">Наша локация</a>
+              </div>
+              <div className="flex items-center">
+                <span className="mr-2">📞</span>
+                <span>+84 349 338 758</span>
+              </div>
+              <div className="flex items-center">
+                <span className="mr-2">🌐</span>
+                <a href="https://t.me/goodzone_vn" target="_blank" rel="noopener noreferrer" className="text-orange-600 hover:text-orange-700">Telegram группа</a>
+              </div>
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Version info - hidden div */}
+      <div className="fixed bottom-2 right-2 text-xs text-gray-400 opacity-30 pointer-events-none">
+        v2.2.5
       </div>
     </div>
   );
