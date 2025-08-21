@@ -3,7 +3,7 @@
 # Скрипт для автоматического деплоя по расписанию
 # Добавить в crontab: */5 * * * * /path/to/deploy-cron.sh
 
-cd /var/www/restbublic_z_usr/data/www/goodzone.zapleo.com
+cd /var/www/goodzone_zap_usr/data/www/goodzone.zapleo.com
 
 # Проверяем, есть ли новые коммиты
 git fetch origin

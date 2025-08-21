@@ -5,7 +5,7 @@ const { exec } = require('child_process');
 const crypto = require('crypto');
 
 const WEBHOOK_SECRET = process.env.WEBHOOK_SECRET || 'your-secret-key';
-const DEPLOY_PATH = '/var/www/restbublic_z_usr/data/www/goodzone.zapleo.com';
+const DEPLOY_PATH = '/var/www/goodzone_zap_usr/data/www/goodzone.zapleo.com';
 
 const server = http.createServer((req, res) => {
   if (req.method === 'POST' && req.url === '/deploy') {

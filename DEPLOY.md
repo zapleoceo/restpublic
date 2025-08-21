@@ -4,12 +4,12 @@
 
 ### 1. Подключение к серверу
 ```bash
-ssh -i ~/.ssh/id_rsa_restbublic restbublic_z_usr@159.253.23.113
+ssh -i ~/.ssh/goodzone goodzone_zap_usr@159.253.23.113
 ```
 
 ### 2. Переход в рабочую директорию
 ```bash
-cd /var/www/restbublic_z_usr/data/www/goodzone.zapleo.com
+cd /var/www/goodzone_zap_usr/data/www/goodzone.zapleo.com
 ```
 
 ### 3. Клонирование/обновление репозитория
@@ -18,7 +18,7 @@ cd /var/www/restbublic_z_usr/data/www/goodzone.zapleo.com
 git clone https://github.com/zapleoceo/restpublic.git .
 
 # Если репозиторий уже существует
-git pull origin master --allow-unrelated-histories --no-edit
+git pull origin main --allow-unrelated-histories --no-edit
 ```
 
 ### 4. Настройка переменных окружения
@@ -63,14 +63,14 @@ cd ..
 ### 8. Настройка прав доступа
 ```bash
 chmod +x bot/dist/bot.js
-chown -R restbublic_z_usr:restbublic_z_usr .
+chown -R goodzone_zap_usr:goodzone_zap_usr .
 ```
 
 ## 📝 Логи
 
 Логи проекта находятся в:
 ```
-/var/www/restbublic_z_usr/data/www/goodzone.zapleo.com/logs/
+/var/www/goodzone_zap_usr/data/www/goodzone.zapleo.com/logs/
 ```
 
 - `bot.log` - логи Telegram бота
@@ -83,10 +83,10 @@ chown -R restbublic_z_usr:restbublic_z_usr .
 
 ```bash
 #!/bin/bash
-cd /var/www/restbublic_z_usr/data/www/goodzone.zapleo.com
+cd /var/www/goodzone_zap_usr/data/www/goodzone.zapleo.com
 
 # Обновление кода
-git pull origin master --allow-unrelated-histories --no-edit
+git pull origin main --allow-unrelated-histories --no-edit
 
 # Остановка старых процессов
 pkill -f "node dist/bot.js" || echo "Процессы бота не найдены"
@@ -115,7 +115,7 @@ cd ..
 
 # Настройка прав доступа
 chmod +x bot/dist/bot.js
-chown -R restbublic_z_usr:restbublic_z_usr .
+chown -R goodzone_zap_usr:goodzone_zap_usr .
 
 echo "Deployment completed!"
 ```
@@ -123,7 +123,7 @@ echo "Deployment completed!"
 ## 🌐 Проверка работы
 
 - Веб-сайт: https://goodzone.zapleo.com
-- Проверить логи: `tail -f /var/www/restbublic_z_usr/data/logs/bot.log`
+- Проверить логи: `tail -f /var/www/goodzone_zap_usr/data/logs/bot.log`
 
 ## 🔧 Устранение неполадок
 
