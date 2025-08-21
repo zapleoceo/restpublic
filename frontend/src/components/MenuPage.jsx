@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { groupProductsByCategory } from '../utils/menuUtils';
 import ProductCard from './ProductCard';
+import LanguageSwitcher from './LanguageSwitcher';
 
 const MenuPage = ({ menuData }) => {
   const { t } = useTranslation();
@@ -56,14 +57,14 @@ const MenuPage = ({ menuData }) => {
               className="inline-flex items-center px-3 py-2 text-gray-600 hover:text-orange-600 transition-colors"
             >
               <ArrowLeft className="mr-2 w-4 h-4" />
-              Назад
+              {t('back')}
             </Link>
 
             {/* Заголовок */}
-            <h1 className="text-xl font-semibold text-gray-900">Меню</h1>
+            <h1 className="text-xl font-semibold text-gray-900">{t('menu.title')}</h1>
 
-            {/* Пустой элемент для центрирования */}
-            <div className="w-20"></div>
+            {/* Переключатель языка */}
+            <LanguageSwitcher />
           </div>
         </div>
       </div>

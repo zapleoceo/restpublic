@@ -8,7 +8,7 @@ module.exports = {
         NODE_ENV: 'production',
         PORT: 3001,
         env_file: '.env',
-        APP_VERSION: '2.3.6'
+        APP_VERSION: '2.3.7'
       },
       log_file: './logs/backend.log',
       error_file: './logs/backend-error.log',

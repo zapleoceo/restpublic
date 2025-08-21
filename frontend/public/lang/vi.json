@@ -3,6 +3,36 @@
     "title": "Chào mừng đến với",
     "subtitle": "Không gian ấm cúng và món ăn tinh tế cho buổi tối của bạn"
   },
+  "home": {
+    "title": "Chào mừng đến với GoodZone",
+    "subtitle": "Khu phức hợp giải trí với nhà hàng, laser tag, bắn cung, rạp chiếu phim và cho thuê lều",
+    "contacts": "Liên hệ",
+    "location": "Vị trí của chúng tôi",
+    "phone": "Điện thoại",
+    "group": "Nhóm Telegram"
+  },
+  "sections": {
+    "menu": {
+      "title": "Thực đơn",
+      "description": "Thực đơn nhà hàng"
+    },
+    "lasertag": {
+      "title": "Laser Tag",
+      "description": "Trò chơi đồng đội"
+    },
+    "bow": {
+      "title": "Bắn cung",
+      "description": "Bắn cung truyền thống"
+    },
+    "cinema": {
+      "title": "Rạp chiếu phim",
+      "description": "Xem phim"
+    },
+    "rent": {
+      "title": "Thuê lều",
+      "description": "Cho thuê lều"
+    }
+  },
   "menu": {
     "title": "Thực đơn của chúng tôi",
     "dishes": "món"
@@ -17,5 +47,6 @@
   "loading": "Đang tải...",
   "error": "Lỗi tải dữ liệu",
   "no_products": "Không tìm thấy món ăn",
-  "no_categories": "Không tìm thấy danh mục"
+  "no_categories": "Không tìm thấy danh mục",
+  "back": "Quay lại"
 }
