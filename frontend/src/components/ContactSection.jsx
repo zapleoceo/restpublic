@@ -32,48 +32,84 @@ const ContactSection = () => {
           </div>
         </div>
 
-        {/* Иконки контактов */}
-        <div className="flex justify-center space-x-8">
-          {/* Телефон */}
-          <a
-            href="tel:+84349338758"
-            className="flex flex-col items-center p-6 bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105 group"
-          >
-            <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mb-4 group-hover:bg-orange-200 transition-colors">
-              <i className="fas fa-phone text-orange-600 text-xl"></i>
-            </div>
-            <span className="text-sm font-medium text-gray-900">+84 349 338 758</span>
-            <span className="text-xs text-gray-500 mt-1">{t('home.phone')}</span>
-          </a>
+                 {/* Иконки контактов */}
+         <div className="flex justify-center space-x-8 mb-8">
+           {/* Телефон */}
+           <a
+             href="tel:+84349338758"
+             className="flex flex-col items-center p-6 bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105 group"
+           >
+             <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mb-4 group-hover:bg-orange-200 transition-colors">
+               <i className="fas fa-phone text-orange-600 text-xl"></i>
+             </div>
+             <span className="text-sm font-medium text-gray-900">+84 349 338 758</span>
+             <span className="text-xs text-gray-500 mt-1">{t('home.phone')}</span>
+           </a>
 
-          {/* Локация */}
-          <a
-            href="https://maps.app.goo.gl/Hgbn5n83PA11NcqLA"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex flex-col items-center p-6 bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105 group"
-          >
-            <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mb-4 group-hover:bg-orange-200 transition-colors">
-              <i className="fas fa-map-marker-alt text-orange-600 text-xl"></i>
-            </div>
-            <span className="text-sm font-medium text-gray-900">{t('home.location')}</span>
-            <span className="text-xs text-gray-500 mt-1">Trần Khát Chân, Nha Trang</span>
-          </a>
+           {/* Локация */}
+           <a
+             href="https://maps.app.goo.gl/Hgbn5n83PA11NcqLA"
+             target="_blank"
+             rel="noopener noreferrer"
+             className="flex flex-col items-center p-6 bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105 group"
+           >
+             <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mb-4 group-hover:bg-orange-200 transition-colors">
+               <i className="fas fa-map-marker-alt text-orange-600 text-xl"></i>
+             </div>
+             <span className="text-sm font-medium text-gray-900">{t('home.location')}</span>
+             <span className="text-xs text-gray-500 mt-1">Trần Khát Chân, Nha Trang</span>
+           </a>
 
-          {/* Telegram */}
-          <a
-            href="https://t.me/goodzone_vn"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex flex-col items-center p-6 bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105 group"
-          >
-            <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mb-4 group-hover:bg-orange-200 transition-colors">
-              <i className="fab fa-telegram text-orange-600 text-xl"></i>
-            </div>
-            <span className="text-sm font-medium text-gray-900">{t('home.group')}</span>
-            <span className="text-xs text-gray-500 mt-1">@goodzone_vn</span>
-          </a>
-        </div>
+           {/* Telegram */}
+           <a
+             href="https://t.me/goodzone_vn"
+             target="_blank"
+             rel="noopener noreferrer"
+             className="flex flex-col items-center p-6 bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105 group"
+           >
+             <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mb-4 group-hover:bg-orange-200 transition-colors">
+               <i className="fab fa-telegram text-orange-600 text-xl"></i>
+             </div>
+             <span className="text-sm font-medium text-gray-900">{t('home.group')}</span>
+             <span className="text-xs text-gray-500 mt-1">@goodzone_vn</span>
+           </a>
+         </div>
+
+         {/* Социальные сети */}
+         <div className="text-center mb-8">
+           <h3 className="text-xl font-semibold text-gray-900 mb-6">{t('home.social_media')}</h3>
+           <div className="flex justify-center space-x-6">
+             {/* Instagram */}
+             <a
+               href="https://www.instagram.com/gamezone_vietnam/"
+               target="_blank"
+               rel="noopener noreferrer"
+               className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center hover:scale-110 transition-transform duration-200 shadow-lg hover:shadow-xl"
+             >
+               <i className="fab fa-instagram text-white text-xl"></i>
+             </a>
+
+             {/* TikTok */}
+             <a
+               href="https://www.tiktok.com/@gamezone_vietnam"
+               target="_blank"
+               rel="noopener noreferrer"
+               className="w-12 h-12 bg-black rounded-full flex items-center justify-center hover:scale-110 transition-transform duration-200 shadow-lg hover:shadow-xl"
+             >
+               <i className="fab fa-tiktok text-white text-xl"></i>
+             </a>
+
+             {/* Facebook */}
+             <a
+               href="https://www.facebook.com/gamezone.vietnam"
+               target="_blank"
+               rel="noopener noreferrer"
+               className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center hover:scale-110 transition-transform duration-200 shadow-lg hover:shadow-xl"
+             >
+               <i className="fab fa-facebook-f text-white text-xl"></i>
+             </a>
+           </div>
+         </div>
 
         {/* Адрес */}
         <div className="text-center mt-8">
