@@ -4,11 +4,9 @@ module.exports = {
       name: 'restpublic-backend',
       script: './backend/server.js',
       cwd: '/var/www/goodzone_zap_usr/data/www/goodzone.zapleo.com',
+      env_file: '.env',
       env: {
-        NODE_ENV: 'production',
-        PORT: 3001,
-        env_file: '.env',
-        APP_VERSION: '2.3.12'
+        APP_VERSION: '2.3.13'
       },
       log_file: './logs/backend.log',
       error_file: './logs/backend-error.log',
@@ -23,10 +21,9 @@ module.exports = {
       name: 'restpublic-bot',
       script: './bot/dist/bot.js',
       cwd: '/var/www/goodzone_zap_usr/data/www/goodzone.zapleo.com',
+      env_file: '.env',
       env: {
-        NODE_ENV: 'production',
-        env_file: '.env',
-        env_file: '.env'
+        NODE_ENV: 'production'
       },
       log_file: './logs/bot.log',
       error_file: './logs/bot-error.log',
