@@ -1,25 +1,16 @@
 import axios from 'axios';
 
-// Создаем экземпляр axios для Poster API
-const posterApi = axios.create({
-  baseURL: 'https://joinposter.com/api',
+// Создаем экземпляр axios для нашего backend
+const backendApi = axios.create({
+  baseURL: 'http://localhost:3001/api',
   timeout: 10000,
 });
 
-// Интерцептор для добавления токена к запросам
-posterApi.interceptors.request.use((config) => {
-  const token = process.env.POSTER_API_TOKEN;
-  if (token) {
-    config.params = { ...config.params, token: token };
-  }
-  return config;
-});
-
 // Интерцептор для обработки ошибок
-posterApi.interceptors.response.use(
+backendApi.interceptors.response.use(
   (response) => response,
   (error) => {
-    console.error('Poster API Error:', error);
+    console.error('Backend API Error:', error);
     return Promise.reject(error);
   }
 );
@@ -47,11 +38,25 @@ export interface Product {
 
 // Функции для работы с API
 export const posterService = {
+  // Получить все категории и продукты
+  async getMenuData(): Promise<{ categories: Category[], products: Product[] }> {
+    try {
+      const response = await backendApi.get('/menu');
+      return {
+        categories: response.data.categories || [],
+        products: response.data.products || []
+      };
+    } catch (error) {
+      console.error('Error fetching menu data:', error);
+      throw error;
+    }
+  },
+
   // Получить все категории
   async getCategories(): Promise<Category[]> {
     try {
-      const response = await posterApi.get('/menu.getCategories');
-      return response.data.response;
+      const menuData = await this.getMenuData();
+      return menuData.categories;
     } catch (error) {
       console.error('Error fetching categories:', error);
       throw error;
@@ -61,15 +66,14 @@ export const posterService = {
   // Получить товары категории
   async getProducts(categoryId?: number): Promise<Product[]> {
     try {
-      const params = categoryId ? { category_id: categoryId } : {};
-      const response = await posterApi.get('/menu.getProducts', { params });
-      
-      // Фильтруем только видимые товары (hidden !== "1")
-      const visibleProducts = (response.data.response || []).filter((product: any) => 
-        product.hidden !== "1"
-      );
-      
-      return visibleProducts;
+      const menuData = await this.getMenuData();
+      if (categoryId) {
+        // Фильтруем продукты по категории
+        return menuData.products.filter((product: any) => 
+          product.menu_category_id === categoryId.toString()
+        );
+      }
+      return menuData.products;
     } catch (error) {
       console.error('Error fetching products:', error);
       throw error;

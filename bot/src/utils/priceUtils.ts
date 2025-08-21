@@ -1,5 +1,5 @@
 // Утилита для форматирования цен в боте
-// Backend уже нормализует цены (делит на 100), поэтому просто форматируем
+// Backend уже нормализует цены, поэтому просто форматируем
 export const formatPrice = (price: string): string => {
   const numPrice = parseFloat(price);
   return numPrice.toLocaleString('ru-RU');
