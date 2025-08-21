@@ -90,7 +90,7 @@ const HomePage = () => {
 
       {/* Version info - hidden div */}
       <div className="fixed bottom-2 right-2 text-xs text-gray-400 opacity-30 pointer-events-none">
-        v2.2.7
+        v2.2.8
       </div>
     </div>
   );

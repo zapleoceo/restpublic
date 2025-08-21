@@ -1,6 +1,5 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Phone, MapPin, MessageCircle } from 'lucide-react';
 
 const ContactSection = () => {
   const { t } = useTranslation();
@@ -41,7 +40,7 @@ const ContactSection = () => {
             className="flex flex-col items-center p-6 bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105 group"
           >
             <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mb-4 group-hover:bg-orange-200 transition-colors">
-              <Phone className="w-6 h-6 text-orange-600" />
+              <i className="fas fa-phone text-orange-600 text-xl"></i>
             </div>
             <span className="text-sm font-medium text-gray-900">+84 349 338 758</span>
             <span className="text-xs text-gray-500 mt-1">{t('home.phone')}</span>
@@ -55,7 +54,7 @@ const ContactSection = () => {
             className="flex flex-col items-center p-6 bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105 group"
           >
             <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mb-4 group-hover:bg-orange-200 transition-colors">
-              <MapPin className="w-6 h-6 text-orange-600" />
+              <i className="fas fa-map-marker-alt text-orange-600 text-xl"></i>
             </div>
             <span className="text-sm font-medium text-gray-900">{t('home.location')}</span>
             <span className="text-xs text-gray-500 mt-1">Trần Khát Chân, Nha Trang</span>
@@ -69,7 +68,7 @@ const ContactSection = () => {
             className="flex flex-col items-center p-6 bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105 group"
           >
             <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mb-4 group-hover:bg-orange-200 transition-colors">
-              <MessageCircle className="w-6 h-6 text-orange-600" />
+              <i className="fab fa-telegram text-orange-600 text-xl"></i>
             </div>
             <span className="text-sm font-medium text-gray-900">{t('home.group')}</span>
             <span className="text-xs text-gray-500 mt-1">@goodzone_vn</span>
