@@ -32,8 +32,8 @@ const ContactSection = () => {
           </div>
         </div>
 
-                 {/* Иконки контактов */}
-         <div className="flex justify-center space-x-8 mb-8">
+                 {/* Иконки контактов и социальных сетей */}
+         <div className="flex justify-center space-x-6 mb-8">
            {/* Телефон */}
            <a
              href="tel:+84349338758"
@@ -73,53 +73,56 @@ const ContactSection = () => {
              <span className="text-sm font-medium text-gray-900">{t('home.group')}</span>
              <span className="text-xs text-gray-500 mt-1">@goodzone_vn</span>
            </a>
-         </div>
 
-         {/* Социальные сети */}
-         <div className="text-center mb-8">
-           <h3 className="text-xl font-semibold text-gray-900 mb-6">{t('home.social_media')}</h3>
-           <div className="flex justify-center space-x-6">
-             {/* Instagram */}
-             <a
-               href="https://www.instagram.com/gamezone_vietnam/"
-               target="_blank"
-               rel="noopener noreferrer"
-               className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center hover:scale-110 transition-transform duration-200 shadow-lg hover:shadow-xl"
-             >
+           {/* Instagram */}
+           <a
+             href="https://www.instagram.com/gamezone_vietnam/"
+             target="_blank"
+             rel="noopener noreferrer"
+             className="flex flex-col items-center p-6 bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105 group"
+           >
+             <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center mb-4 group-hover:bg-gradient-to-r group-hover:from-purple-600 group-hover:to-pink-600 transition-colors">
                <i className="fab fa-instagram text-white text-xl"></i>
-             </a>
+             </div>
+             <span className="text-sm font-medium text-gray-900">Instagram</span>
+             <span className="text-xs text-gray-500 mt-1">@gamezone_vietnam</span>
+           </a>
 
-             {/* TikTok */}
-             <a
-               href="https://www.tiktok.com/@gamezone_vietnam"
-               target="_blank"
-               rel="noopener noreferrer"
-               className="w-12 h-12 bg-black rounded-full flex items-center justify-center hover:scale-110 transition-transform duration-200 shadow-lg hover:shadow-xl"
-             >
+           {/* TikTok */}
+           <a
+             href="https://www.tiktok.com/@gamezone_vietnam"
+             target="_blank"
+             rel="noopener noreferrer"
+             className="flex flex-col items-center p-6 bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105 group"
+           >
+             <div className="w-12 h-12 bg-black rounded-full flex items-center justify-center mb-4 group-hover:bg-gray-800 transition-colors">
                <i className="fab fa-tiktok text-white text-xl"></i>
-             </a>
+             </div>
+             <span className="text-sm font-medium text-gray-900">TikTok</span>
+             <span className="text-xs text-gray-500 mt-1">@gamezone_vietnam</span>
+           </a>
 
-             {/* Facebook */}
-             <a
-               href="https://www.facebook.com/gamezone.vietnam"
-               target="_blank"
-               rel="noopener noreferrer"
-               className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center hover:scale-110 transition-transform duration-200 shadow-lg hover:shadow-xl"
-             >
+           {/* Facebook */}
+           <a
+             href="https://www.facebook.com/gamezone.vietnam"
+             target="_blank"
+             rel="noopener noreferrer"
+             className="flex flex-col items-center p-6 bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105 group"
+           >
+             <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center mb-4 group-hover:bg-blue-700 transition-colors">
                <i className="fab fa-facebook-f text-white text-xl"></i>
-             </a>
-           </div>
+             </div>
+             <span className="text-sm font-medium text-gray-900">Facebook</span>
+             <span className="text-xs text-gray-500 mt-1">gamezone.vietnam</span>
+           </a>
          </div>
 
-        {/* Адрес */}
-        <div className="text-center mt-8">
-          <p className="text-gray-600">
-            Trần Khát Chân, Đường Đệ, Nha Trang, Khánh Hòa, Vietnam
-          </p>
-          <p className="text-sm text-gray-500 mt-2">
-            Coordinates: 12.302584, 109.207279
-          </p>
-        </div>
+                 {/* Адрес */}
+         <div className="text-center mt-8">
+           <p className="text-gray-600">
+             Trần Khát Chân, Đường Đệ, Nha Trang, Khánh Hòa, Vietnam
+           </p>
+         </div>
       </div>
     </div>
   );
