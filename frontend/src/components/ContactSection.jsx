@@ -32,18 +32,20 @@ const ContactSection = () => {
           </div>
         </div>
 
-                 {/* Иконки контактов и социальных сетей */}
-         <div className="flex justify-center space-x-6 mb-8">
+                 {/* Контакты - телефон и локация */}
+         <div className="flex justify-center space-x-4 mb-8">
            {/* Телефон */}
            <a
              href="tel:+84349338758"
-             className="flex flex-col items-center p-6 bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105 group"
+             className="flex items-center p-4 bg-white rounded-lg shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105 group"
            >
-             <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mb-4 group-hover:bg-orange-200 transition-colors">
-               <i className="fas fa-phone text-orange-600 text-xl"></i>
+             <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center mr-3 group-hover:bg-orange-200 transition-colors">
+               <i className="fas fa-phone text-orange-600 text-lg"></i>
              </div>
-             <span className="text-sm font-medium text-gray-900">+84 349 338 758</span>
-             <span className="text-xs text-gray-500 mt-1">{t('home.phone')}</span>
+             <div className="text-left">
+               <span className="text-sm font-medium text-gray-900 block">+84 349 338 758</span>
+               <span className="text-xs text-gray-500">{t('home.phone')}</span>
+             </div>
            </a>
 
            {/* Локация */}
@@ -51,70 +53,62 @@ const ContactSection = () => {
              href="https://maps.app.goo.gl/Hgbn5n83PA11NcqLA"
              target="_blank"
              rel="noopener noreferrer"
-             className="flex flex-col items-center p-6 bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105 group"
+             className="flex items-center p-4 bg-white rounded-lg shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105 group"
            >
-             <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mb-4 group-hover:bg-orange-200 transition-colors">
-               <i className="fas fa-map-marker-alt text-orange-600 text-xl"></i>
+             <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center mr-3 group-hover:bg-orange-200 transition-colors">
+               <i className="fas fa-map-marker-alt text-orange-600 text-lg"></i>
              </div>
-             <span className="text-sm font-medium text-gray-900">{t('home.location')}</span>
-             <span className="text-xs text-gray-500 mt-1">Trần Khát Chân, Nha Trang</span>
-           </a>
-
-           {/* Telegram */}
-           <a
-             href="https://t.me/goodzone_vn"
-             target="_blank"
-             rel="noopener noreferrer"
-             className="flex flex-col items-center p-6 bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105 group"
-           >
-             <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mb-4 group-hover:bg-orange-200 transition-colors">
-               <i className="fab fa-telegram text-orange-600 text-xl"></i>
+             <div className="text-left">
+               <span className="text-sm font-medium text-gray-900 block">{t('home.location')}</span>
+               <span className="text-xs text-gray-500">Trần Khát Chân, Nha Trang</span>
              </div>
-             <span className="text-sm font-medium text-gray-900">{t('home.group')}</span>
-             <span className="text-xs text-gray-500 mt-1">@goodzone_vn</span>
            </a>
+         </div>
 
-           {/* Instagram */}
-           <a
-             href="https://www.instagram.com/gamezone_vietnam/"
-             target="_blank"
-             rel="noopener noreferrer"
-             className="flex flex-col items-center p-6 bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105 group"
-           >
-             <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center mb-4 group-hover:bg-gradient-to-r group-hover:from-purple-600 group-hover:to-pink-600 transition-colors">
+         {/* Социальные сети */}
+         <div className="text-center mb-8">
+           <h3 className="text-xl font-semibold text-gray-900 mb-6">{t('home.social_media')}</h3>
+           <div className="flex justify-center space-x-4">
+             {/* Telegram */}
+             <a
+               href="https://t.me/goodzone_vn"
+               target="_blank"
+               rel="noopener noreferrer"
+               className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center hover:scale-110 transition-transform duration-200 shadow-lg hover:shadow-xl"
+             >
+               <i className="fab fa-telegram text-white text-xl"></i>
+             </a>
+
+             {/* Instagram */}
+             <a
+               href="https://www.instagram.com/gamezone_vietnam/"
+               target="_blank"
+               rel="noopener noreferrer"
+               className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center hover:scale-110 transition-transform duration-200 shadow-lg hover:shadow-xl"
+             >
                <i className="fab fa-instagram text-white text-xl"></i>
-             </div>
-             <span className="text-sm font-medium text-gray-900">Instagram</span>
-             <span className="text-xs text-gray-500 mt-1">@gamezone_vietnam</span>
-           </a>
+             </a>
 
-           {/* TikTok */}
-           <a
-             href="https://www.tiktok.com/@gamezone_vietnam"
-             target="_blank"
-             rel="noopener noreferrer"
-             className="flex flex-col items-center p-6 bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105 group"
-           >
-             <div className="w-12 h-12 bg-black rounded-full flex items-center justify-center mb-4 group-hover:bg-gray-800 transition-colors">
+             {/* TikTok */}
+             <a
+               href="https://www.tiktok.com/@gamezone_vietnam"
+               target="_blank"
+               rel="noopener noreferrer"
+               className="w-12 h-12 bg-black rounded-full flex items-center justify-center hover:scale-110 transition-transform duration-200 shadow-lg hover:shadow-xl"
+             >
                <i className="fab fa-tiktok text-white text-xl"></i>
-             </div>
-             <span className="text-sm font-medium text-gray-900">TikTok</span>
-             <span className="text-xs text-gray-500 mt-1">@gamezone_vietnam</span>
-           </a>
+             </a>
 
-           {/* Facebook */}
-           <a
-             href="https://www.facebook.com/gamezone.vietnam"
-             target="_blank"
-             rel="noopener noreferrer"
-             className="flex flex-col items-center p-6 bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105 group"
-           >
-             <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center mb-4 group-hover:bg-blue-700 transition-colors">
+             {/* Facebook */}
+             <a
+               href="https://www.facebook.com/gamezone.vietnam"
+               target="_blank"
+               rel="noopener noreferrer"
+               className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center hover:scale-110 transition-transform duration-200 shadow-lg hover:shadow-xl"
+             >
                <i className="fab fa-facebook-f text-white text-xl"></i>
-             </div>
-             <span className="text-sm font-medium text-gray-900">Facebook</span>
-             <span className="text-xs text-gray-500 mt-1">gamezone.vietnam</span>
-           </a>
+             </a>
+           </div>
          </div>
 
                  {/* Адрес */}
