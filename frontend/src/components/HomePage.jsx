@@ -72,30 +72,30 @@ const HomePage = () => {
             <Link
               key={section.id}
               to={section.link}
-              className="bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105 p-6 text-center group"
+              className={`bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105 p-6 text-center group relative overflow-hidden ${section.id === 'lasertag' ? 'group' : ''}`}
             >
-              <div className="mb-4 group-hover:scale-110 transition-transform duration-200 relative">
+              {section.id === 'lasertag' && (
+                <img 
+                  src={section.logo} 
+                  alt="GoodZone Logo" 
+                  className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-xl" 
+                />
+              )}
+              <div className="mb-4 group-hover:scale-110 transition-transform duration-200 relative z-10">
                 {section.id === 'lasertag' ? (
-                  <>
-                    <img 
-                      src={section.icon} 
-                      alt="Lasertag Icon" 
-                      className="w-16 h-16 mx-auto group-hover:opacity-0 transition-opacity duration-200 object-cover" 
-                    />
-                    <img 
-                      src={section.logo} 
-                      alt="GoodZone Logo" 
-                      className="w-16 h-16 mx-auto absolute top-0 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 object-cover" 
-                    />
-                  </>
+                  <img 
+                    src={section.icon} 
+                    alt="Lasertag Icon" 
+                    className="w-16 h-16 mx-auto group-hover:opacity-0 transition-opacity duration-200 object-cover" 
+                  />
                 ) : (
                   <div className="text-4xl">{section.icon}</div>
                 )}
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">
+              <h3 className="text-xl font-semibold text-gray-900 mb-2 relative z-10 group-hover:text-white transition-colors duration-200">
                 {t(`sections.${section.id}.title`)}
               </h3>
-              <p className="text-gray-600 text-sm">
+              <p className="text-gray-600 text-sm relative z-10 group-hover:text-white transition-colors duration-200">
                 {t(`sections.${section.id}.description`)}
               </p>
             </Link>
