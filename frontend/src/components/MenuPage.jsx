@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next';
 import { Link, useParams, useLocation } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { groupProductsByCategory, sortProducts } from '../utils/menuUtils';
-import { useTable } from '../contexts/TableContext';
 import { validateTableId, formatTableNumber } from '../utils/tableUtils';
 import { menuService } from '../services/menuService';
 import ProductCard from './ProductCard';
@@ -19,11 +18,10 @@ const MenuPage = ({ menuData }) => {
   const [loadingPopularity, setLoadingPopularity] = useState(false);
   const { tableId } = useParams();
   const location = useLocation();
-  const { tableNumber } = useTable();
   
   // Определяем, открыта ли страница через fast access
   const isFastAccess = location.pathname.includes('/fast/');
-  const currentTableId = tableId || tableNumber;
+  const currentTableId = tableId;
 
   const categories = menuData?.categories || [];
   const products = menuData?.products || [];
