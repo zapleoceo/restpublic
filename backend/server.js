@@ -3,6 +3,7 @@ const cors = require('cors');
 const axios = require('axios');
 const path = require('path');
 const https = require('https');
+const FormData = require('form-data');
 const SePayMonitor = require('./sepay-monitor');
 require('dotenv').config();
 
@@ -498,11 +499,21 @@ async function sendQRToTelegram(chatId, amount, comment, qrUrl) {
 
 📱 **Сканируйте QR код для оплаты**`;
 
-        const response = await axios.post(`https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendPhoto`, {
-            chat_id: chatId,
-            photo: qrUrl,
-            caption: message,
-            parse_mode: 'Markdown'
+        // Сначала скачиваем QR код
+        const qrResponse = await axios.get(qrUrl, { responseType: 'arraybuffer' });
+        const qrBuffer = Buffer.from(qrResponse.data);
+        
+        // Отправляем QR код как файл
+        const formData = new FormData();
+        formData.append('chat_id', chatId);
+        formData.append('photo', qrBuffer, { filename: 'qr_code.png', contentType: 'image/png' });
+        formData.append('caption', message);
+        formData.append('parse_mode', 'Markdown');
+
+        const response = await axios.post(`https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendPhoto`, formData, {
+            headers: {
+                ...formData.getHeaders()
+            }
         });
 
         console.log(`✅ QR код отправлен в Telegram чат ${chatId}`);
