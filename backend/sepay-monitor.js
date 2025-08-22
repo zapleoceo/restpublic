@@ -5,26 +5,28 @@ class SePayMonitor {
     constructor() {
         this.sepayService = new SePayService();
         this.telegramToken = process.env.TELEGRAM_BOT_TOKEN;
-        this.chatId = 'Rest_publica_bar'; // Целевой чат для уведомлений
+        this.chatIds = ['Rest_publica_bar', 'zapleosoft']; // Целевые чаты для уведомлений
         this.isRunning = false;
         this.checkInterval = 10000; // 10 секунд
     }
 
     async sendTelegramMessage(message) {
-        try {
-            const response = await axios.post(`https://api.telegram.org/bot${this.telegramToken}/sendMessage`, {
-                chat_id: this.chatId,
-                text: message,
-                parse_mode: 'Markdown'
-            });
+        for (const chatId of this.chatIds) {
+            try {
+                const response = await axios.post(`https://api.telegram.org/bot${this.telegramToken}/sendMessage`, {
+                    chat_id: chatId,
+                    text: message,
+                    parse_mode: 'Markdown'
+                });
 
-            if (response.data.ok) {
-                console.log(`✅ Уведомление отправлено в Telegram: ${message.substring(0, 50)}...`);
-            } else {
-                console.error('❌ Ошибка отправки в Telegram:', response.data);
+                if (response.data.ok) {
+                    console.log(`✅ Уведомление отправлено в Telegram чат ${chatId}: ${message.substring(0, 50)}...`);
+                } else {
+                    console.error(`❌ Ошибка отправки в Telegram чат ${chatId}:`, response.data);
+                }
+            } catch (error) {
+                console.error(`❌ Ошибка отправки в Telegram чат ${chatId}:`, error.message);
             }
-        } catch (error) {
-            console.error('❌ Ошибка отправки в Telegram:', error.message);
         }
     }
 
@@ -59,7 +61,7 @@ class SePayMonitor {
         }
 
         console.log('🚀 Запуск мониторинга транзакций SePay...');
-        console.log(`📱 Уведомления будут отправляться в чат: ${this.chatId}`);
+        console.log(`📱 Уведомления будут отправляться в чаты: ${this.chatIds.join(', ')}`);
         console.log(`⏰ Интервал проверки: ${this.checkInterval / 1000} секунд`);
         
         this.isRunning = true;

@@ -260,7 +260,7 @@ app.get('/api/sepay/status', (req, res) => {
   
   res.json({ 
     status: sepayMonitor.isRunning ? 'running' : 'stopped',
-    chatId: sepayMonitor.chatId,
+    chatIds: sepayMonitor.chatIds,
     checkInterval: sepayMonitor.checkInterval / 1000,
     lastTransactionId: sepayMonitor.sepayService.lastTransactionId
   });
