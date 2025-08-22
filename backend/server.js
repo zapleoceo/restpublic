@@ -144,9 +144,9 @@ let menuCache = null;
 let cacheTimestamp = null;
 const CACHE_DURATION = 5 * 60 * 1000; // 5 минут
 
-// Кэш для данных о популярности
-let popularityCache = null;
-let popularityCacheTimestamp = null;
+// Кэш для данных популярности
+let popularityCache = {};
+let popularityCacheTimestamp = 0;
 const POPULARITY_CACHE_DURATION = 10 * 60 * 1000; // 10 минут
 
 app.get('/api/menu', async (req, res) => {
@@ -248,90 +248,72 @@ app.get('/api/menu', async (req, res) => {
   }
 });
 
-// Endpoint для получения данных о популярности продуктов
+// Endpoint для получения популярности товаров
 app.get('/api/products/popularity', async (req, res) => {
   try {
+    const now = Date.now();
+    
     // Проверяем кэш
-    if (popularityCache && popularityCacheTimestamp && (Date.now() - popularityCacheTimestamp) < POPULARITY_CACHE_DURATION) {
-      console.log('📊 Serving popularity data from cache');
-      return res.json(popularityCache);
+    if (popularityCache && (now - popularityCacheTimestamp) < POPULARITY_CACHE_DURATION) {
+      console.log('📊 Возвращаем кэшированные данные популярности');
+      return res.json({ productPopularity: popularityCache });
     }
 
-    const token = process.env.POSTER_API_TOKEN;
-    if (!token) {
-      return res.status(500).json({ error: 'POSTER_API_TOKEN not configured' });
-    }
+    console.log('📊 Запрашиваем данные популярности товаров...');
+    
+    // Вычисляем даты для последних 3 дней
+    const endDate = new Date();
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - 3);
+    
+    const dateFrom = startDate.getFullYear().toString() + 
+                    (startDate.getMonth() + 1).toString().padStart(2, '0') + 
+                    startDate.getDate().toString().padStart(2, '0');
+    const dateTo = endDate.getFullYear().toString() + 
+                  (endDate.getMonth() + 1).toString().padStart(2, '0') + 
+                  endDate.getDate().toString().padStart(2, '0');
 
-    console.log('🔄 Fetching fresh popularity data');
+    console.log(`📅 Период: ${dateFrom} - ${dateTo}`);
 
-    // Вычисляем дату 3 дня назад
-    const threeDaysAgo = new Date();
-    threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
-    const dateFrom = threeDaysAgo.toISOString().split('T')[0]; // YYYY-MM-DD формат
-
-    // Получаем транзакции за последние 3 дня
-    const transactionsResponse = await axios.get('https://joinposter.com/api/dash.getTransactions', {
-      params: { 
-        token,
+    // Используем правильный API метод для получения продаж по товарам
+    const response = await axios.get('https://joinposter.com/api/dash.getProductsSales', {
+      params: {
+        token: process.env.POSTER_API_TOKEN,
         date_from: dateFrom,
-        date_to: new Date().toISOString().split('T')[0], // Сегодня
-        type: 'incoming_order'
-      },
-      httpsAgent: httpsAgent,
-      timeout: 15000
+        date_to: dateTo
+      }
     });
 
-    console.log('📊 Transactions response:', JSON.stringify(transactionsResponse.data, null, 2));
+    console.log('📊 Получен ответ от Poster API:', response.status);
 
-    const transactions = transactionsResponse.data.response || [];
-    console.log(`📊 Found ${transactions.length} transactions`);
-    
-    // Подсчитываем количество заказов для каждого продукта
-    const productPopularity = {};
-    
-    transactions.forEach((transaction, index) => {
-      console.log(`🔍 Transaction ${index + 1}:`, {
-        transaction_id: transaction.transaction_id,
-        has_products: !!transaction.products,
-        products_count: transaction.products ? transaction.products.length : 0,
-        products_sample: transaction.products ? transaction.products.slice(0, 2) : null
+    if (response.data && response.data.response) {
+      const productPopularity = {};
+      
+      // Обрабатываем данные о продажах товаров
+      response.data.response.forEach(item => {
+        const productId = item.product_id;
+        const count = parseFloat(item.count) || 0;
+        
+        if (productId && count > 0) {
+          productPopularity[productId] = count;
+        }
       });
-      
-      // Логируем полную структуру первой транзакции для анализа
-      if (index === 0) {
-        console.log('🔍 Full transaction structure:', JSON.stringify(transaction, null, 2));
-      }
-      
-      // Проверяем разные возможные поля с продуктами
-      const products = transaction.products || transaction.items || transaction.products_data || [];
-      
-      if (Array.isArray(products)) {
-        products.forEach(product => {
-          const productId = product.product_id || product.id;
-          if (productId) {
-            productPopularity[productId] = (productPopularity[productId] || 0) + (product.count || product.quantity || 1);
-            console.log(`📦 Product ${productId}: count ${product.count || product.quantity || 1}, total popularity: ${productPopularity[productId]}`);
-          }
-        });
-      }
-    });
 
-    const popularityData = {
-      productPopularity,
-      dateFrom,
-      totalTransactions: transactions.length,
-      timestamp: new Date().toISOString()
-    };
+      console.log('📊 Обработано товаров:', Object.keys(productPopularity).length);
+      console.log('📊 Данные популярности:', productPopularity);
 
-    // Обновляем кэш
-    popularityCache = popularityData;
-    popularityCacheTimestamp = Date.now();
+      // Обновляем кэш
+      popularityCache = productPopularity;
+      popularityCacheTimestamp = now;
 
-    console.log(`✅ Popularity data cached: ${Object.keys(productPopularity).length} products with orders`);
-    res.json(popularityData);
+      res.json({ productPopularity });
+    } else {
+      console.log('❌ Неверный формат ответа от Poster API');
+      res.json({ productPopularity: {} });
+    }
   } catch (error) {
-    console.error('❌ Popularity fetch error:', error.message);
-    res.status(500).json({ error: error.message });
+    console.error('❌ Ошибка при получении данных популярности:', error.message);
+    res.json({ productPopularity: {} });
   }
 });
 
