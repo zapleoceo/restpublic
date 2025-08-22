@@ -269,44 +269,52 @@ app.get('/api/products/popularity', async (req, res) => {
     threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
     const dateFrom = threeDaysAgo.toISOString().split('T')[0]; // YYYY-MM-DD формат
 
-    // Получаем статистику продаж за последние 3 дня
-    const salesResponse = await axios.get('https://joinposter.com/api/dash.getSales', {
+    // Получаем транзакции за последние 3 дня
+    const transactionsResponse = await axios.get('https://joinposter.com/api/dash.getTransactions', {
       params: { 
         token,
         date_from: dateFrom,
         date_to: new Date().toISOString().split('T')[0], // Сегодня
-        group_by: 'product'
+        type: 'incoming_order'
       },
       httpsAgent: httpsAgent,
       timeout: 15000
     });
 
-    console.log('📊 Sales response:', JSON.stringify(salesResponse.data, null, 2));
+    console.log('📊 Transactions response:', JSON.stringify(transactionsResponse.data, null, 2));
 
-    const salesData = salesResponse.data.response || [];
-    console.log(`📊 Found ${salesData.length} products with sales data`);
+    const transactions = transactionsResponse.data.response || [];
+    console.log(`📊 Found ${transactions.length} transactions`);
     
     // Подсчитываем количество заказов для каждого продукта
     const productPopularity = {};
     
-    salesData.forEach((product, index) => {
-      console.log(`🔍 Product ${index + 1}:`, {
-        product_id: product.product_id,
-        product_name: product.product_name,
-        count: product.count,
-        sum: product.sum
+    transactions.forEach((transaction, index) => {
+      console.log(`🔍 Transaction ${index + 1}:`, {
+        transaction_id: transaction.transaction_id,
+        has_products: !!transaction.products,
+        products_count: transaction.products ? transaction.products.length : 0,
+        products_sample: transaction.products ? transaction.products.slice(0, 2) : null
       });
       
-      if (product.product_id) {
-        productPopularity[product.product_id] = (productPopularity[product.product_id] || 0) + (product.count || 0);
-        console.log(`📦 Product ${product.product_id}: count ${product.count || 0}, total popularity: ${productPopularity[product.product_id]}`);
+      // Проверяем разные возможные поля с продуктами
+      const products = transaction.products || transaction.items || transaction.products_data || [];
+      
+      if (Array.isArray(products)) {
+        products.forEach(product => {
+          const productId = product.product_id || product.id;
+          if (productId) {
+            productPopularity[productId] = (productPopularity[productId] || 0) + (product.count || product.quantity || 1);
+            console.log(`📦 Product ${productId}: count ${product.count || product.quantity || 1}, total popularity: ${productPopularity[productId]}`);
+          }
+        });
       }
     });
 
     const popularityData = {
       productPopularity,
       dateFrom,
-      totalTransactions: salesData.length, // Assuming totalTransactions is the count of products with sales data
+      totalTransactions: transactions.length,
       timestamp: new Date().toISOString()
     };
 
