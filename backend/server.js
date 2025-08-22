@@ -369,6 +369,91 @@ app.get('/api/products/popularity', async (req, res) => {
   }
 });
 
+// Временный тестовый endpoint для проверки Telegram API
+app.get('/api/test-telegram', async (req, res) => {
+    try {
+        const testMessage = '🧪 Тестовое сообщение от SePay мониторинга';
+        
+        // Тестируем разные варианты chat_id
+        const testChatIds = [
+            'Rest_publica_bar',
+            '@Rest_publica_bar', 
+            'zapleosoft',
+            '@zapleosoft'
+        ];
+        
+        const results = [];
+        
+        for (const chatId of testChatIds) {
+            try {
+                const response = await axios.post(`https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
+                    chat_id: chatId,
+                    text: testMessage
+                });
+                
+                results.push({
+                    chatId,
+                    success: true,
+                    response: response.data
+                });
+            } catch (error) {
+                results.push({
+                    chatId,
+                    success: false,
+                    error: error.response?.data || error.message
+                });
+            }
+        }
+        
+        res.json({
+            message: 'Тест Telegram API завершен',
+            results
+        });
+    } catch (error) {
+        res.status(500).json({
+            error: 'Ошибка тестирования Telegram API',
+            details: error.message
+        });
+    }
+});
+
+// Endpoint для получения chat_id пользователя
+app.get('/api/get-chat-id', async (req, res) => {
+    try {
+        const updates = await axios.get(`https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/getUpdates`);
+        
+        if (updates.data.ok && updates.data.result.length > 0) {
+            const chatIds = updates.data.result.map(update => {
+                if (update.message) {
+                    return {
+                        chat_id: update.message.chat.id,
+                        username: update.message.chat.username,
+                        first_name: update.message.chat.first_name,
+                        last_name: update.message.chat.last_name,
+                        type: update.message.chat.type
+                    };
+                }
+                return null;
+            }).filter(Boolean);
+            
+            res.json({
+                message: 'Найденные chat_id',
+                chatIds: chatIds
+            });
+        } else {
+            res.json({
+                message: 'Обновлений не найдено. Попросите пользователей написать боту /start',
+                chatIds: []
+            });
+        }
+    } catch (error) {
+        res.status(500).json({
+            error: 'Ошибка получения chat_id',
+            details: error.message
+        });
+    }
+});
+
 // SPA fallback
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../dist/index.html'));
