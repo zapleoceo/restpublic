@@ -41,3 +41,37 @@ export const getFeaturedCategories = (categories = [], products = [], limit = 2)
   const groupedCategories = groupProductsByCategory(categories, products);
   return groupedCategories.slice(0, limit);
 };
+
+// Сортировка продуктов по популярности
+export const sortProductsByPopularity = (products = [], popularityData = {}) => {
+  return [...products].sort((a, b) => {
+    const popularityA = popularityData[a.product_id] || 0;
+    const popularityB = popularityData[b.product_id] || 0;
+    
+    // Сначала по популярности (убывание), затем по алфавиту
+    if (popularityA !== popularityB) {
+      return popularityB - popularityA;
+    }
+    
+    return (a.product_name || '').localeCompare(b.product_name || '');
+  });
+};
+
+// Сортировка продуктов по алфавиту
+export const sortProductsByAlphabet = (products = []) => {
+  return [...products].sort((a, b) => {
+    return (a.product_name || '').localeCompare(b.product_name || '');
+  });
+};
+
+// Сортировка продуктов в зависимости от типа
+export const sortProducts = (products = [], sortType = 'popularity', popularityData = {}) => {
+  switch (sortType) {
+    case 'popularity':
+      return sortProductsByPopularity(products, popularityData);
+    case 'alphabet':
+      return sortProductsByAlphabet(products);
+    default:
+      return sortProductsByPopularity(products, popularityData);
+  }
+};

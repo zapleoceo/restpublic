@@ -36,6 +36,18 @@ export const menuService = {
     }
   },
 
+  // Получить данные о популярности продуктов
+  async getPopularityData() {
+    try {
+      const data = await apiService.get('/api/products/popularity');
+      return data;
+    } catch (error) {
+      console.error('Error fetching popularity data:', error);
+      // Возвращаем пустой объект в случае ошибки
+      return { productPopularity: {} };
+    }
+  },
+
   // Проверить состояние API
   async checkHealth() {
     try {

@@ -37,7 +37,12 @@
   },
   "menu": {
     "title": "Наше меню",
-    "dishes": "блюд"
+    "dishes": "блюд",
+    "sort": {
+      "title": "Сортировка",
+      "popularity": "По популярности",
+      "alphabet": "По алфавиту"
+    }
   },
   "contacts": {
     "title": "Контакты",

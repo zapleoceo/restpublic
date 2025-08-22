@@ -1,14 +1,29 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
+import { Link, useParams, useLocation } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
-import { groupProductsByCategory } from '../utils/menuUtils';
+import { groupProductsByCategory, sortProducts } from '../utils/menuUtils';
+import { useTable } from '../contexts/TableContext';
+import { validateTableId, formatTableNumber } from '../utils/tableUtils';
+import { menuService } from '../services/menuService';
 import ProductCard from './ProductCard';
 import LanguageSwitcher from './LanguageSwitcher';
+import SortSelector from './SortSelector';
+import LoadingSpinner from './LoadingSpinner';
 
 const MenuPage = ({ menuData }) => {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState(0);
+  const [sortType, setSortType] = useState('popularity'); // По умолчанию по популярности
+  const [popularityData, setPopularityData] = useState({});
+  const [loadingPopularity, setLoadingPopularity] = useState(false);
+  const { tableId } = useParams();
+  const location = useLocation();
+  const { tableNumber } = useTable();
+  
+  // Определяем, открыта ли страница через fast access
+  const isFastAccess = location.pathname.includes('/fast/');
+  const currentTableId = tableId || tableNumber;
 
   const categories = menuData?.categories || [];
   const products = menuData?.products || [];
@@ -20,10 +35,37 @@ const MenuPage = ({ menuData }) => {
     productsSample: products.slice(0, 2)
   });
 
-  // Группируем продукты по категориям
-  const groupedCategories = groupProductsByCategory(categories, products);
+  // Загружаем данные о популярности при монтировании компонента
+  useEffect(() => {
+    const loadPopularityData = async () => {
+      setLoadingPopularity(true);
+      try {
+        const data = await menuService.getPopularityData();
+        setPopularityData(data.productPopularity || {});
+        console.log('📊 Popularity data loaded:', data);
+      } catch (error) {
+        console.error('❌ Error loading popularity data:', error);
+        setPopularityData({});
+      } finally {
+        setLoadingPopularity(false);
+      }
+    };
 
-  console.log('🔍 Grouped categories:', groupedCategories);
+    loadPopularityData();
+  }, []);
+
+  // Группируем продукты по категориям и применяем сортировку
+  const groupedCategories = groupProductsByCategory(categories, products).map(category => ({
+    ...category,
+    products: sortProducts(category.products, sortType, popularityData)
+  }));
+
+  console.log('🔍 Grouped categories with sorting:', groupedCategories);
+
+  // Обработчик изменения сортировки
+  const handleSortChange = (newSortType) => {
+    setSortType(newSortType);
+  };
 
   // Если нет категорий, показываем сообщение
   if (groupedCategories.length === 0) {
@@ -34,7 +76,7 @@ const MenuPage = ({ menuData }) => {
           <h1 className="text-2xl font-bold text-gray-900 mb-4">Меню</h1>
           <p className="text-gray-600 mb-6">Категории не найдены</p>
           <Link 
-            to="/"
+            to={isFastAccess ? `/fast/${currentTableId}` : "/"}
             className="inline-flex items-center px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg transition-colors"
           >
             <ArrowLeft className="mr-2 w-4 h-4" />
@@ -53,7 +95,7 @@ const MenuPage = ({ menuData }) => {
           <div className="flex items-center justify-between h-16">
             {/* Кнопка назад */}
             <Link 
-              to="/"
+              to={isFastAccess ? `/fast/${currentTableId}` : "/"}
               className="inline-flex items-center px-3 py-2 text-gray-600 hover:text-orange-600 transition-colors"
             >
               <ArrowLeft className="mr-2 w-4 h-4" />
@@ -61,7 +103,14 @@ const MenuPage = ({ menuData }) => {
             </Link>
 
             {/* Заголовок */}
-            <h1 className="text-xl font-semibold text-gray-900">{t('menu.title')}</h1>
+            <div className="text-center">
+              <h1 className="text-xl font-semibold text-gray-900">{t('menu.title')}</h1>
+              {isFastAccess && currentTableId && (
+                <p className="text-sm text-orange-600 font-medium">
+                  {formatTableNumber(currentTableId)}
+                </p>
+              )}
+            </div>
 
             {/* Переключатель языка */}
             <LanguageSwitcher />
@@ -97,14 +146,30 @@ const MenuPage = ({ menuData }) => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {groupedCategories[activeTab] && (
           <div>
-            {/* Category header */}
+            {/* Category header with sort selector */}
             <div className="mb-8">
-              <h2 className="text-3xl font-bold text-gray-900 mb-2">
-                {groupedCategories[activeTab].category_name}
-              </h2>
-              <p className="text-gray-600">
-                {groupedCategories[activeTab].products.length} блюд
-              </p>
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h2 className="text-3xl font-bold text-gray-900 mb-2">
+                    {groupedCategories[activeTab].category_name}
+                  </h2>
+                  <p className="text-gray-600">
+                    {groupedCategories[activeTab].products.length} {t('menu.dishes')}
+                  </p>
+                </div>
+                <div className="flex items-center space-x-4">
+                  {loadingPopularity && (
+                    <div className="flex items-center space-x-2 text-sm text-gray-500">
+                      <LoadingSpinner size="sm" compact={true} />
+                      <span>Загрузка популярности...</span>
+                    </div>
+                  )}
+                  <SortSelector 
+                    sortType={sortType} 
+                    onSortChange={handleSortChange} 
+                  />
+                </div>
+              </div>
             </div>
 
             {/* Products grid */}

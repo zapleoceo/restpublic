@@ -144,6 +144,11 @@ let menuCache = null;
 let cacheTimestamp = null;
 const CACHE_DURATION = 5 * 60 * 1000; // 5 минут
 
+// Кэш для данных о популярности
+let popularityCache = null;
+let popularityCacheTimestamp = null;
+const POPULARITY_CACHE_DURATION = 10 * 60 * 1000; // 10 минут
+
 app.get('/api/menu', async (req, res) => {
   try {
     // Проверяем кэш
@@ -239,6 +244,75 @@ app.get('/api/menu', async (req, res) => {
     res.json(menuData);
   } catch (error) {
     console.error('❌ Menu fetch error:', error.message);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Endpoint для получения данных о популярности продуктов
+app.get('/api/products/popularity', async (req, res) => {
+  try {
+    // Проверяем кэш
+    if (popularityCache && popularityCacheTimestamp && (Date.now() - popularityCacheTimestamp) < POPULARITY_CACHE_DURATION) {
+      console.log('📊 Serving popularity data from cache');
+      return res.json(popularityCache);
+    }
+
+    const token = process.env.POSTER_API_TOKEN;
+    if (!token) {
+      return res.status(500).json({ error: 'POSTER_API_TOKEN not configured' });
+    }
+
+    console.log('🔄 Fetching fresh popularity data');
+
+    // Вычисляем дату 3 дня назад
+    const threeDaysAgo = new Date();
+    threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
+    const dateFrom = threeDaysAgo.toISOString().split('T')[0]; // YYYY-MM-DD формат
+
+    // Получаем транзакции за последние 3 дня
+    const transactionsResponse = await axios.get('https://joinposter.com/api/dash.getTransactions', {
+      params: { 
+        token,
+        date_from: dateFrom,
+        type: 'incoming_order'
+      },
+      httpsAgent: httpsAgent,
+      timeout: 15000
+    });
+
+    console.log('📊 Transactions response:', JSON.stringify(transactionsResponse.data, null, 2));
+
+    const transactions = transactionsResponse.data.response || [];
+    
+    // Подсчитываем количество заказов для каждого продукта
+    const productPopularity = {};
+    
+    transactions.forEach(transaction => {
+      if (transaction.products && Array.isArray(transaction.products)) {
+        transaction.products.forEach(product => {
+          const productId = product.product_id;
+          if (productId) {
+            productPopularity[productId] = (productPopularity[productId] || 0) + (product.count || 1);
+          }
+        });
+      }
+    });
+
+    const popularityData = {
+      productPopularity,
+      dateFrom,
+      totalTransactions: transactions.length,
+      timestamp: new Date().toISOString()
+    };
+
+    // Обновляем кэш
+    popularityCache = popularityData;
+    popularityCacheTimestamp = Date.now();
+
+    console.log(`✅ Popularity data cached: ${Object.keys(productPopularity).length} products with orders`);
+    res.json(popularityData);
+  } catch (error) {
+    console.error('❌ Popularity fetch error:', error.message);
     res.status(500).json({ error: error.message });
   }
 });

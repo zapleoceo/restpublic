@@ -5,13 +5,13 @@
   },
   "home": {
     "title": "Welcome to GoodZone",
-    "subtitle": "Entertainment complex with restaurant, laser tag, archery, cinema and gazebo rental",
+    "subtitle": "Entertainment complex with restaurant, lasertag, archery, cinema and gazebo rental",
     "contacts": "Contacts",
-    "contacts_subtitle": "Contact us for booking and additional information",
+    "contacts_subtitle": "Contact us for reservations and additional information",
     "social_media": "Social Media",
     "location": "Our Location",
     "phone": "Phone",
-    "group": "Telegram Group"
+    "group": "Telegram group"
   },
   "sections": {
     "menu": {
@@ -19,7 +19,7 @@
       "description": "Restaurant menu"
     },
     "lasertag": {
-      "title": "Laser Tag",
+      "title": "Lasertag",
       "description": "Team game"
     },
     "bow": {
@@ -37,7 +37,12 @@
   },
   "menu": {
     "title": "Our Menu",
-    "dishes": "dishes"
+    "dishes": "dishes",
+    "sort": {
+      "title": "Sort by",
+      "popularity": "By popularity",
+      "alphabet": "By alphabet"
+    }
   },
   "contacts": {
     "title": "Contacts",
@@ -48,7 +53,7 @@
   },
   "loading": "Loading...",
   "error": "Error loading data",
-  "no_products": "No products found",
-  "no_categories": "No categories found",
+  "no_products": "Dishes not found",
+  "no_categories": "Categories not found",
   "back": "Back"
 }

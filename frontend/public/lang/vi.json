@@ -1,13 +1,13 @@
 {
   "welcome": {
     "title": "Chào mừng đến với",
-    "subtitle": "Không gian ấm cúng và món ăn tinh tế cho buổi tối của bạn"
+    "subtitle": "Không khí ấm cúng và món ăn tinh tế cho buổi tối của bạn"
   },
   "home": {
     "title": "Chào mừng đến với GoodZone",
-    "subtitle": "Khu phức hợp giải trí với nhà hàng, laser tag, bắn cung, rạp chiếu phim và cho thuê lều",
+    "subtitle": "Khu phức hợp giải trí với nhà hàng, lasertag, bắn cung, rạp chiếu phim và thuê lều",
     "contacts": "Liên hệ",
-    "contacts_subtitle": "Liên hệ với chúng tôi để đặt chỗ và thông tin thêm",
+    "contacts_subtitle": "Liên hệ với chúng tôi để đặt chỗ và thông tin bổ sung",
     "social_media": "Mạng xã hội",
     "location": "Vị trí của chúng tôi",
     "phone": "Điện thoại",
@@ -19,7 +19,7 @@
       "description": "Thực đơn nhà hàng"
     },
     "lasertag": {
-      "title": "Laser Tag",
+      "title": "Lasertag",
       "description": "Trò chơi đồng đội"
     },
     "bow": {
@@ -32,12 +32,17 @@
     },
     "rent": {
       "title": "Thuê lều",
-      "description": "Cho thuê lều"
+      "description": "Thuê lều"
     }
   },
   "menu": {
     "title": "Thực đơn của chúng tôi",
-    "dishes": "món"
+    "dishes": "món",
+    "sort": {
+      "title": "Sắp xếp theo",
+      "popularity": "Theo độ phổ biến",
+      "alphabet": "Theo bảng chữ cái"
+    }
   },
   "contacts": {
     "title": "Liên hệ",
