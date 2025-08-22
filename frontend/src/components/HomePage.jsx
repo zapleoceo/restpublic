@@ -56,7 +56,7 @@ const HomePage = () => {
         {/* Welcome Section */}
         <div className="text-center mb-12">
           <div className="mb-4">
-            <img src="/img/lazertag/logo.png" alt="GoodZone Logo" className="mx-auto h-24 w-auto" />
+            <img src="/img/logo.png" alt="GoodZone Logo" className="mx-auto h-24 w-auto" />
           </div>
           <h2 className="text-3xl font-bold text-gray-900 mb-4 -mt-7">
             {t('home.title')}
@@ -80,12 +80,12 @@ const HomePage = () => {
                     <img 
                       src={section.icon} 
                       alt="Lasertag Icon" 
-                      className="w-16 h-16 mx-auto group-hover:opacity-0 transition-opacity duration-200" 
+                      className="w-16 h-16 mx-auto group-hover:opacity-0 transition-opacity duration-200 object-cover" 
                     />
                     <img 
                       src={section.logo} 
                       alt="GoodZone Logo" 
-                      className="w-16 h-16 mx-auto absolute top-0 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200" 
+                      className="w-16 h-16 mx-auto absolute top-0 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 object-cover" 
                     />
                   </>
                 ) : (
