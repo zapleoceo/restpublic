@@ -270,7 +270,7 @@ app.get('/api/products/popularity', async (req, res) => {
     const dateFrom = threeDaysAgo.toISOString().split('T')[0]; // YYYY-MM-DD формат
 
     // Получаем статистику продаж за последние 3 дня
-    const salesResponse = await axios.get('https://joinposter.com/api/dashboards.sales.get', {
+    const salesResponse = await axios.get('https://joinposter.com/api/dash.getSales', {
       params: { 
         token,
         date_from: dateFrom,
