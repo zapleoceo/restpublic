@@ -20,7 +20,7 @@ class SePayMonitor {
                 });
 
                 if (response.data.ok) {
-                    console.log(`✅ Уведомление отправлено в Telegram чат ${chatId}: ${message.substring(0, 50)}...`);
+                    console.log(`✅ Уведомление отправлено в Telegram чат ${chatId}`);
                 } else {
                     console.error(`❌ Ошибка отправки в Telegram чат ${chatId}:`, response.data);
                 }

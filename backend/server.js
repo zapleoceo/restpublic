@@ -45,51 +45,7 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// Тестовый endpoint для проверки API Poster
-app.get('/api/test-poster', async (req, res) => {
-  try {
-    const token = process.env.POSTER_API_TOKEN;
-    if (!token) {
-      return res.status(500).json({ error: 'POSTER_API_TOKEN not configured' });
-    }
 
-    console.log('🧪 Testing Poster API...');
-
-    // Тестируем категории
-    const categoriesResponse = await axios.get('https://joinposter.com/api/menu.getCategories', {
-      params: { token },
-      httpsAgent: httpsAgent,
-      timeout: 10000
-    });
-
-    // Тестируем продукты
-    const productsResponse = await axios.get('https://joinposter.com/api/menu.getProducts', {
-      params: { token },
-      httpsAgent: httpsAgent,
-      timeout: 10000
-    });
-
-    res.json({
-      success: true,
-      categories: {
-        count: categoriesResponse.data.response?.length || 0,
-        sample: categoriesResponse.data.response?.slice(0, 2) || [],
-        fullResponse: categoriesResponse.data
-      },
-      products: {
-        count: productsResponse.data.response?.length || 0,
-        sample: productsResponse.data.response?.slice(0, 2) || [],
-        fullResponse: productsResponse.data
-      }
-    });
-  } catch (error) {
-    console.error('❌ Poster API test error:', error.message);
-    res.status(500).json({ 
-      error: error.message,
-      details: error.response?.data || 'No response data'
-    });
-  }
-});
 
 // Poster API прокси
 app.use('/api/poster', async (req, res) => {
@@ -106,8 +62,6 @@ app.use('/api/poster', async (req, res) => {
       token: token
     };
 
-    console.log(`📡 Poster API request: ${req.method} ${req.path}`);
-
     const response = await axios({
       method: req.method,
       url: `${posterUrl}${req.path}`,
@@ -121,8 +75,6 @@ app.use('/api/poster', async (req, res) => {
       httpsAgent: httpsAgent,
       timeout: 15000
     });
-
-    console.log(`✅ Poster API response: ${response.status}`);
     res.json(response.data);
   } catch (error) {
     console.error('❌ Poster API error:', error.message);
@@ -155,7 +107,7 @@ app.get('/api/menu', async (req, res) => {
   try {
     // Проверяем кэш
     if (menuCache && cacheTimestamp && (Date.now() - cacheTimestamp) < CACHE_DURATION) {
-      console.log('📋 Serving menu from cache');
+  
       return res.json(menuCache);
     }
 
@@ -164,7 +116,7 @@ app.get('/api/menu', async (req, res) => {
       return res.status(500).json({ error: 'POSTER_API_TOKEN not configured' });
     }
 
-    console.log('🔄 Fetching fresh menu data');
+
 
     // Получаем категории
     const categoriesResponse = await axios.get('https://joinposter.com/api/menu.getCategories', {
@@ -173,7 +125,7 @@ app.get('/api/menu', async (req, res) => {
       timeout: 10000
     });
 
-    console.log('📋 Categories response:', JSON.stringify(categoriesResponse.data, null, 2));
+
 
     // Получаем продукты
     const productsResponse = await axios.get('https://joinposter.com/api/menu.getProducts', {
@@ -182,7 +134,7 @@ app.get('/api/menu', async (req, res) => {
       timeout: 10000
     });
 
-    console.log('🍽️ Products response sample:', JSON.stringify(productsResponse.data.response?.slice(0, 2), null, 2));
+
 
     // Фильтруем только видимые товары (hidden !== "1")
     const rawProducts = productsResponse.data.response || [];
@@ -228,21 +180,13 @@ app.get('/api/menu', async (req, res) => {
       timestamp: new Date().toISOString()
     };
 
-    // Логируем пример цены для отладки
-    if (menuData.products.length > 0) {
-      const sampleProduct = menuData.products[0];
-      console.log('🔍 Sample product price debug:');
-      console.log('Product:', sampleProduct.product_name);
-      console.log('Price object:', JSON.stringify(sampleProduct.price));
-      console.log('Price["1"]:', sampleProduct.price?.['1']);
-      console.log('Price type:', typeof sampleProduct.price?.['1']);
-    }
+
 
     // Обновляем кэш
     menuCache = menuData;
     cacheTimestamp = Date.now();
 
-    console.log(`✅ Menu data cached: ${menuData.categories.length} categories, ${menuData.products.length} products`);
+
     res.json(menuData);
   } catch (error) {
     console.error('❌ Menu fetch error:', error.message);
@@ -308,12 +252,10 @@ app.get('/api/products/popularity', async (req, res) => {
     
     // Проверяем кэш
     if (popularityCache && (now - popularityCacheTimestamp) < POPULARITY_CACHE_DURATION) {
-      console.log('📊 Возвращаем кэшированные данные популярности');
+  
       return res.json({ productPopularity: popularityCache });
     }
 
-    console.log('📊 Запрашиваем данные популярности товаров...');
-    
     // Вычисляем даты для последних 7 дней
     const endDate = new Date();
     const startDate = new Date();
@@ -326,8 +268,6 @@ app.get('/api/products/popularity', async (req, res) => {
                   (endDate.getMonth() + 1).toString().padStart(2, '0') + 
                   endDate.getDate().toString().padStart(2, '0');
 
-    console.log(`📅 Период: ${dateFrom} - ${dateTo} (7 дней)`);
-
     // Используем правильный API метод для получения продаж по товарам
     const response = await axios.get('https://joinposter.com/api/dash.getProductsSales', {
       params: {
@@ -336,8 +276,6 @@ app.get('/api/products/popularity', async (req, res) => {
         date_to: dateTo
       }
     });
-
-    console.log('📊 Получен ответ от Poster API:', response.status);
 
     if (response.data && response.data.response) {
       const productPopularity = {};
@@ -352,16 +290,13 @@ app.get('/api/products/popularity', async (req, res) => {
         }
       });
 
-      console.log('📊 Обработано товаров:', Object.keys(productPopularity).length);
-      console.log('📊 Данные популярности:', productPopularity);
-
       // Обновляем кэш
       popularityCache = productPopularity;
       popularityCacheTimestamp = now;
 
       res.json({ productPopularity });
     } else {
-      console.log('❌ Неверный формат ответа от Poster API');
+  
       res.json({ productPopularity: {} });
     }
   } catch (error) {
@@ -370,90 +305,7 @@ app.get('/api/products/popularity', async (req, res) => {
   }
 });
 
-// Временный тестовый endpoint для проверки Telegram API
-app.get('/api/test-telegram', async (req, res) => {
-    try {
-        const testMessage = '🧪 Тестовое сообщение от SePay мониторинга';
-        
-        // Тестируем разные варианты chat_id
-        const testChatIds = [
-            'Rest_publica_bar',
-            '@Rest_publica_bar', 
-            'zapleosoft',
-            '@zapleosoft'
-        ];
-        
-        const results = [];
-        
-        for (const chatId of testChatIds) {
-            try {
-                const response = await axios.post(`https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
-                    chat_id: chatId,
-                    text: testMessage
-                });
-                
-                results.push({
-                    chatId,
-                    success: true,
-                    response: response.data
-                });
-            } catch (error) {
-                results.push({
-                    chatId,
-                    success: false,
-                    error: error.response?.data || error.message
-                });
-            }
-        }
-        
-        res.json({
-            message: 'Тест Telegram API завершен',
-            results
-        });
-    } catch (error) {
-        res.status(500).json({
-            error: 'Ошибка тестирования Telegram API',
-            details: error.message
-        });
-    }
-});
 
-// Endpoint для получения chat_id пользователя
-app.get('/api/get-chat-id', async (req, res) => {
-    try {
-        const updates = await axios.get(`https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/getUpdates`);
-        
-        if (updates.data.ok && updates.data.result.length > 0) {
-            const chatIds = updates.data.result.map(update => {
-                if (update.message) {
-                    return {
-                        chat_id: update.message.chat.id,
-                        username: update.message.chat.username,
-                        first_name: update.message.chat.first_name,
-                        last_name: update.message.chat.last_name,
-                        type: update.message.chat.type
-                    };
-                }
-                return null;
-            }).filter(Boolean);
-            
-            res.json({
-                message: 'Найденные chat_id',
-                chatIds: chatIds
-            });
-        } else {
-            res.json({
-                message: 'Обновлений не найдено. Попросите пользователей написать боту /start',
-                chatIds: []
-            });
-        }
-    } catch (error) {
-        res.status(500).json({
-            error: 'Ошибка получения chat_id',
-            details: error.message
-        });
-    }
-});
 
 // SPA fallback
 app.get('*', (req, res) => {
@@ -472,7 +324,6 @@ let sepayMonitor = null;
 if (process.env.SEPAY_API_TOKEN) {
   try {
     sepayMonitor = new SePayMonitor();
-    console.log('💰 SePay мониторинг инициализирован');
   } catch (error) {
     console.error('❌ Ошибка инициализации SePay мониторинга:', error.message);
   }
@@ -516,7 +367,7 @@ async function sendQRToTelegram(chatId, amount, comment, qrUrl) {
             }
         });
 
-        console.log(`✅ QR код отправлен в Telegram чат ${chatId}`);
+
         return response.data;
     } catch (error) {
         console.error(`❌ Ошибка отправки QR кода в Telegram:`, error.message);
@@ -524,32 +375,7 @@ async function sendQRToTelegram(chatId, amount, comment, qrUrl) {
     }
 }
 
-// Endpoint для тестирования QR кода
-app.post('/api/test-qr', async (req, res) => {
-    try {
-        const { amount = 1, comment = 'Test payment', chatId = '169510539' } = req.body;
-        
-        console.log(`🧪 Генерация тестового QR кода: ${amount} VND, комментарий: ${comment}`);
-        
-        const qrUrl = generateQRCode(amount, comment);
-        
-        await sendQRToTelegram(chatId, amount, comment, qrUrl);
-        
-        res.json({
-            success: true,
-            message: 'QR код отправлен в Telegram',
-            qr_url: qrUrl,
-            amount: amount,
-            comment: comment
-        });
-    } catch (error) {
-        console.error('❌ Ошибка генерации QR кода:', error.message);
-        res.status(500).json({
-            error: 'Ошибка генерации QR кода',
-            details: error.message
-        });
-    }
-});
+
 
 app.listen(PORT, async () => {
   console.log(`🚀 RestPublic Backend v${process.env.APP_VERSION || '2.1.1'} running on port ${PORT}`);
@@ -561,11 +387,10 @@ app.listen(PORT, async () => {
   // Запускаем мониторинг SePay после запуска сервера
   if (sepayMonitor) {
     try {
-      console.log('🧪 Тестирование подключения к SePay API...');
       const connectionOk = await sepayMonitor.testConnection();
       
       if (connectionOk) {
-        console.log('🚀 Запуск мониторинга транзакций SePay...');
+        console.log('🚀 SePay мониторинг запущен');
         sepayMonitor.start();
       } else {
         console.log('⚠️ SePay мониторинг не запущен из-за ошибки подключения');
@@ -573,7 +398,5 @@ app.listen(PORT, async () => {
     } catch (error) {
       console.error('❌ Ошибка запуска SePay мониторинга:', error.message);
     }
-  } else {
-    console.log('⚠️ SePay мониторинг не инициализирован (отсутствует SEPAY_API_TOKEN)');
   }
 });
