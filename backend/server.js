@@ -477,6 +477,69 @@ if (process.env.SEPAY_API_TOKEN) {
   }
 }
 
+// Функция генерации QR кода через SePay
+function generateQRCode(amount, comment) {
+    const bidvAccount = process.env.BIDV_ACCOUNT_NUMBER || '8845500293'; // Используем номер счета из SePay
+    const bankCode = 'BIDV';
+    const encodedComment = encodeURIComponent(comment);
+    
+    return `https://qr.sepay.vn/img?acc=${bidvAccount}&bank=${bankCode}&amount=${amount}&des=${encodedComment}&template=compact`;
+}
+
+// Функция отправки QR кода в Telegram
+async function sendQRToTelegram(chatId, amount, comment, qrUrl) {
+    try {
+        const message = `💳 **QR код для оплаты**
+
+💵 Сумма: ${amount} VND
+📝 Комментарий: ${comment}
+🏦 Банк: BIDV
+💳 Счет: ${process.env.BIDV_ACCOUNT_NUMBER || '8845500293'}
+
+📱 **Сканируйте QR код для оплаты**`;
+
+        const response = await axios.post(`https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendPhoto`, {
+            chat_id: chatId,
+            photo: qrUrl,
+            caption: message,
+            parse_mode: 'Markdown'
+        });
+
+        console.log(`✅ QR код отправлен в Telegram чат ${chatId}`);
+        return response.data;
+    } catch (error) {
+        console.error(`❌ Ошибка отправки QR кода в Telegram:`, error.message);
+        throw error;
+    }
+}
+
+// Endpoint для тестирования QR кода
+app.post('/api/test-qr', async (req, res) => {
+    try {
+        const { amount = 1, comment = 'Test payment', chatId = '169510539' } = req.body;
+        
+        console.log(`🧪 Генерация тестового QR кода: ${amount} VND, комментарий: ${comment}`);
+        
+        const qrUrl = generateQRCode(amount, comment);
+        
+        await sendQRToTelegram(chatId, amount, comment, qrUrl);
+        
+        res.json({
+            success: true,
+            message: 'QR код отправлен в Telegram',
+            qr_url: qrUrl,
+            amount: amount,
+            comment: comment
+        });
+    } catch (error) {
+        console.error('❌ Ошибка генерации QR кода:', error.message);
+        res.status(500).json({
+            error: 'Ошибка генерации QR кода',
+            details: error.message
+        });
+    }
+});
+
 app.listen(PORT, async () => {
   console.log(`🚀 RestPublic Backend v${process.env.APP_VERSION || '2.1.1'} running on port ${PORT}`);
   console.log(`📡 Poster API proxy: /api/poster/*`);
