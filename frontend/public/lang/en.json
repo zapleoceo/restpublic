@@ -55,5 +55,39 @@
   "error": "Error loading data",
   "no_products": "Dishes not found",
   "no_categories": "Categories not found",
-  "back": "Back"
+  "back": "Back",
+  "lasertag": {
+    "title": "Lasertag - Laser Battle",
+    "subtitle": "Exciting team game with laser weapons for children and adults",
+    "about": {
+      "title": "About Lasertag",
+      "paragraph1": "Players are divided into teams, take laser weapons and wear headbands with sensors. The goal of the game is to hit the opponent's sensors with an infrared pulse emitted from the weapon.",
+      "paragraph2": "This eliminates the risk of injury from \"shots\" as hits are registered by electronics built into the sensors. The infrared radiation used in the game is completely safe for eyes and skin.",
+      "paragraph3": "Experienced game hosts monitor the match to ensure rules are followed and all players stay safe."
+    },
+    "how": {
+      "title": "How the game works",
+      "paragraph1": "After booking the game, you arrive at the scheduled time. An instructor will meet you and fully guide your event.",
+      "paragraph2": "They will help you settle in the lounge area, explain everything and act as a referee during matches.",
+      "paragraph3": "For an exciting game, at least six players are needed to form 3v3 teams. The more players, the more fun!"
+    },
+    "conditions": {
+      "title": "Game Conditions",
+      "price_per_player": "Cost per player",
+      "duration": "from 2 hours",
+      "duration_label": "Game duration",
+      "participants": "Number of participants",
+      "min_age": "Minimum age",
+      "equipment": "Game equipment (weapons)",
+      "scenarios": "Game scenarios",
+      "referees": "Referees and organization",
+      "safe_equipment": "Safe equipment",
+      "safety_briefing": "Safety briefing",
+      "rest_area": "Rest area"
+    },
+    "cta": {
+      "title": "Ready for battle?",
+      "description": "Book your game now and get ready for an incredible adventure!"
+    }
+  }
 }

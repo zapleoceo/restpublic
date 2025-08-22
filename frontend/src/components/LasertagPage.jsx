@@ -8,12 +8,23 @@ const LasertagPage = () => {
   const { t } = useTranslation();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-  // Массив изображений для слайдера (заглушки, которые можно заменить на реальные)
+  // Массив изображений для слайдера (реальные изображения с сайта-донора)
   const images = [
-    'https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80',
-    'https://images.unsplash.com/photo-1511512578047-dfb367046420?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2071&q=80',
-    'https://images.unsplash.com/photo-1544551763-46a013bb70d5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80',
-    'https://images.unsplash.com/photo-1511512578047-dfb367046420?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2071&q=80'
+    '/img/lazertag/1.jpg',
+    '/img/lazertag/2.jpg',
+    '/img/lazertag/3',
+    '/img/lazertag/4.jpg',
+    '/img/lazertag/5.jpg',
+    '/img/lazertag/6.jpg',
+    '/img/lazertag/7.jpg',
+    '/img/lazertag/8.jpg',
+    '/img/lazertag/9.jpg',
+    '/img/lazertag/10.jpg',
+    '/img/lazertag/11.jpg',
+    '/img/lazertag/12.jpg',
+    '/img/lazertag/13.jpg',
+    '/img/lazertag/14.jpg',
+    '/img/lazertag/15.jpg'
   ];
 
   const nextImage = () => {
@@ -57,10 +68,10 @@ const LasertagPage = () => {
         <div className="text-center mb-12">
           <div className="text-6xl mb-4">🎯</div>
           <h2 className="text-4xl font-bold text-gray-900 mb-4">
-            Lasertag - Лазерная битва
+            {t('lasertag.title')}
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Захватывающая командная игра с лазерным оружием для детей и взрослых
+            {t('lasertag.subtitle')}
           </p>
         </div>
 
@@ -115,60 +126,44 @@ const LasertagPage = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-12">
           {/* About Lasertag */}
           <div className="bg-white rounded-xl shadow-md p-8">
-            <h3 className="text-2xl font-bold text-gray-900 mb-6">О Lasertag</h3>
+            <h3 className="text-2xl font-bold text-gray-900 mb-6">{t('lasertag.about.title')}</h3>
             <div className="space-y-4 text-gray-700">
-              <p>
-                Игроки делятся на команды, берут лазерное оружие и надевают головные повязки с сенсорами. 
-                Цель игры - попасть инфракрасным импульсом, испускаемым из оружия, в сенсоры противника.
-              </p>
-              <p>
-                Это исключает риск получения травм от "выстрелов", так как попадания регистрируются электроникой, 
-                встроенной в сенсоры. Инфракрасное излучение, используемое в игре, полностью безопасно для глаз и кожи.
-              </p>
-              <p>
-                Опытные игровые ведущие следят за матчем, чтобы обеспечить соблюдение правил и безопасность всех игроков.
-              </p>
+              <p>{t('lasertag.about.paragraph1')}</p>
+              <p>{t('lasertag.about.paragraph2')}</p>
+              <p>{t('lasertag.about.paragraph3')}</p>
             </div>
           </div>
 
           {/* How it works */}
           <div className="bg-white rounded-xl shadow-md p-8">
-            <h3 className="text-2xl font-bold text-gray-900 mb-6">Как проходит игра</h3>
+            <h3 className="text-2xl font-bold text-gray-900 mb-6">{t('lasertag.how.title')}</h3>
             <div className="space-y-4 text-gray-700">
-              <p>
-                После бронирования игры вы прибываете в назначенное время. Инструктор встретит вас и полностью 
-                проведет ваше мероприятие.
-              </p>
-              <p>
-                Он поможет вам разместиться в зоне отдыха, объяснит все и будет действовать как судья во время матчей.
-              </p>
-              <p>
-                Для захватывающей игры нужно минимум шесть игроков для формирования команд 3 на 3. 
-                Чем больше игроков, тем веселее!
-              </p>
+              <p>{t('lasertag.how.paragraph1')}</p>
+              <p>{t('lasertag.how.paragraph2')}</p>
+              <p>{t('lasertag.how.paragraph3')}</p>
             </div>
           </div>
         </div>
 
         {/* Conditions Section */}
         <div className="bg-white rounded-xl shadow-md p-8 mb-12">
-          <h3 className="text-2xl font-bold text-gray-900 mb-6 text-center">Условия игры</h3>
+          <h3 className="text-2xl font-bold text-gray-900 mb-6 text-center">{t('lasertag.conditions.title')}</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <div className="text-center p-4 bg-orange-50 rounded-lg">
               <div className="text-2xl font-bold text-orange-600 mb-2">300.000 VND</div>
-              <div className="text-sm text-gray-600">Стоимость за игрока</div>
+              <div className="text-sm text-gray-600">{t('lasertag.conditions.price_per_player')}</div>
             </div>
             <div className="text-center p-4 bg-orange-50 rounded-lg">
-              <div className="text-2xl font-bold text-orange-600 mb-2">2 часа</div>
-              <div className="text-sm text-gray-600">Продолжительность игры</div>
+              <div className="text-2xl font-bold text-orange-600 mb-2">{t('lasertag.conditions.duration')}</div>
+              <div className="text-sm text-gray-600">{t('lasertag.conditions.duration_label')}</div>
             </div>
             <div className="text-center p-4 bg-orange-50 rounded-lg">
               <div className="text-2xl font-bold text-orange-600 mb-2">6-14</div>
-              <div className="text-sm text-gray-600">Количество участников</div>
+              <div className="text-sm text-gray-600">{t('lasertag.conditions.participants')}</div>
             </div>
             <div className="text-center p-4 bg-orange-50 rounded-lg">
               <div className="text-2xl font-bold text-orange-600 mb-2">5+ лет</div>
-              <div className="text-sm text-gray-600">Минимальный возраст</div>
+              <div className="text-sm text-gray-600">{t('lasertag.conditions.min_age')}</div>
             </div>
           </div>
           
@@ -176,29 +171,29 @@ const LasertagPage = () => {
             <div className="space-y-3">
               <div className="flex items-center">
                 <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
-                <span className="text-gray-700">Игровое оборудование (оружие)</span>
-              </div>
-              <div className="flex items-center">
-                <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
-                <span className="text-gray-700">Сценарии игры</span>
-              </div>
-              <div className="flex items-center">
-                <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
-                <span className="text-gray-700">Судьи и организация</span>
+                                 <span className="text-gray-700">{t('lasertag.conditions.equipment')}</span>
+               </div>
+               <div className="flex items-center">
+                 <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
+                 <span className="text-gray-700">{t('lasertag.conditions.scenarios')}</span>
+               </div>
+               <div className="flex items-center">
+                 <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
+                 <span className="text-gray-700">{t('lasertag.conditions.referees')}</span>
               </div>
             </div>
             <div className="space-y-3">
               <div className="flex items-center">
                 <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
-                <span className="text-gray-700">Безопасное оборудование</span>
-              </div>
-              <div className="flex items-center">
-                <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
-                <span className="text-gray-700">Инструктаж по технике безопасности</span>
-              </div>
-              <div className="flex items-center">
-                <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
-                <span className="text-gray-700">Зона отдыха</span>
+                                 <span className="text-gray-700">{t('lasertag.conditions.safe_equipment')}</span>
+               </div>
+               <div className="flex items-center">
+                 <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
+                 <span className="text-gray-700">{t('lasertag.conditions.safety_briefing')}</span>
+               </div>
+               <div className="flex items-center">
+                 <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
+                 <span className="text-gray-700">{t('lasertag.conditions.rest_area')}</span>
               </div>
             </div>
           </div>
@@ -207,10 +202,10 @@ const LasertagPage = () => {
         {/* CTA Section */}
         <div className="text-center mb-12">
           <div className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl shadow-lg p-8 text-white">
-            <h3 className="text-2xl font-bold mb-4">Готовы к битве?</h3>
-            <p className="text-lg mb-6 opacity-90">
-              Забронируйте игру прямо сейчас и приготовьтесь к невероятному приключению!
-            </p>
+                         <h3 className="text-2xl font-bold mb-4">{t('lasertag.cta.title')}</h3>
+             <p className="text-lg mb-6 opacity-90">
+               {t('lasertag.cta.description')}
+             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <a
                 href="tel:+84349338758"

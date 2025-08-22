@@ -55,5 +55,39 @@
   "error": "Lỗi tải dữ liệu",
   "no_products": "Không tìm thấy món ăn",
   "no_categories": "Không tìm thấy danh mục",
-  "back": "Quay lại"
+  "back": "Quay lại",
+  "lasertag": {
+    "title": "Lasertag - Trận chiến laser",
+    "subtitle": "Trò chơi đồng đội thú vị với vũ khí laser cho trẻ em và người lớn",
+    "about": {
+      "title": "Về Lasertag",
+      "paragraph1": "Người chơi được chia thành các đội, cầm vũ khí laser và đeo băng đô có cảm biến. Mục tiêu của trò chơi là bắn trúng cảm biến của đối thủ bằng xung hồng ngoại phát ra từ vũ khí.",
+      "paragraph2": "Điều này loại bỏ nguy cơ bị thương từ \"phát bắn\" vì các lần trúng được ghi lại bởi thiết bị điện tử tích hợp trong cảm biến. Bức xạ hồng ngoại được sử dụng trong trò chơi hoàn toàn an toàn cho mắt và da.",
+      "paragraph3": "Các người dẫn chương trình có kinh nghiệm theo dõi trận đấu để đảm bảo tuân thủ quy tắc và tất cả người chơi được an toàn."
+    },
+    "how": {
+      "title": "Cách thức hoạt động của trò chơi",
+      "paragraph1": "Sau khi đặt trò chơi, bạn đến vào thời gian đã lên lịch. Một người hướng dẫn sẽ gặp bạn và hướng dẫn đầy đủ sự kiện của bạn.",
+      "paragraph2": "Họ sẽ giúp bạn ổn định trong khu vực nghỉ ngơi, giải thích mọi thứ và đóng vai trò là trọng tài trong các trận đấu.",
+      "paragraph3": "Để có một trò chơi thú vị, cần ít nhất sáu người chơi để tạo thành các đội 3v3. Càng nhiều người chơi càng vui!"
+    },
+    "conditions": {
+      "title": "Điều kiện trò chơi",
+      "price_per_player": "Chi phí mỗi người chơi",
+      "duration": "từ 2 giờ",
+      "duration_label": "Thời lượng trò chơi",
+      "participants": "Số lượng người tham gia",
+      "min_age": "Độ tuổi tối thiểu",
+      "equipment": "Thiết bị trò chơi (vũ khí)",
+      "scenarios": "Kịch bản trò chơi",
+      "referees": "Trọng tài và tổ chức",
+      "safe_equipment": "Thiết bị an toàn",
+      "safety_briefing": "Hướng dẫn an toàn",
+      "rest_area": "Khu vực nghỉ ngơi"
+    },
+    "cta": {
+      "title": "Sẵn sàng cho trận chiến?",
+      "description": "Đặt trò chơi ngay bây giờ và chuẩn bị cho một cuộc phiêu lưu không thể tin được!"
+    }
+  }
 }

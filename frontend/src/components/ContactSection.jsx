@@ -59,15 +59,15 @@ const ContactSection = () => {
                <i className="fas fa-map-marker-alt text-orange-600 text-lg"></i>
              </div>
              <div className="text-left">
-               <span className="text-sm font-medium text-gray-900 block">{t('home.location')}</span>
-               <span className="text-xs text-gray-500">Trần Khát Chân, Nha Trang</span>
+               <span className="text-sm font-medium text-gray-900 block">Trần Khát Chân, Đường Đệ, Nha Trang, Khánh Hòa, Vietnam</span>
+               <span className="text-xs text-gray-500">{t('home.location')}</span>
              </div>
            </a>
          </div>
 
-         {/* Социальные сети */}
+         {/* Мы на связи */}
          <div className="text-center mb-8">
-           <h3 className="text-xl font-semibold text-gray-900 mb-6">{t('home.social_media')}</h3>
+           <h3 className="text-xl font-semibold text-gray-900 mb-6">Мы на связи</h3>
            <div className="flex justify-center space-x-4">
              {/* Telegram */}
              <a
