@@ -3,6 +3,7 @@ const cors = require('cors');
 const axios = require('axios');
 const path = require('path');
 const https = require('https');
+const SePayMonitor = require('./sepay-monitor');
 require('dotenv').config();
 
 const app = express();
@@ -248,6 +249,57 @@ app.get('/api/menu', async (req, res) => {
   }
 });
 
+// Endpoint для управления мониторингом SePay
+app.get('/api/sepay/status', (req, res) => {
+  if (!sepayMonitor) {
+    return res.json({ 
+      status: 'not_initialized', 
+      message: 'SePay мониторинг не инициализирован' 
+    });
+  }
+  
+  res.json({ 
+    status: sepayMonitor.isRunning ? 'running' : 'stopped',
+    chatId: sepayMonitor.chatId,
+    checkInterval: sepayMonitor.checkInterval / 1000,
+    lastTransactionId: sepayMonitor.sepayService.lastTransactionId
+  });
+});
+
+app.post('/api/sepay/start', (req, res) => {
+  if (!sepayMonitor) {
+    return res.status(400).json({ error: 'SePay мониторинг не инициализирован' });
+  }
+  
+  sepayMonitor.start();
+  res.json({ status: 'started', message: 'Мониторинг SePay запущен' });
+});
+
+app.post('/api/sepay/stop', (req, res) => {
+  if (!sepayMonitor) {
+    return res.status(400).json({ error: 'SePay мониторинг не инициализирован' });
+  }
+  
+  sepayMonitor.stop();
+  res.json({ status: 'stopped', message: 'Мониторинг SePay остановлен' });
+});
+
+app.post('/api/sepay/test', async (req, res) => {
+  if (!sepayMonitor) {
+    return res.status(400).json({ error: 'SePay мониторинг не инициализирован' });
+  }
+  
+  try {
+    const result = await sepayMonitor.testConnection();
+    res.json({ 
+      success: result, 
+      message: result ? 'Подключение к SePay API успешно' : 'Ошибка подключения к SePay API' 
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Endpoint для получения популярности товаров
 app.get('/api/products/popularity', async (req, res) => {
   try {
@@ -328,10 +380,41 @@ app.use((error, req, res, next) => {
   res.status(500).json({ error: 'Internal server error' });
 });
 
-app.listen(PORT, () => {
+// Инициализация мониторинга SePay
+let sepayMonitor = null;
+
+if (process.env.SEPAY_API_TOKEN) {
+  try {
+    sepayMonitor = new SePayMonitor();
+    console.log('💰 SePay мониторинг инициализирован');
+  } catch (error) {
+    console.error('❌ Ошибка инициализации SePay мониторинга:', error.message);
+  }
+}
+
+app.listen(PORT, async () => {
   console.log(`🚀 RestPublic Backend v${process.env.APP_VERSION || '2.1.1'} running on port ${PORT}`);
   console.log(`📡 Poster API proxy: /api/poster/*`);
   console.log(`📋 Menu cache: /api/menu (with price normalization)`);
   console.log(`🌐 Frontend: /dist/*`);
   console.log(`🔗 Health check: http://localhost:${PORT}/api/health`);
+  
+  // Запускаем мониторинг SePay после запуска сервера
+  if (sepayMonitor) {
+    try {
+      console.log('🧪 Тестирование подключения к SePay API...');
+      const connectionOk = await sepayMonitor.testConnection();
+      
+      if (connectionOk) {
+        console.log('🚀 Запуск мониторинга транзакций SePay...');
+        sepayMonitor.start();
+      } else {
+        console.log('⚠️ SePay мониторинг не запущен из-за ошибки подключения');
+      }
+    } catch (error) {
+      console.error('❌ Ошибка запуска SePay мониторинга:', error.message);
+    }
+  } else {
+    console.log('⚠️ SePay мониторинг не инициализирован (отсутствует SEPAY_API_TOKEN)');
+  }
 });
