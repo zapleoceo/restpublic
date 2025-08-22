@@ -24,8 +24,8 @@
       "description": "Trò chơi đồng đội"
     },
     "bow": {
-      "title": "Bắn cung",
-      "description": "Bắn cung truyền thống"
+      "title": "Archery Tag",
+      "description": "Trận chiến cung"
     },
     "cinema": {
       "title": "Rạp chiếu phim",
@@ -88,6 +88,47 @@
     },
     "cta": {
       "title": "Sẵn sàng cho trận chiến?",
+      "description": "Đặt trò chơi ngay bây giờ và chuẩn bị cho một cuộc phiêu lưu không thể tin được!",
+      "call_button": "📞 Gọi +84 349 338 758",
+      "telegram_button": "💬 Viết cho Telegram"
+    }
+  },
+  "archerytag": {
+    "title": "Archery Tag - Trận chiến cung",
+    "subtitle": "Trò chơi đồng đội thú vị với cung và mũi tên mềm cho mọi lứa tuổi",
+    "about": {
+      "title": "Về Archery Tag",
+      "paragraph1": "Nói một cách đơn giản - đây là tương tự như paintball, nhưng với cung và mũi tên mềm thay vì bóng sơn. Nhiệm vụ của bạn là phải nhanh nhẹn, khéo léo và chính xác!"
+    },
+    "advantages": {
+      "title": "Ưu điểm của Archery Tag",
+      "point1": "Vui vẻ cho mọi người: Bất kể trình độ thể lực hay kinh nghiệm của bạn, Archery Tag phù hợp với mọi lứa tuổi và kỹ năng. Chúng tôi sẽ dạy bạn mọi thứ và chỉ cho bạn mọi thứ.",
+      "point2": "Phát triển sức bền: Bắn vào các mục tiêu đang chạy mà còn bắn lại!",
+      "point3": "Tinh thần thi đấu",
+      "point4": "Ý tưởng tuyệt vời cho giải trí hoặc lễ kỷ niệm!"
+    },
+    "how": {
+      "title": "Cách thức hoạt động của trò chơi",
+      "paragraph1": "Sau khi đặt trò chơi, bạn đến vào thời gian đã lên lịch. Một người hướng dẫn sẽ gặp bạn và hướng dẫn đầy đủ sự kiện của bạn.",
+      "paragraph2": "Họ sẽ giúp bạn ổn định trong khu vực nghỉ ngơi, giải thích mọi thứ và đóng vai trò là trọng tài trong các trận đấu.",
+      "paragraph3": "Để có một trò chơi thú vị, cần ít nhất tám người chơi để tạo thành các đội. Càng nhiều người chơi càng vui!"
+    },
+    "conditions": {
+      "title": "Điều kiện trò chơi",
+      "price_per_player": "Chi phí mỗi người chơi",
+      "duration": "90 phút",
+      "duration_label": "Thời lượng trò chơi",
+      "participants": "Số lượng người tham gia",
+      "min_age": "Độ tuổi",
+      "equipment": "Thiết bị trò chơi (cung)",
+      "scenarios": "Kịch bản",
+      "referees": "Đồng hành trò chơi",
+      "safe_equipment": "Thiết bị an toàn",
+      "safety_briefing": "Hướng dẫn an toàn",
+      "rest_area": "Khu vực nghỉ ngơi"
+    },
+    "cta": {
+      "title": "Sẵn sàng cho trận chiến cung?",
       "description": "Đặt trò chơi ngay bây giờ và chuẩn bị cho một cuộc phiêu lưu không thể tin được!",
       "call_button": "📞 Gọi +84 349 338 758",
       "telegram_button": "💬 Viết cho Telegram"

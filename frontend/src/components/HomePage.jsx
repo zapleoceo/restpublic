@@ -21,7 +21,7 @@ const HomePage = () => {
     {
       id: 'bow',
       icon: '🏹',
-      link: '/bow'
+      link: '/archerytag'
     },
     {
       id: 'cinema',

@@ -6,6 +6,7 @@ import MenuPage from './components/MenuPage';
 import MenuPageWrapper from './components/MenuPageWrapper';
 import FastAccessPage from './components/FastAccessPage';
 import LasertagPage from './components/LasertagPage';
+import ArcherytagPage from './components/ArcherytagPage';
 import LoadingSpinner from './components/LoadingSpinner';
 import ErrorBoundary from './components/ErrorBoundary';
 import './App.css';
@@ -81,7 +82,7 @@ function App() {
               <Route path="/fast/:tableId" element={<FastAccessPage />} />
               <Route path="/fast/:tableId/menu" element={<MenuPageWrapper menuData={menuData} />} />
               <Route path="/lasertag" element={<LasertagPage />} />
-              <Route path="/bow" element={<div className="min-h-screen bg-gray-50 flex items-center justify-center"><div className="text-center"><h1 className="text-2xl font-bold mb-4">Стрельба из лука</h1><p className="text-gray-600">Страница в разработке</p></div></div>} />
+              <Route path="/archerytag" element={<ArcherytagPage />} />
               <Route path="/cinema" element={<div className="min-h-screen bg-gray-50 flex items-center justify-center"><div className="text-center"><h1 className="text-2xl font-bold mb-4">Кинотеатр</h1><p className="text-gray-600">Страница в разработке</p></div></div>} />
               <Route path="/rent" element={<div className="min-h-screen bg-gray-50 flex items-center justify-center"><div className="text-center"><h1 className="text-2xl font-bold mb-4">Аренда беседки</h1><p className="text-gray-600">Страница в разработке</p></div></div>} />
             </Routes>

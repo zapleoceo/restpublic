@@ -24,8 +24,8 @@
       "description": "Team game"
     },
     "bow": {
-      "title": "Archery",
-      "description": "Traditional archery"
+      "title": "Archery Tag",
+      "description": "Bow battle"
     },
     "cinema": {
       "title": "Cinema",
@@ -88,6 +88,47 @@
     },
     "cta": {
       "title": "Ready for battle?",
+      "description": "Book your game now and get ready for an incredible adventure!",
+      "call_button": "📞 Call +84 349 338 758",
+      "telegram_button": "💬 Write to Telegram"
+    }
+  },
+  "archerytag": {
+    "title": "Archery Tag - Bow Battle",
+    "subtitle": "Exciting team game with bows and soft arrows for all ages",
+    "about": {
+      "title": "About Archery Tag",
+      "paragraph1": "Simply put - this is an analogue of paintball, but with bows and soft arrows instead of paint balls. Your task is to be fast, agile and accurate!"
+    },
+    "advantages": {
+      "title": "Archery Tag Advantages",
+      "point1": "Fun for everyone: Regardless of your fitness level or experience, Archery Tag is suitable for all ages and skills. We will teach you everything and show you everything.",
+      "point2": "Develops endurance: Shooting at running targets that also shoot back!",
+      "point3": "Competitive spirit",
+      "point4": "Great idea for leisure or celebration!"
+    },
+    "how": {
+      "title": "How the game works",
+      "paragraph1": "After booking the game, you arrive at the scheduled time. An instructor will meet you and fully guide your event.",
+      "paragraph2": "They will help you settle in the lounge area, explain everything and act as a referee during matches.",
+      "paragraph3": "For an exciting game, at least eight players are needed to form teams. The more players, the more fun!"
+    },
+    "conditions": {
+      "title": "Game Conditions",
+      "price_per_player": "Cost per player",
+      "duration": "90 minutes",
+      "duration_label": "Game duration",
+      "participants": "Number of participants",
+      "min_age": "Age",
+      "equipment": "Game equipment (bows)",
+      "scenarios": "Scenario",
+      "referees": "Game accompaniment",
+      "safe_equipment": "Safe equipment",
+      "safety_briefing": "Safety briefing",
+      "rest_area": "Rest area"
+    },
+    "cta": {
+      "title": "Ready for bow battle?",
       "description": "Book your game now and get ready for an incredible adventure!",
       "call_button": "📞 Call +84 349 338 758",
       "telegram_button": "💬 Write to Telegram"
