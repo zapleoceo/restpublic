@@ -32,38 +32,7 @@ const ContactSection = () => {
           </div>
         </div>
 
-                 {/* Контакты - телефон и локация */}
-         <div className="flex justify-center space-x-4 mb-8">
-           {/* Телефон */}
-           <a
-             href="tel:+84349338758"
-             className="flex items-center p-4 bg-white rounded-lg shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105 group"
-           >
-             <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center mr-3 group-hover:bg-orange-200 transition-colors">
-               <i className="fas fa-phone text-orange-600 text-lg"></i>
-             </div>
-             <div className="text-left">
-               <span className="text-sm font-medium text-gray-900 block">+84 349 338 758</span>
-               <span className="text-xs text-gray-500">{t('home.phone')}</span>
-             </div>
-           </a>
-
-           {/* Локация */}
-           <a
-             href="https://maps.app.goo.gl/Hgbn5n83PA11NcqLA"
-             target="_blank"
-             rel="noopener noreferrer"
-             className="flex items-center p-4 bg-white rounded-lg shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105 group"
-           >
-             <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center mr-3 group-hover:bg-orange-200 transition-colors">
-               <i className="fas fa-map-marker-alt text-orange-600 text-lg"></i>
-             </div>
-             <div className="text-left">
-               <span className="text-sm font-medium text-gray-900 block">Trần Khát Chân, Đường Đệ, Nha Trang, Khánh Hòa, Vietnam</span>
-               <span className="text-xs text-gray-500">{t('home.location')}</span>
-             </div>
-           </a>
-         </div>
+        
 
                    {/* Мы на связи */}
           <div className="text-center mb-8">
@@ -113,8 +82,21 @@ const ContactSection = () => {
 
                  {/* Адрес */}
          <div className="text-center mt-8">
-           <p className="text-gray-600">
+           <a 
+             href="https://www.google.com/maps/search/Tr%E1%BA%A7n+Kh%E1%A3t+Ch%C3%A2n,+%C4%90%C6%B0%E1%BB%9Dng+%C4%90%E1%BB%87,+Nha+Trang,+Kh%C3%A1nh+H%C3%B2a,+Vietnam" 
+             target="_blank" 
+             rel="noopener noreferrer"
+             className="text-gray-600 hover:text-blue-600 hover:underline transition-colors"
+           >
              Trần Khát Chân, Đường Đệ, Nha Trang, Khánh Hòa, Vietnam
+           </a>
+           <p className="text-gray-600 mt-2">
+             <a 
+               href="tel:+84349338758"
+               className="hover:text-blue-600 hover:underline transition-colors"
+             >
+               +84 349 338 758
+             </a>
            </p>
          </div>
       </div>
