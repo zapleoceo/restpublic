@@ -43,7 +43,7 @@ const HomePage = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex-1"></div>
-            <h1 className="text-2xl font-bold text-gray-900">GoodZone</h1>
+            <img src="/img/logo.png" alt="GoodZone Logo" className="h-12 w-auto" />
             <div className="flex-1 flex justify-end">
               <LanguageSwitcher />
             </div>
@@ -55,10 +55,7 @@ const HomePage = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Welcome Section */}
         <div className="text-center mb-12">
-          <div className="mb-4">
-            <img src="/img/logo.png" alt="GoodZone Logo" className="mx-auto h-24 w-auto" />
-          </div>
-          <h2 className="text-3xl font-bold text-gray-900 mb-4 -mt-7">
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">
             {t('home.title')}
           </h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
