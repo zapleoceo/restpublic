@@ -274,7 +274,8 @@ app.get('/api/products/popularity', async (req, res) => {
       params: { 
         token,
         date_from: dateFrom,
-        type: 'incoming_order'
+        type: 'incoming_order',
+        include_products: 1
       },
       httpsAgent: httpsAgent,
       timeout: 15000
@@ -283,16 +284,25 @@ app.get('/api/products/popularity', async (req, res) => {
     console.log('📊 Transactions response:', JSON.stringify(transactionsResponse.data, null, 2));
 
     const transactions = transactionsResponse.data.response || [];
+    console.log(`📊 Found ${transactions.length} transactions`);
     
     // Подсчитываем количество заказов для каждого продукта
     const productPopularity = {};
     
-    transactions.forEach(transaction => {
+    transactions.forEach((transaction, index) => {
+      console.log(`🔍 Transaction ${index + 1}:`, {
+        transaction_id: transaction.transaction_id,
+        has_products: !!transaction.products,
+        products_count: transaction.products ? transaction.products.length : 0,
+        products_sample: transaction.products ? transaction.products.slice(0, 2) : null
+      });
+      
       if (transaction.products && Array.isArray(transaction.products)) {
         transaction.products.forEach(product => {
           const productId = product.product_id;
           if (productId) {
             productPopularity[productId] = (productPopularity[productId] || 0) + (product.count || 1);
+            console.log(`📦 Product ${productId}: count ${product.count || 1}, total popularity: ${productPopularity[productId]}`);
           }
         });
       }
