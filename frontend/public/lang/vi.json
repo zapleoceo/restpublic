@@ -9,6 +9,7 @@
     "contacts": "Liên hệ",
     "contacts_subtitle": "Liên hệ với chúng tôi để đặt chỗ và thông tin bổ sung",
     "social_media": "Mạng xã hội",
+    "we_are_in_touch": "Chúng tôi liên lạc",
     "location": "Vị trí của chúng tôi",
     "phone": "Điện thoại",
     "group": "Nhóm Telegram"
@@ -87,7 +88,9 @@
     },
     "cta": {
       "title": "Sẵn sàng cho trận chiến?",
-      "description": "Đặt trò chơi ngay bây giờ và chuẩn bị cho một cuộc phiêu lưu không thể tin được!"
+      "description": "Đặt trò chơi ngay bây giờ và chuẩn bị cho một cuộc phiêu lưu không thể tin được!",
+      "call_button": "📞 Gọi +84 349 338 758",
+      "telegram_button": "💬 Viết cho Telegram"
     }
   }
 }

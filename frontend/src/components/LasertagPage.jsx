@@ -207,19 +207,19 @@ const LasertagPage = () => {
                {t('lasertag.cta.description')}
              </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <a
-                href="tel:+84349338758"
-                className="bg-white text-orange-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors duration-200"
-              >
-                📞 Позвонить +84 349 338 758
-              </a>
                              <a
+                 href="tel:+84349338758"
+                 className="bg-white text-orange-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors duration-200"
+               >
+                 {t('lasertag.cta.call_button')}
+               </a>
+               <a
                  href="https://t.me/gamezone_vietnam/1725"
                  target="_blank"
                  rel="noopener noreferrer"
                  className="bg-blue-500 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-600 transition-colors duration-200"
                >
-                 💬 Написать в Telegram
+                 {t('lasertag.cta.telegram_button')}
                </a>
             </div>
           </div>

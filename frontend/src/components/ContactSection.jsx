@@ -65,9 +65,9 @@ const ContactSection = () => {
            </a>
          </div>
 
-         {/* Мы на связи */}
-         <div className="text-center mb-8">
-           <h3 className="text-xl font-semibold text-gray-900 mb-6">Мы на связи</h3>
+                   {/* Мы на связи */}
+          <div className="text-center mb-8">
+            <h3 className="text-xl font-semibold text-gray-900 mb-6">{t('home.we_are_in_touch')}</h3>
            <div className="flex justify-center space-x-4">
              {/* Telegram */}
              <a

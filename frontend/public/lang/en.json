@@ -9,6 +9,7 @@
     "contacts": "Contacts",
     "contacts_subtitle": "Contact us for reservations and additional information",
     "social_media": "Social Media",
+    "we_are_in_touch": "We are in touch",
     "location": "Our Location",
     "phone": "Phone",
     "group": "Telegram group"
@@ -87,7 +88,9 @@
     },
     "cta": {
       "title": "Ready for battle?",
-      "description": "Book your game now and get ready for an incredible adventure!"
+      "description": "Book your game now and get ready for an incredible adventure!",
+      "call_button": "📞 Call +84 349 338 758",
+      "telegram_button": "💬 Write to Telegram"
     }
   }
 }
