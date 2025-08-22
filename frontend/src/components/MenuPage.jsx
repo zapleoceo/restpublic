@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useParams, useLocation } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
@@ -53,15 +53,18 @@ const MenuPage = ({ menuData }) => {
   }, []);
 
   // Группируем продукты по категориям и применяем сортировку
-  const groupedCategories = groupProductsByCategory(categories, products).map(category => ({
-    ...category,
-    products: sortProducts(category.products, sortType, popularityData)
-  }));
+  const groupedCategories = useMemo(() => {
+    return groupProductsByCategory(categories, products).map(category => ({
+      ...category,
+      products: sortProducts(category.products, sortType, popularityData)
+    }));
+  }, [categories, products, sortType, popularityData]);
 
   console.log('🔍 Grouped categories with sorting:', groupedCategories);
 
   // Обработчик изменения сортировки
   const handleSortChange = (newSortType) => {
+    console.log('🔄 Changing sort type from', sortType, 'to', newSortType);
     setSortType(newSortType);
   };
 
