@@ -23,7 +23,11 @@ const mainKeyboard = Markup.keyboard([
 // Обработчик команды /start
 bot.command('start', async (ctx) => {
   // Временно логируем chat_id для настройки уведомлений SePay
-  console.log(`🆔 Chat ID: ${ctx.chat.id}, Username: @${ctx.chat.username || 'N/A'}, Name: ${ctx.chat.first_name || ''} ${ctx.chat.last_name || ''}`);
+  const chat = ctx.chat;
+  const username = 'username' in chat ? chat.username : 'N/A';
+  const firstName = 'first_name' in chat ? chat.first_name : '';
+  const lastName = 'last_name' in chat ? chat.last_name : '';
+  console.log(`🆔 Chat ID: ${chat.id}, Username: @${username || 'N/A'}, Name: ${firstName || ''} ${lastName || ''}`);
   
   await ctx.reply(
     '🍜 Добро пожаловать в RestPublic!\n\nИспользуйте кнопки ниже для навигации:',
@@ -65,7 +69,11 @@ bot.hears('📞 Контакты', async (ctx) => {
 // Обработчик всех остальных текстовых сообщений
 bot.on('text', async (ctx) => {
   // Временно логируем chat_id для настройки уведомлений SePay
-  console.log(`🆔 Chat ID: ${ctx.chat.id}, Username: @${ctx.chat.username || 'N/A'}, Name: ${ctx.chat.first_name || ''} ${ctx.chat.last_name || ''}, Text: ${ctx.message.text}`);
+  const chat = ctx.chat;
+  const username = 'username' in chat ? chat.username : 'N/A';
+  const firstName = 'first_name' in chat ? chat.first_name : '';
+  const lastName = 'last_name' in chat ? chat.last_name : '';
+  console.log(`🆔 Chat ID: ${chat.id}, Username: @${username || 'N/A'}, Name: ${firstName || ''} ${lastName || ''}, Text: ${ctx.message.text}`);
   
   await ctx.reply(
     'Используйте кнопки внизу экрана для навигации или отправьте /help для получения справки.',
