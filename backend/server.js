@@ -261,10 +261,10 @@ app.get('/api/products/popularity', async (req, res) => {
 
     console.log('📊 Запрашиваем данные популярности товаров...');
     
-    // Вычисляем даты для последних 3 дней
+    // Вычисляем даты для последних 7 дней
     const endDate = new Date();
     const startDate = new Date();
-    startDate.setDate(startDate.getDate() - 3);
+    startDate.setDate(startDate.getDate() - 7);
     
     const dateFrom = startDate.getFullYear().toString() + 
                     (startDate.getMonth() + 1).toString().padStart(2, '0') + 
@@ -273,7 +273,7 @@ app.get('/api/products/popularity', async (req, res) => {
                   (endDate.getMonth() + 1).toString().padStart(2, '0') + 
                   endDate.getDate().toString().padStart(2, '0');
 
-    console.log(`📅 Период: ${dateFrom} - ${dateTo}`);
+    console.log(`📅 Период: ${dateFrom} - ${dateTo} (7 дней)`);
 
     // Используем правильный API метод для получения продаж по товарам
     const response = await axios.get('https://joinposter.com/api/dash.getProductsSales', {
