@@ -79,12 +79,12 @@ const OrderMenuPage = ({ menuData }) => {
     e.preventDefault();
     
     if (cart.length === 0) {
-      alert('Корзина пуста');
+             alert(t('cart_empty'));
       return;
     }
 
     if (!orderForm.name || !orderForm.phone) {
-      alert('Пожалуйста, заполните имя и телефон');
+             alert(t('order_form_fields.fill_name_phone'));
       return;
     }
 
@@ -136,14 +136,14 @@ const OrderMenuPage = ({ menuData }) => {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="text-6xl mb-4">🍽️</div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Заказ еды</h1>
-          <p className="text-gray-600 mb-6">Категории не найдены</p>
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">{t('order_food')}</h1>
+          <p className="text-gray-600 mb-6">{t('no_categories')}</p>
           <Link 
             to="/"
             className="inline-flex items-center px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg transition-colors"
           >
             <ArrowLeft className="mr-2 w-4 h-4" />
-            Назад
+            {t('back')}
           </Link>
         </div>
       </div>
@@ -162,11 +162,11 @@ const OrderMenuPage = ({ menuData }) => {
               className="inline-flex items-center px-3 py-2 text-gray-600 hover:text-orange-600 transition-colors"
             >
               <ArrowLeft className="mr-2 w-4 h-4" />
-              Назад
+              {t('back')}
             </Link>
 
             {/* Заголовок */}
-            <h1 className="text-xl font-semibold text-gray-900">Заказ еды</h1>
+            <h1 className="text-xl font-semibold text-gray-900">{t('order_food')}</h1>
 
             {/* Корзина */}
             <button
@@ -218,7 +218,7 @@ const OrderMenuPage = ({ menuData }) => {
                 {groupedCategories[activeTab].category_name}
               </h2>
               <p className="text-gray-600">
-                {groupedCategories[activeTab].products.length} блюд
+                {groupedCategories[activeTab].products.length} {t('menu.dishes')}
               </p>
             </div>
 
@@ -242,10 +242,10 @@ const OrderMenuPage = ({ menuData }) => {
               <div className="text-center py-12">
                 <div className="text-6xl mb-4">🍽️</div>
                 <h3 className="text-lg font-medium text-gray-900 mb-2">
-                  В этой категории пока нет блюд
+                  {t('no_dishes_in_category')}
                 </h3>
                 <p className="text-gray-600">
-                  Скоро здесь появятся новые блюда
+                  {t('new_dishes_coming_soon')}
                 </p>
               </div>
             )}
@@ -258,7 +258,7 @@ const OrderMenuPage = ({ menuData }) => {
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-lg max-w-md w-full max-h-[80vh] overflow-hidden">
             <div className="flex items-center justify-between p-4 border-b">
-              <h3 className="text-lg font-semibold">Корзина</h3>
+              <h3 className="text-lg font-semibold">{t('cart')}</h3>
               <button
                 onClick={() => setShowCart(false)}
                 className="text-gray-400 hover:text-gray-600"
@@ -271,7 +271,7 @@ const OrderMenuPage = ({ menuData }) => {
               {cart.length === 0 ? (
                 <div className="text-center py-8">
                   <ShoppingCart className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-                  <p className="text-gray-500">Корзина пуста</p>
+                  <p className="text-gray-500">{t('cart_empty')}</p>
                 </div>
               ) : (
                 <div className="space-y-4">
@@ -307,7 +307,7 @@ const OrderMenuPage = ({ menuData }) => {
             {cart.length > 0 && (
               <div className="p-4 border-t">
                 <div className="flex justify-between items-center mb-4">
-                  <span className="font-semibold">Итого:</span>
+                  <span className="font-semibold">{t('total')}</span>
                   <span className="font-semibold text-lg">
                     {getCartTotal().toLocaleString()} ₫
                   </span>
@@ -319,7 +319,7 @@ const OrderMenuPage = ({ menuData }) => {
                   }}
                   className="w-full bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-lg font-medium transition-colors"
                 >
-                  Оформить заказ
+                  {t('place_order')}
                 </button>
               </div>
             )}
@@ -332,7 +332,7 @@ const OrderMenuPage = ({ menuData }) => {
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-lg max-w-md w-full max-h-[80vh] overflow-y-auto">
             <div className="flex items-center justify-between p-4 border-b">
-              <h3 className="text-lg font-semibold">Оформление заказа</h3>
+              <h3 className="text-lg font-semibold">{t('order_form')}</h3>
               <button
                 onClick={() => setShowOrderForm(false)}
                 className="text-gray-400 hover:text-gray-600"
@@ -352,13 +352,13 @@ const OrderMenuPage = ({ menuData }) => {
                   value={orderForm.name}
                   onChange={(e) => setOrderForm({...orderForm, name: e.target.value})}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                  placeholder="Ваше имя"
+                  placeholder={t('order_form_fields.your_name')}
                 />
               </div>
               
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Телефон * <Phone className="inline w-4 h-4" />
+                  {t('order_form_fields.phone')} * <Phone className="inline w-4 h-4" />
                 </label>
                 <input
                   type="tel"
@@ -372,7 +372,7 @@ const OrderMenuPage = ({ menuData }) => {
               
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Email <Mail className="inline w-4 h-4" />
+                  {t('order_form_fields.email')} <Mail className="inline w-4 h-4" />
                 </label>
                 <input
                   type="email"
@@ -385,32 +385,32 @@ const OrderMenuPage = ({ menuData }) => {
               
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Адрес доставки <MapPin className="inline w-4 h-4" />
+                  {t('order_form_fields.delivery_address')} <MapPin className="inline w-4 h-4" />
                 </label>
                 <textarea
                   value={orderForm.address}
                   onChange={(e) => setOrderForm({...orderForm, address: e.target.value})}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                  placeholder="Адрес доставки (если требуется)"
+                  placeholder={t('order_form_fields.delivery_address_placeholder')}
                   rows="2"
                 />
               </div>
               
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Дополнительные пожелания
+                  {t('order_form_fields.additional_notes')}
                 </label>
                 <textarea
                   value={orderForm.notes}
                   onChange={(e) => setOrderForm({...orderForm, notes: e.target.value})}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                  placeholder="Особые пожелания к заказу"
+                  placeholder={t('order_form_fields.notes_placeholder')}
                   rows="2"
                 />
               </div>
               
               <div className="bg-gray-50 p-3 rounded-lg">
-                <h4 className="font-medium mb-2">Ваш заказ:</h4>
+                <h4 className="font-medium mb-2">{t('order_form_fields.your_order')}</h4>
                 <div className="space-y-1 text-sm">
                   {cart.map((item) => (
                     <div key={item.product_id} className="flex justify-between">
@@ -420,7 +420,7 @@ const OrderMenuPage = ({ menuData }) => {
                   ))}
                   <div className="border-t pt-2 mt-2 font-medium">
                     <div className="flex justify-between">
-                      <span>Итого:</span>
+                      <span>{t('total')}</span>
                       <span>{getCartTotal().toLocaleString()} ₫</span>
                     </div>
                   </div>
@@ -433,7 +433,7 @@ const OrderMenuPage = ({ menuData }) => {
                   onClick={() => setShowOrderForm(false)}
                   className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
                 >
-                  Отмена
+                  {t('order_form_fields.cancel')}
                 </button>
                 <button
                   type="submit"

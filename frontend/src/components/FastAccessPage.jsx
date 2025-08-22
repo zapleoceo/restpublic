@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { validateTableId, createBotUrl, createMenuUrl, createHomeUrl } from '../utils/tableUtils';
 import { TableProvider } from '../contexts/TableContext';
 import TableErrorPage from './TableErrorPage';
 import { Bot, Menu, Globe, ChevronRight } from 'lucide-react';
 
 const FastAccessPage = () => {
+  const { t } = useTranslation();
   const { tableId } = useParams();
   const navigate = useNavigate();
   const [isValidTable, setIsValidTable] = useState(true);
@@ -40,24 +42,24 @@ const FastAccessPage = () => {
   const actions = [
     {
       icon: Bot,
-      title: 'Telegram Bot',
-      description: 'Быстрый заказ в один клик',
+      title: t('fast_access.telegram_bot'),
+      description: t('fast_access.telegram_bot_desc'),
       onClick: handleBotClick,
       gradient: 'from-blue-500 to-blue-600',
       iconBg: 'bg-blue-500'
     },
     {
       icon: Menu,
-      title: 'Меню онлайн',
-      description: 'Полное меню нашего ресторана',
+      title: t('fast_access.online_menu'),
+      description: t('fast_access.online_menu_desc'),
       onClick: handleMenuClick,
       gradient: 'from-orange-500 to-red-500',
       iconBg: 'bg-orange-500'
     },
     {
       icon: Globe,
-      title: 'Главная страница',
-      description: 'Перейти на главную страницу',
+      title: t('fast_access.home_page'),
+      description: t('fast_access.home_page_desc'),
       onClick: handleHomeClick,
       gradient: 'from-green-500 to-emerald-600',
       iconBg: 'bg-green-500'
@@ -75,8 +77,8 @@ const FastAccessPage = () => {
               <div className="inline-flex items-center justify-center w-28 h-28 bg-gradient-to-br from-orange-400 to-red-500 rounded-full shadow-xl border-4 border-white mb-6">
                 <span className="text-4xl font-bold text-white">№{tableId}</span>
               </div>
-              <h1 className="text-xl font-semibold text-gray-800 mb-2">Ваш столик</h1>
-              <p className="text-sm text-gray-600">Выберите действие для продолжения</p>
+              <h1 className="text-xl font-semibold text-gray-800 mb-2">{t('fast_access.your_table')}</h1>
+              <p className="text-sm text-gray-600">{t('fast_access.choose_action')}</p>
             </div>
 
             {/* Три большие кнопки */}
@@ -121,7 +123,7 @@ const FastAccessPage = () => {
               <div className="inline-flex items-center space-x-2 px-4 py-2 bg-white/80 backdrop-blur-sm rounded-full shadow-sm">
                 <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
                 <p className="text-sm font-medium text-gray-700">
-                  GoodZone • Ресторан и развлечения
+                  {t('fast_access.goodzone_restaurant')}
                 </p>
               </div>
             </div>

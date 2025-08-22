@@ -13,7 +13,7 @@ const ErrorDisplay = ({ error, onRetry, className = '' }) => {
         <p className="text-gray-600 mb-6">{error}</p>
         {onRetry && (
           <Button onClick={onRetry} size="lg">
-            Попробовать снова
+            {t('try_again')}
           </Button>
         )}
       </div>

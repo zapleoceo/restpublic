@@ -4,22 +4,22 @@ import { Link } from 'react-router-dom';
 import LanguageSwitcher from './LanguageSwitcher';
 import ContactSection from './ContactSection';
 
-const ArcherytagPage = () => {
+const BBQZonePage = () => {
   const { t } = useTranslation();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-  // Массив изображений для слайдера (из папки archery)
+  // Массив изображений для слайдера (из папки bbq)
   const images = [
-    '/img/archery/1.jpg',
-    '/img/archery/2.jpg',
-    '/img/archery/3.jpg',
-    '/img/archery/4.jpg',
-    '/img/archery/5.jpg',
-    '/img/archery/6.jpg',
-    '/img/archery/7.jpg',
-    '/img/archery/8',
-    '/img/archery/99.jpg',
-    '/img/archery/10.jpg'
+    '/img/bbq/1.jpg',
+    '/img/bbq/2.jpg',
+    '/img/bbq/3.jpg',
+    '/img/bbq/4.jpg',
+    '/img/bbq/5.jpg',
+    '/img/bbq/6.jpg',
+    '/img/bbq/7.jpg',
+    '/img/bbq/8.jpg',
+    '/img/bbq/9.jpg',
+    '/img/bbq/10.jpg'
   ];
 
   const nextImage = () => {
@@ -44,12 +44,12 @@ const ArcherytagPage = () => {
       <div className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            <div className="flex-1">
-              <Link to="/" className="text-green-600 hover:text-green-700 font-medium">
-                ← {t('back')}
-              </Link>
-            </div>
-            <h1 className="text-2xl font-bold text-gray-900">Archery Tag</h1>
+                         <div className="flex-1">
+               <Link to="/" className="text-green-600 hover:text-green-700 font-medium">
+                 ← {t('back')}
+               </Link>
+             </div>
+             <h1 className="text-2xl font-bold text-gray-900">{t('bbq_zone.title')}</h1>
             <div className="flex-1 flex justify-end">
               <LanguageSwitcher />
             </div>
@@ -61,12 +61,12 @@ const ArcherytagPage = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Hero Section */}
         <div className="text-center mb-12">
-          <div className="text-6xl mb-4">🏹</div>
+          <div className="text-6xl mb-4">🏕️</div>
           <h2 className="text-4xl font-bold text-gray-900 mb-4">
-            {t('archerytag.title')}
+            {t('bbq_zone.title')}
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            {t('archerytag.subtitle')}
+            {t('bbq_zone.subtitle')}
           </p>
         </div>
 
@@ -76,7 +76,7 @@ const ArcherytagPage = () => {
             <div className="relative h-96 md:h-[500px]">
               <img
                 src={images[currentImageIndex]}
-                alt={`Archery Tag ${currentImageIndex + 1}`}
+                alt={`BBQ Zone ${currentImageIndex + 1}`}
                 className="w-full h-full object-cover"
               />
               
@@ -117,100 +117,99 @@ const ArcherytagPage = () => {
           </div>
         </div>
 
-        {/* Description Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-12">
-          {/* About Archery Tag */}
-          <div className="bg-white rounded-xl shadow-md p-8">
-            <h3 className="text-2xl font-bold text-gray-900 mb-6">{t('archerytag.about.title')}</h3>
-            <div className="space-y-4 text-gray-700">
-              <p>{t('archerytag.about.paragraph1')}</p>
-            </div>
-          </div>
-
-          {/* Advantages */}
-          <div className="bg-white rounded-xl shadow-md p-8">
-            <h3 className="text-2xl font-bold text-gray-900 mb-6">{t('archerytag.advantages.title')}</h3>
-            <div className="space-y-4 text-gray-700">
-              <div className="flex items-start">
-                <div className="w-2 h-2 bg-green-500 rounded-full mr-3 mt-2 flex-shrink-0"></div>
-                <p>{t('archerytag.advantages.point1')}</p>
-              </div>
-              <div className="flex items-start">
-                <div className="w-2 h-2 bg-green-500 rounded-full mr-3 mt-2 flex-shrink-0"></div>
-                <p>{t('archerytag.advantages.point2')}</p>
-              </div>
-              <div className="flex items-start">
-                <div className="w-2 h-2 bg-green-500 rounded-full mr-3 mt-2 flex-shrink-0"></div>
-                <p>{t('archerytag.advantages.point3')}</p>
-              </div>
-              <div className="flex items-start">
-                <div className="w-2 h-2 bg-green-500 rounded-full mr-3 mt-2 flex-shrink-0"></div>
-                <p>{t('archerytag.advantages.point4')}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* How it works */}
+        {/* About Section */}
         <div className="bg-white rounded-xl shadow-md p-8 mb-12">
-          <h3 className="text-2xl font-bold text-gray-900 mb-6">{t('archerytag.how.title')}</h3>
+          <h3 className="text-2xl font-bold text-gray-900 mb-6">{t('bbq_zone.about.title')}</h3>
           <div className="space-y-4 text-gray-700">
-            <p>{t('archerytag.how.paragraph1')}</p>
-            <p>{t('archerytag.how.paragraph2')}</p>
-            <p>{t('archerytag.how.paragraph3')}</p>
+            <p>{t('bbq_zone.about.paragraph1')}</p>
+            <p>{t('bbq_zone.about.paragraph2')}</p>
+            <p>{t('bbq_zone.about.paragraph3')}</p>
+            <p>{t('bbq_zone.about.paragraph4')}</p>
           </div>
         </div>
 
         {/* Conditions Section */}
         <div className="bg-white rounded-xl shadow-md p-8 mb-12">
-          <h3 className="text-2xl font-bold text-gray-900 mb-6 text-center">{t('archerytag.conditions.title')}</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="text-center p-4 bg-green-50 rounded-lg">
-              <div className="text-2xl font-bold text-green-600 mb-2">250.000 VND</div>
-              <div className="text-sm text-gray-600">{t('archerytag.conditions.price_per_player')}</div>
+          <h3 className="text-2xl font-bold text-gray-900 mb-6 text-center">{t('bbq_zone.conditions.title')}</h3>
+          
+          {/* Pricing Tables */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            {/* Weekdays */}
+            <div className="bg-green-50 rounded-lg p-6">
+              <h4 className="text-xl font-semibold text-gray-900 mb-4">{t('bbq_zone.conditions.weekdays')}</h4>
+              <div className="space-y-3">
+                <div className="flex justify-between">
+                  <span className="text-gray-700">09:00 - 17:00</span>
+                  <span className="font-semibold text-green-600">200.000 VND/час</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-700">17:00 - 22:00</span>
+                  <span className="font-semibold text-green-600">300.000 VND/час</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-700">22:00 - 02:00</span>
+                  <span className="font-semibold text-green-600">350.000 VND/час</span>
+                </div>
+              </div>
             </div>
-            <div className="text-center p-4 bg-green-50 rounded-lg">
-              <div className="text-2xl font-bold text-green-600 mb-2">{t('archerytag.conditions.duration')}</div>
-              <div className="text-sm text-gray-600">{t('archerytag.conditions.duration_label')}</div>
-            </div>
-            <div className="text-center p-4 bg-green-50 rounded-lg">
-              <div className="text-2xl font-bold text-green-600 mb-2">8-20</div>
-              <div className="text-sm text-gray-600">{t('archerytag.conditions.participants')}</div>
-            </div>
-            <div className="text-center p-4 bg-green-50 rounded-lg">
-              <div className="text-2xl font-bold text-green-600 mb-2">до 75 лет</div>
-              <div className="text-sm text-gray-600">{t('archerytag.conditions.min_age')}</div>
+
+            {/* Weekends */}
+            <div className="bg-green-50 rounded-lg p-6">
+              <h4 className="text-xl font-semibold text-gray-900 mb-4">{t('bbq_zone.conditions.weekends')}</h4>
+              <div className="space-y-3">
+                <div className="flex justify-between">
+                  <span className="text-gray-700">09:00 - 17:00</span>
+                  <span className="font-semibold text-green-600">250.000 VND/час</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-700">17:00 - 22:00</span>
+                  <span className="font-semibold text-green-600">350.000 VND/час</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-700">22:00 - 02:00</span>
+                  <span className="font-semibold text-green-600">400.000 VND/час</span>
+                </div>
+              </div>
             </div>
           </div>
-          
-          <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+
+          {/* Features */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-3">
               <div className="flex items-center">
                 <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
-                <span className="text-gray-700">{t('archerytag.conditions.equipment')}</span>
+                <span className="text-gray-700">{t('bbq_zone.conditions.capacity')}: <strong>до 35 человек</strong></span>
               </div>
               <div className="flex items-center">
                 <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
-                <span className="text-gray-700">{t('archerytag.conditions.scenarios')}</span>
+                <span className="text-gray-700">{t('bbq_zone.conditions.barbecue_zone')}</span>
               </div>
               <div className="flex items-center">
                 <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
-                <span className="text-gray-700">{t('archerytag.conditions.referees')}</span>
+                <span className="text-gray-700">{t('bbq_zone.conditions.grill')}</span>
+              </div>
+              <div className="flex items-center">
+                <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
+                <span className="text-gray-700">{t('bbq_zone.conditions.sink')}</span>
               </div>
             </div>
             <div className="space-y-3">
               <div className="flex items-center">
                 <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
-                <span className="text-gray-700">{t('archerytag.conditions.safe_equipment')}</span>
+                <span className="text-gray-700">{t('bbq_zone.conditions.charcoal')} - {t('bbq_zone.conditions.utensils')}</span>
               </div>
-              <div className="flex items-center">
-                <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
-                <span className="text-gray-700">{t('archerytag.conditions.safety_briefing')}</span>
-              </div>
-              <div className="flex items-center">
-                <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
-                <span className="text-gray-700">{t('archerytag.conditions.rest_area')}</span>
-              </div>
+                             <div className="flex items-center">
+                 <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
+                 <span className="text-gray-700">{t('bbq_zone.features.hourly_rental')}</span>
+               </div>
+               <div className="flex items-center">
+                 <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
+                 <span className="text-gray-700">{t('bbq_zone.features.combine_with_games')}</span>
+               </div>
+               <div className="flex items-center">
+                 <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
+                 <span className="text-gray-700">{t('bbq_zone.features.green_nature_zone')}</span>
+               </div>
             </div>
           </div>
         </div>
@@ -218,24 +217,24 @@ const ArcherytagPage = () => {
         {/* CTA Section */}
         <div className="text-center mb-12">
           <div className="bg-gradient-to-r from-green-500 to-green-600 rounded-xl shadow-lg p-8 text-white">
-            <h3 className="text-2xl font-bold mb-4">{t('archerytag.cta.title')}</h3>
+            <h3 className="text-2xl font-bold mb-4">{t('bbq_zone.cta.title')}</h3>
             <p className="text-lg mb-6 opacity-90">
-              {t('archerytag.cta.description')}
+              {t('bbq_zone.cta.description')}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <a
                 href="tel:+84349338758"
                 className="bg-white text-green-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors duration-200"
               >
-                {t('archerytag.cta.call_button')}
+                {t('bbq_zone.cta.call_button')}
               </a>
               <a
-                href="https://t.me/gamezone_vietnam/1727"
+                href="https://t.me/gamezone_vietnam/1729"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="bg-blue-500 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-600 transition-colors duration-200"
               >
-                {t('archerytag.cta.telegram_button')}
+                {t('bbq_zone.cta.telegram_button')}
               </a>
             </div>
           </div>
@@ -248,4 +247,4 @@ const ArcherytagPage = () => {
   );
 };
 
-export default ArcherytagPage;
+export default BBQZonePage;

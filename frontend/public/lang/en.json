@@ -6,7 +6,7 @@
   "home": {
     "title": "Welcome to GoodZone",
     "subtitle": "Entertainment complex with restaurant, lasertag, archery, cinema and gazebo rental",
-    "contacts": "Contacts",
+    "contacts": "How to find us",
     "contacts_subtitle": "Contact us for reservations and additional information",
     "social_media": "Social Media",
     "we_are_in_touch": "We are in touch",
@@ -32,8 +32,8 @@
       "description": "Movie watching"
     },
     "rent": {
-      "title": "Gazebo Rental",
-      "description": "Gazebo rental"
+      "title": "BBQ Picnic Area",
+      "description": "Barbecue area"
     }
   },
   "menu": {
@@ -54,8 +54,42 @@
   },
   "loading": "Loading...",
   "error": "Error loading data",
+  "try_again": "Try again",
   "no_products": "Dishes not found",
   "no_categories": "Categories not found",
+  "cart_empty": "Cart is empty",
+  "order_food": "Order Food",
+  "loading_popularity": "Loading popularity...",
+  "no_dishes_in_category": "No dishes in this category yet",
+  "new_dishes_coming_soon": "New dishes will appear here soon",
+  "cart": "Cart",
+  "total": "Total:",
+  "place_order": "Place Order",
+  "order_form": "Order Form",
+  "fast_access": {
+    "telegram_bot": "Telegram Bot",
+    "telegram_bot_desc": "Quick order in one click",
+    "online_menu": "Online Menu",
+    "online_menu_desc": "Complete menu of our restaurant",
+    "home_page": "Home Page",
+    "home_page_desc": "Go to the main page",
+    "your_table": "Your Table",
+    "choose_action": "Choose an action to continue",
+    "goodzone_restaurant": "GoodZone • Restaurant and Entertainment"
+  },
+  "order_form_fields": {
+    "your_name": "Your Name",
+    "phone": "Phone",
+    "email": "Email",
+    "delivery_address": "Delivery Address",
+    "delivery_address_placeholder": "Delivery address (if required)",
+    "additional_notes": "Additional Notes",
+    "notes_placeholder": "Special requests for the order",
+    "your_order": "Your Order:",
+    "cancel": "Cancel",
+    "fill_name_phone": "Please fill in your name and phone number"
+  },
+  },
   "back": "Back",
   "lasertag": {
     "title": "Lasertag - Laser Battle",
@@ -132,6 +166,40 @@
       "description": "Book your game now and get ready for an incredible adventure!",
       "call_button": "📞 Call +84 349 338 758",
       "telegram_button": "💬 Write to Telegram"
+    }
+  },
+  "bbq_zone": {
+    "title": "BBQ Picnic Area - Barbecue Zone",
+    "subtitle": "Perfect place to relax with friends, family or colleagues",
+    "about": {
+      "title": "About BBQ Zone",
+      "paragraph1": "Perfect place to gather with friends, family or colleagues — our gazebos in the middle of a green corner of nature.",
+      "paragraph2": "One such zone can comfortably accommodate up to 35 people. The cost also includes a barbecue area with a grill and sink.",
+      "paragraph3": "Please note: Meat, drinks, food, grills, skewers, dishes and other consumables — bring with you. But we will always tell you where to buy them nearby. You can buy charcoal from us.",
+      "paragraph4": "Hourly rental — choose the time that suits you. You can combine with laser tag or bow battle games, or just arrange a soulful evening in the open air."
+    },
+    "conditions": {
+      "title": "Rental Conditions",
+      "weekdays": "Weekdays",
+      "weekends": "Weekends and holidays",
+      "capacity": "Capacity",
+      "equipment": "Equipment",
+      "barbecue_zone": "Barbecue area",
+      "grill": "Grill",
+      "sink": "Sink",
+      "charcoal": "Charcoal",
+      "utensils": "Dishes and consumables"
+    },
+    "cta": {
+      "title": "Ready for a picnic?",
+      "description": "Book your barbecue area now and get ready for great relaxation!",
+      "call_button": "📞 Call +84 349 338 758",
+      "telegram_button": "💬 Write to Telegram"
+    },
+    "features": {
+      "hourly_rental": "Hourly rental",
+      "combine_with_games": "Possibility to combine with games",
+      "green_nature_zone": "Green nature zone"
     }
   }
 }

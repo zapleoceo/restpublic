@@ -51,7 +51,7 @@ const LasertagPage = () => {
           <div className="flex items-center justify-between h-16">
             <div className="flex-1">
               <Link to="/" className="text-orange-600 hover:text-orange-700 font-medium">
-                ← Назад
+                ← {t('back')}
               </Link>
             </div>
             <h1 className="text-2xl font-bold text-gray-900">Lasertag</h1>

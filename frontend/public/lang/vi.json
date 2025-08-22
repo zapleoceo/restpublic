@@ -6,7 +6,7 @@
   "home": {
     "title": "Chào mừng đến với GoodZone",
     "subtitle": "Khu phức hợp giải trí với nhà hàng, lasertag, bắn cung, rạp chiếu phim và thuê lều",
-    "contacts": "Liên hệ",
+    "contacts": "Cách tìm chúng tôi",
     "contacts_subtitle": "Liên hệ với chúng tôi để đặt chỗ và thông tin bổ sung",
     "social_media": "Mạng xã hội",
     "we_are_in_touch": "Chúng tôi liên lạc",
@@ -32,8 +32,8 @@
       "description": "Xem phim"
     },
     "rent": {
-      "title": "Thuê lều",
-      "description": "Thuê lều"
+      "title": "BBQ Picnic Area",
+      "description": "Khu vực nướng BBQ"
     }
   },
   "menu": {
@@ -54,8 +54,42 @@
   },
   "loading": "Đang tải...",
   "error": "Lỗi tải dữ liệu",
+  "try_again": "Thử lại",
   "no_products": "Không tìm thấy món ăn",
   "no_categories": "Không tìm thấy danh mục",
+  "cart_empty": "Giỏ hàng trống",
+  "order_food": "Đặt món ăn",
+  "loading_popularity": "Đang tải độ phổ biến...",
+  "no_dishes_in_category": "Chưa có món ăn nào trong danh mục này",
+  "new_dishes_coming_soon": "Các món ăn mới sẽ xuất hiện ở đây sớm",
+  "cart": "Giỏ hàng",
+  "total": "Tổng cộng:",
+  "place_order": "Đặt hàng",
+  "order_form": "Đơn đặt hàng",
+  "fast_access": {
+    "telegram_bot": "Telegram Bot",
+    "telegram_bot_desc": "Đặt hàng nhanh trong một cú nhấp",
+    "online_menu": "Thực đơn trực tuyến",
+    "online_menu_desc": "Thực đơn đầy đủ của nhà hàng chúng tôi",
+    "home_page": "Trang chủ",
+    "home_page_desc": "Đi đến trang chính",
+    "your_table": "Bàn của bạn",
+    "choose_action": "Chọn một hành động để tiếp tục",
+    "goodzone_restaurant": "GoodZone • Nhà hàng và Giải trí"
+  },
+  "order_form_fields": {
+    "your_name": "Tên của bạn",
+    "phone": "Điện thoại",
+    "email": "Email",
+    "delivery_address": "Địa chỉ giao hàng",
+    "delivery_address_placeholder": "Địa chỉ giao hàng (nếu cần)",
+    "additional_notes": "Ghi chú bổ sung",
+    "notes_placeholder": "Yêu cầu đặc biệt cho đơn hàng",
+    "your_order": "Đơn hàng của bạn:",
+    "cancel": "Hủy",
+    "fill_name_phone": "Vui lòng điền tên và số điện thoại"
+  },
+  },
   "back": "Quay lại",
   "lasertag": {
     "title": "Lasertag - Trận chiến laser",
@@ -132,6 +166,40 @@
       "description": "Đặt trò chơi ngay bây giờ và chuẩn bị cho một cuộc phiêu lưu không thể tin được!",
       "call_button": "📞 Gọi +84 349 338 758",
       "telegram_button": "💬 Viết cho Telegram"
+    }
+  },
+  "bbq_zone": {
+    "title": "BBQ Picnic Area - Khu vực nướng BBQ",
+    "subtitle": "Nơi hoàn hảo để thư giãn với bạn bè, gia đình hoặc đồng nghiệp",
+    "about": {
+      "title": "Về khu vực BBQ",
+      "paragraph1": "Nơi hoàn hảo để tụ tập với bạn bè, gia đình hoặc đồng nghiệp — những lều của chúng tôi giữa góc xanh của thiên nhiên.",
+      "paragraph2": "Một khu vực như vậy có thể thoải mái chứa tới 35 người. Chi phí cũng bao gồm khu vực nướng BBQ với bếp nướng và bồn rửa.",
+      "paragraph3": "Lưu ý: Thịt, đồ uống, thực phẩm, bếp nướng, xiên, bát đĩa và các vật dụng tiêu hao khác — mang theo. Nhưng chúng tôi sẽ luôn cho bạn biết nơi mua chúng gần đó. Bạn có thể mua than từ chúng tôi.",
+      "paragraph4": "Thuê theo giờ — chọn thời gian phù hợp với bạn. Bạn có thể kết hợp với các trò chơi laser tag hoặc bow battle, hoặc chỉ sắp xếp một buổi tối ấm cúng ngoài trời."
+    },
+    "conditions": {
+      "title": "Điều kiện thuê",
+      "weekdays": "Ngày trong tuần",
+      "weekends": "Cuối tuần và ngày lễ",
+      "capacity": "Sức chứa",
+      "equipment": "Thiết bị",
+      "barbecue_zone": "Khu vực nướng BBQ",
+      "grill": "Bếp nướng",
+      "sink": "Bồn rửa",
+      "charcoal": "Than",
+      "utensils": "Bát đĩa và vật dụng tiêu hao"
+    },
+    "cta": {
+      "title": "Sẵn sàng cho dã ngoại?",
+      "description": "Đặt khu vực nướng BBQ ngay bây giờ và chuẩn bị cho sự thư giãn tuyệt vời!",
+      "call_button": "📞 Gọi +84 349 338 758",
+      "telegram_button": "💬 Viết cho Telegram"
+    },
+    "features": {
+      "hourly_rental": "Thuê theo giờ",
+      "combine_with_games": "Khả năng kết hợp với các trò chơi",
+      "green_nature_zone": "Khu vực thiên nhiên xanh"
     }
   }
 }

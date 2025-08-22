@@ -15,8 +15,9 @@ const HomePage = () => {
     },
     {
       id: 'lasertag',
-      icon: '🎯',
-              link: '/lasertag'
+      icon: '/img/lazertag/icon.png',
+      logo: '/img/lazertag/logo.png',
+      link: '/lasertag'
     },
     {
       id: 'bow',
@@ -31,7 +32,7 @@ const HomePage = () => {
     {
       id: 'rent',
       icon: '🏕️',
-      link: '/rent'
+      link: '/bbq_zone'
     }
   ];
 
@@ -54,8 +55,10 @@ const HomePage = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Welcome Section */}
         <div className="text-center mb-12">
-          <div className="text-6xl mb-4">🎯</div>
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">
+          <div className="mb-4">
+            <img src="/img/lazertag/logo.png" alt="GoodZone Logo" className="mx-auto h-24 w-auto" />
+          </div>
+          <h2 className="text-3xl font-bold text-gray-900 mb-4 -mt-7">
             {t('home.title')}
           </h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
@@ -71,8 +74,23 @@ const HomePage = () => {
               to={section.link}
               className="bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105 p-6 text-center group"
             >
-              <div className="text-4xl mb-4 group-hover:scale-110 transition-transform duration-200">
-                {section.icon}
+              <div className="mb-4 group-hover:scale-110 transition-transform duration-200 relative">
+                {section.id === 'lasertag' ? (
+                  <>
+                    <img 
+                      src={section.icon} 
+                      alt="Lasertag Icon" 
+                      className="w-16 h-16 mx-auto group-hover:opacity-0 transition-opacity duration-200" 
+                    />
+                    <img 
+                      src={section.logo} 
+                      alt="GoodZone Logo" 
+                      className="w-16 h-16 mx-auto absolute top-0 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200" 
+                    />
+                  </>
+                ) : (
+                  <div className="text-4xl">{section.icon}</div>
+                )}
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-2">
                 {t(`sections.${section.id}.title`)}
@@ -85,7 +103,9 @@ const HomePage = () => {
         </div>
 
         {/* Contact Section */}
-        <ContactSection />
+        <div className="mt-7">
+          <ContactSection />
+        </div>
       </div>
 
       {/* Version info - hidden div */}

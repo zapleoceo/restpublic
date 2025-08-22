@@ -85,14 +85,14 @@ const MenuPage = ({ menuData }) => {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="text-6xl mb-4">🍽️</div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Меню</h1>
-          <p className="text-gray-600 mb-6">Категории не найдены</p>
+                      <h1 className="text-2xl font-bold text-gray-900 mb-4">{t('menu.title')}</h1>
+          <p className="text-gray-600 mb-6">{t('no_categories')}</p>
           <Link 
             to={isFastAccess ? `/fast/${currentTableId}` : "/"}
             className="inline-flex items-center px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg transition-colors"
           >
             <ArrowLeft className="mr-2 w-4 h-4" />
-            Назад
+            {t('back')}
           </Link>
         </div>
       </div>
@@ -173,7 +173,7 @@ const MenuPage = ({ menuData }) => {
                   {loadingPopularity && (
                     <div className="flex items-center space-x-2 text-sm text-gray-500">
                       <LoadingSpinner size="sm" compact={true} />
-                      <span>Загрузка популярности...</span>
+                      <span>{t('loading_popularity')}</span>
                     </div>
                   )}
                   <SortSelector 
@@ -196,10 +196,10 @@ const MenuPage = ({ menuData }) => {
               <div className="text-center py-12">
                 <div className="text-6xl mb-4">🍽️</div>
                 <h3 className="text-lg font-medium text-gray-900 mb-2">
-                  В этой категории пока нет блюд
+                  {t('no_dishes_in_category')}
                 </h3>
                 <p className="text-gray-600">
-                  Скоро здесь появятся новые блюда
+                  {t('new_dishes_coming_soon')}
                 </p>
               </div>
             )}

@@ -1,14 +1,17 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import ProductCard from './ProductCard';
 import EmptyState from './EmptyState';
 import Grid from './Grid';
 
 const ProductGrid = ({ products = [], className = '' }) => {
+  const { t } = useTranslation();
+  
   if (!products || products.length === 0) {
     return (
       <EmptyState 
-        title="Блюда не найдены"
-        description="В данной категории пока нет блюд"
+        title={t('no_products')}
+        description={t('no_dishes_in_category')}
       />
     );
   }

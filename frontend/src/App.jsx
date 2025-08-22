@@ -7,6 +7,7 @@ import MenuPageWrapper from './components/MenuPageWrapper';
 import FastAccessPage from './components/FastAccessPage';
 import LasertagPage from './components/LasertagPage';
 import ArcherytagPage from './components/ArcherytagPage';
+import BBQZonePage from './components/BBQZonePage';
 import LoadingSpinner from './components/LoadingSpinner';
 import ErrorBoundary from './components/ErrorBoundary';
 import './App.css';
@@ -60,12 +61,12 @@ function App() {
           <div className="text-orange-400 text-6xl mb-4">⚠️</div>
           <h1 className="text-2xl font-bold text-gray-900 mb-4">{t('error')}</h1>
           <p className="text-gray-600 mb-6">{error}</p>
-          <button 
-            onClick={fetchMenuData}
-            className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-lg transition-colors"
-          >
-            Попробовать снова
-          </button>
+                     <button 
+             onClick={fetchMenuData}
+             className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-lg transition-colors"
+           >
+             {t('try_again')}
+           </button>
         </div>
       </div>
     );
@@ -83,8 +84,8 @@ function App() {
               <Route path="/fast/:tableId/menu" element={<MenuPageWrapper menuData={menuData} />} />
               <Route path="/lasertag" element={<LasertagPage />} />
               <Route path="/archerytag" element={<ArcherytagPage />} />
+              <Route path="/bbq_zone" element={<BBQZonePage />} />
               <Route path="/cinema" element={<div className="min-h-screen bg-gray-50 flex items-center justify-center"><div className="text-center"><h1 className="text-2xl font-bold mb-4">Кинотеатр</h1><p className="text-gray-600">Страница в разработке</p></div></div>} />
-              <Route path="/rent" element={<div className="min-h-screen bg-gray-50 flex items-center justify-center"><div className="text-center"><h1 className="text-2xl font-bold mb-4">Аренда беседки</h1><p className="text-gray-600">Страница в разработке</p></div></div>} />
             </Routes>
           </main>
         </div>

@@ -5,18 +5,10 @@ const ContactSection = () => {
   const { t } = useTranslation();
 
   return (
-    <div className="bg-gray-50 py-16">
+         <div className="bg-gray-50 py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Заголовок */}
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">{t('home.contacts')}</h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            {t('home.contacts_subtitle')}
-          </p>
-        </div>
-
-        {/* Карта */}
-        <div className="mb-12">
+                 {/* Карта */}
+         <div className="mb-8">
           <div className="bg-white rounded-xl shadow-md overflow-hidden">
             <iframe
               src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3898.302584!2d109.207279!3d12.302584!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTLCsDE4JzA5LjMiTiAxMDnCsDEyJzI2LjIiRQ!5e0!3m2!1sru!2sru!4v1234567890"
@@ -34,9 +26,9 @@ const ContactSection = () => {
 
         
 
-                   {/* Мы на связи */}
-          <div className="text-center mb-8">
-            <h3 className="text-xl font-semibold text-gray-900 mb-6">{t('home.we_are_in_touch')}</h3>
+                            {/* Мы на связи */}
+         <div className="text-center mb-6">
+           <h3 className="text-xl font-semibold text-gray-900 mb-4">{t('home.we_are_in_touch')}</h3>
            <div className="flex justify-center space-x-4">
              {/* Telegram */}
              <a
@@ -81,7 +73,7 @@ const ContactSection = () => {
          </div>
 
                  {/* Адрес */}
-         <div className="text-center mt-8">
+         <div className="text-center mt-6 pb-7">
            <a 
              href="https://www.google.com/maps/search/Tr%E1%BA%A7n+Kh%E1%A3t+Ch%C3%A2n,+%C4%90%C6%B0%E1%BB%9Dng+%C4%90%E1%BB%87,+Nha+Trang,+Kh%C3%A1nh+H%C3%B2a,+Vietnam" 
              target="_blank" 
