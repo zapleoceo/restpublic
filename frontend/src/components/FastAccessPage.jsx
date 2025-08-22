@@ -33,12 +33,16 @@ const FastAccessPage = () => {
     window.location.href = createHomeUrl();
   };
 
+  const handleBotClick = () => {
+    window.open(createBotUrl(tableId), '_blank', 'noopener,noreferrer');
+  };
+
   const actions = [
     {
       icon: Bot,
       title: 'Telegram Bot',
       description: 'Быстрый заказ в один клик',
-      href: createBotUrl(tableId),
+      onClick: handleBotClick,
       gradient: 'from-blue-500 to-blue-600',
       iconBg: 'bg-blue-500'
     },
@@ -79,17 +83,10 @@ const FastAccessPage = () => {
             <div className="space-y-4">
               {actions.map((action, index) => {
                 const IconComponent = action.icon;
-                const Component = action.href ? 'a' : 'button';
-                const props = action.href ? { 
-                  href: action.href, 
-                  target: '_blank', 
-                  rel: 'noopener noreferrer' 
-                } : {};
 
                 return (
-                  <Component
+                  <button
                     key={index}
-                    {...props}
                     onClick={action.onClick}
                     className="group w-full h-20 bg-white rounded-2xl shadow-lg hover:shadow-xl border-0 transition-all duration-300 hover:scale-[1.02] cursor-pointer overflow-hidden relative"
                   >
@@ -114,7 +111,7 @@ const FastAccessPage = () => {
                         <ChevronRight className="w-4 h-4 text-gray-600 group-hover:text-gray-800 transition-colors duration-200" />
                       </div>
                     </div>
-                  </Component>
+                  </button>
                 );
               })}
             </div>
