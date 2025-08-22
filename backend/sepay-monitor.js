@@ -5,7 +5,7 @@ class SePayMonitor {
     constructor() {
         this.sepayService = new SePayService();
         this.telegramToken = process.env.TELEGRAM_BOT_TOKEN;
-        this.chatIds = ['Rest_publica_bar', 'zapleosoft']; // Целевые чаты для уведомлений
+        this.chatIds = ['7795513546', '169510539']; // Целевые чаты для уведомлений: Rest_publica_bar, zapleosoft
         this.isRunning = false;
         this.checkInterval = 10000; // 10 секунд
     }
