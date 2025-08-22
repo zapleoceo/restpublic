@@ -40,8 +40,7 @@ const FastAccessPage = () => {
       description: 'Быстрый заказ в один клик',
       href: createBotUrl(tableId),
       gradient: 'from-blue-500 to-blue-600',
-      iconBg: 'bg-blue-500',
-      iconColor: 'text-white'
+      iconBg: 'bg-blue-500'
     },
     {
       icon: Menu,
@@ -49,17 +48,15 @@ const FastAccessPage = () => {
       description: 'Полное меню нашего ресторана',
       onClick: handleMenuClick,
       gradient: 'from-orange-500 to-red-500',
-      iconBg: 'bg-orange-500',
-      iconColor: 'text-white'
+      iconBg: 'bg-orange-500'
     },
     {
       icon: Globe,
-      title: 'Посетить наш сайт',
-      description: 'Главная страница сайта',
+      title: 'Главная страница',
+      description: 'Перейти на главную страницу',
       onClick: handleHomeClick,
       gradient: 'from-green-500 to-emerald-600',
-      iconBg: 'bg-green-500',
-      iconColor: 'text-white'
+      iconBg: 'bg-green-500'
     }
   ];
 
@@ -78,8 +75,8 @@ const FastAccessPage = () => {
               <p className="text-sm text-gray-600">Выберите действие для продолжения</p>
             </div>
 
-            {/* Карточки действий */}
-            <div className="space-y-6">
+            {/* Три большие кнопки */}
+            <div className="space-y-4">
               {actions.map((action, index) => {
                 const IconComponent = action.icon;
                 const Component = action.href ? 'a' : 'button';
@@ -94,18 +91,18 @@ const FastAccessPage = () => {
                     key={index}
                     {...props}
                     onClick={action.onClick}
-                    className="group w-full bg-white rounded-3xl shadow-lg hover:shadow-2xl border-0 p-6 text-left transition-all duration-300 hover:scale-[1.02] cursor-pointer overflow-hidden relative"
+                    className="group w-full h-20 bg-white rounded-2xl shadow-lg hover:shadow-xl border-0 transition-all duration-300 hover:scale-[1.02] cursor-pointer overflow-hidden relative"
                   >
                     {/* Градиентный фон при наведении */}
                     <div className={`absolute inset-0 bg-gradient-to-r ${action.gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-300`}></div>
                     
-                    <div className="relative flex items-center justify-between">
-                      <div className="flex items-center space-x-5">
-                        <div className={`w-14 h-14 rounded-2xl ${action.iconBg} flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg`}>
-                          <IconComponent className="w-7 h-7 text-white" />
+                    <div className="relative flex items-center justify-between h-full px-6">
+                      <div className="flex items-center space-x-4">
+                        <div className={`w-12 h-12 rounded-xl ${action.iconBg} flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg`}>
+                          <IconComponent className="w-6 h-6 text-white" />
                         </div>
-                        <div className="flex-1">
-                          <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-gray-800 transition-colors duration-200">
+                        <div>
+                          <h3 className="text-lg font-bold text-gray-900 group-hover:text-gray-800 transition-colors duration-200">
                             {action.title}
                           </h3>
                           <p className="text-sm text-gray-600 group-hover:text-gray-700 transition-colors duration-200">
