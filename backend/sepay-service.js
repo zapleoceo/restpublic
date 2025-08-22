@@ -64,12 +64,8 @@ class SePayService {
     formatTransactionMessage(transaction) {
         return `💵 **${transaction.amount_in} VND**
 
-💰 Поступление средств BIDV
 📅 Время: ${transaction.transaction_date}
-💳 Счет: ${transaction.account_number}
-📝 Описание: ${transaction.transaction_content}
-💰 Баланс: ${transaction.accumulated} VND
-🔢 Номер ссылки: ${transaction.reference_number || 'N/A'}`;
+📝 Описание: ${transaction.transaction_content}`;
     }
 }
 
