@@ -54,10 +54,21 @@ const MenuPage = ({ menuData }) => {
 
   // Группируем продукты по категориям и применяем сортировку
   const groupedCategories = useMemo(() => {
-    return groupProductsByCategory(categories, products).map(category => ({
-      ...category,
-      products: sortProducts(category.products, sortType, popularityData)
-    }));
+    console.log('🔄 Recalculating groupedCategories with sortType:', sortType);
+    const result = groupProductsByCategory(categories, products).map(category => {
+      const sortedProducts = sortProducts(category.products, sortType, popularityData);
+      console.log(`📦 Category "${category.category_name}": ${sortedProducts.length} products sorted by ${sortType}`);
+      if (sortedProducts.length > 0) {
+        console.log(`   First product: ${sortedProducts[0].product_name}`);
+        console.log(`   Last product: ${sortedProducts[sortedProducts.length - 1].product_name}`);
+      }
+      return {
+        ...category,
+        products: sortedProducts
+      };
+    });
+    console.log('✅ GroupedCategories recalculated');
+    return result;
   }, [categories, products, sortType, popularityData]);
 
   console.log('🔍 Grouped categories with sorting:', groupedCategories);

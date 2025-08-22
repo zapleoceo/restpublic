@@ -66,12 +66,22 @@ export const sortProductsByAlphabet = (products = []) => {
 
 // Сортировка продуктов в зависимости от типа
 export const sortProducts = (products = [], sortType = 'popularity', popularityData = {}) => {
+  console.log(`🔄 Sorting ${products.length} products by ${sortType}`);
+  
+  let result;
   switch (sortType) {
     case 'popularity':
-      return sortProductsByPopularity(products, popularityData);
+      result = sortProductsByPopularity(products, popularityData);
+      console.log(`📊 Sorted by popularity. First: ${result[0]?.product_name}, Last: ${result[result.length - 1]?.product_name}`);
+      break;
     case 'alphabet':
-      return sortProductsByAlphabet(products);
+      result = sortProductsByAlphabet(products);
+      console.log(`📝 Sorted by alphabet. First: ${result[0]?.product_name}, Last: ${result[result.length - 1]?.product_name}`);
+      break;
     default:
-      return sortProductsByPopularity(products, popularityData);
+      result = sortProductsByPopularity(products, popularityData);
+      console.log(`📊 Default sort by popularity. First: ${result[0]?.product_name}, Last: ${result[result.length - 1]?.product_name}`);
   }
+  
+  return result;
 };
