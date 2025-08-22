@@ -297,6 +297,11 @@ app.get('/api/products/popularity', async (req, res) => {
         products_sample: transaction.products ? transaction.products.slice(0, 2) : null
       });
       
+      // Логируем полную структуру первой транзакции для анализа
+      if (index === 0) {
+        console.log('🔍 Full transaction structure:', JSON.stringify(transaction, null, 2));
+      }
+      
       // Проверяем разные возможные поля с продуктами
       const products = transaction.products || transaction.items || transaction.products_data || [];
       
