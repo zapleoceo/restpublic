@@ -16,7 +16,7 @@ const HomePage = () => {
     {
       id: 'lasertag',
       icon: '🎯',
-      link: '/lt'
+              link: '/lasertag'
     },
     {
       id: 'bow',
