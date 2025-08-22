@@ -1,10 +1,10 @@
 #!/bin/bash
 
-# RestPublic Deployment Script v2.0
+# RestPublic Deployment Script v2.1
 # Этот скрипт автоматически обновляет код, собирает приложения и перезапускает сервисы
 set -e  # Остановить выполнение при ошибке
 
-echo "🚀 Начинаем деплой RestPublic v2.0..."
+echo "🚀 Начинаем деплой RestPublic v2.1..."
 
 cd /var/www/goodzone_zap_usr/data/www/goodzone.zapleo.com
 echo "📁 Рабочая директория: $(pwd)"
@@ -24,19 +24,15 @@ git pull origin main --allow-unrelated-histories --no-edit || {
     git reset --hard origin/main
 }
 
-echo "🛑 Останавливаем старые процессы..."
-pkill -f "node dist/bot.js" || echo "Процессы бота не найдены"
-pkill -f "node server.js" || echo "Backend процессы не найдены"
+echo "🛑 Останавливаем PM2 процессы..."
+pm2 stop restpublic-backend restpublic-bot || echo "PM2 процессы не найдены или уже остановлены"
+pm2 delete restpublic-backend restpublic-bot || echo "PM2 процессы не найдены для удаления"
 
-echo "🔧 Собираем и запускаем Backend..."
+echo "🔧 Собираем Backend..."
 cd backend
 npm install
 mkdir -p ../logs
 cd ..
-
-echo "🚀 Запускаем процессы через PM2..."
-pm2 start ecosystem.config.js --update-env
-echo "✅ Процессы запущены через PM2"
 
 echo "🔨 Собираем Frontend..."
 cd frontend
@@ -57,8 +53,12 @@ echo "🔐 Настраиваем права доступа..."
 chmod +x bot/dist/bot.js
 chown -R goodzone_zap_usr:goodzone_zap_usr .
 
+echo "🚀 Запускаем процессы через PM2..."
+pm2 start ecosystem.config.js --update-env
+echo "✅ Процессы запущены через PM2"
+
 echo "✅ Проверяем статус деплоя..."
-sleep 3
+sleep 5
 
 # Проверяем статус PM2 процессов
 if pm2 list | grep -q "restpublic-backend.*online"; then

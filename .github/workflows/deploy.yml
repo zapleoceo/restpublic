@@ -22,9 +22,15 @@ jobs:
         script: |
           cd /var/www/goodzone_zap_usr/data/www/goodzone.zapleo.com
           echo "🚀 Начинаем автодеплой..."
-          git pull origin main
+          echo "📅 Время: $(date)"
+          echo "📁 Директория: $(pwd)"
+          
+          # Проверяем права на скрипт
           chmod +x deploy.sh
+          
+          # Выполняем деплой с подробным логированием
           ./deploy.sh
+          
           echo "✅ Автодеплой завершен!"
           
     - name: Health check
@@ -34,6 +40,27 @@ jobs:
         username: ${{ secrets.SSH_USER }}
         key: ${{ secrets.SSH_KEY }}
         script: |
-          sleep 10
-          curl -f http://localhost:3001/api/health || exit 1
-          echo "✅ Health check passed"
+          echo "🔍 Выполняем health check..."
+          sleep 15
+          
+          # Проверяем backend
+          echo "📡 Проверяем backend API..."
+          curl -f http://localhost:3001/api/health || {
+            echo "❌ Backend health check failed"
+            echo "📋 Логи backend:"
+            tail -n 20 /var/www/goodzone_zap_usr/data/www/goodzone.zapleo.com/logs/backend.log
+            exit 1
+          }
+          
+          # Проверяем PM2 процессы
+          echo "🔍 Проверяем PM2 процессы..."
+          pm2 list
+          
+          # Проверяем frontend
+          echo "🌐 Проверяем frontend..."
+          curl -f https://goodzone.zapleo.com/m > /dev/null || {
+            echo "❌ Frontend check failed"
+            exit 1
+          }
+          
+          echo "✅ Все проверки пройдены успешно!"
