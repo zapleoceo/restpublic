@@ -21,14 +21,14 @@ const HomePage = () => {
     },
     {
       id: 'bow',
-      icon: '/img/archery/logo.png',
+      icon: '/img/archery/icon.png',
       logo: '/img/archery/logo.png',
       link: '/archerytag'
     },
     {
       id: 'cinema',
-      icon: '/img/cinema/button.png',
-      logo: '/img/cinema/logo.png',
+      icon: '/img/cinema/icon.png',
+      logo: '/img/cinema/big.jpg',
       link: '/cinema'
     },
     {
