@@ -136,9 +136,21 @@ app.get('/api/menu', async (req, res) => {
 
 
 
-    // Фильтруем только видимые товары (hidden !== "1")
+    // Фильтруем только видимые товары (hidden !== "1" и visible !== "0" в spots)
     const rawProducts = productsResponse.data.response || [];
-    const visibleProducts = rawProducts.filter(product => product.hidden !== "1");
+    const visibleProducts = rawProducts.filter(product => {
+      // Проверяем основное поле hidden
+      if (product.hidden === "1") return false;
+      
+      // Проверяем видимость в точках продаж
+      if (product.spots && Array.isArray(product.spots)) {
+        // Если хотя бы одна точка продаж видима, показываем товар
+        return product.spots.some(spot => spot.visible !== "0");
+      }
+      
+      // Если нет spots, считаем товар видимым
+      return true;
+    });
 
     // Нормализуем цены: делим на 100 везде, чтобы получать итог в донгах
     const normalizePriceValue = (value) => {
