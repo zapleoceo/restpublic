@@ -37,6 +37,12 @@ const HomePage = () => {
       icon: '/img/bbq/icon.png',
       logo: '/img/bbq/buttton.png',
       link: '/bbq_zone'
+    },
+    {
+      id: 'quests',
+      icon: '/img/quests/icon.png',
+      logo: '/img/quests/big.jpg',
+      link: '/quests'
     }
   ];
 
@@ -73,9 +79,9 @@ const HomePage = () => {
             <Link
               key={section.id}
               to={section.link}
-              className={`bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105 p-6 text-center group relative overflow-hidden ${section.id === 'menu' || section.id === 'lasertag' || section.id === 'bow' || section.id === 'rent' || section.id === 'cinema' ? 'group' : ''}`}
+              className={`bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105 p-6 text-center group relative overflow-hidden ${section.id === 'menu' || section.id === 'lasertag' || section.id === 'bow' || section.id === 'rent' || section.id === 'cinema' || section.id === 'quests' ? 'group' : ''}`}
             >
-              {(section.id === 'menu' || section.id === 'lasertag' || section.id === 'bow' || section.id === 'rent' || section.id === 'cinema') && (
+              {(section.id === 'menu' || section.id === 'lasertag' || section.id === 'bow' || section.id === 'rent' || section.id === 'cinema' || section.id === 'quests') && (
                 <img 
                   src={section.logo} 
                   alt="GoodZone Logo" 
@@ -83,10 +89,10 @@ const HomePage = () => {
                 />
               )}
               <div className="mb-4 group-hover:scale-110 transition-transform duration-200 relative z-10">
-                {(section.id === 'menu' || section.id === 'lasertag' || section.id === 'bow' || section.id === 'rent' || section.id === 'cinema') ? (
+                {(section.id === 'menu' || section.id === 'lasertag' || section.id === 'bow' || section.id === 'rent' || section.id === 'cinema' || section.id === 'quests') ? (
                   <img 
                     src={section.icon} 
-                    alt={`${section.id === 'menu' ? 'Menu' : section.id === 'lasertag' ? 'Lasertag' : section.id === 'bow' ? 'Archery Tag' : section.id === 'rent' ? 'BBQ Zone' : 'Cinema'} Icon`}
+                    alt={`${section.id === 'menu' ? 'Menu' : section.id === 'lasertag' ? 'Lasertag' : section.id === 'bow' ? 'Archery Tag' : section.id === 'rent' ? 'BBQ Zone' : section.id === 'cinema' ? 'Cinema' : 'Quests'} Icon`}
                     className="w-16 h-16 mx-auto group-hover:opacity-0 transition-opacity duration-200 object-cover" 
                   />
                 ) : (

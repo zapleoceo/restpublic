@@ -34,6 +34,10 @@
     "rent": {
       "title": "BBQ Picnic Area",
       "description": "Зона барбекю"
+    },
+    "quests": {
+      "title": "Квесты",
+      "description": "Увлекательные квесты"
     }
   },
   "menu": {
