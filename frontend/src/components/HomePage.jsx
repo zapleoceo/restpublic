@@ -27,13 +27,14 @@ const HomePage = () => {
     },
     {
       id: 'cinema',
-      icon: '🎬',
+      icon: '/img/cinema/button.png',
+      logo: '/img/cinema/logo.png',
       link: '/cinema'
     },
     {
       id: 'rent',
       icon: '🏕️',
-      logo: '/img/bbq/button.png',
+      logo: '/img/bbq/buttton.png',
       link: '/bbq_zone'
     }
   ];
@@ -71,9 +72,9 @@ const HomePage = () => {
             <Link
               key={section.id}
               to={section.link}
-              className={`bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105 p-6 text-center group relative overflow-hidden ${section.id === 'lasertag' || section.id === 'bow' || section.id === 'rent' ? 'group' : ''}`}
+              className={`bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105 p-6 text-center group relative overflow-hidden ${section.id === 'lasertag' || section.id === 'bow' || section.id === 'rent' || section.id === 'cinema' ? 'group' : ''}`}
             >
-              {(section.id === 'lasertag' || section.id === 'bow' || section.id === 'rent') && (
+              {(section.id === 'lasertag' || section.id === 'bow' || section.id === 'rent' || section.id === 'cinema') && (
                 <img 
                   src={section.logo} 
                   alt="GoodZone Logo" 
@@ -81,10 +82,10 @@ const HomePage = () => {
                 />
               )}
               <div className="mb-4 group-hover:scale-110 transition-transform duration-200 relative z-10">
-                {(section.id === 'lasertag' || section.id === 'bow' || section.id === 'rent') ? (
+                {(section.id === 'lasertag' || section.id === 'bow' || section.id === 'rent' || section.id === 'cinema') ? (
                   <img 
                     src={section.icon} 
-                    alt={`${section.id === 'lasertag' ? 'Lasertag' : section.id === 'bow' ? 'Archery Tag' : 'BBQ Zone'} Icon`}
+                    alt={`${section.id === 'lasertag' ? 'Lasertag' : section.id === 'bow' ? 'Archery Tag' : section.id === 'rent' ? 'BBQ Zone' : 'Cinema'} Icon`}
                     className="w-16 h-16 mx-auto group-hover:opacity-0 transition-opacity duration-200 object-cover" 
                   />
                 ) : (
