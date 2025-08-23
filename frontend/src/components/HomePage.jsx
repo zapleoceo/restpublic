@@ -10,7 +10,8 @@ const HomePage = () => {
   const sections = [
     {
       id: 'menu',
-      icon: '🍽️',
+      icon: '/img/menu/icon.png',
+      logo: '/img/menu/big.jpg',
       link: '/m'
     },
     {
@@ -33,7 +34,7 @@ const HomePage = () => {
     },
     {
       id: 'rent',
-      icon: '/img/bbq/buttton.png',
+      icon: '/img/bbq/icon.png',
       logo: '/img/bbq/buttton.png',
       link: '/bbq_zone'
     }
