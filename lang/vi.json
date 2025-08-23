@@ -1,29 +1,243 @@
 {
   "welcome": {
-    "title": "Chào mừng đến RestPublic",
-    "subtitle": "Khám phá thực đơn ngon của chúng tôi với hương vị chân thực"
+    "title": "Chào mừng đến với",
+    "subtitle": "Không khí ấm cúng và món ăn tinh tế cho buổi tối của bạn"
   },
-  "menu": "Thực đơn",
-  "menu.subtitle": "Chọn từ bộ sưu tập ngon của chúng tôi",
-  "categories": "Danh mục",
-  "all_products": "Tất cả món ăn",
-  "price": "Giá",
-  "weight": "Trọng lượng",
-  "description": "Mô tả",
+  "home": {
+    "title": "Chào mừng đến với GoodZone",
+    "subtitle": "Khu phức hợp giải trí với nhà hàng, lasertag, bắn cung, rạp chiếu phim và thuê lều",
+    "contacts": "Cách tìm chúng tôi",
+    "contacts_subtitle": "Liên hệ với chúng tôi để đặt chỗ và thông tin bổ sung",
+    "social_media": "Mạng xã hội",
+    "we_are_in_touch": "Chúng tôi liên lạc",
+    "location": "Vị trí của chúng tôi",
+    "phone": "Điện thoại",
+    "group": "Nhóm Telegram"
+  },
+  "sections": {
+    "menu": {
+      "title": "Thực đơn",
+      "description": "Thực đơn nhà hàng"
+    },
+    "lasertag": {
+      "title": "Lasertag",
+      "description": "Trò chơi đồng đội"
+    },
+    "bow": {
+      "title": "Archery Tag",
+      "description": "Trận chiến cung"
+    },
+    "cinema": {
+      "title": "Rạp chiếu phim",
+      "description": "Xem phim"
+    },
+    "rent": {
+      "title": "BBQ Picnic Area",
+      "description": "Khu vực nướng BBQ"
+    },
+    "quests": {
+      "title": "Nhiệm vụ",
+      "description": "Nhiệm vụ thú vị"
+    }
+  },
+  "menu": {
+    "title": "Thực đơn của chúng tôi",
+    "dishes": "món",
+    "sort": {
+      "title": "Sắp xếp theo",
+      "popularity": "Theo độ phổ biến",
+      "alphabet": "Theo bảng chữ cái"
+    }
+  },
+  "contacts": {
+    "title": "Liên hệ",
+    "location": "Vị trí của chúng tôi",
+    "phone": "Điện thoại",
+    "group": "Nhóm của chúng tôi",
+    "view_on_map": "Xem trên bản đồ"
+  },
   "loading": "Đang tải...",
   "error": "Lỗi tải dữ liệu",
+  "try_again": "Thử lại",
   "no_products": "Không tìm thấy món ăn",
   "no_categories": "Không tìm thấy danh mục",
-  "footer": {
-    "description": "Nhà hàng chân thực với món ăn ngon và không khí tuyệt vời",
-    "contact": "Liên hệ",
-    "websites": "Trang web",
-    "rights": "Tất cả quyền được bảo lưu"
+  "cart_empty": "Giỏ hàng trống",
+  "order_food": "Đặt món ăn",
+  "loading_popularity": "Đang tải độ phổ biến...",
+  "no_dishes_in_category": "Chưa có món ăn nào trong danh mục này",
+  "new_dishes_coming_soon": "Các món ăn mới sẽ xuất hiện ở đây sớm",
+  "cart": "Giỏ hàng",
+  "total": "Tổng cộng:",
+  "place_order": "Đặt hàng",
+  "order_form": "Đơn đặt hàng",
+  "fast_access": {
+    "telegram_bot": "Telegram Bot",
+    "telegram_bot_desc": "Đặt hàng nhanh trong một cú nhấp",
+    "online_menu": "Thực đơn trực tuyến",
+    "online_menu_desc": "Thực đơn đầy đủ của nhà hàng chúng tôi",
+    "home_page": "Trang chủ",
+    "home_page_desc": "Đi đến trang chính",
+    "your_table": "Bàn của bạn",
+    "choose_action": "Chọn một hành động để tiếp tục",
+    "goodzone_restaurant": "GoodZone • Nhà hàng và Giải trí"
   },
-  "categories": {
-    "food": "Món ăn",
-    "bar": "Quầy bar",
-    "drinks": "Đồ uống",
-    "desserts": "Tráng miệng"
+  "order_form_fields": {
+    "your_name": "Tên của bạn",
+    "phone": "Điện thoại",
+    "email": "Email",
+    "delivery_address": "Địa chỉ giao hàng",
+    "delivery_address_placeholder": "Địa chỉ giao hàng (nếu cần)",
+    "additional_notes": "Ghi chú bổ sung",
+    "notes_placeholder": "Yêu cầu đặc biệt cho đơn hàng",
+    "your_order": "Đơn hàng của bạn:",
+    "cancel": "Hủy",
+    "fill_name_phone": "Vui lòng điền tên và số điện thoại"
+  },
+  "back": "Quay lại",
+  "quests": {
+    "title": "Nhiệm vụ - Cuộc phiêu lưu thú vị",
+    "subtitle": "Đắm chìm trong những câu chuyện hấp dẫn và giải đố trong phòng nhiệm vụ của chúng tôi",
+    "about": {
+      "title": "Về nhiệm vụ",
+      "paragraph1": "Nhiệm vụ của chúng tôi là những cuộc phiêu lưu tương tác nơi bạn trở thành nhân vật chính của một câu chuyện thú vị. Cùng với bạn bè hoặc gia đình, bạn sẽ giải đố, tìm kiếm manh mối và giải quyết các câu đố.",
+      "paragraph2": "Mỗi nhiệm vụ là độc đáo và có bầu không khí riêng - từ những câu chuyện trinh thám đến những cuộc phiêu lưu giả tưởng. Tất cả các phòng đều được trang bị công nghệ hiện đại và trang trí chất lượng.",
+      "paragraph3": "Các diễn viên có kinh nghiệm của chúng tôi sẽ giúp bạn hoàn toàn đắm chìm trong bầu không khí trò chơi và làm cho cuộc phiêu lưu của bạn trở nên khó quên."
+    },
+    "how": {
+      "title": "Cách thức hoạt động của nhiệm vụ",
+      "paragraph1": "Chọn nhiệm vụ phù hợp và đặt thời gian. Đến 10-15 phút trước khi bắt đầu để làm quen với quy tắc và nhận hướng dẫn.",
+      "paragraph2": "Cùng với đội của bạn, bạn sẽ vào phòng có chủ đề và bắt đầu cuộc phiêu lưu. Bạn sẽ có thời gian hạn chế để giải tất cả các câu đố và thoát khỏi phòng.",
+      "paragraph3": "Người dẫn chương trình của chúng tôi theo dõi quá trình và đưa ra gợi ý khi cần thiết để giữ cho trò chơi thú vị và hấp dẫn."
+    },
+    "conditions": {
+      "title": "Điều kiện tham gia",
+      "price_per_person": "Chi phí mỗi người",
+      "duration": "60-90 phút",
+      "duration_label": "Thời lượng",
+      "participants": "Số lượng người tham gia",
+      "min_age": "Độ tuổi tối thiểu",
+      "equipment": "Thiết bị và trang trí",
+      "scenarios": "Kịch bản nhiệm vụ",
+      "actors": "Diễn viên và người dẫn chương trình",
+      "safety": "An toàn",
+      "briefing": "Hướng dẫn"
+    },
+    "cta": {
+      "title": "Sẵn sàng cho cuộc phiêu lưu?",
+      "description": "Đặt nhiệm vụ ngay bây giờ và có được ấn tượng khó quên!",
+      "call_button": "📞 Gọi +84 349 338 758",
+      "telegram_button": "💬 Viết cho Telegram"
+    }
+  },
+  "lasertag": {
+    "title": "Lasertag - Trận chiến laser",
+    "subtitle": "Trò chơi đồng đội thú vị với vũ khí laser cho trẻ em và người lớn",
+    "about": {
+      "title": "Về Lasertag",
+      "paragraph1": "Người chơi được chia thành các đội, cầm vũ khí laser và đeo băng đô có cảm biến. Mục tiêu của trò chơi là bắn trúng cảm biến của đối thủ bằng xung hồng ngoại phát ra từ vũ khí.",
+      "paragraph2": "Điều này loại bỏ nguy cơ bị thương từ \"phát bắn\" vì các lần trúng được ghi lại bởi thiết bị điện tử tích hợp trong cảm biến. Bức xạ hồng ngoại được sử dụng trong trò chơi hoàn toàn an toàn cho mắt và da.",
+      "paragraph3": "Các người dẫn chương trình có kinh nghiệm theo dõi trận đấu để đảm bảo tuân thủ quy tắc và tất cả người chơi được an toàn."
+    },
+    "how": {
+      "title": "Cách thức hoạt động của trò chơi",
+      "paragraph1": "Sau khi đặt trò chơi, bạn đến vào thời gian đã lên lịch. Một người hướng dẫn sẽ gặp bạn và hướng dẫn đầy đủ sự kiện của bạn.",
+      "paragraph2": "Họ sẽ giúp bạn ổn định trong khu vực nghỉ ngơi, giải thích mọi thứ và đóng vai trò là trọng tài trong các trận đấu.",
+      "paragraph3": "Để có một trò chơi thú vị, cần ít nhất sáu người chơi để tạo thành các đội 3v3. Càng nhiều người chơi càng vui!"
+    },
+    "conditions": {
+      "title": "Điều kiện trò chơi",
+      "price_per_player": "Chi phí mỗi người chơi",
+      "duration": "từ 2 giờ",
+      "duration_label": "Thời lượng trò chơi",
+      "participants": "Số lượng người tham gia",
+      "min_age": "Độ tuổi tối thiểu",
+      "equipment": "Thiết bị trò chơi (vũ khí)",
+      "scenarios": "Kịch bản trò chơi",
+      "referees": "Trọng tài và tổ chức",
+      "safe_equipment": "Thiết bị an toàn",
+      "safety_briefing": "Hướng dẫn an toàn",
+      "rest_area": "Khu vực nghỉ ngơi"
+    },
+    "cta": {
+      "title": "Sẵn sàng cho trận chiến?",
+      "description": "Đặt trò chơi ngay bây giờ và chuẩn bị cho một cuộc phiêu lưu không thể tin được!",
+      "call_button": "📞 Gọi +84 349 338 758",
+      "telegram_button": "💬 Viết cho Telegram"
+    }
+  },
+  "archerytag": {
+    "title": "Archery Tag - Trận chiến cung",
+    "subtitle": "Trò chơi đồng đội thú vị với cung và mũi tên mềm cho mọi lứa tuổi",
+    "about": {
+      "title": "Về Archery Tag",
+      "paragraph1": "Nói một cách đơn giản - đây là tương tự như paintball, nhưng với cung và mũi tên mềm thay vì bóng sơn. Nhiệm vụ của bạn là phải nhanh nhẹn, khéo léo và chính xác!"
+    },
+    "advantages": {
+      "title": "Ưu điểm của Archery Tag",
+      "point1": "Vui vẻ cho mọi người: Bất kể trình độ thể lực hay kinh nghiệm của bạn, Archery Tag phù hợp với mọi lứa tuổi và kỹ năng. Chúng tôi sẽ dạy bạn mọi thứ và chỉ cho bạn mọi thứ.",
+      "point2": "Phát triển sức bền: Bắn vào các mục tiêu đang chạy mà còn bắn lại!",
+      "point3": "Tinh thần thi đấu",
+      "point4": "Ý tưởng tuyệt vời cho giải trí hoặc lễ kỷ niệm!"
+    },
+    "how": {
+      "title": "Cách thức hoạt động của trò chơi",
+      "paragraph1": "Sau khi đặt trò chơi, bạn đến vào thời gian đã lên lịch. Một người hướng dẫn sẽ gặp bạn và hướng dẫn đầy đủ sự kiện của bạn.",
+      "paragraph2": "Họ sẽ giúp bạn ổn định trong khu vực nghỉ ngơi, giải thích mọi thứ và đóng vai trò là trọng tài trong các trận đấu.",
+      "paragraph3": "Để có một trò chơi thú vị, cần ít nhất tám người chơi để tạo thành các đội. Càng nhiều người chơi càng vui!"
+    },
+    "conditions": {
+      "title": "Điều kiện trò chơi",
+      "price_per_player": "Chi phí mỗi người chơi",
+      "duration": "90 phút",
+      "duration_label": "Thời lượng trò chơi",
+      "participants": "Số lượng người tham gia",
+      "min_age": "Độ tuổi",
+      "equipment": "Thiết bị trò chơi (cung)",
+      "scenarios": "Kịch bản",
+      "referees": "Đồng hành trò chơi",
+      "safe_equipment": "Thiết bị an toàn",
+      "safety_briefing": "Hướng dẫn an toàn",
+      "rest_area": "Khu vực nghỉ ngơi"
+    },
+    "cta": {
+      "title": "Sẵn sàng cho trận chiến cung?",
+      "description": "Đặt trò chơi ngay bây giờ và chuẩn bị cho một cuộc phiêu lưu không thể tin được!",
+      "call_button": "📞 Gọi +84 349 338 758",
+      "telegram_button": "💬 Viết cho Telegram"
+    }
+  },
+  "bbq_zone": {
+    "title": "BBQ Picnic Area - Khu vực nướng BBQ",
+    "subtitle": "Nơi hoàn hảo để thư giãn với bạn bè, gia đình hoặc đồng nghiệp",
+    "about": {
+      "title": "Về khu vực BBQ",
+      "paragraph1": "Nơi hoàn hảo để tụ tập với bạn bè, gia đình hoặc đồng nghiệp — những lều của chúng tôi giữa góc xanh của thiên nhiên.",
+      "paragraph2": "Một khu vực như vậy có thể thoải mái chứa tới 35 người. Chi phí cũng bao gồm khu vực nướng BBQ với bếp nướng và bồn rửa.",
+      "paragraph3": "Lưu ý: Thịt, đồ uống, thực phẩm, bếp nướng, xiên, bát đĩa và các vật dụng tiêu hao khác — mang theo. Nhưng chúng tôi sẽ luôn cho bạn biết nơi mua chúng gần đó. Bạn có thể mua than từ chúng tôi.",
+      "paragraph4": "Thuê theo giờ — chọn thời gian phù hợp với bạn. Bạn có thể kết hợp với các trò chơi laser tag hoặc bow battle, hoặc chỉ sắp xếp một buổi tối ấm cúng ngoài trời."
+    },
+    "conditions": {
+      "title": "Điều kiện thuê",
+      "weekdays": "Ngày trong tuần",
+      "weekends": "Cuối tuần và ngày lễ",
+      "capacity": "Sức chứa",
+      "equipment": "Thiết bị",
+      "barbecue_zone": "Khu vực nướng BBQ",
+      "grill": "Bếp nướng",
+      "sink": "Bồn rửa",
+      "charcoal": "Than",
+      "utensils": "Bát đĩa và vật dụng tiêu hao"
+    },
+    "cta": {
+      "title": "Sẵn sàng cho dã ngoại?",
+      "description": "Đặt khu vực nướng BBQ ngay bây giờ và chuẩn bị cho sự thư giãn tuyệt vời!",
+      "call_button": "📞 Gọi +84 349 338 758",
+      "telegram_button": "💬 Viết cho Telegram"
+    },
+    "features": {
+      "hourly_rental": "Thuê theo giờ",
+      "combine_with_games": "Khả năng kết hợp với các trò chơi",
+      "green_nature_zone": "Khu vực thiên nhiên xanh"
+    }
   }
 }
