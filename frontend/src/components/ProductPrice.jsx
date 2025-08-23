@@ -5,7 +5,7 @@ const ProductPrice = ({ price, className = '' }) => {
   const mainPrice = getMainPrice(price);
 
   return (
-    <div className={`text-lg font-bold text-orange-600 ${className}`}>
+    <div className={`text-sm font-bold text-orange-600 ${className}`}>
       {formatPrice(mainPrice)} ₫
     </div>
   );

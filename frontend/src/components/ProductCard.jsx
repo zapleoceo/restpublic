@@ -14,12 +14,12 @@ const ProductCard = ({ product }) => {
       />
 
       {/* Product Name */}
-      <div className="p-3 text-center border-t border-gray-100">
+      <div className="p-2 text-center border-t border-gray-100">
         <ProductName name={product.product_name} />
       </div>
 
       {/* Price */}
-      <div className="p-3 text-center border-t border-gray-100">
+      <div className="p-2 text-center border-t border-gray-100">
         <ProductPrice price={product.price} />
       </div>
     </Card>
