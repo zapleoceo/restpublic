@@ -8,6 +8,7 @@ import FastAccessPage from './components/FastAccessPage';
 import LasertagPage from './components/LasertagPage';
 import ArcherytagPage from './components/ArcherytagPage';
 import BBQZonePage from './components/BBQZonePage';
+import QuestsPage from './components/QuestsPage';
 import LoadingSpinner from './components/LoadingSpinner';
 import ErrorBoundary from './components/ErrorBoundary';
 import './App.css';
@@ -85,6 +86,7 @@ function App() {
               <Route path="/lasertag" element={<LasertagPage />} />
               <Route path="/archerytag" element={<ArcherytagPage />} />
               <Route path="/bbq_zone" element={<BBQZonePage />} />
+              <Route path="/quests" element={<QuestsPage />} />
               <Route path="/cinema" element={<div className="min-h-screen bg-gray-50 flex items-center justify-center"><div className="text-center"><h1 className="text-2xl font-bold mb-4">Кинотеатр</h1><p className="text-gray-600">Страница в разработке</p></div></div>} />
             </Routes>
           </main>

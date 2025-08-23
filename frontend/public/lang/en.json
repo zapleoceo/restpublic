@@ -94,6 +94,41 @@
     "fill_name_phone": "Please fill in your name and phone number"
   },
   "back": "Back",
+  "quests": {
+    "title": "Quests - Exciting Adventures",
+    "subtitle": "Immerse yourself in captivating stories and solve puzzles in our quest rooms",
+    "about": {
+      "title": "About Quests",
+      "paragraph1": "Our quests are interactive adventures where you become the main character of an exciting story. Together with friends or family, you will solve riddles, search for clues and solve puzzles.",
+      "paragraph2": "Each quest is unique and has its own atmosphere - from detective stories to fantasy adventures. All rooms are equipped with modern technology and quality decorations.",
+      "paragraph3": "Our experienced actors will help you fully immerse yourself in the game atmosphere and make your adventure unforgettable."
+    },
+    "how": {
+      "title": "How the quest works",
+      "paragraph1": "Choose a suitable quest and book a time. Come 10-15 minutes before the start to familiarize yourself with the rules and receive instructions.",
+      "paragraph2": "Together with your team, you will enter a themed room and begin your adventure. You will have limited time to solve all the riddles and escape from the room.",
+      "paragraph3": "Our hosts monitor the process and give hints when necessary to keep the game interesting and exciting."
+    },
+    "conditions": {
+      "title": "Participation Conditions",
+      "price_per_person": "Cost per person",
+      "duration": "60-90 minutes",
+      "duration_label": "Duration",
+      "participants": "Number of participants",
+      "min_age": "Minimum age",
+      "equipment": "Equipment and decorations",
+      "scenarios": "Quest scenarios",
+      "actors": "Actors and hosts",
+      "safety": "Safety",
+      "briefing": "Briefing"
+    },
+    "cta": {
+      "title": "Ready for adventure?",
+      "description": "Book a quest now and get unforgettable impressions!",
+      "call_button": "📞 Call +84 349 338 758",
+      "telegram_button": "💬 Write to Telegram"
+    }
+  },
   "lasertag": {
     "title": "Lasertag - Laser Battle",
     "subtitle": "Exciting team game with laser weapons for children and adults",

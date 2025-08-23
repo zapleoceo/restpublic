@@ -94,6 +94,41 @@
     "fill_name_phone": "Vui lòng điền tên và số điện thoại"
   },
   "back": "Quay lại",
+  "quests": {
+    "title": "Nhiệm vụ - Cuộc phiêu lưu thú vị",
+    "subtitle": "Đắm chìm trong những câu chuyện hấp dẫn và giải đố trong phòng nhiệm vụ của chúng tôi",
+    "about": {
+      "title": "Về nhiệm vụ",
+      "paragraph1": "Nhiệm vụ của chúng tôi là những cuộc phiêu lưu tương tác nơi bạn trở thành nhân vật chính của một câu chuyện thú vị. Cùng với bạn bè hoặc gia đình, bạn sẽ giải đố, tìm kiếm manh mối và giải quyết các câu đố.",
+      "paragraph2": "Mỗi nhiệm vụ là độc đáo và có bầu không khí riêng - từ những câu chuyện trinh thám đến những cuộc phiêu lưu giả tưởng. Tất cả các phòng đều được trang bị công nghệ hiện đại và trang trí chất lượng.",
+      "paragraph3": "Các diễn viên có kinh nghiệm của chúng tôi sẽ giúp bạn hoàn toàn đắm chìm trong bầu không khí trò chơi và làm cho cuộc phiêu lưu của bạn trở nên khó quên."
+    },
+    "how": {
+      "title": "Cách thức hoạt động của nhiệm vụ",
+      "paragraph1": "Chọn nhiệm vụ phù hợp và đặt thời gian. Đến 10-15 phút trước khi bắt đầu để làm quen với quy tắc và nhận hướng dẫn.",
+      "paragraph2": "Cùng với đội của bạn, bạn sẽ vào phòng có chủ đề và bắt đầu cuộc phiêu lưu. Bạn sẽ có thời gian hạn chế để giải tất cả các câu đố và thoát khỏi phòng.",
+      "paragraph3": "Người dẫn chương trình của chúng tôi theo dõi quá trình và đưa ra gợi ý khi cần thiết để giữ cho trò chơi thú vị và hấp dẫn."
+    },
+    "conditions": {
+      "title": "Điều kiện tham gia",
+      "price_per_person": "Chi phí mỗi người",
+      "duration": "60-90 phút",
+      "duration_label": "Thời lượng",
+      "participants": "Số lượng người tham gia",
+      "min_age": "Độ tuổi tối thiểu",
+      "equipment": "Thiết bị và trang trí",
+      "scenarios": "Kịch bản nhiệm vụ",
+      "actors": "Diễn viên và người dẫn chương trình",
+      "safety": "An toàn",
+      "briefing": "Hướng dẫn"
+    },
+    "cta": {
+      "title": "Sẵn sàng cho cuộc phiêu lưu?",
+      "description": "Đặt nhiệm vụ ngay bây giờ và có được ấn tượng khó quên!",
+      "call_button": "📞 Gọi +84 349 338 758",
+      "telegram_button": "💬 Viết cho Telegram"
+    }
+  },
   "lasertag": {
     "title": "Lasertag - Trận chiến laser",
     "subtitle": "Trò chơi đồng đội thú vị với vũ khí laser cho trẻ em và người lớn",
