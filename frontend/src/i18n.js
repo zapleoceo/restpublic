@@ -3,9 +3,9 @@ import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 
 // Импорт файлов переводов
-import enTranslations from '/lang/en.json';
-import ruTranslations from '/lang/ru.json';
-import viTranslations from '/lang/vi.json';
+import enTranslations from '../../lang/en.json';
+import ruTranslations from '../../lang/ru.json';
+import viTranslations from '../../lang/vi.json';
 
 const resources = {
   en: {
