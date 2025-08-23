@@ -22,7 +22,7 @@ const HomePage = () => {
     {
       id: 'bow',
       icon: '🏹',
-      logo: '/img/logo.png',
+      logo: '/img/archery/logo.png',
       link: '/archerytag'
     },
     {
@@ -33,6 +33,7 @@ const HomePage = () => {
     {
       id: 'rent',
       icon: '🏕️',
+      logo: '/img/bbq/button.png',
       link: '/bbq_zone'
     }
   ];
@@ -70,9 +71,9 @@ const HomePage = () => {
             <Link
               key={section.id}
               to={section.link}
-              className={`bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105 p-6 text-center group relative overflow-hidden ${section.id === 'lasertag' || section.id === 'bow' ? 'group' : ''}`}
+              className={`bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105 p-6 text-center group relative overflow-hidden ${section.id === 'lasertag' || section.id === 'bow' || section.id === 'rent' ? 'group' : ''}`}
             >
-              {(section.id === 'lasertag' || section.id === 'bow') && (
+              {(section.id === 'lasertag' || section.id === 'bow' || section.id === 'rent') && (
                 <img 
                   src={section.logo} 
                   alt="GoodZone Logo" 
@@ -80,10 +81,10 @@ const HomePage = () => {
                 />
               )}
               <div className="mb-4 group-hover:scale-110 transition-transform duration-200 relative z-10">
-                {(section.id === 'lasertag' || section.id === 'bow') ? (
+                {(section.id === 'lasertag' || section.id === 'bow' || section.id === 'rent') ? (
                   <img 
                     src={section.icon} 
-                    alt={`${section.id === 'lasertag' ? 'Lasertag' : 'Archery Tag'} Icon`}
+                    alt={`${section.id === 'lasertag' ? 'Lasertag' : section.id === 'bow' ? 'Archery Tag' : 'BBQ Zone'} Icon`}
                     className="w-16 h-16 mx-auto group-hover:opacity-0 transition-opacity duration-200 object-cover" 
                   />
                 ) : (
