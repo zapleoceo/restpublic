@@ -149,7 +149,8 @@ const QuestsPage = () => {
           </div>
         </div>
 
-        {/* Conditions Section */}
+        {/* Conditions Section - временно отключено, услуга недоступна */}
+        {/* 
         <div className="mb-12">
           <div className="bg-white rounded-xl shadow-lg p-8">
             <h3 className="text-3xl font-bold text-gray-900 mb-8 text-center">
@@ -189,6 +190,7 @@ const QuestsPage = () => {
             </div>
           </div>
         </div>
+        */}
 
         {/* CTA Section */}
         <div className="text-center">
