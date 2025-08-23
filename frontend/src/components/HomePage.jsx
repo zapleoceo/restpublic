@@ -21,7 +21,7 @@ const HomePage = () => {
     },
     {
       id: 'bow',
-      icon: '🏹',
+      icon: '/img/archery/logo.png',
       logo: '/img/archery/logo.png',
       link: '/archerytag'
     },
@@ -33,7 +33,7 @@ const HomePage = () => {
     },
     {
       id: 'rent',
-      icon: '🏕️',
+      icon: '/img/bbq/buttton.png',
       logo: '/img/bbq/buttton.png',
       link: '/bbq_zone'
     }
