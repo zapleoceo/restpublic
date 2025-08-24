@@ -85,8 +85,7 @@ function generateToken(user) {
   const payload = {
     username: user.username,
     role: user.role,
-    iat: Math.floor(Date.now() / 1000),
-    exp: Math.floor(Date.now() / 1000) + (24 * 60 * 60) // 24 часа
+    iat: Math.floor(Date.now() / 1000)
   };
   
   return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
