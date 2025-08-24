@@ -1,28 +1,47 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 
 const AdminPanel = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [config, setConfig] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [updating, setUpdating] = useState({});
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
-    loadConfig();
+    checkAuthAndLoadConfig();
   }, []);
 
-  const loadConfig = async () => {
+  const checkAuthAndLoadConfig = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/admin/config');
-      if (!response.ok) {
+      
+      // Проверяем статус авторизации
+      const authResponse = await fetch('/api/auth/status');
+      if (!authResponse.ok) {
+        navigate('/admin/login');
+        return;
+      }
+      
+      const authData = await authResponse.json();
+      setUser(authData.user);
+      
+      // Загружаем конфигурацию
+      const configResponse = await fetch('/api/admin/config');
+      if (!configResponse.ok) {
         throw new Error('Ошибка загрузки конфигурации');
       }
-      const data = await response.json();
-      setConfig(data);
+      const configData = await configResponse.json();
+      setConfig(configData);
     } catch (err) {
-      setError(err.message);
+      if (err.message.includes('401')) {
+        navigate('/admin/login');
+      } else {
+        setError(err.message);
+      }
     } finally {
       setLoading(false);
     }
@@ -55,16 +74,16 @@ const AdminPanel = () => {
         }
       }));
 
-      // Перезагружаем конфигурацию для обновления lastUpdated
-      await loadConfig();
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setUpdating(prev => ({ ...prev, [sectionKey]: false }));
-    }
-  };
+             // Перезагружаем конфигурацию для обновления lastUpdated
+       await checkAuthAndLoadConfig();
+     } catch (err) {
+       setError(err.message);
+     } finally {
+       setUpdating(prev => ({ ...prev, [sectionKey]: false }));
+     }
+   };
 
-  const updatePage = async (pagePath, enabled) => {
+    const updatePage = async (pagePath, enabled) => {
     try {
       const pathKey = pagePath.replace('/', '');
       setUpdating(prev => ({ ...prev, [pathKey]: true }));
@@ -94,12 +113,21 @@ const AdminPanel = () => {
       }));
 
       // Перезагружаем конфигурацию для обновления lastUpdated
-      await loadConfig();
+      await checkAuthAndLoadConfig();
     } catch (err) {
       setError(err.message);
     } finally {
       const pathKey = pagePath.replace('/', '');
       setUpdating(prev => ({ ...prev, [pathKey]: false }));
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' });
+      navigate('/admin/login');
+    } catch (err) {
+      console.error('Ошибка выхода:', err);
     }
   };
 
@@ -135,12 +163,30 @@ const AdminPanel = () => {
     <div className="min-h-screen bg-gray-100 py-8">
       <div className="max-w-6xl mx-auto px-4">
         <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Панель администратора</h1>
-          <p className="text-gray-600">
-            Управление видимостью кнопок и страниц
-          </p>
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">Панель администратора</h1>
+              <p className="text-gray-600">
+                Управление видимостью кнопок и страниц
+              </p>
+            </div>
+            <div className="text-right">
+              {user && (
+                <div className="mb-2">
+                  <p className="text-sm text-gray-600">Пользователь: <span className="font-semibold">{user.username}</span></p>
+                  <p className="text-xs text-gray-500">Роль: {user.role}</p>
+                </div>
+              )}
+              <button
+                onClick={handleLogout}
+                className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded text-sm"
+              >
+                Выйти
+              </button>
+            </div>
+          </div>
           {config?.lastUpdated && (
-            <p className="text-sm text-gray-500 mt-2">
+            <p className="text-sm text-gray-500">
               Последнее обновление: {new Date(config.lastUpdated).toLocaleString('ru-RU')}
             </p>
           )}

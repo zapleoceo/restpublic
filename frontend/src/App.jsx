@@ -12,6 +12,7 @@ import QuestsPage from './components/QuestsPage';
 import LoadingSpinner from './components/LoadingSpinner';
 import ErrorBoundary from './components/ErrorBoundary';
 import AdminPanel from './components/AdminPanel';
+import LoginPage from './components/LoginPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import './App.css';
 
@@ -91,6 +92,7 @@ function App() {
               <Route path="/quests" element={<ProtectedRoute><QuestsPage /></ProtectedRoute>} />
               <Route path="/cinema" element={<ProtectedRoute><div className="min-h-screen bg-gray-50 flex items-center justify-center"><div className="text-center"><h1 className="text-2xl font-bold mb-4">Кинотеатр</h1><p className="text-gray-600">Страница в разработке</p></div></div></ProtectedRoute>} />
               <Route path="/admin" element={<AdminPanel />} />
+              <Route path="/admin/login" element={<LoginPage />} />
             </Routes>
           </main>
         </div>

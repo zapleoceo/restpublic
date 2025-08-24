@@ -6,6 +6,8 @@ const https = require('https');
 const FormData = require('form-data');
 const SePayMonitor = require('./sepay-monitor');
 const adminModule = require('./admin');
+const authModule = require('./auth');
+const cookieParser = require('cookie-parser');
 require('dotenv').config();
 
 const app = express();
@@ -19,6 +21,7 @@ app.use(cors({
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 // Логирование запросов
 app.use((req, res, next) => {
@@ -318,10 +321,60 @@ app.get('/api/products/popularity', async (req, res) => {
   }
 });
 
+// ===== АВТОРИЗАЦИЯ API =====
+
+// Вход в админку
+app.post('/api/auth/login', (req, res) => {
+  try {
+    const { username, password } = req.body;
+    
+    if (!username || !password) {
+      return res.status(400).json({ error: 'Логин и пароль обязательны' });
+    }
+    
+    const result = authModule.authenticateUser(username, password);
+    
+    if (result.success) {
+      // Устанавливаем JWT токен в httpOnly cookie
+      res.cookie('adminToken', result.token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        maxAge: 24 * 60 * 60 * 1000 // 24 часа
+      });
+      
+      res.json({
+        success: true,
+        user: result.user,
+        message: 'Успешная авторизация'
+      });
+    } else {
+      res.status(401).json({ error: result.error });
+    }
+  } catch (error) {
+    console.error('❌ Ошибка авторизации:', error.message);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Выход из админки
+app.post('/api/auth/logout', (req, res) => {
+  res.clearCookie('adminToken');
+  res.json({ success: true, message: 'Выход выполнен' });
+});
+
+// Проверка статуса авторизации
+app.get('/api/auth/status', authModule.requireAuth, (req, res) => {
+  res.json({
+    authenticated: true,
+    user: req.user
+  });
+});
+
 // ===== АДМИНКА API =====
 
-// Получить конфигурацию админки
-app.get('/api/admin/config', (req, res) => {
+// Получить конфигурацию админки (защищено)
+app.get('/api/admin/config', authModule.requireAuth, authModule.requireAdmin, (req, res) => {
   try {
     const config = adminModule.getAdminConfig();
     res.json(config);
@@ -331,8 +384,8 @@ app.get('/api/admin/config', (req, res) => {
   }
 });
 
-// Обновить секцию
-app.post('/api/admin/section/:key', (req, res) => {
+// Обновить секцию (защищено)
+app.post('/api/admin/section/:key', authModule.requireAuth, authModule.requireAdmin, (req, res) => {
   try {
     const { key } = req.params;
     const { enabled } = req.body;
@@ -353,8 +406,8 @@ app.post('/api/admin/section/:key', (req, res) => {
   }
 });
 
-// Обновить страницу
-app.post('/api/admin/page/:path(*)', (req, res) => {
+// Обновить страницу (защищено)
+app.post('/api/admin/page/:path(*)', authModule.requireAuth, authModule.requireAdmin, (req, res) => {
   try {
     const pagePath = '/' + req.params.path;
     const { enabled } = req.body;
