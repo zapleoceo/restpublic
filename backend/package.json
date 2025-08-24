@@ -1,6 +1,6 @@
 {
   "name": "restpublic-backend",
-  "version": "1.0.36",
+  "version": "1.0.38",
   "description": "Backend proxy server for RestPublic",
   "main": "server.js",
   "scripts": {
