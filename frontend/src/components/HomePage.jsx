@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import LanguageSwitcher from './LanguageSwitcher';
@@ -6,45 +6,72 @@ import ContactSection from './ContactSection';
 
 const HomePage = () => {
   const { t } = useTranslation();
+  const [enabledSections, setEnabledSections] = useState({});
+  const [loading, setLoading] = useState(true);
 
-  const sections = [
-    {
+  // Статическая конфигурация секций
+  const sectionsConfig = {
+    menu: {
       id: 'menu',
       icon: '/img/menu/icon.png',
       logo: '/img/menu/big.jpg',
       link: '/m'
     },
-    {
+    lasertag: {
       id: 'lasertag',
       icon: '/img/lazertag/icon.png',
       logo: '/img/lazertag/logo.png',
       link: '/lasertag'
     },
-    {
+    bow: {
       id: 'bow',
       icon: '/img/archery/icon.png',
       logo: '/img/archery/logo.png',
       link: '/archerytag'
     },
-    {
+    cinema: {
       id: 'cinema',
       icon: '/img/cinema/icon.png',
       logo: '/img/cinema/big.jpg',
       link: '/cinema'
     },
-    {
+    rent: {
       id: 'rent',
       icon: '/img/bbq/icon.png',
       logo: '/img/bbq/buttton.png',
       link: '/bbq_zone'
     },
-    {
+    quests: {
       id: 'quests',
       icon: '/img/quests/icon.png',
       logo: '/img/quests/big.jpg',
       link: '/quests'
     }
-  ];
+  };
+
+  useEffect(() => {
+    loadEnabledSections();
+  }, []);
+
+  const loadEnabledSections = async () => {
+    try {
+      const response = await fetch('/api/sections');
+      if (response.ok) {
+        const data = await response.json();
+        setEnabledSections(data.sections);
+      }
+    } catch (error) {
+      console.error('Ошибка загрузки секций:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Фильтруем только активные секции
+  const sections = Object.keys(enabledSections)
+    .filter(key => enabledSections[key]?.enabled)
+    .map(key => sectionsConfig[key])
+    .filter(Boolean);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-orange-100">

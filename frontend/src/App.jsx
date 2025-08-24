@@ -11,6 +11,8 @@ import BBQZonePage from './components/BBQZonePage';
 import QuestsPage from './components/QuestsPage';
 import LoadingSpinner from './components/LoadingSpinner';
 import ErrorBoundary from './components/ErrorBoundary';
+import AdminPanel from './components/AdminPanel';
+import ProtectedRoute from './components/ProtectedRoute';
 import './App.css';
 
 function App() {
@@ -79,15 +81,16 @@ function App() {
         <div className="min-h-screen bg-gray-50">
           <main>
             <Routes>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/m" element={<MenuPage menuData={menuData} />} />
-              <Route path="/fast/:tableId" element={<FastAccessPage />} />
-              <Route path="/fast/:tableId/menu" element={<MenuPageWrapper menuData={menuData} />} />
-              <Route path="/lasertag" element={<LasertagPage />} />
-              <Route path="/archerytag" element={<ArcherytagPage />} />
-              <Route path="/bbq_zone" element={<BBQZonePage />} />
-              <Route path="/quests" element={<QuestsPage />} />
-              <Route path="/cinema" element={<div className="min-h-screen bg-gray-50 flex items-center justify-center"><div className="text-center"><h1 className="text-2xl font-bold mb-4">Кинотеатр</h1><p className="text-gray-600">Страница в разработке</p></div></div>} />
+              <Route path="/" element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
+              <Route path="/m" element={<ProtectedRoute><MenuPage menuData={menuData} /></ProtectedRoute>} />
+              <Route path="/fast/:tableId" element={<ProtectedRoute><FastAccessPage /></ProtectedRoute>} />
+              <Route path="/fast/:tableId/menu" element={<ProtectedRoute><MenuPageWrapper menuData={menuData} /></ProtectedRoute>} />
+              <Route path="/lasertag" element={<ProtectedRoute><LasertagPage /></ProtectedRoute>} />
+              <Route path="/archerytag" element={<ProtectedRoute><ArcherytagPage /></ProtectedRoute>} />
+              <Route path="/bbq_zone" element={<ProtectedRoute><BBQZonePage /></ProtectedRoute>} />
+              <Route path="/quests" element={<ProtectedRoute><QuestsPage /></ProtectedRoute>} />
+              <Route path="/cinema" element={<ProtectedRoute><div className="min-h-screen bg-gray-50 flex items-center justify-center"><div className="text-center"><h1 className="text-2xl font-bold mb-4">Кинотеатр</h1><p className="text-gray-600">Страница в разработке</p></div></div></ProtectedRoute>} />
+              <Route path="/admin" element={<AdminPanel />} />
             </Routes>
           </main>
         </div>

@@ -5,6 +5,7 @@ const path = require('path');
 const https = require('https');
 const FormData = require('form-data');
 const SePayMonitor = require('./sepay-monitor');
+const adminModule = require('./admin');
 require('dotenv').config();
 
 const app = express();
@@ -314,6 +315,86 @@ app.get('/api/products/popularity', async (req, res) => {
   } catch (error) {
     console.error('❌ Ошибка при получении данных популярности:', error.message);
     res.json({ productPopularity: {} });
+  }
+});
+
+// ===== АДМИНКА API =====
+
+// Получить конфигурацию админки
+app.get('/api/admin/config', (req, res) => {
+  try {
+    const config = adminModule.getAdminConfig();
+    res.json(config);
+  } catch (error) {
+    console.error('❌ Ошибка получения конфигурации админки:', error.message);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Обновить секцию
+app.post('/api/admin/section/:key', (req, res) => {
+  try {
+    const { key } = req.params;
+    const { enabled } = req.body;
+    
+    if (typeof enabled !== 'boolean') {
+      return res.status(400).json({ error: 'Поле enabled должно быть boolean' });
+    }
+    
+    const success = adminModule.updateSection(key, enabled);
+    if (success) {
+      res.json({ success: true, message: `Секция ${key} ${enabled ? 'активирована' : 'деактивирована'}` });
+    } else {
+      res.status(404).json({ error: 'Секция не найдена' });
+    }
+  } catch (error) {
+    console.error('❌ Ошибка обновления секции:', error.message);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Обновить страницу
+app.post('/api/admin/page/:path(*)', (req, res) => {
+  try {
+    const pagePath = '/' + req.params.path;
+    const { enabled } = req.body;
+    
+    if (typeof enabled !== 'boolean') {
+      return res.status(400).json({ error: 'Поле enabled должно быть boolean' });
+    }
+    
+    const success = adminModule.updatePage(pagePath, enabled);
+    if (success) {
+      res.json({ success: true, message: `Страница ${pagePath} ${enabled ? 'активирована' : 'деактивирована'}` });
+    } else {
+      res.status(404).json({ error: 'Страница не найдена' });
+    }
+  } catch (error) {
+    console.error('❌ Ошибка обновления страницы:', error.message);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Получить доступные секции для фронтенда
+app.get('/api/sections', (req, res) => {
+  try {
+    const enabledSections = adminModule.getEnabledSections();
+    res.json({ sections: enabledSections });
+  } catch (error) {
+    console.error('❌ Ошибка получения секций:', error.message);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Проверить доступность страницы
+app.get('/api/admin/page/:path(*)/status', (req, res) => {
+  try {
+    const pagePath = '/' + req.params.path;
+    const isEnabled = adminModule.isPageEnabled(pagePath);
+    res.json({ enabled: isEnabled, path: pagePath });
+  } catch (error) {
+    console.error('❌ Ошибка проверки статуса страницы:', error.message);
+    res.status(500).json({ error: error.message });
   }
 });
 
