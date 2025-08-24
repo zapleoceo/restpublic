@@ -163,7 +163,12 @@
         "description": "Good mood and your favorite mug for tea"
       }
     },
-    "final_quote": "\"How wonderful that we all gathered here today!\""
+    "final_quote": "\"How wonderful that we all gathered here today!\"",
+    "schedule": {
+      "title": "Guitar Circle Schedule",
+      "time": "Guitar circles are held every Sunday at 20:00",
+      "description": "Come to us for a soulful evening with guitar and good company!"
+    }
   },
   "boardgames": {
     "title": "Board Games",

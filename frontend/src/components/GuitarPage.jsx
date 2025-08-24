@@ -160,17 +160,17 @@ const GuitarPage = () => {
         {/* Schedule info */}
         <div className="bg-orange-50 rounded-lg p-8">
           <h2 className="text-3xl font-bold text-gray-900 mb-6 text-center">
-            Расписание гитарников
+            {t('guitar.schedule.title')}
           </h2>
           <div className="text-center">
             <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <span className="text-orange-600 text-2xl">🎵</span>
             </div>
             <p className="text-xl text-gray-800 font-semibold">
-              Гитарники проводятся каждое воскресенье в 20:00
+              {t('guitar.schedule.time')}
             </p>
             <p className="text-gray-600 mt-2">
-              Приходите к нам на душевный вечер с гитарой и хорошей компанией!
+              {t('guitar.schedule.description')}
             </p>
           </div>
         </div>
