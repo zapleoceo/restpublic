@@ -13,12 +13,12 @@ const DEFAULT_ADMIN_CONFIG = {
       description: "Ресторанное меню"
     },
     lasertag: {
-      enabled: true,
+      enabled: false,
       title: "Лазертаг",
       description: "Командная игра"
     },
     bow: {
-      enabled: true,
+      enabled: false,
       title: "Archery Tag",
       description: "Лучный бой"
     },
@@ -28,12 +28,12 @@ const DEFAULT_ADMIN_CONFIG = {
       description: "Просмотр фильмов"
     },
     rent: {
-      enabled: true,
+      enabled: false,
       title: "BBQ Picnic Area",
       description: "Зона барбекю"
     },
     quests: {
-      enabled: true,
+      enabled: false,
       title: "Квесты",
       description: "Увлекательные квесты"
     },
