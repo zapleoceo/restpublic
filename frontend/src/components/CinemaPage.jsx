@@ -30,13 +30,13 @@ const CinemaPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100">
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-orange-100">
       {/* Header */}
       <div className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex-1">
-              <Link to="/" className="text-blue-600 hover:text-blue-700 font-medium">
+              <Link to="/" className="text-orange-600 hover:text-orange-700 font-medium">
                 ← {t('back')}
               </Link>
             </div>
@@ -129,8 +129,8 @@ const CinemaPage = () => {
             <h3 className="text-2xl font-bold text-gray-900 mb-6">{t('cinema.how.title')}</h3>
             <div className="space-y-4">
               <div className="flex items-start space-x-3">
-                <div className="flex-shrink-0 w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                  <span className="text-blue-600 text-lg">🎬</span>
+                <div className="flex-shrink-0 w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center">
+                  <span className="text-orange-600 text-lg">🎬</span>
                 </div>
                 <div>
                   <p className="text-gray-700">
@@ -139,7 +139,7 @@ const CinemaPage = () => {
                       href={t('cinema.how.telegram_link')} 
                       target="_blank" 
                       rel="noopener noreferrer" 
-                      className="text-blue-600 hover:text-blue-800 underline"
+                      className="text-orange-600 hover:text-orange-800 underline"
                     >
                       {t('cinema.how.paragraph1_link')}
                     </a>
@@ -148,16 +148,16 @@ const CinemaPage = () => {
                 </div>
               </div>
               <div className="flex items-start space-x-3">
-                <div className="flex-shrink-0 w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                  <span className="text-blue-600 text-lg">🌅</span>
+                <div className="flex-shrink-0 w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center">
+                  <span className="text-orange-600 text-lg">🌅</span>
                 </div>
                 <div>
                   <p className="text-gray-700">{t('cinema.how.paragraph2')}</p>
                 </div>
               </div>
               <div className="flex items-start space-x-3">
-                <div className="flex-shrink-0 w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                  <span className="text-blue-600 text-lg">☔</span>
+                <div className="flex-shrink-0 w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center">
+                  <span className="text-orange-600 text-lg">☔</span>
                 </div>
                 <div>
                   <p className="text-gray-700">{t('cinema.how.paragraph3')}</p>
@@ -171,32 +171,32 @@ const CinemaPage = () => {
         <div className="bg-white rounded-xl shadow-md p-8 mb-12">
           <h3 className="text-2xl font-bold text-gray-900 mb-6 text-center">{t('cinema.conditions.title')}</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div className="text-center p-4 bg-blue-50 rounded-lg">
+            <div className="text-center p-4 bg-orange-50 rounded-lg">
               <div className="text-2xl mb-2">🌅</div>
               <h4 className="font-semibold text-gray-900 mb-1">{t('cinema.conditions.start_time_label')}</h4>
               <p className="text-gray-700">{t('cinema.conditions.start_time')}</p>
             </div>
-            <div className="text-center p-4 bg-blue-50 rounded-lg">
+            <div className="text-center p-4 bg-orange-50 rounded-lg">
               <div className="text-2xl mb-2">🔊</div>
               <h4 className="font-semibold text-gray-900 mb-1">{t('cinema.conditions.sound_label')}</h4>
               <p className="text-gray-700">{t('cinema.conditions.sound')}</p>
             </div>
-            <div className="text-center p-4 bg-blue-50 rounded-lg">
+            <div className="text-center p-4 bg-orange-50 rounded-lg">
               <div className="text-2xl mb-2">☔</div>
               <h4 className="font-semibold text-gray-900 mb-1">{t('cinema.conditions.weather_label')}</h4>
               <p className="text-gray-700">{t('cinema.conditions.weather')}</p>
             </div>
-            <div className="text-center p-4 bg-blue-50 rounded-lg">
+            <div className="text-center p-4 bg-orange-50 rounded-lg">
               <div className="text-2xl mb-2">🛋️</div>
               <h4 className="font-semibold text-gray-900 mb-1">{t('cinema.conditions.seating_label')}</h4>
               <p className="text-gray-700">{t('cinema.conditions.seating')}</p>
             </div>
-            <div className="text-center p-4 bg-blue-50 rounded-lg">
+            <div className="text-center p-4 bg-orange-50 rounded-lg">
               <div className="text-2xl mb-2">📺</div>
               <h4 className="font-semibold text-gray-900 mb-1">{t('cinema.conditions.screen_label')}</h4>
               <p className="text-gray-700">{t('cinema.conditions.screen')}</p>
             </div>
-            <div className="text-center p-4 bg-blue-50 rounded-lg">
+            <div className="text-center p-4 bg-orange-50 rounded-lg">
               <div className="text-2xl mb-2">🏖️</div>
               <h4 className="font-semibold text-gray-900 mb-1">{t('cinema.conditions.umbrellas_label')}</h4>
               <p className="text-gray-700">{t('cinema.conditions.umbrellas')}</p>
@@ -206,7 +206,7 @@ const CinemaPage = () => {
 
         {/* CTA Section */}
         <div className="text-center mb-12">
-          <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl shadow-lg p-8 text-white">
+          <div className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl shadow-lg p-8 text-white">
             <h3 className="text-2xl font-bold mb-4">{t('cinema.cta.title')}</h3>
             <p className="text-lg mb-6 opacity-90">
               {t('cinema.cta.description')}
@@ -214,7 +214,7 @@ const CinemaPage = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <a
                 href="tel:+84349338758"
-                className="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors duration-200"
+                className="bg-white text-orange-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors duration-200"
               >
                 📞 {t('home.phone')} +84 349 338 758
               </a>
