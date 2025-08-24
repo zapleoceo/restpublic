@@ -32,12 +32,10 @@ class SePayMonitor {
 
     async checkNewTransactions() {
         try {
-            console.log('🔍 Проверка новых транзакций SePay...');
-            
             const newTransactions = await this.sepayService.getNewTransactions();
             
             if (newTransactions.length > 0) {
-                console.log(`💰 Найдено ${newTransactions.length} новых транзакций`);
+                console.log(`💰 Найдено ${newTransactions.length} новых транзакций SePay`);
                 
                 for (const transaction of newTransactions) {
                     const message = this.sepayService.formatTransactionMessage(transaction);
@@ -46,11 +44,9 @@ class SePayMonitor {
                     // Небольшая задержка между отправками
                     await new Promise(resolve => setTimeout(resolve, 1000));
                 }
-            } else {
-                console.log('📭 Новых транзакций не найдено');
             }
         } catch (error) {
-            console.error('❌ Ошибка проверки транзакций:', error.message);
+            console.error('❌ Ошибка проверки транзакций SePay:', error.message);
         }
     }
 
