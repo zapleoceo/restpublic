@@ -168,6 +168,12 @@
       "title": "Lịch trình Guitar Circle",
       "time": "Guitar circle được tổ chức mỗi Chủ nhật lúc 20:00",
       "description": "Hãy đến với chúng tôi để có một buổi tối ấm cúng với guitar và công ty tốt!"
+    },
+    "booking": {
+      "title": "Đặt Guitar Circle",
+      "description": "Để đặt chỗ và nhận thông tin chi tiết về guitar circle sắp tới, hãy truy cập nhóm Telegram của chúng tôi",
+      "telegram_button": "💬 Đặt qua Telegram",
+      "telegram_link": "https://t.me/gamezone_vietnam/1729"
     }
   },
   "boardgames": {

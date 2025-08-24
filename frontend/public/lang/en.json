@@ -168,6 +168,12 @@
       "title": "Guitar Circle Schedule",
       "time": "Guitar circles are held every Sunday at 20:00",
       "description": "Come to us for a soulful evening with guitar and good company!"
+    },
+    "booking": {
+      "title": "Book a Guitar Circle",
+      "description": "To book and get detailed information about the upcoming guitar circle, visit our Telegram group",
+      "telegram_button": "💬 Book via Telegram",
+      "telegram_link": "https://t.me/gamezone_vietnam/1729"
     }
   },
   "boardgames": {

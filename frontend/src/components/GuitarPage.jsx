@@ -158,7 +158,7 @@ const GuitarPage = () => {
         </div>
 
         {/* Schedule info */}
-        <div className="bg-orange-50 rounded-lg p-8">
+        <div className="bg-orange-50 rounded-lg p-8 mb-8">
           <h2 className="text-3xl font-bold text-gray-900 mb-6 text-center">
             {t('guitar.schedule.title')}
           </h2>
@@ -172,6 +172,29 @@ const GuitarPage = () => {
             <p className="text-gray-600 mt-2">
               {t('guitar.schedule.description')}
             </p>
+          </div>
+        </div>
+
+        {/* Booking info */}
+        <div className="bg-white rounded-lg shadow-lg p-8 mb-8">
+          <h2 className="text-3xl font-bold text-gray-900 mb-6 text-center">
+            {t('guitar.booking.title')}
+          </h2>
+          <div className="text-center">
+            <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <span className="text-blue-600 text-2xl">📱</span>
+            </div>
+            <p className="text-lg text-gray-700 mb-6">
+              {t('guitar.booking.description')}
+            </p>
+            <a 
+              href={t('guitar.booking.telegram_link')}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors duration-200"
+            >
+              {t('guitar.booking.telegram_button')}
+            </a>
           </div>
         </div>
 
