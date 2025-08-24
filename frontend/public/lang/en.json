@@ -469,5 +469,59 @@
         "telegram_button": "💬 Details in Telegram",
         "telegram_link": "https://t.me/gamezone_vietnam/1860"
       }
+    },
+    "yoga": {
+      "title": "Yoga at GameZone",
+      "subtitle": "Awaken the energy of the day. Start your morning with strength, end your day in harmony",
+      "about": {
+        "title": "About our classes",
+        "description": "Immerse yourself in a holistic practice where Hatha and Kundalini yoga combine with body therapy, energy practices and sound healing.",
+        "point1": "Every morning is an opportunity to activate your inner sun and reach a new level of self-awareness",
+        "point2": "Scientific approach with the soul of India from a teacher who has trained in the heart of ashtanga yoga",
+        "point3": "Achieving peace of mind, body flexibility and inner stability through regular practice"
+      },
+      "how": {
+        "title": "Class program",
+        "morning": {
+          "title": "Morning Kundalini Yoga",
+          "description": "Unique practice for awakening potential",
+          "point1": "Yoga for the whole body — awakening every cell",
+          "point2": "Breathing practices (pranayama) and healing sounds",
+          "point3": "Kundalini practices for energy activation and block release",
+          "point4": "Energy exercises to raise vibrations",
+          "point5": "Cosmic Shavasana with singing bowl vibrations",
+          "point6": "Deep meditation to awaken inner light",
+          "point7": "Mantras for restoration and inner harmony"
+        },
+        "evening": {
+          "title": "Evening Hatha Yoga",
+          "description": "Scientific approach with the soul of India",
+          "point1": "Accessible explanations without excessive esotericism",
+          "point2": "Scientific approach: biomechanics, proper breathing, strength development",
+          "point3": "Achieving peace of mind, body flexibility and inner stability",
+          "point4": "Gradual progress through regular practice"
+        }
+      },
+      "conditions": {
+        "title": "For whom and what to bring",
+        "for_who": {
+          "title": "For whom our classes",
+          "description": "Suitable for beginners and experienced practitioners. Perfect for energy restoration, stress relief, deep body reboot and finding inner harmony"
+        },
+        "additional": {
+          "title": "Additional practices",
+          "description": "Ecstatic Dance — we periodically hold ecstatic dance sessions, dance without rules and restrictions, where you can express yourself through movement"
+        },
+        "what_to_bring": {
+          "title": "What to bring with you",
+          "description": "Comfortable practice clothes, water, open heart and readiness for changes. How you start your morning is how you will live the whole day!"
+        }
+      },
+      "cta": {
+        "title": "Ready to find harmony?",
+        "description": "Find harmony of body and spirit in the tropical paradise of Nha Trang with GameZone! All details about schedule, cost and registration for classes in our Telegram group.",
+        "telegram_button": "Sign up on Telegram",
+        "telegram_link": "https://t.me/gamezone_vietnam/1963"
+      }
     }
 }

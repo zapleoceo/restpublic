@@ -12,6 +12,7 @@ import QuestsPage from './components/QuestsPage';
 import GuitarPage from './components/GuitarPage';
 import BoardgamesPage from './components/BoardgamesPage';
 import CinemaPage from './components/CinemaPage';
+import YogaPage from './components/YogaPage';
 import LoadingSpinner from './components/LoadingSpinner';
 import ErrorBoundary from './components/ErrorBoundary';
 import AdminPanel from './components/AdminPanel';
@@ -95,7 +96,8 @@ function App() {
               <Route path="/quests" element={<ProtectedRoute><QuestsPage /></ProtectedRoute>} />
               <Route path="/guitar" element={<ProtectedRoute><GuitarPage /></ProtectedRoute>} />
               <Route path="/boardgames" element={<ProtectedRoute><BoardgamesPage /></ProtectedRoute>} />
-              <Route path="/cinema" element={<ProtectedRoute><CinemaPage /></ProtectedRoute>} />
+                              <Route path="/cinema" element={<ProtectedRoute><CinemaPage /></ProtectedRoute>} />
+                <Route path="/yoga" element={<ProtectedRoute><YogaPage /></ProtectedRoute>} />
               <Route path="/admin" element={<AdminPanel />} />
               <Route path="/admin/login" element={<LoginPage />} />
             </Routes>

@@ -469,5 +469,59 @@
         "telegram_button": "💬 Chi tiết trong Telegram",
         "telegram_link": "https://t.me/gamezone_vietnam/1860"
       }
+    },
+    "yoga": {
+      "title": "Yoga tại GameZone",
+      "subtitle": "Đánh thức năng lượng của ngày. Bắt đầu buổi sáng với sức mạnh, kết thúc ngày trong hài hòa",
+      "about": {
+        "title": "Về các lớp học của chúng tôi",
+        "description": "Đắm chìm trong thực hành toàn diện nơi Hatha và Kundalini yoga kết hợp với liệu pháp cơ thể, thực hành năng lượng và chữa lành bằng âm thanh.",
+        "point1": "Mỗi buổi sáng là cơ hội để kích hoạt mặt trời bên trong và đạt đến mức độ nhận thức mới",
+        "point2": "Phương pháp khoa học với tâm hồn Ấn Độ từ giáo viên đã được đào tạo tại trung tâm ashtanga yoga",
+        "point3": "Đạt được sự bình yên tâm trí, tính linh hoạt cơ thể và sự ổn định bên trong thông qua thực hành thường xuyên"
+      },
+      "how": {
+        "title": "Chương trình lớp học",
+        "morning": {
+          "title": "Yoga Kundalini buổi sáng",
+          "description": "Thực hành độc đáo để đánh thức tiềm năng",
+          "point1": "Yoga cho toàn bộ cơ thể — đánh thức mọi tế bào",
+          "point2": "Thực hành thở (pranayama) và âm thanh chữa lành",
+          "point3": "Thực hành Kundalini để kích hoạt năng lượng và giải phóng khối chặn",
+          "point4": "Bài tập năng lượng để nâng cao rung động",
+          "point5": "Shavasana vũ trụ với rung động của bát hát",
+          "point6": "Thiền sâu để đánh thức ánh sáng bên trong",
+          "point7": "Mantra để phục hồi và hài hòa bên trong"
+        },
+        "evening": {
+          "title": "Hatha Yoga buổi tối",
+          "description": "Phương pháp khoa học với tâm hồn Ấn Độ",
+          "point1": "Giải thích dễ hiểu không có chủ nghĩa thần bí quá mức",
+          "point2": "Phương pháp khoa học: sinh cơ học, thở đúng cách, phát triển sức mạnh",
+          "point3": "Đạt được sự bình yên tâm trí, tính linh hoạt cơ thể và sự ổn định bên trong",
+          "point4": "Tiến bộ dần dần thông qua thực hành thường xuyên"
+        }
+      },
+      "conditions": {
+        "title": "Dành cho ai và mang gì",
+        "for_who": {
+          "title": "Dành cho ai các lớp học của chúng tôi",
+          "description": "Phù hợp cho người mới bắt đầu và người thực hành có kinh nghiệm. Hoàn hảo để phục hồi năng lượng, giảm căng thẳng, khởi động lại cơ thể sâu và tìm kiếm sự hài hòa bên trong"
+        },
+        "additional": {
+          "title": "Thực hành bổ sung",
+          "description": "Ecstatic Dance — chúng tôi định kỳ tổ chức các buổi nhảy ecstatic, nhảy không có quy tắc và hạn chế, nơi bạn có thể thể hiện bản thân thông qua chuyển động"
+        },
+        "what_to_bring": {
+          "title": "Mang gì theo",
+          "description": "Quần áo thực hành thoải mái, nước, trái tim rộng mở và sẵn sàng cho những thay đổi. Cách bạn bắt đầu buổi sáng là cách bạn sẽ sống cả ngày!"
+        }
+      },
+      "cta": {
+        "title": "Sẵn sàng tìm kiếm sự hài hòa?",
+        "description": "Tìm kiếm sự hài hòa của cơ thể và tinh thần trong thiên đường nhiệt đới Nha Trang với GameZone! Tất cả chi tiết về lịch trình, chi phí và đăng ký lớp học trong nhóm Telegram của chúng tôi.",
+        "telegram_button": "Đăng ký trên Telegram",
+        "telegram_link": "https://t.me/gamezone_vietnam/1963"
+      }
     }
 }
