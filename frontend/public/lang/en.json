@@ -395,38 +395,76 @@
       "telegram_button": "💬 Write to Telegram"
     }
   },
-  "bbq_zone": {
-    "title": "BBQ Picnic Area - Barbecue Zone",
-    "subtitle": "Perfect place to relax with friends, family or colleagues",
-    "about": {
-      "title": "About BBQ Zone",
-      "paragraph1": "Perfect place to gather with friends, family or colleagues — our gazebos in the middle of a green corner of nature.",
-      "paragraph2": "One such zone can comfortably accommodate up to 35 people. The cost also includes a barbecue area with a grill and sink.",
-      "paragraph3": "Please note: Meat, drinks, food, grills, skewers, dishes and other consumables — bring with you. But we will always tell you where to buy them nearby. You can buy charcoal from us.",
-      "paragraph4": "Hourly rental — choose the time that suits you. You can combine with laser tag or bow battle games, or just arrange a soulful evening in the open air."
+      "bbq_zone": {
+      "title": "BBQ Picnic Area - Barbecue Zone",
+      "subtitle": "Perfect place to relax with friends, family or colleagues",
+      "about": {
+        "title": "About BBQ Zone",
+        "paragraph1": "Perfect place to gather with friends, family or colleagues — our gazebos in the middle of a green corner of nature.",
+        "paragraph2": "One such zone can comfortably accommodate up to 35 people. The cost also includes a barbecue area with a grill and sink.",
+        "paragraph3": "Please note: Meat, drinks, food, grills, skewers, dishes and other consumables — bring with you. But we will always tell you where to buy them nearby. You can buy charcoal from us.",
+        "paragraph4": "Hourly rental — choose the time that suits you. You can combine with laser tag or bow battle games, or just arrange a soulful evening in the open air."
+      },
+      "conditions": {
+        "title": "Rental Conditions",
+        "weekdays": "Weekdays",
+        "weekends": "Weekends and holidays",
+        "capacity": "Capacity",
+        "equipment": "Equipment",
+        "barbecue_zone": "Barbecue area",
+        "grill": "Grill",
+        "sink": "Sink",
+        "charcoal": "Charcoal",
+        "utensils": "Dishes and consumables"
+      },
+      "cta": {
+        "title": "Ready for a picnic?",
+        "description": "Book your barbecue area now and get ready for great relaxation!",
+        "call_button": "📞 Call +84 349 338 758",
+        "telegram_button": "💬 Write to Telegram"
+      },
+      "features": {
+        "hourly_rental": "Hourly rental",
+        "combine_with_games": "Possibility to combine with games",
+        "green_nature_zone": "Green nature zone"
+      }
     },
-    "conditions": {
-      "title": "Rental Conditions",
-      "weekdays": "Weekdays",
-      "weekends": "Weekends and holidays",
-      "capacity": "Capacity",
-      "equipment": "Equipment",
-      "barbecue_zone": "Barbecue area",
-      "grill": "Grill",
-      "sink": "Sink",
-      "charcoal": "Charcoal",
-      "utensils": "Dishes and consumables"
-    },
-    "cta": {
-      "title": "Ready for a picnic?",
-      "description": "Book your barbecue area now and get ready for great relaxation!",
-      "call_button": "📞 Call +84 349 338 758",
-      "telegram_button": "💬 Write to Telegram"
-    },
-    "features": {
-      "hourly_rental": "Hourly rental",
-      "combine_with_games": "Possibility to combine with games",
-      "green_nature_zone": "Green nature zone"
+    "cinema": {
+      "title": "Cinema Under the Stars",
+      "subtitle": "Immerse yourself in the atmosphere of an evening movie screening under the tropical sky",
+      "about": {
+        "title": "About Cinema",
+        "paragraph1": "Immerse yourself in the atmosphere of an evening movie screening under the tropical sky, where every frame comes alive in the soft light of stars and the twinkling of the city night.",
+        "paragraph2": "Our cozy venue is equipped with large umbrellas and elegant gazebos so that not a drop of rain will spoil the viewing.",
+        "paragraph3": "A wide projection screen is hung between exotic palm trees, and soft bean bags and pillows right on the grass allow you to comfortably settle under the open sky."
+      },
+      "how": {
+        "title": "How the screening works",
+        "paragraph1": "Movies are chosen by you in our Telegram group — just suggest and vote for your favorite films!",
+        "paragraph2": "Screening starts: at sunset. Sound without headphones: natural acoustics of a tropical evening.",
+        "paragraph3": "Any weather: umbrellas and gazebos will hide from the rain, and a slightly cool breeze will only add freshness."
+      },
+      "conditions": {
+        "title": "Viewing Conditions",
+        "start_time": "At sunset",
+        "start_time_label": "Start time",
+        "sound": "Without headphones",
+        "sound_label": "Sound",
+        "weather": "Any weather",
+        "weather_label": "Weather",
+        "seating": "Soft bean bags",
+        "seating_label": "Seating",
+        "screen": "Projection screen",
+        "screen_label": "Screen",
+        "umbrellas": "Umbrellas and gazebos",
+        "umbrellas_label": "Rain protection"
+      },
+      "cta": {
+        "title": "Ready for cinema under the stars?",
+        "description": "Come and become part of our cinema community, where every evening gives unforgettable impressions under the starry sky of Nha Trang!",
+        "call_button": "📞 Call +84 349 338 758",
+        "telegram_button": "💬 Details in Telegram",
+        "telegram_link": "https://t.me/gamezone_vietnam/1860"
+      }
     }
-  }
 }

@@ -395,38 +395,76 @@
       "telegram_button": "💬 Viết cho Telegram"
     }
   },
-  "bbq_zone": {
-    "title": "BBQ Picnic Area - Khu vực nướng BBQ",
-    "subtitle": "Nơi hoàn hảo để thư giãn với bạn bè, gia đình hoặc đồng nghiệp",
-    "about": {
-      "title": "Về khu vực BBQ",
-      "paragraph1": "Nơi hoàn hảo để tụ tập với bạn bè, gia đình hoặc đồng nghiệp — những lều của chúng tôi giữa góc xanh của thiên nhiên.",
-      "paragraph2": "Một khu vực như vậy có thể thoải mái chứa tới 35 người. Chi phí cũng bao gồm khu vực nướng BBQ với bếp nướng và bồn rửa.",
-      "paragraph3": "Lưu ý: Thịt, đồ uống, thực phẩm, bếp nướng, xiên, bát đĩa và các vật dụng tiêu hao khác — mang theo. Nhưng chúng tôi sẽ luôn cho bạn biết nơi mua chúng gần đó. Bạn có thể mua than từ chúng tôi.",
-      "paragraph4": "Thuê theo giờ — chọn thời gian phù hợp với bạn. Bạn có thể kết hợp với các trò chơi laser tag hoặc bow battle, hoặc chỉ sắp xếp một buổi tối ấm cúng ngoài trời."
+      "bbq_zone": {
+      "title": "BBQ Picnic Area - Khu vực nướng BBQ",
+      "subtitle": "Nơi hoàn hảo để thư giãn với bạn bè, gia đình hoặc đồng nghiệp",
+      "about": {
+        "title": "Về khu vực BBQ",
+        "paragraph1": "Nơi hoàn hảo để tụ tập với bạn bè, gia đình hoặc đồng nghiệp — những lều của chúng tôi giữa góc xanh của thiên nhiên.",
+        "paragraph2": "Một khu vực như vậy có thể thoải mái chứa tới 35 người. Chi phí cũng bao gồm khu vực nướng BBQ với bếp nướng và bồn rửa.",
+        "paragraph3": "Lưu ý: Thịt, đồ uống, thực phẩm, bếp nướng, xiên, bát đĩa và các vật dụng tiêu hao khác — mang theo. Nhưng chúng tôi sẽ luôn cho bạn biết nơi mua chúng gần đó. Bạn có thể mua than từ chúng tôi.",
+        "paragraph4": "Thuê theo giờ — chọn thời gian phù hợp với bạn. Bạn có thể kết hợp với các trò chơi laser tag hoặc bow battle, hoặc chỉ sắp xếp một buổi tối ấm cúng ngoài trời."
+      },
+      "conditions": {
+        "title": "Điều kiện thuê",
+        "weekdays": "Ngày trong tuần",
+        "weekends": "Cuối tuần và ngày lễ",
+        "capacity": "Sức chứa",
+        "equipment": "Thiết bị",
+        "barbecue_zone": "Khu vực nướng BBQ",
+        "grill": "Bếp nướng",
+        "sink": "Bồn rửa",
+        "charcoal": "Than",
+        "utensils": "Bát đĩa và vật dụng tiêu hao"
+      },
+      "cta": {
+        "title": "Sẵn sàng cho dã ngoại?",
+        "description": "Đặt khu vực nướng BBQ ngay bây giờ và chuẩn bị cho sự thư giãn tuyệt vời!",
+        "call_button": "📞 Gọi +84 349 338 758",
+        "telegram_button": "💬 Viết cho Telegram"
+      },
+      "features": {
+        "hourly_rental": "Thuê theo giờ",
+        "combine_with_games": "Khả năng kết hợp với các trò chơi",
+        "green_nature_zone": "Khu vực thiên nhiên xanh"
+      }
     },
-    "conditions": {
-      "title": "Điều kiện thuê",
-      "weekdays": "Ngày trong tuần",
-      "weekends": "Cuối tuần và ngày lễ",
-      "capacity": "Sức chứa",
-      "equipment": "Thiết bị",
-      "barbecue_zone": "Khu vực nướng BBQ",
-      "grill": "Bếp nướng",
-      "sink": "Bồn rửa",
-      "charcoal": "Than",
-      "utensils": "Bát đĩa và vật dụng tiêu hao"
-    },
-    "cta": {
-      "title": "Sẵn sàng cho dã ngoại?",
-      "description": "Đặt khu vực nướng BBQ ngay bây giờ và chuẩn bị cho sự thư giãn tuyệt vời!",
-      "call_button": "📞 Gọi +84 349 338 758",
-      "telegram_button": "💬 Viết cho Telegram"
-    },
-    "features": {
-      "hourly_rental": "Thuê theo giờ",
-      "combine_with_games": "Khả năng kết hợp với các trò chơi",
-      "green_nature_zone": "Khu vực thiên nhiên xanh"
+    "cinema": {
+      "title": "Rạp chiếu phim dưới bầu trời sao",
+      "subtitle": "Đắm chìm trong không khí buổi chiếu phim buổi tối dưới bầu trời nhiệt đới",
+      "about": {
+        "title": "Về rạp chiếu phim",
+        "paragraph1": "Đắm chìm trong không khí buổi chiếu phim buổi tối dưới bầu trời nhiệt đới, nơi mỗi khung hình sống động trong ánh sáng mềm mại của những ngôi sao và sự lấp lánh của đêm thành phố.",
+        "paragraph2": "Địa điểm ấm cúng của chúng tôi được trang bị những chiếc ô lớn và những lều thanh lịch để không một giọt mưa nào làm hỏng việc xem phim.",
+        "paragraph3": "Màn hình chiếu rộng được treo giữa những cây cọ nhiệt đới, và những chiếc túi đậu mềm mại và gối ngay trên cỏ cho phép bạn thoải mái ngồi dưới bầu trời mở."
+      },
+      "how": {
+        "title": "Cách thức hoạt động của buổi chiếu",
+        "paragraph1": "Phim được chọn bởi bạn trong nhóm Telegram của chúng tôi — chỉ cần đề xuất và bình chọn cho những bộ phim yêu thích của bạn!",
+        "paragraph2": "Buổi chiếu bắt đầu: khi mặt trời lặn. Âm thanh không cần tai nghe: âm học tự nhiên của buổi tối nhiệt đới.",
+        "paragraph3": "Mọi thời tiết: ô và lều sẽ che mưa, và gió mát nhẹ sẽ chỉ thêm sự tươi mới."
+      },
+      "conditions": {
+        "title": "Điều kiện xem phim",
+        "start_time": "Khi mặt trời lặn",
+        "start_time_label": "Thời gian bắt đầu",
+        "sound": "Không cần tai nghe",
+        "sound_label": "Âm thanh",
+        "weather": "Mọi thời tiết",
+        "weather_label": "Thời tiết",
+        "seating": "Túi đậu mềm mại",
+        "seating_label": "Chỗ ngồi",
+        "screen": "Màn hình chiếu",
+        "screen_label": "Màn hình",
+        "umbrellas": "Ô và lều",
+        "umbrellas_label": "Bảo vệ khỏi mưa"
+      },
+      "cta": {
+        "title": "Sẵn sàng cho rạp chiếu phim dưới bầu trời sao?",
+        "description": "Hãy đến và trở thành một phần của cộng đồng rạp chiếu phim của chúng tôi, nơi mỗi buổi tối mang lại những ấn tượng khó quên dưới bầu trời đầy sao của Nha Trang!",
+        "call_button": "📞 Gọi +84 349 338 758",
+        "telegram_button": "💬 Chi tiết trong Telegram",
+        "telegram_link": "https://t.me/gamezone_vietnam/1860"
+      }
     }
-  }
 }
