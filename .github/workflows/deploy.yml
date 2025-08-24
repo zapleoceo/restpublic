@@ -13,17 +13,46 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
       
+    - name: Debug secrets
+      run: |
+        echo "Checking if secrets are available..."
+        if [ -n "${{ secrets.SSH_HOST }}" ]; then
+          echo "✅ SSH_HOST is set"
+        else
+          echo "❌ SSH_HOST is missing"
+          exit 1
+        fi
+        
+        if [ -n "${{ secrets.SSH_USER }}" ]; then
+          echo "✅ SSH_USER is set"
+        else
+          echo "❌ SSH_USER is missing"
+          exit 1
+        fi
+        
+        if [ -n "${{ secrets.SSH_KEY }}" ]; then
+          echo "✅ SSH_KEY is set"
+        else
+          echo "❌ SSH_KEY is missing"
+          exit 1
+        fi
+      
     - name: Deploy to server
       uses: appleboy/ssh-action@v1.0.3
       with:
         host: ${{ secrets.SSH_HOST }}
         username: ${{ secrets.SSH_USER }}
         key: ${{ secrets.SSH_KEY }}
+        port: 22
+        timeout: 60s
+        command_timeout: 60m
         script: |
           cd /var/www/goodzone_zap_usr/data/www/goodzone.zapleo.com
           echo "🚀 Начинаем автодеплой..."
           echo "📅 Время: $(date)"
           echo "📁 Директория: $(pwd)"
+          echo "🔧 Проверяем Git статус..."
+          git status
           
           # Проверяем права на скрипт
           chmod +x deploy.sh
@@ -39,6 +68,9 @@ jobs:
         host: ${{ secrets.SSH_HOST }}
         username: ${{ secrets.SSH_USER }}
         key: ${{ secrets.SSH_KEY }}
+        port: 22
+        timeout: 60s
+        command_timeout: 10m
         script: |
           echo "🔍 Выполняем health check..."
           sleep 15
