@@ -9,6 +9,8 @@ import LasertagPage from './components/LasertagPage';
 import ArcherytagPage from './components/ArcherytagPage';
 import BBQZonePage from './components/BBQZonePage';
 import QuestsPage from './components/QuestsPage';
+import GuitarPage from './components/GuitarPage';
+import BoardgamesPage from './components/BoardgamesPage';
 import LoadingSpinner from './components/LoadingSpinner';
 import ErrorBoundary from './components/ErrorBoundary';
 import AdminPanel from './components/AdminPanel';
@@ -90,6 +92,8 @@ function App() {
               <Route path="/archerytag" element={<ProtectedRoute><ArcherytagPage /></ProtectedRoute>} />
               <Route path="/bbq_zone" element={<ProtectedRoute><BBQZonePage /></ProtectedRoute>} />
               <Route path="/quests" element={<ProtectedRoute><QuestsPage /></ProtectedRoute>} />
+              <Route path="/guitar" element={<ProtectedRoute><GuitarPage /></ProtectedRoute>} />
+              <Route path="/boardgames" element={<ProtectedRoute><BoardgamesPage /></ProtectedRoute>} />
               <Route path="/cinema" element={<ProtectedRoute><div className="min-h-screen bg-gray-50 flex items-center justify-center"><div className="text-center"><h1 className="text-2xl font-bold mb-4">Кинотеатр</h1><p className="text-gray-600">Страница в разработке</p></div></div></ProtectedRoute>} />
               <Route path="/admin" element={<AdminPanel />} />
               <Route path="/admin/login" element={<LoginPage />} />

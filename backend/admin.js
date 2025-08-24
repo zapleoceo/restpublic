@@ -36,6 +36,21 @@ const DEFAULT_ADMIN_CONFIG = {
       enabled: true,
       title: "Квесты",
       description: "Увлекательные квесты"
+    },
+    guitar: {
+      enabled: true,
+      title: "Гитарники",
+      description: "Душевный гитарник у костра"
+    },
+    boardgames: {
+      enabled: true,
+      title: "Настольные игры",
+      description: "Найди свою компанию"
+    },
+    yoga: {
+      enabled: true,
+      title: "Йога",
+      description: "Гармония тела и духа"
     }
   },
   pages: {
@@ -45,7 +60,10 @@ const DEFAULT_ADMIN_CONFIG = {
     "/bow": { enabled: true, title: "Archery Tag" },
     "/cinema": { enabled: true, title: "Кинотеатр" },
     "/rent": { enabled: true, title: "BBQ Picnic Area" },
-    "/quests": { enabled: true, title: "Квесты" }
+    "/quests": { enabled: true, title: "Квесты" },
+    "/guitar": { enabled: true, title: "Гитарники" },
+    "/boardgames": { enabled: true, title: "Настольные игры" },
+    "/yoga": { enabled: true, title: "Йога" }
   },
   lastUpdated: new Date().toISOString()
 };

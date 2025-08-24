@@ -38,6 +38,18 @@
     "quests": {
       "title": "Nhiệm vụ",
       "description": "Nhiệm vụ thú vị"
+    },
+    "guitar": {
+      "title": "Guitar Circle",
+      "description": "Guitar tâm hồn bên lửa trại"
+    },
+    "boardgames": {
+      "title": "Board Games",
+      "description": "Tìm công ty của bạn"
+    },
+    "yoga": {
+      "title": "Yoga",
+      "description": "Sự hài hòa của cơ thể và tinh thần"
     }
   },
   "menu": {
@@ -94,6 +106,172 @@
     "fill_name_phone": "Vui lòng điền tên và số điện thoại"
   },
   "back": "Quay lại",
+  "guitar": {
+    "title": "Guitar Circle",
+    "subtitle": "Guitar tâm hồn bên lửa trại",
+    "atmosphere": {
+      "title": "Không khí vòng tròn của chúng tôi",
+      "description": "Hãy tưởng tượng: lửa trại nổ lách tách, chiếu những tia sáng mềm mại lên khuôn mặt bạn bè. Cây guitar chuyển từ tay này sang tay khác, và mọi người có thể chia sẻ giai điệu yêu thích hoặc đơn giản là lắng nghe, hát theo những câu quen thuộc. Không có sân khấu hay khán phòng ở đây — chỉ có vòng tròn của những người bình đẳng, đoàn kết bởi âm nhạc và mong muốn được lắng nghe.",
+      "quote": "Trong vòng tròn lửa trại của chúng tôi, bạn sẽ nghe cả những bài hát gốc mà bạn sẽ không nghe ở đâu khác và những bản hit được yêu thích khiến bạn muốn hát theo."
+    },
+    "expect": {
+      "title": "Điều gì đang chờ bạn",
+      "live_music": {
+        "title": "Âm nhạc trực tiếp",
+        "description": "Không có micro hay ampli, chỉ có âm thanh thuần khiết của dây guitar và giọng hát"
+      },
+      "conversations": {
+        "title": "Những cuộc trò chuyện tâm hồn",
+        "description": "Giữa các bài hát — về du lịch, ước mơ, cuộc sống"
+      },
+      "tea": {
+        "title": "Trà ấm",
+        "description": "Và những món ăn đơn giản làm cho buổi tối thêm ấm cúng"
+      },
+      "perform": {
+        "title": "Cơ hội biểu diễn",
+        "description": "Hát bài hát yêu thích của bạn hoặc lắng nghe người khác"
+      },
+      "friendly": {
+        "title": "Không khí thân thiện",
+        "description": "Ở đây mọi người sẽ tìm thấy những người cùng chí hướng"
+      }
+    },
+    "rules": {
+      "title": "Quy tắc lửa trại của chúng tôi",
+      "memorize": "Chúng tôi yêu cầu bạn biểu diễn bài hát thuộc lòng — hãy để mắt bạn gặp mắt người nghe, không phải màn hình điện thoại.",
+      "alternate": "Luân phiên các sáng tác gốc của bạn với những bài hát nổi tiếng — cách này sẽ thú vị hơn cho mọi người.",
+      "sincere": "Và quan trọng nhất — hát từ trái tim, vì chính sự chân thành làm cho vòng tròn của chúng tôi đặc biệt."
+    },
+    "for_whom": {
+      "title": "Buổi tối này dành cho ai",
+      "description": "Không quan trọng bạn có biết chơi guitar hay chỉ mơ ước học. Nhạc sĩ và người nghe, những người hát rong giàu kinh nghiệm và người mới bắt đầu rụt rè đều được chào đón ở đây. Điều duy nhất cần thiết là mong muốn đắm chìm trong không khí giao tiếp con người chân chính.",
+      "conclusion": "Hãy đến như bạn vốn có, với bài hát trong trái tim mà bạn muốn chia sẻ với người khác. Rốt cuộc, những kỷ niệm quý giá nhất được sinh ra chính xác trong những buổi tối như vậy — khi guitar vang lên dưới bầu trời mở, và trái tim mở ra với nhau."
+    },
+    "practical": {
+      "title": "Thông tin thực tế",
+      "location": {
+        "title": "Địa điểm gặp mặt",
+        "description": "Sẽ được thông báo riêng"
+      },
+      "time": {
+        "title": "Thời gian",
+        "description": "Bắt đầu khi mặt trời lặn"
+      },
+      "bring": {
+        "title": "Mang theo",
+        "description": "Tâm trạng tốt và tách trà yêu thích của bạn"
+      }
+    },
+    "final_quote": "\"Thật tuyệt vời khi tất cả chúng ta đều tụ họp ở đây hôm nay!\""
+  },
+  "boardgames": {
+    "title": "Board Games",
+    "subtitle": "Tìm công ty của bạn!",
+    "description": {
+      "title": "Board Games tại GoodZone",
+      "text": "Bộ sưu tập của chúng tôi bao gồm các trò chơi cho mọi sở thích: từ các trận chiến chiến lược đến các bữa tiệc vui nhộn. Mọi người sẽ tìm thấy thứ gì đó phù hợp với mình — dù bạn là người hâm mộ các câu đố logic hay người yêu thích các buổi tụ họp vui vẻ với bạn bè."
+    },
+    "deduction": {
+      "title": "Trò chơi suy luận và bí ẩn",
+      "mafia": {
+        "title": "Mafia — Thể loại cổ điển",
+        "description": "Trận chiến vĩnh cửu giữa những công dân trung thực và mafia xảo quyệt. Ban ngày mọi người ngủ yên, nhưng ban đêm... Ai có thể xác định được tội phạm và sống sót?",
+        "quote": "Một trò chơi về tâm lý, lừa gạt và kỹ năng thuyết phục."
+      },
+      "hitler": {
+        "title": "Hitler Bí Mật — Âm mưu chính trị",
+        "description": "Đức những năm 1930: những người tự do chống lại phát xít trong cuộc đấu tranh quyền lực kịch tính. Phát xít biết nhau, những người tự do thiểu số, và Hitler không biết ai cả!",
+        "quote": "Mọi luật lệ có thể gây chết người, mọi cuộc bỏ phiếu — định mệnh."
+      },
+      "bunker": {
+        "title": "Bunker — Sinh tồn bằng mọi giá",
+        "description": "Thế giới trên bờ vực thảm họa, không gian nơi trú ẩn có hạn. Mỗi người có nghề nghiệp, đặc điểm, hành lý riêng. Chứng minh rằng bạn xứng đáng được cứu!",
+        "quote": "Thuyết phục, tranh luận, âm mưu — như trong phim \"The Philosophers: Survival Lesson\"."
+      }
+    },
+    "adventure": {
+      "title": "Phiêu lưu và chiến lược",
+      "shakal": {
+        "title": "Shakal — Kho báu cướp biển",
+        "description": "Trở thành thuyền trưởng tàu cướp biển! Khám phá hòn đảo bí ẩn, tìm kiếm kho báu, chiến đấu với đối thủ và đề phòng bẫy.",
+        "quote": "Mỗi ván chơi là một cuộc phiêu lưu mới với bản đồ đảo độc đáo."
+      }
+    },
+    "dexterity": {
+      "title": "Trò chơi khéo léo và phản ứng",
+      "jenga": {
+        "title": "Jenga — Tháp trên bờ vực",
+        "description": "Trò chơi cổ điển về sự ổn định của tay và sức mạnh thần kinh. Cẩn thận lấy các khối gỗ và đặt chúng lên trên.",
+        "quote": "Điều chính — đừng để tháp sụp đổ! Mỗi nước đi tăng cường cổ phần."
+      }
+    },
+    "cards": {
+      "title": "Trận chiến thẻ nhanh",
+      "kittens": {
+        "title": "Mèo Nổ — Roulette Nga với mèo",
+        "description": "Những chú mèo dễ thương có thể... nổ! Rút thẻ từ bộ bài, nhưng cầu nguyện đừng bị mèo có bẫy.",
+        "quote": "Sử dụng \"con trỏ laser\" và \"cỏ mèo\" để gỡ bỏ. Trò chơi siêu nhanh, luật đơn giản, niềm vui tối đa!"
+      },
+      "uno": {
+        "title": "UNO — Cổ điển đầy màu sắc",
+        "description": "Loại bỏ thẻ theo màu sắc hoặc giá trị, sử dụng thẻ đặc biệt để tấn công đối thủ.",
+        "quote": "Đừng quên hét \"UNO!\" khi bạn còn một thẻ! Trò chơi về sự chú ý, tốc độ và một chút may mắn."
+      }
+    },
+    "economic": {
+      "title": "Trận chiến kinh tế",
+      "monopoly": {
+        "title": "Monopoly — Trận chiến cho đế chế",
+        "description": "Mua bất động sản, xây khách sạn, thu tiền thuê và phá sản đối thủ!",
+        "quote": "Chiến lược kinh tế cổ điển nơi may mắn gặp tính toán, và tình bạn được kiểm tra về sức mạnh."
+      }
+    },
+    "atmosphere": {
+      "title": "Không khí phòng chơi của chúng tôi",
+      "tables": {
+        "title": "Bàn thoải mái",
+        "description": "Cho nhóm từ 2 đến 10 người"
+      },
+      "rules": {
+        "title": "Giải thích chi tiết",
+        "description": "Luật từ người dẫn chương trình của chúng tôi"
+      },
+      "tournaments": {
+        "title": "Giải đấu và vô địch",
+        "description": "Cho những người đam mê nhất"
+      },
+      "refreshments": {
+        "title": "Trà, cà phê, đồ ăn nhẹ",
+        "description": "Để não hoạt động hết công suất"
+      }
+    },
+    "why_play": {
+      "title": "Tại sao chơi Board Games?",
+      "description": "Board games là giao tiếp trực tiếp không có thiết bị, kiểm tra tư duy chiến lược và kỹ năng diễn xuất. Đây là nơi bạn có thể khám phá bạn bè từ góc độ mới và kết bạn mới.",
+      "beginners": {
+        "title": "Cho người mới bắt đầu",
+        "description": "Bắt đầu với luật đơn giản"
+      },
+      "experienced": {
+        "title": "Cho người có kinh nghiệm",
+        "description": "Chiến lược phức tạp và giải đấu"
+      },
+      "companies": {
+        "title": "Cho công ty",
+        "description": "Trò chơi kết nối mọi người"
+      },
+      "families": {
+        "title": "Cho gia đình",
+        "description": "Giải trí cho mọi lứa tuổi"
+      }
+    },
+    "cta": {
+      "title": "Sẵn sàng chơi?",
+      "description": "Đến một mình hoặc với công ty — luôn có bàn và đối tác cho trò chơi. Trong thế giới board games, mỗi buổi tối có thể trở thành cuộc phiêu lưu khó quên!",
+      "quote": "Chúng tôi giải thích luật của tất cả trò chơi tại chỗ. Không cần kinh nghiệm — chỉ cần mong muốn chơi và chiến thắng!"
+    }
+  },
   "quests": {
     "title": "Nhiệm vụ - Cuộc phiêu lưu thú vị",
     "subtitle": "Đắm chìm trong những câu chuyện hấp dẫn và giải đố trong phòng nhiệm vụ của chúng tôi",

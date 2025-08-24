@@ -46,6 +46,24 @@ const HomePage = () => {
       icon: '/img/quests/icon.png',
       logo: '/img/quests/big.jpg',
       link: '/quests'
+    },
+    guitar: {
+      id: 'guitar',
+      icon: '/img/guitar/icon.png',
+      logo: '/img/guitar/button.jpg',
+      link: '/guitar'
+    },
+    boardgames: {
+      id: 'boardgames',
+      icon: '/img/boardgames/icon.png',
+      logo: '/img/boardgames/button.jpg',
+      link: '/boardgames'
+    },
+    yoga: {
+      id: 'yoga',
+      icon: '/img/yoga/icon.png',
+      logo: '/img/yoga/button.jpg',
+      link: '/yoga'
     }
   };
 

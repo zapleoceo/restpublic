@@ -38,6 +38,18 @@
     "quests": {
       "title": "Quests",
       "description": "Exciting quests"
+    },
+    "guitar": {
+      "title": "Guitar Circle",
+      "description": "Soulful guitar by the campfire"
+    },
+    "boardgames": {
+      "title": "Board Games",
+      "description": "Find your company"
+    },
+    "yoga": {
+      "title": "Yoga",
+      "description": "Harmony of body and spirit"
     }
   },
   "menu": {
@@ -94,6 +106,172 @@
     "fill_name_phone": "Please fill in your name and phone number"
   },
   "back": "Back",
+  "guitar": {
+    "title": "Guitar Circle",
+    "subtitle": "Soulful guitar by the campfire",
+    "atmosphere": {
+      "title": "Our Circle's Atmosphere",
+      "description": "Imagine: a crackling campfire casting soft highlights on friends' faces. The guitar passes from hand to hand, and everyone can share their favorite melody or simply listen, singing along to familiar lines. There's no stage or auditorium here — just a circle of equals, united by music and the desire to be heard.",
+      "quote": "In our campfire circle, you'll hear both original songs you won't hear anywhere else and beloved hits that make you want to sing along."
+    },
+    "expect": {
+      "title": "What Awaits You",
+      "live_music": {
+        "title": "Live Music",
+        "description": "No microphones or amplifiers, just the pure sound of guitar strings and voices"
+      },
+      "conversations": {
+        "title": "Heartfelt Conversations",
+        "description": "Between songs — about travels, dreams, life"
+      },
+      "tea": {
+        "title": "Warm Tea",
+        "description": "And simple treats that make the evening even cozier"
+      },
+      "perform": {
+        "title": "Performance Opportunity",
+        "description": "Sing your favorite song or listen to others"
+      },
+      "friendly": {
+        "title": "Friendly Atmosphere",
+        "description": "Here everyone will find like-minded people"
+      }
+    },
+    "rules": {
+      "title": "Our Campfire Rules",
+      "memorize": "We ask you to perform songs from memory — let your eyes meet the listeners' eyes, not the phone screen.",
+      "alternate": "Alternate your original compositions with well-known ones — this way it will be more interesting for everyone.",
+      "sincere": "And most importantly — sing from the heart, because it's sincerity that makes our circle special."
+    },
+    "for_whom": {
+      "title": "Who This Evening Is For",
+      "description": "It doesn't matter if you can play guitar or just dream of learning. Musicians and listeners, experienced bards and timid beginners are welcome here. The only thing needed is the desire to immerse yourself in the atmosphere of genuine human communication.",
+      "conclusion": "Come as you are, with that song in your heart that you want to share with others. After all, the most precious memories are born precisely on such evenings — when the guitar sounds under the open sky, and hearts are open to each other."
+    },
+    "practical": {
+      "title": "Practical Information",
+      "location": {
+        "title": "Meeting Place",
+        "description": "Will be announced separately"
+      },
+      "time": {
+        "title": "Time",
+        "description": "Starts at sunset"
+      },
+      "bring": {
+        "title": "Bring With You",
+        "description": "Good mood and your favorite mug for tea"
+      }
+    },
+    "final_quote": "\"How wonderful that we all gathered here today!\""
+  },
+  "boardgames": {
+    "title": "Board Games",
+    "subtitle": "Find your company!",
+    "description": {
+      "title": "Board Games at GoodZone",
+      "text": "Our collection includes games for every taste: from strategic battles to fun parties. Everyone will find something to their liking — whether you're a fan of logical puzzles or a lover of fun gatherings with friends."
+    },
+    "deduction": {
+      "title": "Deduction and Mystery Games",
+      "mafia": {
+        "title": "Mafia — Classic Genre",
+        "description": "Eternal battle between honest citizens and cunning mafia. During the day everyone sleeps peacefully, but at night... Who can identify the criminals and stay alive?",
+        "quote": "A game of psychology, bluffing, and persuasion skills."
+      },
+      "hitler": {
+        "title": "Secret Hitler — Political Intrigues",
+        "description": "Germany 1930s: liberals against fascists in a dramatic struggle for power. Fascists know each other, liberals are in the minority, and Hitler himself knows no one!",
+        "quote": "Every law can be fatal, every vote — fateful."
+      },
+      "bunker": {
+        "title": "Bunker — Survival at Any Cost",
+        "description": "The world is on the brink of disaster, shelter space is limited. Everyone has their own profession, characteristics, baggage. Prove that you deserve salvation!",
+        "quote": "Persuade, argue, intrigue — like in the movie \"The Philosophers: Survival Lesson\"."
+      }
+    },
+    "adventure": {
+      "title": "Adventures and Strategy",
+      "shakal": {
+        "title": "Shakal — Pirate Treasures",
+        "description": "Become a pirate ship captain! Explore the mysterious island, search for treasures, fight rivals and beware of traps.",
+        "quote": "Every game is a new adventure with a unique island map."
+      }
+    },
+    "dexterity": {
+      "title": "Dexterity and Reaction Games",
+      "jenga": {
+        "title": "Jenga — Tower on the Edge",
+        "description": "Classic game of hand steadiness and nerve strength. Carefully remove wooden blocks and place them on top.",
+        "quote": "The main thing — don't let the tower collapse! Each move increases the stakes."
+      }
+    },
+    "cards": {
+      "title": "Fast Card Battles",
+      "kittens": {
+        "title": "Exploding Kittens — Russian Roulette with Cats",
+        "description": "Cute kittens can be... explosive! Draw cards from the deck, but pray not to get a booby-trapped kitten.",
+        "quote": "Use \"laser pointers\" and \"catnip\" for defusing. Super-fast games, simple rules, maximum fun!"
+      },
+      "uno": {
+        "title": "UNO — Colorful Classic",
+        "description": "Discard cards by color or value, use special cards to attack opponents.",
+        "quote": "Don't forget to shout \"UNO!\" when you have one card left! A game of attention, speed, and a bit of luck."
+      }
+    },
+    "economic": {
+      "title": "Economic Battles",
+      "monopoly": {
+        "title": "Monopoly — Battle for Empire",
+        "description": "Buy real estate, build hotels, collect rent and bankrupt opponents!",
+        "quote": "Classic economic strategy where luck meets calculation, and friendship is tested for strength."
+      }
+    },
+    "atmosphere": {
+      "title": "Our Game Room Atmosphere",
+      "tables": {
+        "title": "Comfortable Tables",
+        "description": "For groups from 2 to 10 people"
+      },
+      "rules": {
+        "title": "Detailed Explanations",
+        "description": "Of rules from our hosts"
+      },
+      "tournaments": {
+        "title": "Tournaments and Championships",
+        "description": "For the most passionate"
+      },
+      "refreshments": {
+        "title": "Tea, Coffee, Snacks",
+        "description": "To keep the brain working at full capacity"
+      }
+    },
+    "why_play": {
+      "title": "Why Play Board Games?",
+      "description": "Board games are live communication without gadgets, testing strategic thinking and acting skills. This is a place where you can discover friends from a new side and make new acquaintances.",
+      "beginners": {
+        "title": "For Beginners",
+        "description": "Start with simple rules"
+      },
+      "experienced": {
+        "title": "For Experienced",
+        "description": "Complex strategies and tournaments"
+      },
+      "companies": {
+        "title": "For Companies",
+        "description": "Games that bring people together"
+      },
+      "families": {
+        "title": "For Families",
+        "description": "Entertainment for all ages"
+      }
+    },
+    "cta": {
+      "title": "Ready to Play?",
+      "description": "Come alone or with company — there's always a table and partners for the game. In the world of board games, every evening can become an unforgettable adventure!",
+      "quote": "We explain the rules of all games on the spot. No experience required — just the desire to play and win!"
+    }
+  },
   "quests": {
     "title": "Quests - Exciting Adventures",
     "subtitle": "Immerse yourself in captivating stories and solve puzzles in our quest rooms",
