@@ -1,6 +1,6 @@
 {
   "name": "restpublic-frontend",
-  "version": "2.2.47",
+  "version": "2.2.48",
   "description": "Modern React frontend for RestPublic restaurant menu",
   "type": "module",
   "scripts": {
