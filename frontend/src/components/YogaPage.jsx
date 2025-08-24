@@ -9,7 +9,7 @@ const YogaPage = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   const images = [
-    '/img/yoga/button.jpg'
+    '/img/yoga/button.jpg?v=1'
   ];
 
   const nextImage = () => {

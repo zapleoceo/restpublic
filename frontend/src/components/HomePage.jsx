@@ -62,7 +62,7 @@ const HomePage = () => {
     yoga: {
       id: 'yoga',
       icon: '/img/yoga/icon.png',
-      logo: '/img/yoga/button.jpg',
+      logo: '/img/yoga/button.jpg?v=1',
       link: '/yoga'
     }
   };
