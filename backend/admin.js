@@ -17,7 +17,7 @@ const DEFAULT_ADMIN_CONFIG = {
       title: "Лазертаг",
       description: "Командная игра"
     },
-    bow: {
+    archerytag: {
       enabled: false,
       title: "Archery Tag",
       description: "Лучный бой"
@@ -27,7 +27,7 @@ const DEFAULT_ADMIN_CONFIG = {
       title: "Кинотеатр",
       description: "Просмотр фильмов"
     },
-    rent: {
+    bbq_zone: {
       enabled: false,
       title: "BBQ Picnic Area",
       description: "Зона барбекю"
@@ -57,9 +57,9 @@ const DEFAULT_ADMIN_CONFIG = {
     "/": { enabled: true, title: "Главная страница" },
     "/m": { enabled: true, title: "Меню" },
     "/lasertag": { enabled: false, title: "Лазертаг" },
-    "/bow": { enabled: false, title: "Archery Tag" },
+    "/archerytag": { enabled: false, title: "Archery Tag" },
     "/cinema": { enabled: true, title: "Кинотеатр" },
-    "/rent": { enabled: false, title: "BBQ Picnic Area" },
+    "/bbq_zone": { enabled: false, title: "BBQ Picnic Area" },
     "/quests": { enabled: false, title: "Квесты" },
     "/guitar": { enabled: true, title: "Гитарники" },
     "/boardgames": { enabled: true, title: "Настольные игры" },
