@@ -2,6 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import LanguageSwitcher from './LanguageSwitcher';
+import ContactSection from './ContactSection';
 
 const GuitarPage = () => {
   const { t } = useTranslation();
@@ -17,6 +18,7 @@ const GuitarPage = () => {
                 ← Назад
               </Link>
             </div>
+            <img src="/img/logo.png" alt="GoodZone Logo" className="h-36 w-auto mt-10" />
             <div className="flex-1 flex justify-end">
               <LanguageSwitcher />
             </div>
@@ -155,35 +157,21 @@ const GuitarPage = () => {
           </p>
         </div>
 
-        {/* Practical info */}
+        {/* Schedule info */}
         <div className="bg-orange-50 rounded-lg p-8">
-          <h2 className="text-3xl font-bold text-gray-900 mb-6">
-            {t('guitar.practical.title')}
+          <h2 className="text-3xl font-bold text-gray-900 mb-6 text-center">
+            Расписание гитарников
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="text-center">
-              <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-orange-600 text-2xl">📍</span>
-              </div>
-              <h3 className="font-semibold text-gray-900 mb-2">{t('guitar.practical.location.title')}</h3>
-              <p className="text-gray-600">{t('guitar.practical.location.description')}</p>
+          <div className="text-center">
+            <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <span className="text-orange-600 text-2xl">🎵</span>
             </div>
-            
-            <div className="text-center">
-              <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-orange-600 text-2xl">🌅</span>
-              </div>
-              <h3 className="font-semibold text-gray-900 mb-2">{t('guitar.practical.time.title')}</h3>
-              <p className="text-gray-600">{t('guitar.practical.time.description')}</p>
-            </div>
-            
-            <div className="text-center">
-              <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-orange-600 text-2xl">🎒</span>
-              </div>
-              <h3 className="font-semibold text-gray-900 mb-2">{t('guitar.practical.bring.title')}</h3>
-              <p className="text-gray-600">{t('guitar.practical.bring.description')}</p>
-            </div>
+            <p className="text-xl text-gray-800 font-semibold">
+              Гитарники проводятся каждое воскресенье в 20:00
+            </p>
+            <p className="text-gray-600 mt-2">
+              Приходите к нам на душевный вечер с гитарой и хорошей компанией!
+            </p>
           </div>
         </div>
 
@@ -194,6 +182,11 @@ const GuitarPage = () => {
               {t('guitar.final_quote')}
             </p>
           </div>
+        </div>
+
+        {/* Contact Section */}
+        <div className="mt-7">
+          <ContactSection />
         </div>
       </div>
     </div>
