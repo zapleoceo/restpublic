@@ -56,11 +56,11 @@ const DEFAULT_ADMIN_CONFIG = {
   pages: {
     "/": { enabled: true, title: "Главная страница" },
     "/m": { enabled: true, title: "Меню" },
-    "/lasertag": { enabled: true, title: "Лазертаг" },
-    "/bow": { enabled: true, title: "Archery Tag" },
+    "/lasertag": { enabled: false, title: "Лазертаг" },
+    "/bow": { enabled: false, title: "Archery Tag" },
     "/cinema": { enabled: true, title: "Кинотеатр" },
-    "/rent": { enabled: true, title: "BBQ Picnic Area" },
-    "/quests": { enabled: true, title: "Квесты" },
+    "/rent": { enabled: false, title: "BBQ Picnic Area" },
+    "/quests": { enabled: false, title: "Квесты" },
     "/guitar": { enabled: true, title: "Гитарники" },
     "/boardgames": { enabled: true, title: "Настольные игры" },
     "/yoga": { enabled: true, title: "Йога" }
