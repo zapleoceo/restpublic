@@ -133,7 +133,18 @@ const CinemaPage = () => {
                   <span className="text-blue-600 text-lg">🎬</span>
                 </div>
                 <div>
-                  <p className="text-gray-700">{t('cinema.how.paragraph1')}</p>
+                  <p className="text-gray-700">
+                    {t('cinema.how.paragraph1_before')}
+                    <a 
+                      href={t('cinema.how.telegram_link')} 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="text-blue-600 hover:text-blue-800 underline"
+                    >
+                      {t('cinema.how.paragraph1_link')}
+                    </a>
+                    {t('cinema.how.paragraph1_after')}
+                  </p>
                 </div>
               </div>
               <div className="flex items-start space-x-3">

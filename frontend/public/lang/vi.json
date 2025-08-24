@@ -440,7 +440,10 @@
       },
       "how": {
         "title": "Cách thức hoạt động của buổi chiếu",
-        "paragraph1": "Phim được chọn bởi bạn trong <a href=\"https://t.me/gamezone_vietnam/1860\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-blue-600 hover:text-blue-800 underline\">nhóm Telegram</a> của chúng tôi — chỉ cần đề xuất và bình chọn cho những bộ phim yêu thích của bạn!",
+        "paragraph1_before": "Phim được chọn bởi bạn trong ",
+        "paragraph1_link": "nhóm Telegram",
+        "paragraph1_after": " của chúng tôi — chỉ cần đề xuất và bình chọn cho những bộ phim yêu thích của bạn!",
+        "telegram_link": "https://t.me/gamezone_vietnam/1860",
         "paragraph2": "Buổi chiếu bắt đầu: khi mặt trời lặn. Âm thanh không cần tai nghe: âm học tự nhiên của buổi tối nhiệt đới.",
         "paragraph3": "Mọi thời tiết: ô và lều sẽ che mưa, và gió mát nhẹ sẽ chỉ thêm sự tươi mới."
       },
