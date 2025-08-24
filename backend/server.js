@@ -30,7 +30,7 @@ app.use((req, res, next) => {
 });
 
 // Статические файлы
-app.use(express.static(path.join(__dirname, '../dist')));
+app.use(express.static(path.join(__dirname, '..')));
 
 // HTTPS агент для API запросов
 const httpsAgent = new https.Agent({
@@ -455,7 +455,7 @@ app.get('/api/admin/page/:path(*)/status', (req, res) => {
 
 // SPA fallback
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../dist/index.html'));
+  res.sendFile(path.join(__dirname, '../index.html'));
 });
 
 // Error handler
@@ -527,7 +527,7 @@ app.listen(PORT, async () => {
   console.log(`🚀 RestPublic Backend v${process.env.APP_VERSION || '2.1.1'} running on port ${PORT}`);
   console.log(`📡 Poster API proxy: /api/poster/*`);
   console.log(`📋 Menu cache: /api/menu (with price normalization)`);
-  console.log(`🌐 Frontend: /dist/*`);
+  console.log(`🌐 Frontend: /*`);
   console.log(`🔗 Health check: http://localhost:${PORT}/api/health`);
   
   // Запускаем мониторинг SePay после запуска сервера
