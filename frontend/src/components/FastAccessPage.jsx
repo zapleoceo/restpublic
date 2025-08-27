@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { validateTableId, createBotUrl, createMenuUrl, createHomeUrl } from '../utils/tableUtils';
 import { TableProvider } from '../contexts/TableContext';
 import TableErrorPage from './TableErrorPage';
+import LanguageSwitcher from './LanguageSwitcher';
 import { Bot, Menu, Globe, ChevronRight } from 'lucide-react';
 
 const FastAccessPage = () => {
@@ -69,6 +70,19 @@ const FastAccessPage = () => {
   return (
     <TableProvider tableId={tableId}>
       <div className="min-h-screen bg-gradient-to-br from-orange-50 via-red-50 to-amber-50">
+        {/* Header с переключателем языка */}
+        <div className="bg-white shadow-sm border-b">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex items-center justify-between h-16">
+              <div className="flex-1"></div>
+              <h1 className="text-2xl font-bold text-gray-900">GoodZone</h1>
+              <div className="flex-1 flex justify-end">
+                <LanguageSwitcher />
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div className="container mx-auto px-4 py-8">
           <div className="max-w-md mx-auto">
             
