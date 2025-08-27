@@ -134,7 +134,7 @@ TZ_*.md
 technical_assignment*.md
 requirements*.md
 specification*.md
-README.md
+# README.md - НЕ исключаем, это основная документация проекта
 
 # ===========================================
 # Temporary API response files
