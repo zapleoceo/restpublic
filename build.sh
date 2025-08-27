@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# RestPublic Auto Build Script v1.0
+# North Republic Auto Build Script v1.0
 # Автоматический скрипт для обновления и сборки проекта
 
 set -e  # Остановить выполнение при ошибке
@@ -57,7 +57,7 @@ if ! command -v npm &> /dev/null; then
     exit 1
 fi
 
-log "🚀 Начинаем автоматическую сборку RestPublic проекта..."
+log "🚀 Начинаем автоматическую сборку North Republic проекта..."
 
 # Показываем текущую директорию
 log "📁 Текущая директория: $(pwd)"
@@ -215,7 +215,7 @@ fi
 
 # Создаем файл с информацией о сборке
 BUILD_INFO="logs/build-info.txt"
-echo "=== RestPublic Build Info ===" > $BUILD_INFO
+echo "=== North Republic Build Info ===" > $BUILD_INFO
 echo "Build Date: $(date)" >> $BUILD_INFO
 echo "Git Branch: $CURRENT_BRANCH" >> $BUILD_INFO
 echo "Git Commit: $(git rev-parse --short HEAD)" >> $BUILD_INFO
@@ -228,7 +228,7 @@ success "Информация о сборке сохранена в $BUILD_INFO"
 
 # Финальное сообщение
 echo
-log "🎉 Сборка проекта завершена успешно!"
+log "🎉 Сборка North Republic проекта завершена успешно!"
 log "📋 Следующие шаги:"
 log "   1. Запустить backend: cd backend && npm start"
 log "   2. Запустить bot: cd bot && npm start"

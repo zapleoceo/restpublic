@@ -33,7 +33,7 @@ const server = http.createServer((req, res) => {
         
         // Проверяем, что это push в main ветку
         if (payload.ref === 'refs/heads/main') {
-          console.log('🚀 Запускаем автодеплой...');
+          console.log('🚀 Запускаем автодеплой North Republic...');
           
           exec(`cd ${DEPLOY_PATH} && ./deploy.sh`, (error, stdout, stderr) => {
             if (error) {
@@ -43,7 +43,7 @@ const server = http.createServer((req, res) => {
               return;
             }
             
-            console.log('✅ Деплой завершен успешно');
+            console.log('✅ Деплой North Republic завершен успешно');
             console.log(stdout);
             
             res.writeHead(200);

@@ -75,7 +75,7 @@ const FastAccessPage = () => {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-16">
               <div className="flex-1"></div>
-              <h1 className="text-2xl font-bold text-gray-900">GoodZone</h1>
+              <h1 className="text-2xl font-bold text-gray-900">North Republic</h1>
               <div className="flex-1 flex justify-end">
                 <LanguageSwitcher />
               </div>

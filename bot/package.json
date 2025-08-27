@@ -1,7 +1,7 @@
 {
-  "name": "restpublic-bot",
+  "name": "northrepublic-bot",
   "version": "1.0.1",
-  "description": "Telegram bot for RestPublic restaurant menu",
+  "description": "Telegram bot for North Republic restaurant menu",
   "main": "dist/bot.js",
   "type": "module",
   "scripts": {

@@ -30,7 +30,7 @@ bot.command('start', async (ctx) => {
   console.log(`🆔 Chat ID: ${chat.id}, Username: @${username || 'N/A'}, Name: ${firstName || ''} ${lastName || ''}`);
   
   await ctx.reply(
-    '🍜 Добро пожаловать в RestPublic!\n\nИспользуйте кнопки ниже для навигации:',
+    '🍜 Добро пожаловать в North Republic!\n\nИспользуйте кнопки ниже для навигации:',
     mainKeyboard
   );
 });

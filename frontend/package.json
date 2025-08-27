@@ -1,7 +1,7 @@
 {
-  "name": "restpublic-frontend",
+  "name": "northrepublic-frontend",
   "version": "2.2.67",
-  "description": "Modern React frontend for RestPublic restaurant menu",
+  "description": "Modern React frontend for North Republic restaurant menu",
   "type": "module",
   "scripts": {
     "dev": "vite",

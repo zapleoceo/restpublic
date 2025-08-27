@@ -73,7 +73,7 @@ app.use('/api/poster', async (req, res) => {
       data: req.body,
       headers: {
         'Content-Type': 'application/json',
-        'User-Agent': 'RestPublic-Backend/2.0',
+        'User-Agent': 'NorthRepublic-Backend/2.0',
         ...req.headers
       },
       httpsAgent: httpsAgent,

@@ -1,7 +1,7 @@
 module.exports = {
   apps: [
     {
-      name: 'restpublic-backend',
+      name: 'northrepublic-backend',
       script: './backend/server.js',
       cwd: '/var/www/goodzone_zap_usr/data/www/goodzone.zapleo.com',
       env_file: '.env',
@@ -18,7 +18,7 @@ module.exports = {
       max_memory_restart: '1G'
     },
     {
-      name: 'restpublic-bot',
+      name: 'northrepublic-bot',
       script: './bot/dist/bot.js',
       cwd: '/var/www/goodzone_zap_usr/data/www/goodzone.zapleo.com',
       env_file: '.env',

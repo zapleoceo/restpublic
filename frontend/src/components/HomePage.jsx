@@ -98,7 +98,7 @@ const HomePage = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex-1"></div>
-            <img src="/img/logo.png" alt="GoodZone Logo" className="h-36 w-auto mt-10" />
+                            <img src="/img/logo.png" alt="North Republic Logo" className="h-36 w-auto mt-10" />
             <div className="flex-1 flex justify-end">
               <LanguageSwitcher />
             </div>
@@ -129,7 +129,7 @@ const HomePage = () => {
               {(section.id === 'menu' || section.id === 'lasertag' || section.id === 'bow' || section.id === 'rent' || section.id === 'cinema' || section.id === 'quests' || section.id === 'guitar' || section.id === 'boardgames' || section.id === 'yoga') && (
                 <img 
                   src={section.logo} 
-                  alt="GoodZone Logo" 
+                  alt="North Republic Logo" 
                   className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-xl" 
                 />
               )}

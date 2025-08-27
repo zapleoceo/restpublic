@@ -18,7 +18,7 @@ const ContactSection = () => {
               allowFullScreen=""
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
-              title="GoodZone Location"
+              title="North Republic Location"
               className="w-full"
             ></iframe>
           </div>

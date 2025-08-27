@@ -4,7 +4,7 @@
     "subtitle": "Không khí ấm cúng và món ăn tinh tế cho buổi tối của bạn"
   },
   "home": {
-    "title": "Chào mừng đến với GoodZone",
+    "title": "Chào mừng đến với Cộng hòa Bắc",
     "subtitle": "Khu phức hợp giải trí với nhà hàng, lasertag, bắn cung, rạp chiếu phim và thuê lều",
     "contacts": "Cách tìm chúng tôi",
     "contacts_subtitle": "Liên hệ với chúng tôi để đặt chỗ và thông tin bổ sung",
@@ -91,7 +91,7 @@
     "home_page_desc": "Đi đến trang chính",
     "your_table": "Bàn của bạn",
     "choose_action": "Chọn một hành động để tiếp tục",
-    "goodzone_restaurant": "GoodZone • Nhà hàng và Giải trí"
+    "goodzone_restaurant": "Cộng hòa Bắc • Nhà hàng và Giải trí"
   },
   "order_form_fields": {
     "your_name": "Tên của bạn",
@@ -180,7 +180,7 @@
     "title": "Board Games",
     "subtitle": "Tìm công ty của bạn!",
     "description": {
-      "title": "Board Games tại GoodZone",
+      "title": "Board Games tại Cộng hòa Bắc",
       "text": "Bộ sưu tập của chúng tôi bao gồm các trò chơi cho mọi sở thích: từ các trận chiến chiến lược đến các bữa tiệc vui nhộn. Mọi người sẽ tìm thấy thứ gì đó phù hợp với mình — dù bạn là người hâm mộ các câu đố logic hay người yêu thích các buổi tụ họp vui vẻ với bạn bè."
     },
     "deduction": {

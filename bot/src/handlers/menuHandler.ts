@@ -92,7 +92,7 @@ export const menuHandler = {
   // Показать контакты (без сайтов)
   async showContact(ctx: Context) {
     const contactMessage = 
-      '📞 *Контакты RestPublic*\n\n' +
+      '📞 *Контакты North Republic*\n\n' +
       '📍 *Мы тут:* https://maps.app.goo.gl/Hgbn5n83PA11NcqLA\n' +
       '📞 *Телефон:* +84 349 338 758';
 

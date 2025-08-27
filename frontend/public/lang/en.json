@@ -4,7 +4,7 @@
     "subtitle": "Cozy atmosphere and exquisite dishes for your evening"
   },
   "home": {
-    "title": "Welcome to GoodZone",
+    "title": "Welcome to North Republic",
     "subtitle": "Entertainment complex with restaurant, lasertag, archery, cinema and gazebo rental",
     "contacts": "How to find us",
     "contacts_subtitle": "Contact us for reservations and additional information",
@@ -91,7 +91,7 @@
     "home_page_desc": "Go to the main page",
     "your_table": "Your Table",
     "choose_action": "Choose an action to continue",
-    "goodzone_restaurant": "GoodZone • Restaurant and Entertainment"
+    "goodzone_restaurant": "North Republic • Restaurant and Entertainment"
   },
   "order_form_fields": {
     "your_name": "Your Name",
@@ -180,7 +180,7 @@
     "title": "Board Games",
     "subtitle": "Find your company!",
     "description": {
-      "title": "Board Games at GoodZone",
+      "title": "Board Games at North Republic",
       "text": "Our collection includes games for every taste: from strategic battles to fun parties. Everyone will find something to their liking — whether you're a fan of logical puzzles or a lover of fun gatherings with friends."
     },
     "deduction": {
