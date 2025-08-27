@@ -18,10 +18,10 @@ export EDITOR=/bin/true
 
 echo "📥 Обновляем код из репозитория..."
 # Используем --allow-unrelated-histories для решения проблемы с очищенной историей
-git pull origin main --allow-unrelated-histories --no-edit || {
+git pull origin dev --allow-unrelated-histories --no-edit || {
     echo "⚠️ Обычный pull не удался, выполняем принудительный reset..."
     git fetch origin
-    git reset --hard origin/main
+    git reset --hard origin/dev
 }
 
 echo "🛑 Останавливаем PM2 процессы..."
