@@ -1,0 +1,116 @@
+name: Deploy to Production
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+        - production
+      confirm:
+        description: 'Confirm deployment to production'
+        required: true
+        type: boolean
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.confirm == 'true' }}
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Deploy to Production
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.PRODUCTION_HOST }}
+        username: ${{ secrets.PRODUCTION_USER }}
+        key: ${{ secrets.PRODUCTION_SSH_KEY }}
+        script: |
+          echo "🚀 Starting production deployment..."
+          
+          # Переход в рабочую директорию
+          cd /var/www/northrepubli_usr/data/www/northrepublic.me
+          
+          # Обновление кода
+          echo "📥 Updating code from repository..."
+          git pull origin main --allow-unrelated-histories --no-edit
+          
+          # Остановка старых процессов
+          echo "🛑 Stopping old processes..."
+          pm2 stop northrepublic-backend northrepublic-bot || echo "PM2 processes not found"
+          pm2 delete northrepublic-backend northrepublic-bot || echo "PM2 processes not found"
+          
+          # Сборка и запуск Backend
+          echo "🔧 Building Backend..."
+          cd backend
+          npm install
+          mkdir -p ../logs
+          cd ..
+          
+          # Сборка Frontend
+          echo "🔨 Building Frontend..."
+          cd frontend
+          npm install
+          npm run build
+          echo "📋 Copying frontend files..."
+          cp -r dist/* ../
+          cd ..
+          
+          # Сборка Telegram Bot
+          echo "🤖 Building Telegram Bot..."
+          cd bot
+          npm install
+          npm run build
+          cd ..
+          echo "✅ Bot built and ready to start via PM2"
+          
+          # Настройка прав доступа
+          echo "🔐 Setting permissions..."
+          chmod +x bot/dist/bot.js
+          chown -R northrepubli_usr:northrepubli_usr .
+          
+          # Запуск процессов через PM2
+          echo "🚀 Starting processes via PM2..."
+          pm2 start ecosystem.config.js --update-env
+          echo "✅ Processes started via PM2"
+          
+          # Проверка статуса
+          echo "✅ Checking deployment status..."
+          sleep 5
+          
+          if pm2 list | grep -q "northrepublic-backend.*online"; then
+            echo "✅ Backend successfully started via PM2"
+          else
+            echo "❌ Error: backend not started"
+            echo "📋 Recent backend logs:"
+            tail -n 20 logs/backend.log
+            exit 1
+          fi
+          
+          if pm2 list | grep -q "northrepublic-bot.*online"; then
+            echo "✅ Bot successfully started via PM2"
+          else
+            echo "❌ Error: bot not started"
+            echo "📋 Recent bot logs:"
+            tail -n 20 logs/bot.log
+            exit 1
+          fi
+          
+          if [ -f "index.html" ]; then
+            echo "✅ Frontend files successfully deployed"
+          else
+            echo "❌ Error: frontend files not found"
+            exit 1
+          fi
+          
+          echo "🎉 Production deployment completed successfully!"
+          echo "🌐 Site available at: https://northrepublic.me"
+          echo "📡 Backend API: http://localhost:3001/api/health"
+          echo "📋 Backend logs: pm2 logs northrepublic-backend"
+          echo "📋 Bot logs: pm2 logs northrepublic-bot"
+          echo "🔍 Check processes: pm2 list"

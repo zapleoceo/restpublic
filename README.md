@@ -150,15 +150,33 @@ npm start        # Запуск продакшен версии
 
 ### Development (Автоматический)
 ```bash
-# При push в main ветку
-# GitHub Actions автоматически деплоит на goodzone.zapleo.com
+# На сервере
+cd /var/www/restbublic_z_usr/data/www/goodzone.zapleo.com
+./deploy.sh
 ```
 
-### Production (Ручной)
+Скрипт автоматически:
+1. Обновляет код из репозитория
+2. Останавливает старые процессы
+3. Собирает и запускает backend
+4. Собирает frontend
+5. Собирает и запускает бота
+6. Проверяет статус всех сервисов
+
+### Ручной деплой
 ```bash
-# На сервере northrepublic.me
-cd /path/to/production
-./deploy.sh
+# Обновление кода
+git pull origin master
+
+# Backend
+cd backend && npm install && npm start
+
+# Frontend
+cd frontend && npm install && npm run build
+cp -r dist/* ../
+
+# Bot
+cd bot && npm install && npm run build && npm start
 ```
 
 ## 🔒 Безопасность
