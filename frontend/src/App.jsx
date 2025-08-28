@@ -87,7 +87,7 @@ function App() {
           <main>
             <Routes>
               <Route path="/" element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
-              <Route path="/m" element={<ProtectedRoute><MenuPage menuData={menuData} /></ProtectedRoute>} />
+              <Route path="/menu" element={<ProtectedRoute><MenuPageWrapper menuData={menuData} /></ProtectedRoute>} />
               <Route path="/fast/:tableId" element={<ProtectedRoute><FastAccessPage /></ProtectedRoute>} />
               <Route path="/fast/:tableId/menu" element={<ProtectedRoute><MenuPageWrapper menuData={menuData} /></ProtectedRoute>} />
               <Route path="/lasertag" element={<ProtectedRoute><LasertagPage /></ProtectedRoute>} />
