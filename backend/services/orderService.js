@@ -161,11 +161,25 @@ class OrderService {
         };
       });
 
+      // Формируем комментарий с номером стола, именем гостя и комментарием
+      let orderComment = '';
+      if (tableId) {
+        orderComment += `Стол: ${tableId}`;
+      }
+      if (orderData.customerData && orderData.customerData.name) {
+        orderComment += orderComment ? ' | ' : '';
+        orderComment += `Гость: ${orderData.customerData.name}`;
+      }
+      if (comment) {
+        orderComment += orderComment ? ' | ' : '';
+        orderComment += `Комментарий: ${comment}`;
+      }
+
       // Подготавливаем данные заказа согласно документации
       const orderPayload = {
         spot_id: tableId || 1, // ID стола/места
         products: products,
-        comment: comment || ''
+        comment: orderComment || ''
       };
 
       // Привязываем заказ к клиенту по client_id
@@ -228,6 +242,7 @@ class OrderService {
         tableId,
         comment,
         clientId: client.client_id,
+        customerData: clientData, // Передаем данные клиента для комментария
         isFirstOrder: true // Для гостя всегда первый заказ, но без скидки
       });
 
