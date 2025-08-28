@@ -227,9 +227,9 @@ class OrderService {
     try {
       const { items, total, tableId, comment, customerData } = orderData;
 
-      // Сначала создаем минимального клиента
+      // Сначала создаем минимального клиента с правильным именем
       const clientData = {
-        name: customerData.name,
+        name: customerData.name || 'Гость',
         phone: customerData.phone
       };
 
