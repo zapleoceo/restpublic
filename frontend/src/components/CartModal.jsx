@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { X, Plus, Minus, Trash2, ShoppingCart } from 'lucide-react';
 import { useCart } from '../contexts/CartContext';
 import { formatPrice } from '../utils/priceUtils';
+import { getImageUrl, isImageAvailable } from '../utils/imageUtils';
 import CheckoutModal from './CheckoutModal';
 
 const CartModal = ({ isOpen, onClose, tableId }) => {
@@ -90,9 +91,9 @@ const CartModal = ({ isOpen, onClose, tableId }) => {
                     <div key={item.product_id} className="flex items-center space-x-3 bg-gray-50 rounded-lg p-3">
                       {/* Product image */}
                       <div className="w-12 h-12 bg-gray-200 rounded-lg overflow-hidden flex-shrink-0">
-                        {item.photo ? (
+                        {isImageAvailable(item.photo) ? (
                           <img
-                            src={item.photo}
+                            src={getImageUrl(item.photo)}
                             alt={item.product_name}
                             className="w-full h-full object-cover"
                             onError={(e) => {
@@ -101,7 +102,10 @@ const CartModal = ({ isOpen, onClose, tableId }) => {
                             }}
                           />
                         ) : null}
-                        <div className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-400 text-xs">
+                        <div 
+                          className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-400 text-xs"
+                          style={{ display: isImageAvailable(item.photo) ? 'none' : 'flex' }}
+                        >
                           🍽️
                         </div>
                       </div>

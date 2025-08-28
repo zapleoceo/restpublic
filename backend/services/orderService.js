@@ -2,7 +2,7 @@ const axios = require('axios');
 
 class OrderService {
   constructor() {
-    this.baseUrl = 'https://joinposter.com/api';
+    this.baseUrl = 'https://joinposter.com/api/v3';
     this.token = process.env.POSTER_API_TOKEN;
   }
 
@@ -11,8 +11,11 @@ class OrderService {
    */
   async checkExistingClient(phone) {
     try {
-      const response = await axios.post(`${this.baseUrl}/clients.getClientsList?token=${this.token}`, {
-        phone: phone
+      const response = await axios.get(`${this.baseUrl}/clients.getClientsList`, {
+        params: {
+          token: this.token,
+          phone: phone
+        }
       });
 
       if (response.data && response.data.response && response.data.response.length > 0) {
@@ -34,7 +37,8 @@ class OrderService {
    */
   async createClient(clientData) {
     try {
-      const response = await axios.post(`${this.baseUrl}/clients.createClient?token=${this.token}`, {
+      const response = await axios.post(`${this.baseUrl}/clients.createClient`, {
+        token: this.token,
         client_name: clientData.name,
         client_lastname: clientData.lastName || '',
         client_phone: clientData.phone,
@@ -58,9 +62,12 @@ class OrderService {
    */
   async checkFirstOrder(clientId) {
     try {
-      const response = await axios.post(`${this.baseUrl}/dash.getTransactions?token=${this.token}`, {
-        client_id: clientId,
-        type: 'incoming_order'
+      const response = await axios.get(`${this.baseUrl}/dash.getTransactions`, {
+        params: {
+          token: this.token,
+          client_id: clientId,
+          type: 'incoming_order'
+        }
       });
 
       // Если нет транзакций - это первый заказ
@@ -81,14 +88,25 @@ class OrderService {
       const { items, total, tableId, comment, clientId, isFirstOrder } = orderData;
 
       // Подготавливаем товары для заказа
-      const products = items.map(item => ({
-        product_id: item.product_id,
-        count: item.quantity,
-        price: item.price
-      }));
+      const products = items.map(item => {
+        // Получаем числовую цену
+        let price = item.price;
+        if (typeof price === 'object' && price !== null) {
+          // Если цена - объект, берем основную цену
+          price = price['1'] || Object.values(price)[0] || 0;
+        }
+        price = parseFloat(price) || 0;
+
+        return {
+          product_id: item.product_id,
+          count: item.quantity,
+          price: Math.round(price * 100) // Poster API ожидает цену в копейках
+        };
+      });
 
       // Подготавливаем данные заказа
       const orderPayload = {
+        token: this.token,
         spot_id: tableId || 1, // ID стола/места
         client_id: clientId,
         products: products,
@@ -97,14 +115,11 @@ class OrderService {
 
       // Добавляем скидку 20% если это первый заказ
       if (isFirstOrder) {
-        orderPayload.discounts = [{
-          type: 'percent',
-          value: 20
-        }];
+        orderPayload.discount = 20; // Процентная скидка
       }
 
       const response = await axios.post(
-        `${this.baseUrl}/incomingOrders.createIncomingOrder?token=${this.token}`,
+        `${this.baseUrl}/incomingOrders.createIncomingOrder`,
         orderPayload
       );
 
@@ -115,7 +130,8 @@ class OrderService {
       throw new Error('Неверный ответ от API при создании заказа');
     } catch (error) {
       console.error('Error creating order:', error);
-      throw new Error('Ошибка при создании заказа');
+      console.error('Order data:', orderData);
+      throw new Error('Ошибка при создании заказа: ' + (error.response?.data?.error || error.message));
     }
   }
 
