@@ -19,15 +19,27 @@ class OrderService {
   async checkExistingClient(phone) {
     try {
       console.log('Checking existing client with phone:', phone);
+      
+      // Форматируем номер телефона для поиска
+      let formattedPhone = phone;
+      if (formattedPhone.startsWith('+')) {
+        formattedPhone = formattedPhone.substring(1);
+      }
+      formattedPhone = formattedPhone.replace(/\D/g, '');
+      
+      console.log('Searching for formatted phone:', formattedPhone);
+      
       const response = await axios.get(`${this.baseUrl}/clients.getClients?token=${this.getToken()}`);
 
       console.log('Client check response:', response.data);
       
       if (response.data && response.data.response) {
         // Фильтруем клиентов по номеру телефона
-        const client = response.data.response.find(c => 
-          c.phone === phone || c.phone_number === phone.replace(/\D/g, '')
-        );
+        const client = response.data.response.find(c => {
+          const clientPhone = c.phone || c.phone_number || '';
+          const cleanClientPhone = clientPhone.replace(/\D/g, '');
+          return cleanClientPhone === formattedPhone;
+        });
         
         if (client) {
           return {
@@ -51,11 +63,21 @@ class OrderService {
     try {
       console.log('Creating client with data:', clientData);
       
+      // Форматируем номер телефона для Poster API
+      let phone = clientData.phone;
+      if (phone.startsWith('+')) {
+        phone = phone.substring(1); // Убираем +
+      }
+      // Убираем все нецифровые символы
+      phone = phone.replace(/\D/g, '');
+      
+      console.log('Formatted phone:', phone);
+      
       // Создаем URLSearchParams для form data
       const formData = new URLSearchParams();
       formData.append('client_name', clientData.name);
       formData.append('client_lastname', clientData.lastName || '');
-      formData.append('client_phone', clientData.phone);
+      formData.append('client_phone', phone);
       formData.append('client_birthday', clientData.birthday || '');
       formData.append('client_sex', clientData.gender === 'male' ? 1 : (clientData.gender === 'female' ? 2 : 0));
       formData.append('client_groups_id_client', 1); // Обязательное поле - группа клиентов (New customers)
