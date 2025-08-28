@@ -7,11 +7,12 @@ module.exports = {
       autorestart: true,
       watch: false,
       max_memory_restart: '1G',
+      env_file: '.env',
       env: {
         NODE_ENV: 'production',
         PORT: 3002
       },
-      APP_VERSION: '2.4.14'
+      APP_VERSION: '2.4.15'
     }
     // Временно отключен бот из-за конфликта с другим экземпляром
     // {

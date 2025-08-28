@@ -89,8 +89,8 @@ class OrderService {
       console.log('First order check response:', response.data);
 
       // Фильтруем транзакции по client_id
-      if (response.data && response.data.response) {
-        const clientTransactions = response.data.response.filter(t => 
+      if (response.data && response.data.response && response.data.response.data) {
+        const clientTransactions = response.data.response.data.filter(t => 
           t.client_id === clientId.toString()
         );
         
@@ -130,7 +130,7 @@ class OrderService {
         };
       });
 
-      // Подготавливаем данные заказа
+      // Подготавливаем данные заказа согласно документации
       const orderPayload = {
         spot_id: tableId || 1, // ID стола/места
         products: products,
@@ -142,9 +142,11 @@ class OrderService {
         orderPayload.client_id = clientId;
       }
 
-      // Добавляем скидку 20% если это первый заказ
+      // Добавляем скидку 20% если это первый заказ согласно документации
       if (isFirstOrder) {
-        orderPayload.discount = 20; // Процентная скидка
+        orderPayload.discounts = [
+          { "type": "percent", "value": 20 }
+        ];
       }
 
       console.log('Creating order with payload:', JSON.stringify(orderPayload, null, 2));
