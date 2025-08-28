@@ -1,6 +1,6 @@
 {
   "name": "northrepublic-backend",
-  "version": "1.0.92",
+  "version": "1.0.93",
   "description": "Backend proxy server for North Republic",
   "main": "server.js",
   "scripts": {

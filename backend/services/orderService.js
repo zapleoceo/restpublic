@@ -52,7 +52,7 @@ class OrderService {
       formData.append('client_phone', clientData.phone);
       formData.append('client_birthday', clientData.birthday || '');
       formData.append('client_sex', clientData.gender === 'male' ? 1 : (clientData.gender === 'female' ? 2 : 0));
-      formData.append('client_groups_id_client', 2); // Обязательное поле - группа клиентов (Founders)
+      formData.append('client_groups_id_client', 1); // Обязательное поле - группа клиентов (New customers)
       
       const response = await axios.post(`${this.baseUrl}/clients.createClient?token=${this.token}`, formData, {
         headers: {

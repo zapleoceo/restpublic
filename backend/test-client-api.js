@@ -15,7 +15,7 @@ async function testCreateClient() {
       client_phone: '+380991234567',
       client_birthday: '',
       client_sex: 0,
-      client_groups_id_client: 2
+      client_groups_id_client: 1
     };
 
     console.log('Sending request with data:', clientData);
