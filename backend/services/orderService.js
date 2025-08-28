@@ -50,7 +50,7 @@ class OrderService {
         client_phone: clientData.phone,
         client_birthday: clientData.birthday || '',
         client_sex: clientData.gender === 'male' ? 1 : (clientData.gender === 'female' ? 2 : 0),
-        client_groups_id: 1 // Обязательное поле - группа клиентов
+        client_groups_id_client: 2 // Обязательное поле - группа клиентов (Founders)
       }, {
         headers: {
           'Content-Type': 'application/json'
@@ -144,6 +144,9 @@ class OrderService {
       if (isFirstOrder) {
         orderPayload.discount = 20; // Процентная скидка
       }
+
+      // Убираем лишние поля, которые могут вызывать ошибки
+      // client_phone не нужен, так как client_id уже содержит всю информацию о клиенте
 
       console.log('Creating order with payload:', JSON.stringify(orderPayload, null, 2));
       
