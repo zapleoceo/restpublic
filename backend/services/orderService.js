@@ -91,7 +91,10 @@ class OrderService {
       console.log('Client creation response:', response.data);
 
       if (response.data && response.data.response) {
-        return response.data.response;
+        // Poster API возвращает только ID клиента, создаем объект
+        return {
+          client_id: response.data.response
+        };
       }
 
       throw new Error('Неверный ответ от API при создании клиента');
