@@ -13,22 +13,22 @@ class OrderService {
   async checkExistingClient(phone) {
     try {
       console.log('Checking existing client with phone:', phone);
-      const response = await axios.post(`${this.baseUrl}/clients.getClientsList`, {
-        token: this.token,
-        phone: phone
-      }, {
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
+      const response = await axios.get(`${this.baseUrl}/clients.getClients?token=${this.token}`);
 
       console.log('Client check response:', response.data);
       
-      if (response.data && response.data.response && response.data.response.length > 0) {
-        return {
-          exists: true,
-          client: response.data.response[0]
-        };
+      if (response.data && response.data.response) {
+        // Фильтруем клиентов по номеру телефона
+        const client = response.data.response.find(c => 
+          c.phone === phone || c.phone_number === phone.replace(/\D/g, '')
+        );
+        
+        if (client) {
+          return {
+            exists: true,
+            client: client
+          };
+        }
       }
 
       return { exists: false, client: null };
@@ -44,13 +44,13 @@ class OrderService {
   async createClient(clientData) {
     try {
       console.log('Creating client with data:', clientData);
-      const response = await axios.post(`${this.baseUrl}/clients.createClient`, {
-        token: this.token,
+      const response = await axios.post(`${this.baseUrl}/clients.createClient?token=${this.token}`, {
         client_name: clientData.name,
         client_lastname: clientData.lastName || '',
         client_phone: clientData.phone,
         client_birthday: clientData.birthday || '',
-        client_sex: clientData.gender === 'male' ? 1 : (clientData.gender === 'female' ? 2 : 0)
+        client_sex: clientData.gender === 'male' ? 1 : (clientData.gender === 'female' ? 2 : 0),
+        client_groups_id: 1 // Обязательное поле - группа клиентов
       }, {
         headers: {
           'Content-Type': 'application/json'
@@ -76,21 +76,26 @@ class OrderService {
   async checkFirstOrder(clientId) {
     try {
       console.log('Checking first order for client:', clientId);
-      const response = await axios.post(`${this.baseUrl}/dash.getTransactions`, {
-        token: this.token,
-        client_id: clientId,
-        type: 'incoming_order'
-      }, {
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
+      const dateFrom = '2020-01-01';
+      const dateTo = new Date().toISOString().split('T')[0];
+      
+      const response = await axios.get(
+        `${this.baseUrl}/dash.getTransactions?token=${this.token}&dateFrom=${dateFrom}&dateTo=${dateTo}`
+      );
 
       console.log('First order check response:', response.data);
 
-      // Если нет транзакций - это первый заказ
-      const hasOrders = response.data && response.data.response && response.data.response.length > 0;
-      return !hasOrders;
+      // Фильтруем транзакции по client_id
+      if (response.data && response.data.response) {
+        const clientTransactions = response.data.response.filter(t => 
+          t.client_id === clientId.toString()
+        );
+        
+        // Если нет транзакций для этого клиента - это первый заказ
+        return clientTransactions.length === 0;
+      }
+      
+      return true; // Если нет данных, считаем первым заказом
     } catch (error) {
       console.error('Error checking first order:', error.response?.data || error.message);
       // При ошибке считаем, что это не первый заказ (безопаснее)
@@ -103,7 +108,7 @@ class OrderService {
    */
   async createOrder(orderData) {
     try {
-      const { items, total, tableId, comment, clientId, isFirstOrder } = orderData;
+      const { items, total, tableId, comment, clientId, isFirstOrder, customerData } = orderData;
 
       // Подготавливаем товары для заказа
       const products = items.map(item => {
@@ -130,6 +135,11 @@ class OrderService {
         comment: comment || ''
       };
 
+      // Добавляем телефон клиента (обязательное поле)
+      if (customerData && customerData.phone) {
+        orderPayload.client_phone = customerData.phone;
+      }
+
       // Добавляем скидку 20% если это первый заказ
       if (isFirstOrder) {
         orderPayload.discount = 20; // Процентная скидка
@@ -138,11 +148,8 @@ class OrderService {
       console.log('Creating order with payload:', JSON.stringify(orderPayload, null, 2));
       
       const response = await axios.post(
-        `${this.baseUrl}/incomingOrders.createIncomingOrder`,
-        {
-          token: this.token,
-          ...orderPayload
-        },
+        `${this.baseUrl}/incomingOrders.createIncomingOrder?token=${this.token}`,
+        orderPayload,
         {
           headers: {
             'Content-Type': 'application/json'

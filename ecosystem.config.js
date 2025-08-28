@@ -3,10 +3,12 @@ module.exports = {
     {
       name: 'northrepublic-backend',
       script: './backend/server.js',
-      cwd: '/var/www/goodzone_zap_usr/data/www/goodzone.zapleo.com',
+      cwd: '/var/www/northrepubli_usr/data/www/northrepublic.me',
       env_file: '.env',
       env: {
-        APP_VERSION: '2.4.1'
+        APP_VERSION: '2.4.2',
+        NODE_ENV: 'production',
+        PORT: 3002
       },
       log_file: './logs/backend.log',
       error_file: './logs/backend-error.log',
@@ -20,7 +22,7 @@ module.exports = {
     {
       name: 'northrepublic-bot',
       script: './bot/dist/bot.js',
-      cwd: '/var/www/goodzone_zap_usr/data/www/goodzone.zapleo.com',
+      cwd: '/var/www/northrepubli_usr/data/www/northrepublic.me',
       env_file: '.env',
       env: {
         NODE_ENV: 'production'

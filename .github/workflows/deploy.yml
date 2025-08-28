@@ -1,8 +1,8 @@
-name: Deploy to Server
+name: Deploy to Production
 
 on:
   push:
-    branches: [ dev ]
+    branches: [ main ]
   workflow_dispatch:
 
 jobs:
@@ -16,39 +16,39 @@ jobs:
     - name: Debug secrets
       run: |
         echo "Checking if secrets are available..."
-        if [ -n "${{ secrets.SSH_HOST }}" ]; then
-          echo "✅ SSH_HOST is set"
+        if [ -n "${{ secrets.PRODUCTION_HOST }}" ]; then
+          echo "✅ PRODUCTION_HOST is set"
         else
-          echo "❌ SSH_HOST is missing"
+          echo "❌ PRODUCTION_HOST is missing"
           exit 1
         fi
         
-        if [ -n "${{ secrets.SSH_USER }}" ]; then
-          echo "✅ SSH_USER is set"
+        if [ -n "${{ secrets.PRODUCTION_USER }}" ]; then
+          echo "✅ PRODUCTION_USER is set"
         else
-          echo "❌ SSH_USER is missing"
+          echo "❌ PRODUCTION_USER is missing"
           exit 1
         fi
         
-        if [ -n "${{ secrets.SSH_KEY }}" ]; then
-          echo "✅ SSH_KEY is set"
+        if [ -n "${{ secrets.PRODUCTION_SSH_KEY }}" ]; then
+          echo "✅ PRODUCTION_SSH_KEY is set"
         else
-          echo "❌ SSH_KEY is missing"
+          echo "❌ PRODUCTION_SSH_KEY is missing"
           exit 1
         fi
       
     - name: Deploy to server
       uses: appleboy/ssh-action@v1.0.3
       with:
-        host: ${{ secrets.SSH_HOST }}
-        username: ${{ secrets.SSH_USER }}
-        key: ${{ secrets.SSH_KEY }}
+        host: ${{ secrets.PRODUCTION_HOST }}
+        username: ${{ secrets.PRODUCTION_USER }}
+        key: ${{ secrets.PRODUCTION_SSH_KEY }}
         port: 22
         timeout: 60s
         command_timeout: 60m
         script: |
-          cd /var/www/goodzone_zap_usr/data/www/goodzone.zapleo.com
-          echo "🚀 Начинаем автодеплой..."
+          cd /var/www/northrepubli_usr/data/www/northrepublic.me
+          echo "🚀 Начинаем автодеплой Production..."
           echo "📅 Время: $(date)"
           echo "📁 Директория: $(pwd)"
           echo "🔧 Проверяем Git статус..."
@@ -60,14 +60,14 @@ jobs:
           # Выполняем деплой с подробным логированием
           ./deploy.sh
           
-          echo "✅ Автодеплой завершен!"
+          echo "✅ Автодеплой Production завершен!"
           
     - name: Health check
       uses: appleboy/ssh-action@v1.0.3
       with:
-        host: ${{ secrets.SSH_HOST }}
-        username: ${{ secrets.SSH_USER }}
-        key: ${{ secrets.SSH_KEY }}
+        host: ${{ secrets.PRODUCTION_HOST }}
+        username: ${{ secrets.PRODUCTION_USER }}
+        key: ${{ secrets.PRODUCTION_SSH_KEY }}
         port: 22
         timeout: 60s
         command_timeout: 10m
@@ -77,10 +77,10 @@ jobs:
           
           # Проверяем backend
           echo "📡 Проверяем backend API..."
-          curl -f http://localhost:3001/api/health || {
+          curl -f http://localhost:3002/api/health || {
             echo "❌ Backend health check failed"
             echo "📋 Логи backend:"
-            tail -n 20 /var/www/goodzone_zap_usr/data/www/goodzone.zapleo.com/logs/backend.log
+            tail -n 20 /var/www/northrepubli_usr/data/www/northrepublic.me/logs/backend.log
             exit 1
           }
           
@@ -90,7 +90,7 @@ jobs:
           
           # Проверяем frontend
           echo "🌐 Проверяем frontend..."
-          curl -f https://goodzone.zapleo.com/m > /dev/null || {
+          curl -f https://northrepublic.me/m > /dev/null || {
             echo "❌ Frontend check failed"
             exit 1
           }

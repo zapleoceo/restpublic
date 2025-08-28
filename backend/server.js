@@ -565,7 +565,8 @@ app.post('/api/orders/create', async (req, res) => {
       tableId,
       comment,
       clientId,
-      isFirstOrder
+      isFirstOrder,
+      customerData
     });
 
     res.json({ 

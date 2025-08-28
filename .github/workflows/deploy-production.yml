@@ -77,7 +77,7 @@ jobs:
           
           # Quick restart
           echo "🚀 Restarting services..."
-          pm2 start ecosystem-prod.config.js --update-env
+          pm2 start ecosystem.config.js --update-env
           
           # Quick health check (5 sec max)
           echo "✅ Health check..."

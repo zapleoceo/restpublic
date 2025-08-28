@@ -1,12 +1,12 @@
 #!/bin/bash
 
-# North Republic Deployment Script v2.1
+# North Republic Deployment Script v3.0
 # Этот скрипт автоматически обновляет код, собирает приложения и перезапускает сервисы
 set -e  # Остановить выполнение при ошибке
 
-echo "🚀 Начинаем деплой North Republic v2.1..."
+echo "🚀 Начинаем деплой North Republic v3.0 (Production)..."
 
-cd /var/www/goodzone_zap_usr/data/www/goodzone.zapleo.com
+cd /var/www/northrepubli_usr/data/www/northrepublic.me
 echo "📁 Рабочая директория: $(pwd)"
 
 # Настройки Git для предотвращения открытия редактора
@@ -18,10 +18,10 @@ export EDITOR=/bin/true
 
 echo "📥 Обновляем код из репозитория..."
 # Используем --allow-unrelated-histories для решения проблемы с очищенной историей
-git pull origin dev --allow-unrelated-histories --no-edit || {
+git pull origin main --allow-unrelated-histories --no-edit || {
     echo "⚠️ Обычный pull не удался, выполняем принудительный reset..."
     git fetch origin
-    git reset --hard origin/dev
+    git reset --hard origin/main
 }
 
 echo "🛑 Останавливаем PM2 процессы..."
@@ -51,7 +51,7 @@ echo "✅ Бот собран и готов к запуску через PM2"
 
 echo "🔐 Настраиваем права доступа..."
 chmod +x bot/dist/bot.js
-chown -R goodzone_zap_usr:goodzone_zap_usr .
+chown -R northrepubli_usr:northrepubli_usr .
 
 echo "🚀 Запускаем процессы через PM2..."
 pm2 start ecosystem.config.js --update-env
@@ -87,8 +87,8 @@ else
 fi
 
 echo "🎉 Деплой North Republic завершен успешно!"
-echo "🌐 Сайт доступен по адресу: https://goodzone.zapleo.com"
-echo "📡 Backend API: http://localhost:3001/api/health"
+echo "🌐 Сайт доступен по адресу: https://northrepublic.me"
+echo "📡 Backend API: http://localhost:3002/api/health"
 echo "📋 Логи backend: pm2 logs northrepublic-backend"
 echo "📋 Логи бота: pm2 logs northrepublic-bot"
 echo "🔍 Проверить процессы: pm2 list"
