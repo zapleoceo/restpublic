@@ -2,7 +2,7 @@ const axios = require('axios');
 
 class OrderService {
   constructor() {
-    this.baseUrl = 'https://joinposter.com/api/v3';
+    this.baseUrl = 'https://joinposter.com/api';
     this.token = process.env.POSTER_API_TOKEN;
   }
 
@@ -11,11 +11,8 @@ class OrderService {
    */
   async checkExistingClient(phone) {
     try {
-      const response = await axios.get(`${this.baseUrl}/clients.getClientsList`, {
-        params: {
-          token: this.token,
-          phone: phone
-        }
+      const response = await axios.post(`${this.baseUrl}/clients.getClientsList?token=${this.token}`, {
+        phone: phone
       });
 
       if (response.data && response.data.response && response.data.response.length > 0) {
@@ -37,8 +34,7 @@ class OrderService {
    */
   async createClient(clientData) {
     try {
-      const response = await axios.post(`${this.baseUrl}/clients.createClient`, {
-        token: this.token,
+      const response = await axios.post(`${this.baseUrl}/clients.createClient?token=${this.token}`, {
         client_name: clientData.name,
         client_lastname: clientData.lastName || '',
         client_phone: clientData.phone,
@@ -62,12 +58,9 @@ class OrderService {
    */
   async checkFirstOrder(clientId) {
     try {
-      const response = await axios.get(`${this.baseUrl}/dash.getTransactions`, {
-        params: {
-          token: this.token,
-          client_id: clientId,
-          type: 'incoming_order'
-        }
+      const response = await axios.post(`${this.baseUrl}/dash.getTransactions?token=${this.token}`, {
+        client_id: clientId,
+        type: 'incoming_order'
       });
 
       // Если нет транзакций - это первый заказ
@@ -106,7 +99,6 @@ class OrderService {
 
       // Подготавливаем данные заказа
       const orderPayload = {
-        token: this.token,
         spot_id: tableId || 1, // ID стола/места
         client_id: clientId,
         products: products,
@@ -119,7 +111,7 @@ class OrderService {
       }
 
       const response = await axios.post(
-        `${this.baseUrl}/incomingOrders.createIncomingOrder`,
+        `${this.baseUrl}/incomingOrders.createIncomingOrder?token=${this.token}`,
         orderPayload
       );
 
