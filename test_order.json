@@ -1,0 +1,11 @@
+{
+  "spot_id": 1,
+  "phone": "380994811881",
+  "products": [
+    {
+      "product_id": 15,
+      "count": 1
+    }
+  ],
+  "comment": "Test order from GoodZone"
+}
