@@ -6,7 +6,7 @@ module.exports = {
       cwd: '/var/www/northrepubli_usr/data/www/northrepublic.me',
       env_file: '.env',
       env: {
-        APP_VERSION: '2.4.5',
+        APP_VERSION: '2.4.6',
         NODE_ENV: 'production',
         PORT: 3002
       },
