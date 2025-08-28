@@ -4,6 +4,7 @@ class OrderService {
   constructor() {
     this.baseUrl = 'https://joinposter.com/api';
     this.token = process.env.POSTER_API_TOKEN;
+    console.log('OrderService initialized with token:', this.token ? 'present' : 'missing');
   }
 
   /**
@@ -11,10 +12,18 @@ class OrderService {
    */
   async checkExistingClient(phone) {
     try {
-      const response = await axios.post(`${this.baseUrl}/clients.getClientsList?token=${this.token}`, {
+      console.log('Checking existing client with phone:', phone);
+      const response = await axios.post(`${this.baseUrl}/clients.getClientsList`, {
+        token: this.token,
         phone: phone
+      }, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
       });
 
+      console.log('Client check response:', response.data);
+      
       if (response.data && response.data.response && response.data.response.length > 0) {
         return {
           exists: true,
@@ -24,7 +33,7 @@ class OrderService {
 
       return { exists: false, client: null };
     } catch (error) {
-      console.error('Error checking existing client:', error);
+      console.error('Error checking existing client:', error.response?.data || error.message);
       throw new Error('Ошибка при проверке существующего клиента');
     }
   }
@@ -34,13 +43,21 @@ class OrderService {
    */
   async createClient(clientData) {
     try {
-      const response = await axios.post(`${this.baseUrl}/clients.createClient?token=${this.token}`, {
+      console.log('Creating client with data:', clientData);
+      const response = await axios.post(`${this.baseUrl}/clients.createClient`, {
+        token: this.token,
         client_name: clientData.name,
         client_lastname: clientData.lastName || '',
         client_phone: clientData.phone,
         client_birthday: clientData.birthday || '',
         client_sex: clientData.gender === 'male' ? 1 : (clientData.gender === 'female' ? 2 : 0)
+      }, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
       });
+
+      console.log('Client creation response:', response.data);
 
       if (response.data && response.data.response) {
         return response.data.response;
@@ -48,7 +65,7 @@ class OrderService {
 
       throw new Error('Неверный ответ от API при создании клиента');
     } catch (error) {
-      console.error('Error creating client:', error);
+      console.error('Error creating client:', error.response?.data || error.message);
       throw new Error('Ошибка при создании клиента');
     }
   }
@@ -58,16 +75,24 @@ class OrderService {
    */
   async checkFirstOrder(clientId) {
     try {
-      const response = await axios.post(`${this.baseUrl}/dash.getTransactions?token=${this.token}`, {
+      console.log('Checking first order for client:', clientId);
+      const response = await axios.post(`${this.baseUrl}/dash.getTransactions`, {
+        token: this.token,
         client_id: clientId,
         type: 'incoming_order'
+      }, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
       });
+
+      console.log('First order check response:', response.data);
 
       // Если нет транзакций - это первый заказ
       const hasOrders = response.data && response.data.response && response.data.response.length > 0;
       return !hasOrders;
     } catch (error) {
-      console.error('Error checking first order:', error);
+      console.error('Error checking first order:', error.response?.data || error.message);
       // При ошибке считаем, что это не первый заказ (безопаснее)
       return false;
     }
@@ -110,10 +135,22 @@ class OrderService {
         orderPayload.discount = 20; // Процентная скидка
       }
 
+      console.log('Creating order with payload:', JSON.stringify(orderPayload, null, 2));
+      
       const response = await axios.post(
-        `${this.baseUrl}/incomingOrders.createIncomingOrder?token=${this.token}`,
-        orderPayload
+        `${this.baseUrl}/incomingOrders.createIncomingOrder`,
+        {
+          token: this.token,
+          ...orderPayload
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
       );
+      
+      console.log('Order creation response:', response.data);
 
       if (response.data && response.data.response) {
         return response.data.response;

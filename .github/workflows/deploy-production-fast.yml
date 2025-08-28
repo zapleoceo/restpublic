@@ -1,0 +1,94 @@
+name: Fast Deploy to Production
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 2  # Для сравнения изменений
+      
+    - name: Check for changes
+      id: changes
+      run: |
+        echo "backend_changed=$(git diff HEAD~1 HEAD --name-only | grep -q 'backend/' && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
+        echo "frontend_changed=$(git diff HEAD~1 HEAD --name-only | grep -q 'frontend/' && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
+        echo "bot_changed=$(git diff HEAD~1 HEAD --name-only | grep -q 'bot/' && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
+        
+    - name: Fast Deploy to Production
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.PRODUCTION_HOST }}
+        username: ${{ secrets.PRODUCTION_USER }}
+        key: ${{ secrets.PRODUCTION_SSH_KEY }}
+        script: |
+          echo "🚀 Fast deployment started..."
+          cd /var/www/northrepubli_usr/data/www/northrepublic.me
+          
+          # Git update
+          git pull origin main --allow-unrelated-histories --no-edit || (git fetch origin && git reset --hard origin/main)
+          
+          # Check changes
+          BACKEND_CHANGED=$(git diff HEAD~1 HEAD --name-only | grep -q "backend/" && echo "true" || echo "false")
+          FRONTEND_CHANGED=$(git diff HEAD~1 HEAD --name-only | grep -q "frontend/" && echo "true" || echo "false")
+          BOT_CHANGED=$(git diff HEAD~1 HEAD --name-only | grep -q "bot/" && echo "true" || echo "false")
+          
+          # Stop processes
+          pm2 stop northrepublic-backend northrepublic-bot || echo "Processes not found"
+          pm2 delete northrepublic-backend northrepublic-bot || echo "Processes not found"
+          
+          # Parallel build
+          (
+            cd backend
+            [ "$BACKEND_CHANGED" = "true" ] && npm ci --production --silent || echo "⚡ Skip backend install"
+            mkdir -p ../logs
+          ) &
+          
+          (
+            cd bot
+            [ "$BOT_CHANGED" = "true" ] && npm ci --production --silent || echo "⚡ Skip bot install"
+            npm run build --silent
+          ) &
+          
+          # Frontend (main thread)
+          cd frontend
+          [ "$FRONTEND_CHANGED" = "true" ] && npm ci --silent || echo "⚡ Skip frontend install"
+          npm run build --silent
+          cp -r dist/* ../
+          cd ..
+          
+          # Wait for background jobs
+          wait
+          
+          # Start services
+          chmod +x bot/dist/bot.js
+          pm2 start ecosystem-prod.config.js --update-env
+          
+          # Quick health check
+          for i in {1..10}; do
+            if pm2 list | grep -q "northrepublic-backend.*online" && pm2 list | grep -q "northrepublic-bot.*online"; then
+              echo "✅ All services online!"
+              break
+            fi
+            sleep 1
+          done
+          
+          echo "🎉 Fast deployment completed!"
+          
+    - name: Health Check
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.PRODUCTION_HOST }}
+        username: ${{ secrets.PRODUCTION_USER }}
+        key: ${{ secrets.PRODUCTION_SSH_KEY }}
+        script: |
+          # Quick API test
+          curl -f http://localhost:3002/api/health || exit 1
+          echo "✅ API health check passed!"
