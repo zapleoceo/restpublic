@@ -12,7 +12,7 @@ const cookieParser = require('cookie-parser');
 require('dotenv').config();
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3002;
 
 // Middleware
 app.use(cors({
@@ -541,18 +541,22 @@ app.post('/api/orders/create', async (req, res) => {
       return res.status(400).json({ error: 'Товары в заказе обязательны' });
     }
 
-    // Сначала проверяем/создаем клиента
+    // Сначала проверяем/создаем клиента по номеру телефона
     let clientId;
-    if (customerData.phone) {
+    if (customerData && customerData.phone) {
       const existingClient = await orderService.checkExistingClient(customerData.phone);
       if (existingClient.exists) {
+        // Если клиент существует, используем его ID
         clientId = existingClient.client.client_id;
+        console.log(`✅ Найден существующий клиент с ID: ${clientId}`);
       } else {
+        // Если клиента нет, создаем нового
         const newClient = await orderService.createClient(customerData);
-        clientId = newClient.client_id;
+        clientId = newClient; // API возвращает только ID
+        console.log(`✅ Создан новый клиент с ID: ${clientId}`);
       }
     } else {
-      return res.status(400).json({ error: 'Данные клиента обязательны' });
+      return res.status(400).json({ error: 'Номер телефона обязателен для привязки заказа к пользователю' });
     }
 
     // Проверяем первый ли это заказ

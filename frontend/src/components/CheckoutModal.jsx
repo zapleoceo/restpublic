@@ -62,22 +62,12 @@ const CheckoutModal = ({ isOpen, onClose, onOrderSuccess, tableId }) => {
         throw new Error(t('checkout.phone') + ' обязателен');
       }
 
-      if (orderType === 'register') {
-        if (!formData.lastName.trim()) {
-          throw new Error('Фамилия обязательна');
-        }
-        if (!formData.phone.trim()) {
-          throw new Error(t('checkout.phone') + ' обязателен');
-        }
-        if (!formData.birthday) {
-          throw new Error('Дата рождения обязательна');
-        }
-        if (!formData.gender) {
-          throw new Error('Пол обязателен');
-        }
+      // Регистрация временно отключена, все заказы создаются как гостевые
+      if (!formData.phone.trim()) {
+        throw new Error(t('checkout.phone') + ' обязателен');
       }
 
-      // Prepare order data
+      // Prepare order data - все заказы создаются как гостевые
       const orderData = {
         items: items.map(item => ({
           product_id: item.product_id,
@@ -88,13 +78,10 @@ const CheckoutModal = ({ isOpen, onClose, onOrderSuccess, tableId }) => {
         total,
         tableId,
         comment: formData.comment.trim(),
-        orderType,
+        orderType: 'guest', // Принудительно гостевой заказ
         customerData: {
           name: formData.name.trim(),
-          lastName: formData.lastName.trim(),
-          phone: formData.phone.trim(),
-          birthday: formData.birthday,
-          gender: formData.gender
+          phone: formData.phone.trim()
         }
       };
 
@@ -179,15 +166,13 @@ const CheckoutModal = ({ isOpen, onClose, onOrderSuccess, tableId }) => {
                 </button>
                 <button
                   type="button"
-                  onClick={() => setOrderType('register')}
-                  className={`p-3 rounded-lg border-2 transition-colors ${
-                    orderType === 'register'
-                      ? 'border-orange-500 bg-orange-50 text-orange-700'
-                      : 'border-gray-200 text-gray-700 hover:border-gray-300'
-                  }`}
+                  disabled
+                  className="p-3 rounded-lg border-2 transition-colors opacity-50 cursor-not-allowed border-gray-200 text-gray-500"
+                  title="Регистрация временно недоступна"
                 >
                   <UserCheck className="w-5 h-5 mx-auto mb-2" />
                   <div className="text-sm font-medium">{t('checkout.register_discount')}</div>
+                  <div className="text-xs text-gray-400 mt-1">Скоро</div>
                 </button>
               </div>
             </div>

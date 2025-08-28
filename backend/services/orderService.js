@@ -130,23 +130,19 @@ class OrderService {
       // Подготавливаем данные заказа
       const orderPayload = {
         spot_id: tableId || 1, // ID стола/места
-        client_id: clientId,
         products: products,
         comment: comment || ''
       };
 
-      // Добавляем телефон клиента (обязательное поле)
-      if (customerData && customerData.phone) {
-        orderPayload.client_phone = customerData.phone;
+      // Привязываем заказ к клиенту по client_id
+      if (clientId) {
+        orderPayload.client_id = clientId;
       }
 
       // Добавляем скидку 20% если это первый заказ
       if (isFirstOrder) {
         orderPayload.discount = 20; // Процентная скидка
       }
-
-      // Убираем лишние поля, которые могут вызывать ошибки
-      // client_phone не нужен, так как client_id уже содержит всю информацию о клиенте
 
       console.log('Creating order with payload:', JSON.stringify(orderPayload, null, 2));
       
