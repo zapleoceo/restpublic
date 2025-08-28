@@ -6,7 +6,7 @@ import { TableProvider } from '../contexts/TableContext';
 import TableErrorPage from './TableErrorPage';
 import LanguageSwitcher from './LanguageSwitcher';
 import { getSiteName } from '../constants/siteConfig';
-import { Bot, Menu, Globe, ChevronRight } from 'lucide-react';
+import { Menu, Globe, ChevronRight } from 'lucide-react';
 
 const FastAccessPage = () => {
   const { t, i18n } = useTranslation();
@@ -37,19 +37,9 @@ const FastAccessPage = () => {
     window.location.href = createHomeUrl();
   };
 
-  const handleBotClick = () => {
-    window.open(createBotUrl(tableId), '_blank', 'noopener,noreferrer');
-  };
+
 
   const actions = [
-    {
-      icon: Bot,
-      title: t('fast_access.telegram_bot'),
-      description: t('fast_access.telegram_bot_desc'),
-      onClick: handleBotClick,
-      gradient: 'from-blue-500 to-blue-600',
-      iconBg: 'bg-blue-500'
-    },
     {
       icon: Menu,
       title: t('fast_access.online_menu'),
