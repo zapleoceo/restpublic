@@ -11,7 +11,7 @@ module.exports = {
         NODE_ENV: 'production',
         PORT: 3002
       },
-      APP_VERSION: '2.4.10'
+      APP_VERSION: '2.4.11'
     }
     // Временно отключен бот из-за конфликта с другим экземпляром
     // {

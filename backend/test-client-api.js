@@ -2,7 +2,7 @@ const axios = require('axios');
 require('dotenv').config();
 
 const token = process.env.POSTER_API_TOKEN;
-const baseUrl = 'https://api.joinposter.com';
+const baseUrl = 'https://api.joinposter.com/api';
 
 async function testCreateClient() {
   try {
