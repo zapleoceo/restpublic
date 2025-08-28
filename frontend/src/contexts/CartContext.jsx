@@ -1,6 +1,19 @@
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
+import { getMainPrice } from '../utils/priceUtils';
 
 const CartContext = createContext();
+
+// Функция для получения числовой цены товара
+const getNumericPrice = (price) => {
+  if (!price && price !== 0) return 0;
+  
+  if (typeof price === 'object' && price !== null) {
+    const mainPrice = getMainPrice(price);
+    return parseFloat(mainPrice) || 0;
+  }
+  
+  return parseFloat(price) || 0;
+};
 
 // Action types для reducer
 const CART_ACTIONS = {
@@ -38,7 +51,7 @@ const cartReducer = (state, action) => {
         updatedItems = [...state.items, { ...product, quantity: 1 }];
       }
 
-      const newTotal = updatedItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+      const newTotal = updatedItems.reduce((sum, item) => sum + (getNumericPrice(item.price) * item.quantity), 0);
       const newItemCount = updatedItems.reduce((sum, item) => sum + item.quantity, 0);
 
       return {
@@ -52,7 +65,7 @@ const cartReducer = (state, action) => {
       const { productId } = action.payload;
       const updatedItems = state.items.filter(item => item.product_id !== productId);
       
-      const newTotal = updatedItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+      const newTotal = updatedItems.reduce((sum, item) => sum + (getNumericPrice(item.price) * item.quantity), 0);
       const newItemCount = updatedItems.reduce((sum, item) => sum + item.quantity, 0);
 
       return {
@@ -79,7 +92,7 @@ const cartReducer = (state, action) => {
           : item
       );
 
-      const newTotal = updatedItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+      const newTotal = updatedItems.reduce((sum, item) => sum + (getNumericPrice(item.price) * item.quantity), 0);
       const newItemCount = updatedItems.reduce((sum, item) => sum + item.quantity, 0);
 
       return {

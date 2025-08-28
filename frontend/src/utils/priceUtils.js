@@ -1,9 +1,24 @@
 // Утилита для форматирования цен (учитывая, что backend уже нормализует цены)
 export const formatPrice = (price) => {
-  if (!price) return 'Цена не указана';
-  // Backend уже нормализует цены (делит на 100), поэтому просто форматируем
-  const numPrice = typeof price === 'string' ? parseFloat(price) : price;
-  return `${numPrice.toLocaleString()}`;
+  if (!price && price !== 0) return 'Цена не указана';
+  
+  let numPrice;
+  
+  // Если price является объектом (например, из Poster API)
+  if (typeof price === 'object' && price !== null) {
+    // Берем основную цену из объекта
+    numPrice = getMainPrice(price);
+    if (!numPrice && numPrice !== 0) return 'Цена не указана';
+    numPrice = parseFloat(numPrice);
+  } else {
+    // Обычное число или строка
+    numPrice = typeof price === 'string' ? parseFloat(price) : price;
+  }
+  
+  if (isNaN(numPrice)) return 'Цена не указана';
+  
+  // Форматируем с валютой
+  return `${numPrice.toLocaleString('vi-VN')} ₫`;
 };
 
 // Получение основной цены из объекта цен Poster API
