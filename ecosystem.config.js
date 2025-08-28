@@ -6,7 +6,7 @@ module.exports = {
       cwd: '/var/www/goodzone_zap_usr/data/www/goodzone.zapleo.com',
       env_file: '.env',
       env: {
-        APP_VERSION: '2.4.0'
+        APP_VERSION: '2.4.1'
       },
       log_file: './logs/backend.log',
       error_file: './logs/backend-error.log',
