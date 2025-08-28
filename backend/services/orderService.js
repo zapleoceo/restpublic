@@ -2,7 +2,7 @@ const axios = require('axios');
 
 class OrderService {
   constructor() {
-    this.baseUrl = 'https://joinposter.com/api/v3';
+    this.baseUrl = 'https://api.joinposter.com';
     this.token = process.env.POSTER_API_TOKEN;
     console.log('OrderService initialized with token:', this.token ? 'present' : 'missing');
   }
