@@ -1,10 +1,10 @@
 #!/bin/bash
 
-# North Republic Deployment Script v4.0
+# North Republic Deployment Script v4.1
 # Этот скрипт автоматически обновляет код, собирает приложения и перезапускает сервисы
 set -e  # Остановить выполнение при ошибке
 
-echo "🚀 Начинаем деплой North Republic v4.0 (Production)..."
+echo "🚀 Начинаем деплой North Republic v4.1 (Production)..."
 
 cd /var/www/northrepubli_usr/data/www/northrepublic.me
 echo "📁 Рабочая директория: $(pwd)"
@@ -30,13 +30,13 @@ pm2 delete all || echo "PM2 процессы не найдены для удал
 
 echo "🔧 Собираем Backend..."
 cd backend
-npm install --production
+npm install
 mkdir -p ../logs
 cd ..
 
 echo "🔨 Собираем Frontend..."
 cd frontend
-npm install --production
+npm install
 npm run build
 echo "📋 Копируем собранные файлы frontend..."
 cp -r dist/* ../
@@ -44,7 +44,7 @@ cd ..
 
 echo "🤖 Собираем Telegram Bot..."
 cd bot
-npm install --production
+npm install
 npm run build
 cd ..
 echo "✅ Бот собран и готов к запуску через PM2"
