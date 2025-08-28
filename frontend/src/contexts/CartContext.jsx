@@ -1,0 +1,173 @@
+import React, { createContext, useContext, useReducer, useEffect } from 'react';
+
+const CartContext = createContext();
+
+// Action types для reducer
+const CART_ACTIONS = {
+  ADD_ITEM: 'ADD_ITEM',
+  REMOVE_ITEM: 'REMOVE_ITEM',
+  UPDATE_QUANTITY: 'UPDATE_QUANTITY',
+  CLEAR_CART: 'CLEAR_CART',
+  LOAD_CART: 'LOAD_CART'
+};
+
+// Начальное состояние корзины
+const initialState = {
+  items: [],
+  total: 0,
+  itemCount: 0
+};
+
+// Reducer для управления состоянием корзины
+const cartReducer = (state, action) => {
+  switch (action.type) {
+    case CART_ACTIONS.ADD_ITEM: {
+      const { product } = action.payload;
+      const existingItem = state.items.find(item => item.product_id === product.product_id);
+
+      let updatedItems;
+      if (existingItem) {
+        // Увеличиваем количество существующего товара
+        updatedItems = state.items.map(item =>
+          item.product_id === product.product_id
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        );
+      } else {
+        // Добавляем новый товар
+        updatedItems = [...state.items, { ...product, quantity: 1 }];
+      }
+
+      const newTotal = updatedItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+      const newItemCount = updatedItems.reduce((sum, item) => sum + item.quantity, 0);
+
+      return {
+        items: updatedItems,
+        total: newTotal,
+        itemCount: newItemCount
+      };
+    }
+
+    case CART_ACTIONS.REMOVE_ITEM: {
+      const { productId } = action.payload;
+      const updatedItems = state.items.filter(item => item.product_id !== productId);
+      
+      const newTotal = updatedItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+      const newItemCount = updatedItems.reduce((sum, item) => sum + item.quantity, 0);
+
+      return {
+        items: updatedItems,
+        total: newTotal,
+        itemCount: newItemCount
+      };
+    }
+
+    case CART_ACTIONS.UPDATE_QUANTITY: {
+      const { productId, quantity } = action.payload;
+      
+      if (quantity <= 0) {
+        // Если количество 0 или меньше, удаляем товар
+        return cartReducer(state, { 
+          type: CART_ACTIONS.REMOVE_ITEM, 
+          payload: { productId } 
+        });
+      }
+
+      const updatedItems = state.items.map(item =>
+        item.product_id === productId
+          ? { ...item, quantity }
+          : item
+      );
+
+      const newTotal = updatedItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+      const newItemCount = updatedItems.reduce((sum, item) => sum + item.quantity, 0);
+
+      return {
+        items: updatedItems,
+        total: newTotal,
+        itemCount: newItemCount
+      };
+    }
+
+    case CART_ACTIONS.CLEAR_CART:
+      return initialState;
+
+    case CART_ACTIONS.LOAD_CART:
+      return action.payload;
+
+    default:
+      return state;
+  }
+};
+
+// Provider компонент
+export const CartProvider = ({ children }) => {
+  const [state, dispatch] = useReducer(cartReducer, initialState);
+
+  // Загружаем корзину из localStorage при инициализации
+  useEffect(() => {
+    const savedCart = localStorage.getItem('cart');
+    if (savedCart) {
+      try {
+        const cartData = JSON.parse(savedCart);
+        dispatch({ type: CART_ACTIONS.LOAD_CART, payload: cartData });
+      } catch (error) {
+        console.error('Error loading cart from localStorage:', error);
+        localStorage.removeItem('cart');
+      }
+    }
+  }, []);
+
+  // Сохраняем корзину в localStorage при изменениях
+  useEffect(() => {
+    localStorage.setItem('cart', JSON.stringify(state));
+  }, [state]);
+
+  // Функции для работы с корзиной
+  const addToCart = (product) => {
+    dispatch({ type: CART_ACTIONS.ADD_ITEM, payload: { product } });
+  };
+
+  const removeFromCart = (productId) => {
+    dispatch({ type: CART_ACTIONS.REMOVE_ITEM, payload: { productId } });
+  };
+
+  const updateQuantity = (productId, quantity) => {
+    dispatch({ type: CART_ACTIONS.UPDATE_QUANTITY, payload: { productId, quantity } });
+  };
+
+  const clearCart = () => {
+    dispatch({ type: CART_ACTIONS.CLEAR_CART });
+  };
+
+  const getItemQuantity = (productId) => {
+    const item = state.items.find(item => item.product_id === productId);
+    return item ? item.quantity : 0;
+  };
+
+  const value = {
+    items: state.items,
+    total: state.total,
+    itemCount: state.itemCount,
+    addToCart,
+    removeFromCart,
+    updateQuantity,
+    clearCart,
+    getItemQuantity
+  };
+
+  return (
+    <CartContext.Provider value={value}>
+      {children}
+    </CartContext.Provider>
+  );
+};
+
+// Hook для использования контекста корзины
+export const useCart = () => {
+  const context = useContext(CartContext);
+  if (!context) {
+    throw new Error('useCart must be used within a CartProvider');
+  }
+  return context;
+};

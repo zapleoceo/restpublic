@@ -524,4 +524,30 @@
         "telegram_link": "https://t.me/gamezone_vietnam/1963"
       }
     }
+  },
+  "cart": {
+    "title": "Cart",
+    "empty": "Cart is empty",
+    "add_items": "Add items to cart",
+    "continue_shopping": "Continue shopping",
+    "add": "Add to cart",
+    "in_cart": "In cart",
+    "total": "Total",
+    "clear": "Clear",
+    "checkout": "Checkout"
+  },
+  "checkout": {
+    "title": "Checkout",
+    "guest_order": "Order as guest",
+    "register_discount": "Register and get 20% discount",
+    "guest_checkout": "Continue as guest",
+    "register": "Register",
+    "name": "Name",
+    "phone": "Phone",
+    "comment": "Order comment",
+    "order_summary": "Your order",
+    "discount": "Discount",
+    "place_order": "Place order",
+    "first_order_discount": "First order discount (20%)"
+  }
 }

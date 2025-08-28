@@ -524,4 +524,30 @@
         "telegram_link": "https://t.me/gamezone_vietnam/1963"
       }
     }
+  },
+  "cart": {
+    "title": "Giỏ hàng",
+    "empty": "Giỏ hàng trống",
+    "add_items": "Thêm sản phẩm vào giỏ hàng",
+    "continue_shopping": "Tiếp tục mua sắm",
+    "add": "Thêm vào giỏ",
+    "in_cart": "Trong giỏ",
+    "total": "Tổng cộng",
+    "clear": "Xóa hết",
+    "checkout": "Thanh toán"
+  },
+  "checkout": {
+    "title": "Thanh toán",
+    "guest_order": "Đặt hàng khách",
+    "register_discount": "Đăng ký và nhận giảm giá 20%",
+    "guest_checkout": "Tiếp tục như khách",
+    "register": "Đăng ký",
+    "name": "Tên",
+    "phone": "Số điện thoại",
+    "comment": "Ghi chú đơn hàng",
+    "order_summary": "Đơn hàng của bạn",
+    "discount": "Giảm giá",
+    "place_order": "Đặt hàng",
+    "first_order_discount": "Giảm giá đơn hàng đầu tiên (20%)"
+  }
 }

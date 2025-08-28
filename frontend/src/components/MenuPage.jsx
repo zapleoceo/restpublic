@@ -9,6 +9,8 @@ import ProductCard from './ProductCard';
 import LanguageSwitcher from './LanguageSwitcher';
 import SortSelector from './SortSelector';
 import LoadingSpinner from './LoadingSpinner';
+import CartButton from './CartButton';
+import CartModal from './CartModal';
 
 const MenuPage = ({ menuData }) => {
   const { t } = useTranslation();
@@ -16,6 +18,7 @@ const MenuPage = ({ menuData }) => {
   const [sortType, setSortType] = useState('popularity'); // По умолчанию по популярности
   const [popularityData, setPopularityData] = useState({});
   const [loadingPopularity, setLoadingPopularity] = useState(false);
+  const [isCartOpen, setIsCartOpen] = useState(false);
   const { tableId } = useParams();
   const location = useLocation();
   
@@ -79,6 +82,10 @@ const MenuPage = ({ menuData }) => {
     setSortType(newSortType);
   };
 
+  // Обработчики корзины
+  const handleCartOpen = () => setIsCartOpen(true);
+  const handleCartClose = () => setIsCartOpen(false);
+
   // Если нет категорий, показываем сообщение
   if (groupedCategories.length === 0) {
     return (
@@ -124,8 +131,11 @@ const MenuPage = ({ menuData }) => {
               )}
             </div>
 
-            {/* Переключатель языка */}
-            <LanguageSwitcher />
+            {/* Переключатель языка и корзина */}
+            <div className="flex items-center space-x-3">
+              <LanguageSwitcher />
+              <CartButton onClick={handleCartOpen} />
+            </div>
           </div>
         </div>
       </div>
@@ -206,6 +216,13 @@ const MenuPage = ({ menuData }) => {
           </div>
         )}
       </div>
+
+      {/* Cart Modal */}
+      <CartModal 
+        isOpen={isCartOpen} 
+        onClose={handleCartClose} 
+        tableId={currentTableId}
+      />
     </div>
   );
 };

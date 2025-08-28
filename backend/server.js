@@ -7,6 +7,7 @@ const FormData = require('form-data');
 const SePayMonitor = require('./sepay-monitor');
 const adminModule = require('./admin');
 const authModule = require('./auth');
+const orderService = require('./services/orderService');
 const cookieParser = require('cookie-parser');
 require('dotenv').config();
 
@@ -476,6 +477,140 @@ if (process.env.SEPAY_API_TOKEN) {
 }
 
 // Функция генерации QR кода через SePay
+// API endpoints для заказов
+app.post('/api/orders/check-phone', async (req, res) => {
+  try {
+    const { phone } = req.body;
+    
+    if (!phone) {
+      return res.status(400).json({ error: 'Номер телефона обязателен' });
+    }
+
+    const result = await orderService.checkExistingClient(phone);
+    res.json(result);
+  } catch (error) {
+    console.error('Error in check-phone endpoint:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post('/api/orders/register', async (req, res) => {
+  try {
+    const { name, lastName, phone, birthday, gender } = req.body;
+    
+    if (!name || !phone) {
+      return res.status(400).json({ error: 'Имя и телефон обязательны' });
+    }
+
+    const client = await orderService.createClient({
+      name,
+      lastName,
+      phone,
+      birthday,
+      gender
+    });
+
+    res.json({ success: true, client });
+  } catch (error) {
+    console.error('Error in register endpoint:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post('/api/orders/check-first', async (req, res) => {
+  try {
+    const { clientId } = req.body;
+    
+    if (!clientId) {
+      return res.status(400).json({ error: 'ID клиента обязателен' });
+    }
+
+    const isFirstOrder = await orderService.checkFirstOrder(clientId);
+    res.json({ isFirstOrder });
+  } catch (error) {
+    console.error('Error in check-first endpoint:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post('/api/orders/create', async (req, res) => {
+  try {
+    const { items, total, tableId, comment, customerData } = req.body;
+    
+    if (!items || !items.length) {
+      return res.status(400).json({ error: 'Товары в заказе обязательны' });
+    }
+
+    // Сначала проверяем/создаем клиента
+    let clientId;
+    if (customerData.phone) {
+      const existingClient = await orderService.checkExistingClient(customerData.phone);
+      if (existingClient.exists) {
+        clientId = existingClient.client.client_id;
+      } else {
+        const newClient = await orderService.createClient(customerData);
+        clientId = newClient.client_id;
+      }
+    } else {
+      return res.status(400).json({ error: 'Данные клиента обязательны' });
+    }
+
+    // Проверяем первый ли это заказ
+    const isFirstOrder = await orderService.checkFirstOrder(clientId);
+
+    // Создаем заказ
+    const order = await orderService.createOrder({
+      items,
+      total,
+      tableId,
+      comment,
+      clientId,
+      isFirstOrder
+    });
+
+    res.json({ 
+      success: true, 
+      order, 
+      isFirstOrder,
+      discount: isFirstOrder ? total * 0.2 : 0
+    });
+  } catch (error) {
+    console.error('Error in create order endpoint:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post('/api/orders/create-guest', async (req, res) => {
+  try {
+    const { items, total, tableId, comment, customerData } = req.body;
+    
+    if (!items || !items.length) {
+      return res.status(400).json({ error: 'Товары в заказе обязательны' });
+    }
+
+    if (!customerData || !customerData.name || !customerData.phone) {
+      return res.status(400).json({ error: 'Имя и телефон обязательны для гостевого заказа' });
+    }
+
+    const result = await orderService.createGuestOrder({
+      items,
+      total,
+      tableId,
+      comment,
+      customerData
+    });
+
+    res.json({ 
+      success: true, 
+      order: result.order,
+      client: result.client
+    });
+  } catch (error) {
+    console.error('Error in create guest order endpoint:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 function generateQRCode(amount, comment) {
     const bidvAccount = process.env.BIDV_ACCOUNT_NUMBER || '8845500293'; // Используем номер счета из SePay
     const bankCode = 'BIDV';
