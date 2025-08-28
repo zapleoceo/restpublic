@@ -21,7 +21,7 @@ export const createBotUrl = (tableId) => {
 
 // Создание URL для меню с номером столика
 export const createMenuUrl = (tableId) => {
-  if (!validateTableId(tableId)) return '/m';
+  if (!validateTableId(tableId)) return '/menu';
   return `/fast/${tableId}/menu`;
 };
 

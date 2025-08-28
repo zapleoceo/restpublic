@@ -16,7 +16,7 @@ const HomePage = () => {
       id: 'menu',
       icon: '/img/menu/icon.png',
       logo: '/img/menu/big.jpg',
-      link: '/m'
+      link: '/menu'
     },
     lasertag: {
       id: 'lasertag',

@@ -51,7 +51,7 @@
       "enabled": true,
       "title": "Главная страница"
     },
-    "/m": {
+    "/menu": {
       "enabled": true,
       "title": "Меню"
     },

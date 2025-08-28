@@ -2,7 +2,7 @@ const axios = require('axios');
 
 class OrderService {
   constructor() {
-    this.baseUrl = 'https://api.joinposter.com/api';
+    this.baseUrl = 'https://joinposter.com/api';
     this.token = process.env.POSTER_API_TOKEN;
     console.log('OrderService initialized with token:', this.token ? 'present' : 'missing');
   }
@@ -44,16 +44,19 @@ class OrderService {
   async createClient(clientData) {
     try {
       console.log('Creating client with data:', clientData);
-      const response = await axios.post(`${this.baseUrl}/clients.createClient?token=${this.token}`, {
-        client_name: clientData.name,
-        client_lastname: clientData.lastName || '',
-        client_phone: clientData.phone,
-        client_birthday: clientData.birthday || '',
-        client_sex: clientData.gender === 'male' ? 1 : (clientData.gender === 'female' ? 2 : 0),
-        client_groups_id_client: 2 // Обязательное поле - группа клиентов (Founders)
-      }, {
+      
+      // Создаем URLSearchParams для form data
+      const formData = new URLSearchParams();
+      formData.append('client_name', clientData.name);
+      formData.append('client_lastname', clientData.lastName || '');
+      formData.append('client_phone', clientData.phone);
+      formData.append('client_birthday', clientData.birthday || '');
+      formData.append('client_sex', clientData.gender === 'male' ? 1 : (clientData.gender === 'female' ? 2 : 0));
+      formData.append('client_groups_id_client', 2); // Обязательное поле - группа клиентов (Founders)
+      
+      const response = await axios.post(`${this.baseUrl}/clients.createClient?token=${this.token}`, formData, {
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/x-www-form-urlencoded'
         }
       });
 
