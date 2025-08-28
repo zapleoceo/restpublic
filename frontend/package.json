@@ -1,6 +1,6 @@
 {
   "name": "northrepublic-frontend",
-  "version": "2.2.92",
+  "version": "2.2.94",
   "description": "Modern React frontend for North Republic restaurant menu",
   "type": "module",
   "scripts": {
@@ -27,6 +27,7 @@
     "@types/react-dom": "^18.2.17",
     "@vitejs/plugin-react": "^4.2.1",
     "autoprefixer": "^10.4.16",
+    "caniuse-lite": "^1.0.30001620",
     "eslint": "^8.55.0",
     "eslint-plugin-react": "^7.33.2",
     "eslint-plugin-react-hooks": "^4.6.0",
