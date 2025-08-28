@@ -54,11 +54,50 @@ jobs:
           echo "🔧 Проверяем Git статус..."
           git status
           
-          # Проверяем права на скрипт
-          chmod +x deploy.sh
+          # Останавливаем старые процессы
+          echo "🛑 Останавливаем старые PM2 процессы..."
+          pm2 stop all || echo "PM2 процессы не найдены или уже остановлены"
+          pm2 delete all || echo "PM2 процессы не найдены для удаления"
           
-          # Выполняем деплой с подробным логированием
-          ./deploy.sh
+          # Обновляем код
+          echo "📥 Обновляем код из репозитория..."
+          git pull origin main --allow-unrelated-histories --no-edit || {
+            echo "⚠️ Обычный pull не удался, выполняем принудительный reset..."
+            git fetch origin
+            git reset --hard origin/main
+          }
+          
+          # Собираем backend
+          echo "🔧 Собираем Backend..."
+          cd backend
+          npm install
+          cd ..
+          
+          # Собираем frontend
+          echo "🔨 Собираем Frontend..."
+          cd frontend
+          npm install
+          npm run build
+          cp -r dist/* ../
+          cd ..
+          
+          # Собираем bot
+          echo "🤖 Собираем Telegram Bot..."
+          cd bot
+          npm install
+          npm run build
+          cd ..
+          
+          # Создаем директорию для логов
+          mkdir -p logs
+          
+          # Настраиваем права доступа
+          chmod +x bot/dist/bot.js
+          chown -R northrepubli_usr:northrepubli_usr .
+          
+          # Запускаем процессы через PM2
+          echo "🚀 Запускаем процессы через PM2..."
+          pm2 start ecosystem.config.js --update-env
           
           echo "✅ Автодеплой Production завершен!"
           
@@ -73,39 +112,34 @@ jobs:
         command_timeout: 10m
         script: |
           echo "🔍 Выполняем health check..."
-          sleep 15
+          sleep 20
           
-          # Проверяем backend
-          echo "📡 Проверяем backend API..."
-          
-          # Сначала проверяем PM2 процессы
+          # Проверяем PM2 процессы
           echo "🔍 Проверяем PM2 процессы..."
           pm2 list
           
-          # Проверяем, запущен ли backend
-          echo "🔍 Проверяем процессы на порту 3002..."
-          netstat -tlnp | grep :3002 || echo "❌ Порт 3002 не занят"
-          
-                     # Проверяем health endpoint
-           curl -f http://localhost:3002/api/health || {
-             echo "❌ Backend health check failed"
-             echo "📋 Логи backend:"
-             tail -n 20 /var/www/northrepubli_usr/data/www/northrepublic.me/logs/backend.log || echo "❌ Файл логов не найден"
-             echo "📋 Логи PM2:"
-             pm2 logs northrepublic-backend --lines 10 || echo "❌ PM2 логи недоступны"
-             echo "🔍 Попытка запуска PM2 процессов вручную..."
-             cd /var/www/northrepubli_usr/data/www/northrepublic.me
-             pm2 start ecosystem.config.js --update-env
-             sleep 10
-             pm2 list
-             exit 1
-           }
-          
-
+          # Проверяем backend
+          echo "📡 Проверяем backend API..."
+          for i in {1..5}; do
+            echo "Попытка $i из 5..."
+            if curl -f http://localhost:3002/api/health; then
+              echo "✅ Backend работает!"
+              break
+            else
+              echo "❌ Попытка $i не удалась"
+              if [ $i -eq 5 ]; then
+                echo "❌ Backend не отвечает после 5 попыток"
+                echo "📋 Логи PM2:"
+                pm2 logs northrepublic-backend --lines 10 || echo "❌ PM2 логи недоступны"
+                exit 1
+              fi
+              sleep 5
+            fi
+          done
           
           # Проверяем frontend
           echo "🌐 Проверяем frontend..."
-          curl -f https://northrepublic.me/m > /dev/null || {
+          curl -f https://northrepublic.me > /dev/null || {
             echo "❌ Frontend check failed"
             exit 1
           }
