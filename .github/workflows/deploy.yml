@@ -77,16 +77,26 @@ jobs:
           
           # Проверяем backend
           echo "📡 Проверяем backend API..."
+          
+          # Сначала проверяем PM2 процессы
+          echo "🔍 Проверяем PM2 процессы..."
+          pm2 list
+          
+          # Проверяем, запущен ли backend
+          echo "🔍 Проверяем процессы на порту 3002..."
+          netstat -tlnp | grep :3002 || echo "❌ Порт 3002 не занят"
+          
+          # Проверяем health endpoint
           curl -f http://localhost:3002/api/health || {
             echo "❌ Backend health check failed"
             echo "📋 Логи backend:"
-            tail -n 20 /var/www/northrepubli_usr/data/www/northrepublic.me/logs/backend.log
+            tail -n 20 /var/www/northrepubli_usr/data/www/northrepublic.me/logs/backend.log || echo "❌ Файл логов не найден"
+            echo "📋 Логи PM2:"
+            pm2 logs northrepublic-backend --lines 10 || echo "❌ PM2 логи недоступны"
             exit 1
           }
           
-          # Проверяем PM2 процессы
-          echo "🔍 Проверяем PM2 процессы..."
-          pm2 list
+
           
           # Проверяем frontend
           echo "🌐 Проверяем frontend..."
