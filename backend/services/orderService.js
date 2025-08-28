@@ -3,8 +3,14 @@ const axios = require('axios');
 class OrderService {
   constructor() {
     this.baseUrl = 'https://joinposter.com/api';
-    this.token = process.env.POSTER_API_TOKEN;
-    console.log('OrderService initialized with token:', this.token ? 'present' : 'missing');
+  }
+
+  getToken() {
+    const token = process.env.POSTER_API_TOKEN;
+    if (!token) {
+      throw new Error('POSTER_API_TOKEN не настроен');
+    }
+    return token;
   }
 
   /**
@@ -13,7 +19,7 @@ class OrderService {
   async checkExistingClient(phone) {
     try {
       console.log('Checking existing client with phone:', phone);
-      const response = await axios.get(`${this.baseUrl}/clients.getClients?token=${this.token}`);
+      const response = await axios.get(`${this.baseUrl}/clients.getClients?token=${this.getToken()}`);
 
       console.log('Client check response:', response.data);
       
@@ -54,7 +60,7 @@ class OrderService {
       formData.append('client_sex', clientData.gender === 'male' ? 1 : (clientData.gender === 'female' ? 2 : 0));
       formData.append('client_groups_id_client', 1); // Обязательное поле - группа клиентов (New customers)
       
-      const response = await axios.post(`${this.baseUrl}/clients.createClient?token=${this.token}`, formData, {
+      const response = await axios.post(`${this.baseUrl}/clients.createClient?token=${this.getToken()}`, formData, {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded'
         }
@@ -83,7 +89,7 @@ class OrderService {
       const dateTo = new Date().toISOString().split('T')[0];
       
       const response = await axios.get(
-        `${this.baseUrl}/dash.getTransactions?token=${this.token}&dateFrom=${dateFrom}&dateTo=${dateTo}`
+        `${this.baseUrl}/dash.getTransactions?token=${this.getToken()}&dateFrom=${dateFrom}&dateTo=${dateTo}`
       );
 
       console.log('First order check response:', response.data);
@@ -152,7 +158,7 @@ class OrderService {
       console.log('Creating order with payload:', JSON.stringify(orderPayload, null, 2));
       
       const response = await axios.post(
-        `${this.baseUrl}/incomingOrders.createIncomingOrder?token=${this.token}`,
+        `${this.baseUrl}/incomingOrders.createIncomingOrder?token=${this.getToken()}`,
         orderPayload,
         {
           headers: {
