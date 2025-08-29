@@ -126,7 +126,7 @@ bot.on('contact', async (ctx) => {
         );
         
         // Очищаем сессию авторизации
-        ctx.session = { ...ctx.session, authMode: false, returnUrl: null };
+        ctx.session = { ...ctx.session, authMode: false, returnUrl: undefined };
       } else {
         await ctx.reply(
           '❌ Ошибка авторизации. Попробуйте еще раз.',
@@ -165,7 +165,7 @@ bot.hears('📞 Контакты', async (ctx) => {
 bot.hears('❌ Отмена', async (ctx) => {
   // Отмена авторизации
   if (ctx.session?.authMode) {
-    ctx.session = { ...ctx.session, authMode: false, returnUrl: null };
+    ctx.session = { ...ctx.session, authMode: false, returnUrl: undefined };
     await ctx.reply(
       '❌ Авторизация отменена. Используйте кнопки ниже для навигации:',
       mainKeyboard
