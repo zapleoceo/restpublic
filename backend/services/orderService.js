@@ -160,8 +160,8 @@ class OrderService {
       console.log('First order check response:', response.data);
 
       // Фильтруем транзакции по client_id
-      if (response.data && response.data.response && response.data.response.data) {
-        const clientTransactions = response.data.response.data.filter(t => 
+      if (response.data && response.data.response) {
+        const clientTransactions = response.data.response.filter(t => 
           t.client_id === clientId.toString()
         );
         
@@ -314,9 +314,9 @@ class OrderService {
       console.log(`📊 API response status: ${response.status}`);
       console.log(`📊 API response data:`, response.data);
       
-      if (response.data && response.data.response && response.data.response.data) {
+      if (response.data && response.data.response) {
         // Фильтруем транзакции по client_id и статусу (неоплаченные)
-        const userOrders = response.data.response.data.filter(order => {
+        const userOrders = response.data.response.filter(order => {
           console.log(`🔍 Checking transaction: client_id=${order.client_id}, status=${order.status}, userId=${userId}`);
           return order.client_id === parseInt(userId) && 
                  (order.status === '0' || order.status === 0 || 
@@ -350,9 +350,9 @@ class OrderService {
         `${this.baseUrl}/dash.getTransactions?token=${this.getToken()}&dateFrom=${dateFrom}&dateTo=${dateTo}`
       );
       
-      if (response.data && response.data.response && response.data.response.data) {
+      if (response.data && response.data.response) {
         // Фильтруем транзакции по client_id и статусу (оплаченные или закрытые)
-        const userOrders = response.data.response.data.filter(order => {
+        const userOrders = response.data.response.filter(order => {
           console.log(`🔍 Checking past transaction: client_id=${order.client_id}, status=${order.status}, userId=${userId}`);
           return order.client_id === parseInt(userId) && 
                  (order.status === '2' || order.status === 2);
