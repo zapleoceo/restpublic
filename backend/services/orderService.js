@@ -159,11 +159,11 @@ class OrderService {
 
       console.log('First order check response:', response.data);
 
-      // Фильтруем транзакции по client_id
-      if (response.data && response.data.response) {
-        const clientTransactions = response.data.response.filter(t => 
-          t.client_id === clientId.toString()
-        );
+             // Фильтруем транзакции по client_id
+       if (response.data && response.data.response) {
+         const clientTransactions = response.data.response.filter(t => 
+           t.client_id.toString() === clientId.toString()
+         );
         
         // Если нет транзакций для этого клиента - это первый заказ
         return clientTransactions.length === 0;
@@ -316,13 +316,13 @@ class OrderService {
       console.log(`📊 First 5 transactions:`, response.data?.response?.slice(0, 5));
       
       if (response.data && response.data.response) {
-        // Фильтруем транзакции по client_id и статусу (неоплаченные)
-        const userOrders = response.data.response.filter(order => {
-          console.log(`🔍 Checking transaction: client_id=${order.client_id}, status=${order.status}, userId=${userId}`);
-          return order.client_id === parseInt(userId) && 
-                 (order.status === '0' || order.status === 0 || 
-                  order.status === '1' || order.status === 1);
-        });
+                 // Фильтруем транзакции по client_id и статусу (неоплаченные)
+         const userOrders = response.data.response.filter(order => {
+           console.log(`🔍 Checking transaction: client_id=${order.client_id}, status=${order.status}, userId=${userId}`);
+           return order.client_id.toString() === userId.toString() && 
+                  (order.status === '0' || order.status === 0 || 
+                   order.status === '1' || order.status === 1);
+         });
         
         console.log(`✅ Found ${userOrders.length} unpaid orders for user ${userId}`);
         return userOrders;
@@ -352,12 +352,12 @@ class OrderService {
       );
       
       if (response.data && response.data.response) {
-        // Фильтруем транзакции по client_id и статусу (оплаченные или закрытые)
-        const userOrders = response.data.response.filter(order => {
-          console.log(`🔍 Checking past transaction: client_id=${order.client_id}, status=${order.status}, userId=${userId}`);
-          return order.client_id === parseInt(userId) && 
-                 (order.status === '2' || order.status === 2);
-        });
+                 // Фильтруем транзакции по client_id и статусу (оплаченные или закрытые)
+         const userOrders = response.data.response.filter(order => {
+           console.log(`🔍 Checking past transaction: client_id=${order.client_id}, status=${order.status}, userId=${userId}`);
+           return order.client_id.toString() === userId.toString() && 
+                  (order.status === '2' || order.status === 2);
+         });
         
         console.log(`✅ Found ${userOrders.length} past orders for user ${userId}`);
         
