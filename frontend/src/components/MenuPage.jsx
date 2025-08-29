@@ -140,22 +140,21 @@ const MenuPage = ({ menuData }) => {
     setTooltipTimeout(timeout);
   };
 
-  // Обработчик для самой подсказки - предотвращает закрытие при наведении
-  const handleTooltipMouseEnter = () => {
-    // Очищаем таймаут закрытия при наведении на подсказку
+  // Обработчик для всего контейнера дропдауна
+  const handleDropdownMouseEnter = () => {
+    // Очищаем таймаут закрытия при наведении на дропдаун
     if (tooltipTimeout) {
       clearTimeout(tooltipTimeout);
       setTooltipTimeout(null);
     }
-    // Убеждаемся, что подсказка открыта
     setShowUserTooltip(true);
   };
 
-  const handleTooltipMouseLeave = () => {
-    // Закрываем подсказку при уходе мыши с неё
+  const handleDropdownMouseLeave = () => {
+    // Закрываем дропдаун при уходе мыши с него
     const timeout = setTimeout(() => {
       setShowUserTooltip(false);
-    }, 200); // Уменьшаем задержку для более быстрого отклика
+    }, 100);
     setTooltipTimeout(timeout);
   };
 
@@ -260,18 +259,12 @@ const MenuPage = ({ menuData }) => {
                       
                       {/* Всплывающая подсказка */}
                       {showUserTooltip && (
-                        <>
-                          {/* Невидимая зона для перехода мыши */}
-                          <div 
-                            className="absolute top-full left-0 w-full h-1 bg-transparent"
-                            onMouseEnter={handleTooltipMouseEnter}
-                            onMouseLeave={handleMouseLeave}
-                          />
-                          <div 
-                            className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg p-3 min-w-[200px] z-50 tooltip-content"
-                            onMouseEnter={handleTooltipMouseEnter}
-                            onMouseLeave={handleTooltipMouseLeave}
-                          >
+                        <div 
+                          className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg p-3 min-w-[200px] z-50 tooltip-content"
+                          onMouseEnter={handleDropdownMouseEnter}
+                          onMouseLeave={handleDropdownMouseLeave}
+                          style={{ paddingTop: '4px' }} // Добавляем невидимую зону сверху
+                        >
                           <div className="flex items-center space-x-2 mb-3">
                             <User className="w-4 h-4 text-gray-500" />
                             <span className="text-sm font-medium text-gray-800">
@@ -286,7 +279,7 @@ const MenuPage = ({ menuData }) => {
                             <span>Выйти</span>
                                                       </button>
                           </div>
-                        </>
+                        </div>
                       )}
                     </div>
                   );
