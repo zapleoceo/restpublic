@@ -136,7 +136,7 @@ const MenuPage = ({ menuData }) => {
     // Устанавливаем таймаут закрытия только при уходе мыши
     const timeout = setTimeout(() => {
       setShowUserTooltip(false);
-    }, 500); // 0.5 секунды задержки
+    }, 100); // Минимальная задержка
     setTooltipTimeout(timeout);
   };
 
@@ -147,13 +147,15 @@ const MenuPage = ({ menuData }) => {
       clearTimeout(tooltipTimeout);
       setTooltipTimeout(null);
     }
+    // Убеждаемся, что подсказка открыта
+    setShowUserTooltip(true);
   };
 
   const handleTooltipMouseLeave = () => {
     // Закрываем подсказку при уходе мыши с неё
     const timeout = setTimeout(() => {
       setShowUserTooltip(false);
-    }, 300); // Меньшая задержка для самой подсказки
+    }, 200); // Уменьшаем задержку для более быстрого отклика
     setTooltipTimeout(timeout);
   };
 
@@ -262,11 +264,11 @@ const MenuPage = ({ menuData }) => {
                           {/* Невидимая зона для перехода мыши */}
                           <div 
                             className="absolute top-full left-0 w-full h-1 bg-transparent"
-                            onMouseEnter={handleMouseEnter}
+                            onMouseEnter={handleTooltipMouseEnter}
                             onMouseLeave={handleMouseLeave}
                           />
                           <div 
-                            className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg p-3 min-w-[200px] z-50"
+                            className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg p-3 min-w-[200px] z-50 tooltip-content"
                             onMouseEnter={handleTooltipMouseEnter}
                             onMouseLeave={handleTooltipMouseLeave}
                           >
