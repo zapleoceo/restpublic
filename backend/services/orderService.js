@@ -312,7 +312,8 @@ class OrderService {
       );
       
       console.log(`📊 API response status: ${response.status}`);
-      console.log(`📊 API response data:`, response.data);
+      console.log(`📊 Total transactions in response: ${response.data?.response?.length || 0}`);
+      console.log(`📊 First 5 transactions:`, response.data?.response?.slice(0, 5));
       
       if (response.data && response.data.response) {
         // Фильтруем транзакции по client_id и статусу (неоплаченные)
