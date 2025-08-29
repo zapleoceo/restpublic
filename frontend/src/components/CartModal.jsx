@@ -9,7 +9,7 @@ import MyOrdersModal from './MyOrdersModal';
 
 const CartModal = ({ isOpen, onClose, tableId }) => {
   const { t } = useTranslation();
-  const { items, total, updateQuantity, removeFromCart, clearCart, getCurrentSession } = useCart();
+  const { items, total, updateQuantity, removeFromCart, clearCart, getCurrentSession, session } = useCart();
   const [showCheckout, setShowCheckout] = useState(false);
   const [showMyOrders, setShowMyOrders] = useState(false);
 
@@ -182,7 +182,6 @@ const CartModal = ({ isOpen, onClose, tableId }) => {
 
                   {/* My Orders link */}
                   {(() => {
-                    const session = getCurrentSession();
                     console.log('🔍 CartModal - Current session:', session);
                     return session ? (
                       <button 
@@ -215,7 +214,7 @@ const CartModal = ({ isOpen, onClose, tableId }) => {
         <MyOrdersModal
           isOpen={showMyOrders}
           onClose={() => setShowMyOrders(false)}
-          userId={getCurrentSession()?.userId}
+          userId={session?.userId}
         />
       )}
     </>
