@@ -181,14 +181,18 @@ const CartModal = ({ isOpen, onClose, tableId }) => {
                   </div>
 
                   {/* My Orders link */}
-                  {getCurrentSession() && (
-                    <button 
-                      onClick={() => setShowMyOrders(true)} 
-                      className="w-full text-center text-gray-600 hover:text-gray-800 transition-colors text-sm py-2"
-                    >
-                      {t('my_orders.title')}
-                    </button>
-                  )}
+                  {(() => {
+                    const session = getCurrentSession();
+                    console.log('🔍 CartModal - Current session:', session);
+                    return session ? (
+                      <button 
+                        onClick={() => setShowMyOrders(true)} 
+                        className="w-full text-center text-gray-600 hover:text-gray-800 transition-colors text-sm py-2"
+                      >
+                        {t('my_orders.title')}
+                      </button>
+                    ) : null;
+                  })()}
                 </div>
               </>
             )}

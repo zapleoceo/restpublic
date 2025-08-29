@@ -101,7 +101,10 @@ const CheckoutModal = ({ isOpen, onClose, onOrderSuccess, tableId }) => {
 
       // Save session if provided
       if (result.session) {
+        console.log('💾 CheckoutModal - Saving session:', result.session);
         setSession(result.session);
+      } else {
+        console.log('⚠️ CheckoutModal - No session in result:', result);
       }
 
       // Success - call success callback
