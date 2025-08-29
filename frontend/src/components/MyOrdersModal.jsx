@@ -87,6 +87,17 @@ const MyOrdersModal = ({ isOpen, onClose, userId }) => {
   };
 
   const formatDate = (dateString) => {
+    // Если это timestamp в миллисекундах
+    if (typeof dateString === 'string' && dateString.length > 10) {
+      return new Date(parseInt(dateString)).toLocaleDateString('ru-RU', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
+    // Если это обычная дата
     return new Date(dateString).toLocaleDateString('ru-RU', {
       year: 'numeric',
       month: 'long',
@@ -97,7 +108,9 @@ const MyOrdersModal = ({ isOpen, onClose, userId }) => {
   };
 
   const formatPrice = (price) => {
-    return new Intl.NumberFormat('ru-RU').format(price);
+    // Если цена в копейках, делим на 100
+    const priceInRubles = typeof price === 'string' ? parseInt(price) / 100 : price / 100;
+    return new Intl.NumberFormat('ru-RU').format(priceInRubles);
   };
 
   if (!isOpen) return null;
@@ -135,33 +148,33 @@ const MyOrdersModal = ({ isOpen, onClose, userId }) => {
                 ) : (
                   <div className="space-y-4">
                     {orders.map((order) => (
-                      <div key={order.order_id} className="border rounded-lg p-4 bg-gray-50">
+                      <div key={order.transaction_id} className="border rounded-lg p-4 bg-gray-50">
                         <div className="flex justify-between items-start">
                           <div className="flex-1">
                             <div className="flex items-center mb-2">
                               <Hash className="mr-2" size={16} />
                               <span className="font-medium">
-                                {t('my_orders.order_number')}{order.order_id}
+                                {t('my_orders.order_number')}{order.transaction_id}
                               </span>
                             </div>
                             <div className="flex items-center mb-2">
                               <Calendar className="mr-2" size={16} />
                               <span className="text-sm text-gray-600">
-                                {formatDate(order.date)}
+                                {formatDate(order.date_start)}
                               </span>
                             </div>
                             <div className="flex items-center mb-2">
                               <DollarSign className="mr-2" size={16} />
                               <span className="font-semibold">
-                                {formatPrice(order.total)} ₽
+                                {formatPrice(order.sum)} ₽
                               </span>
                             </div>
                             <div className="text-sm text-gray-600">
-                              {order.comment && `Комментарий: ${order.comment}`}
+                              {order.transaction_comment && `Комментарий: ${order.transaction_comment}`}
                             </div>
                           </div>
                           <button
-                            onClick={() => handlePayOrder(order.order_id)}
+                            onClick={() => handlePayOrder(order.transaction_id)}
                             className="flex items-center bg-blue-600 text-white px-3 py-2 rounded-lg hover:bg-blue-700 transition-colors"
                           >
                             <CreditCard className="mr-1" size={16} />
@@ -206,35 +219,35 @@ const MyOrdersModal = ({ isOpen, onClose, userId }) => {
                 {showPastOrders && pastOrders.length > 0 && (
                   <div className="mt-4 space-y-3">
                     {pastOrders.map((order) => (
-                      <div key={order.order_id} className="border rounded-lg p-3 bg-white">
+                      <div key={order.transaction_id} className="border rounded-lg p-3 bg-white">
                         <div className="flex justify-between items-center">
                           <div>
                             <div className="flex items-center mb-1">
                               <Hash className="mr-2" size={14} />
                               <span className="font-medium text-sm">
-                                {t('my_orders.order_number')}{order.order_id}
+                                {t('my_orders.order_number')}{order.transaction_id}
                               </span>
                             </div>
                             <div className="flex items-center mb-1">
                               <Calendar className="mr-2" size={14} />
                               <span className="text-xs text-gray-600">
-                                {formatDate(order.date)}
+                                {formatDate(order.date_start)}
                               </span>
                             </div>
                             <div className="flex items-center">
                               <DollarSign className="mr-2" size={14} />
                               <span className="font-semibold text-sm">
-                                {formatPrice(order.total)} ₽
+                                {formatPrice(order.sum)} ₽
                               </span>
                             </div>
                           </div>
                           <div className="text-right">
                             <span className={`text-xs px-2 py-1 rounded ${
-                              order.status === 'paid' 
+                              order.status === '2' 
                                 ? 'bg-green-100 text-green-800' 
                                 : 'bg-red-100 text-red-800'
                             }`}>
-                              {order.status === 'paid' ? t('my_orders.status_paid') : t('my_orders.status_unpaid')}
+                              {order.status === '2' ? t('my_orders.status_paid') : t('my_orders.status_unpaid')}
                             </span>
                           </div>
                         </div>
