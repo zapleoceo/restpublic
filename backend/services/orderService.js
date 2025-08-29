@@ -2,7 +2,7 @@ const axios = require('axios');
 
 class OrderService {
   constructor() {
-    this.baseUrl = process.env.POSTER_API_URL || 'https://joinposter.com/api/v3';
+    this.baseUrl = 'https://joinposter.com/api';
   }
 
   getToken() {
