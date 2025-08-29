@@ -572,5 +572,25 @@
     "discount": "Giảm giá",
     "place_order": "Đặt hàng",
     "first_order_discount": "Giảm giá đơn hàng đầu tiên (20%)"
+  },
+  "auth": {
+    "login": "Đăng nhập",
+    "register": "Đăng ký",
+    "complete_registration": "Hoàn thành đăng ký",
+    "have_account_login": "Đã có tài khoản? Đăng nhập",
+    "no_account_register": "Chưa có tài khoản? Đăng ký",
+    "login_via_telegram": "Đăng nhập qua Telegram",
+    "telegram_login_description": "Để đăng nhập, nhấn nút bên dưới. Bot Telegram của chúng tôi sẽ mở ra nơi bạn có thể chia sẻ liên hệ.",
+    "login_via_telegram_button": "Đăng nhập qua Telegram",
+    "name": "Tên",
+    "lastName": "Họ",
+    "birthday": "Ngày sinh",
+    "gender": "Giới tính",
+    "male": "Nam",
+    "female": "Nữ",
+    "phone": "Điện thoại",
+    "phone_from_telegram": "Số điện thoại nhận từ Telegram",
+    "processing": "Đang xử lý...",
+    "confirm": "Xác nhận"
   }
 }

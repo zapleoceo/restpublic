@@ -330,6 +330,26 @@
     "online_payment_development": "ОПЛАТА ОНЛАЙН ЕЩЕ В РАЗРАБОТКЕ",
     "coming_soon": "Скоро будет доступно"
   },
+  "auth": {
+    "login": "Войти",
+    "register": "Регистрация",
+    "complete_registration": "Завершить регистрацию",
+    "have_account_login": "Уже в клубе? Авторизуйтесь",
+    "no_account_register": "Нет аккаунта? Зарегистрируйтесь",
+    "login_via_telegram": "Авторизация через Telegram",
+    "telegram_login_description": "Для авторизации нажмите кнопку ниже. Откроется наш Telegram бот, где вы сможете поделиться контактом.",
+    "login_via_telegram_button": "Авторизоваться через Telegram",
+    "name": "Имя",
+    "lastName": "Фамилия",
+    "birthday": "Дата рождения",
+    "gender": "Пол",
+    "male": "Мужской",
+    "female": "Женский",
+    "phone": "Телефон",
+    "phone_from_telegram": "Номер телефона получен из Telegram",
+    "processing": "Обработка...",
+    "confirm": "Подтвердить"
+  },
   "quests": {
     "title": "Квесты - Увлекательные приключения",
     "subtitle": "Погрузитесь в захватывающие истории и решите головоломки в наших квест-комнатах",

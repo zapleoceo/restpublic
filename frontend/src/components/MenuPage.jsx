@@ -12,17 +12,19 @@ import LoadingSpinner from './LoadingSpinner';
 import CartButton from './CartButton';
 import CartModal from './CartModal';
 import MyOrdersModal from './MyOrdersModal';
+import AuthModal from './AuthModal';
 import { useCart } from '../contexts/CartContext';
 
 const MenuPage = ({ menuData }) => {
   const { t } = useTranslation();
-  const { session } = useCart();
+  const { session, getCurrentSession } = useCart();
   const [activeTab, setActiveTab] = useState(0);
   const [sortType, setSortType] = useState('popularity'); // По умолчанию по популярности
   const [popularityData, setPopularityData] = useState({});
   const [loadingPopularity, setLoadingPopularity] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [showMyOrders, setShowMyOrders] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
   const { tableId } = useParams();
   const location = useLocation();
   
@@ -58,6 +60,30 @@ const MenuPage = ({ menuData }) => {
 
     loadPopularityData();
   }, []);
+
+  // Обработка URL параметров от Telegram бота
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const sessionParam = urlParams.get('session');
+    
+    if (sessionParam) {
+      try {
+        const sessionData = JSON.parse(decodeURIComponent(sessionParam));
+        console.log('🔗 Received session from URL:', sessionData);
+        
+        // Сохраняем сессию
+        setSession(sessionData);
+        
+        // Показываем модальное окно завершения регистрации
+        setShowAuthModal(true);
+        
+        // Очищаем URL параметры
+        window.history.replaceState({}, document.title, window.location.pathname);
+      } catch (error) {
+        console.error('❌ Error parsing session from URL:', error);
+      }
+    }
+  }, [setSession]);
 
   // Группируем продукты по категориям и применяем сортировку
   const groupedCategories = useMemo(() => {
@@ -139,19 +165,41 @@ const MenuPage = ({ menuData }) => {
             <div className="flex items-center space-x-3">
               <LanguageSwitcher />
               
-              {/* My Orders link */}
-              {session && (
-                <button
-                  onClick={() => setShowMyOrders(true)}
-                  className="inline-flex items-center px-3 py-2 text-gray-600 hover:text-orange-600 transition-colors"
-                  title={t('my_orders.title')}
-                >
-                  <CreditCard className="w-5 h-5" />
-                  <span className="ml-2 text-sm font-medium hidden sm:inline">
-                    {t('my_orders.title')}
-                  </span>
-                </button>
-              )}
+              {/* Auth/My Orders button */}
+              {(() => {
+                const currentSession = getCurrentSession();
+                console.log('🔍 MenuPage - Current session:', currentSession);
+                
+                if (currentSession) {
+                  // Авторизованный пользователь - показываем "Мои заказы"
+                  return (
+                    <button
+                      onClick={() => setShowMyOrders(true)}
+                      className="inline-flex items-center px-3 py-2 text-gray-600 hover:text-orange-600 transition-colors"
+                      title={t('my_orders.title')}
+                    >
+                      <CreditCard className="w-5 h-5" />
+                      <span className="ml-2 text-sm font-medium hidden sm:inline">
+                        {t('my_orders.title')}
+                      </span>
+                    </button>
+                  );
+                } else {
+                  // Неавторизованный пользователь - показываем "Войти"
+                  return (
+                    <button
+                      onClick={() => setShowAuthModal(true)}
+                      className="inline-flex items-center px-3 py-2 text-gray-600 hover:text-orange-600 transition-colors"
+                      title={t('auth.login')}
+                    >
+                      <CreditCard className="w-5 h-5" />
+                      <span className="ml-2 text-sm font-medium hidden sm:inline">
+                        {t('auth.login')}
+                      </span>
+                    </button>
+                  );
+                }
+              })()}
               
               <CartButton onClick={handleCartOpen} />
             </div>
@@ -249,6 +297,15 @@ const MenuPage = ({ menuData }) => {
           isOpen={showMyOrders}
           onClose={() => setShowMyOrders(false)}
           userId={session?.userId}
+        />
+      )}
+
+      {/* Auth Modal */}
+      {showAuthModal && (
+        <AuthModal
+          isOpen={showAuthModal}
+          onClose={() => setShowAuthModal(false)}
+          telegramData={session?.userData}
         />
       )}
     </div>

@@ -661,6 +661,134 @@ app.post('/api/session/update', async (req, res) => {
   }
 });
 
+// ===== АВТОРИЗАЦИЯ ЧЕРЕЗ TELEGRAM =====
+
+// Регистрация пользователя
+app.post('/api/auth/register', async (req, res) => {
+  try {
+    const { name, lastName, phone, birthday, gender } = req.body;
+    
+    if (!name || !phone) {
+      return res.status(400).json({ error: 'Имя и телефон обязательны' });
+    }
+
+    // Проверяем существование клиента по телефону
+    let clientId;
+    const existingClient = await orderService.findClientByPhone(phone);
+    
+    if (existingClient) {
+      clientId = existingClient.client.client_id;
+      console.log(`✅ Найден существующий клиент с ID: ${clientId}`);
+    } else {
+      // Создаем нового клиента
+      const clientData = {
+        name,
+        lastName,
+        phone,
+        birthday,
+        gender
+      };
+      clientId = await orderService.createClient(clientData);
+      console.log(`✅ Создан новый клиент с ID: ${clientId}`);
+    }
+
+    // Создаем сессию
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + 30);
+    const session = {
+      userId: clientId,
+      userData: { name, lastName, phone, birthday, gender },
+      expiresAt: expiresAt.toISOString()
+    };
+
+    res.json({ 
+      success: true, 
+      session,
+      message: 'Регистрация успешно завершена'
+    });
+  } catch (error) {
+    console.error('Error in register endpoint:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Обработка данных от Telegram бота
+app.post('/api/auth/telegram-callback', async (req, res) => {
+  try {
+    const { phone, name, lastName, birthday, sessionToken } = req.body;
+    
+    if (!phone) {
+      return res.status(400).json({ error: 'Номер телефона обязателен' });
+    }
+
+    // Проверяем существование клиента по телефону
+    let clientId;
+    const existingClient = await orderService.findClientByPhone(phone);
+    
+    if (existingClient) {
+      clientId = existingClient.client.client_id;
+      console.log(`✅ Найден существующий клиент с ID: ${clientId}`);
+    } else {
+      // Создаем нового клиента с данными из Telegram
+      const clientData = {
+        name: name || 'Пользователь',
+        lastName: lastName || '',
+        phone,
+        birthday: birthday || '',
+        gender: ''
+      };
+      clientId = await orderService.createClient(clientData);
+      console.log(`✅ Создан новый клиент с ID: ${clientId} из Telegram`);
+    }
+
+    // Создаем сессию
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + 30);
+    const session = {
+      userId: clientId,
+      userData: { name, lastName, phone, birthday },
+      expiresAt: expiresAt.toISOString()
+    };
+
+    res.json({ 
+      success: true, 
+      session,
+      redirectUrl: `/?session=${encodeURIComponent(JSON.stringify(session))}`
+    });
+  } catch (error) {
+    console.error('Error in telegram callback:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Получить данные сессии по токену
+app.get('/api/auth/session/:token', async (req, res) => {
+  try {
+    const { token } = req.params;
+    
+    // Декодируем токен сессии
+    const sessionData = JSON.parse(decodeURIComponent(token));
+    
+    // Проверяем валидность сессии
+    if (!sessionData.userId || !sessionData.expiresAt) {
+      return res.status(400).json({ error: 'Неверный токен сессии' });
+    }
+
+    const expiresAt = new Date(sessionData.expiresAt);
+    if (expiresAt <= new Date()) {
+      return res.status(400).json({ error: 'Сессия истекла' });
+    }
+
+    res.json({ 
+      success: true, 
+      session: sessionData
+    });
+  } catch (error) {
+    console.error('Error getting session:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 app.post('/api/orders/create-guest', async (req, res) => {
   try {
     const { items, total, tableId, comment, customerData } = req.body;

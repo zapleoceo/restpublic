@@ -129,6 +129,26 @@
     "online_payment_development": "ONLINE PAYMENT STILL IN DEVELOPMENT",
     "coming_soon": "Coming soon"
   },
+  "auth": {
+    "login": "Login",
+    "register": "Registration",
+    "complete_registration": "Complete Registration",
+    "have_account_login": "Already in the club? Login",
+    "no_account_register": "No account? Register",
+    "login_via_telegram": "Login via Telegram",
+    "telegram_login_description": "To login, click the button below. Our Telegram bot will open where you can share your contact.",
+    "login_via_telegram_button": "Login via Telegram",
+    "name": "Name",
+    "lastName": "Last Name",
+    "birthday": "Birthday",
+    "gender": "Gender",
+    "male": "Male",
+    "female": "Female",
+    "phone": "Phone",
+    "phone_from_telegram": "Phone number received from Telegram",
+    "processing": "Processing...",
+    "confirm": "Confirm"
+  },
   "guitar": {
     "title": "Guitar Circle",
     "subtitle": "Soulful guitar by the campfire",
