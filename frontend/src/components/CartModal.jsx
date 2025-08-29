@@ -5,13 +5,12 @@ import { useCart } from '../contexts/CartContext';
 import { formatPrice } from '../utils/priceUtils';
 import { getImageUrl, isImageAvailable } from '../utils/imageUtils';
 import CheckoutModal from './CheckoutModal';
-import MyOrdersModal from './MyOrdersModal';
+
 
 const CartModal = ({ isOpen, onClose, tableId }) => {
   const { t } = useTranslation();
-  const { items, total, updateQuantity, removeFromCart, clearCart, getCurrentSession, session } = useCart();
+  const { items, total, updateQuantity, removeFromCart, clearCart } = useCart();
   const [showCheckout, setShowCheckout] = useState(false);
-  const [showMyOrders, setShowMyOrders] = useState(false);
 
   if (!isOpen) return null;
 
@@ -180,18 +179,7 @@ const CartModal = ({ isOpen, onClose, tableId }) => {
                     </button>
                   </div>
 
-                  {/* My Orders link */}
-                  {(() => {
-                    console.log('🔍 CartModal - Current session:', session);
-                    return session ? (
-                      <button 
-                        onClick={() => setShowMyOrders(true)} 
-                        className="w-full text-center text-gray-600 hover:text-gray-800 transition-colors text-sm py-2"
-                      >
-                        {t('my_orders.title')}
-                      </button>
-                    ) : null;
-                  })()}
+
                 </div>
               </>
             )}
@@ -209,14 +197,7 @@ const CartModal = ({ isOpen, onClose, tableId }) => {
         />
       )}
 
-      {/* My Orders Modal */}
-      {showMyOrders && (
-        <MyOrdersModal
-          isOpen={showMyOrders}
-          onClose={() => setShowMyOrders(false)}
-          userId={session?.userId}
-        />
-      )}
+
     </>
   );
 };

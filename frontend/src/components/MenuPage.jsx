@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useParams, useLocation } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, CreditCard } from 'lucide-react';
 import { groupProductsByCategory, sortProducts } from '../utils/menuUtils';
 import { validateTableId, formatTableNumber } from '../utils/tableUtils';
 import { menuService } from '../services/menuService';
@@ -11,14 +11,18 @@ import SortSelector from './SortSelector';
 import LoadingSpinner from './LoadingSpinner';
 import CartButton from './CartButton';
 import CartModal from './CartModal';
+import MyOrdersModal from './MyOrdersModal';
+import { useCart } from '../contexts/CartContext';
 
 const MenuPage = ({ menuData }) => {
   const { t } = useTranslation();
+  const { session } = useCart();
   const [activeTab, setActiveTab] = useState(0);
   const [sortType, setSortType] = useState('popularity'); // По умолчанию по популярности
   const [popularityData, setPopularityData] = useState({});
   const [loadingPopularity, setLoadingPopularity] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [showMyOrders, setShowMyOrders] = useState(false);
   const { tableId } = useParams();
   const location = useLocation();
   
@@ -131,9 +135,24 @@ const MenuPage = ({ menuData }) => {
               )}
             </div>
 
-            {/* Переключатель языка и корзина */}
+            {/* Переключатель языка, мои заказы и корзина */}
             <div className="flex items-center space-x-3">
               <LanguageSwitcher />
+              
+              {/* My Orders link */}
+              {session && (
+                <button
+                  onClick={() => setShowMyOrders(true)}
+                  className="inline-flex items-center px-3 py-2 text-gray-600 hover:text-orange-600 transition-colors"
+                  title={t('my_orders.title')}
+                >
+                  <CreditCard className="w-5 h-5" />
+                  <span className="ml-2 text-sm font-medium hidden sm:inline">
+                    {t('my_orders.title')}
+                  </span>
+                </button>
+              )}
+              
               <CartButton onClick={handleCartOpen} />
             </div>
           </div>
@@ -223,6 +242,15 @@ const MenuPage = ({ menuData }) => {
         onClose={handleCartClose} 
         tableId={currentTableId}
       />
+
+      {/* My Orders Modal */}
+      {showMyOrders && (
+        <MyOrdersModal
+          isOpen={showMyOrders}
+          onClose={() => setShowMyOrders(false)}
+          userId={session?.userId}
+        />
+      )}
     </div>
   );
 };
