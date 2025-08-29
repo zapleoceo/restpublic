@@ -124,6 +124,7 @@ const MenuPage = ({ menuData }) => {
 
   // Обработчики для всплывающей подсказки с задержкой
   const handleMouseEnter = () => {
+    // Очищаем таймаут закрытия при наведении мыши
     if (tooltipTimeout) {
       clearTimeout(tooltipTimeout);
       setTooltipTimeout(null);
@@ -132,9 +133,27 @@ const MenuPage = ({ menuData }) => {
   };
 
   const handleMouseLeave = () => {
+    // Устанавливаем таймаут закрытия только при уходе мыши
     const timeout = setTimeout(() => {
       setShowUserTooltip(false);
     }, 500); // 0.5 секунды задержки
+    setTooltipTimeout(timeout);
+  };
+
+  // Обработчик для самой подсказки - предотвращает закрытие при наведении
+  const handleTooltipMouseEnter = () => {
+    // Очищаем таймаут закрытия при наведении на подсказку
+    if (tooltipTimeout) {
+      clearTimeout(tooltipTimeout);
+      setTooltipTimeout(null);
+    }
+  };
+
+  const handleTooltipMouseLeave = () => {
+    // Закрываем подсказку при уходе мыши с неё
+    const timeout = setTimeout(() => {
+      setShowUserTooltip(false);
+    }, 300); // Меньшая задержка для самой подсказки
     setTooltipTimeout(timeout);
   };
 
@@ -248,8 +267,8 @@ const MenuPage = ({ menuData }) => {
                           />
                           <div 
                             className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg p-3 min-w-[200px] z-50"
-                            onMouseEnter={handleMouseEnter}
-                            onMouseLeave={handleMouseLeave}
+                            onMouseEnter={handleTooltipMouseEnter}
+                            onMouseLeave={handleTooltipMouseLeave}
                           >
                           <div className="flex items-center space-x-2 mb-3">
                             <User className="w-4 h-4 text-gray-500" />
