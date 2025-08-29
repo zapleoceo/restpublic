@@ -616,6 +616,23 @@ app.get('/api/orders/user/:userId/past', async (req, res) => {
   }
 });
 
+// Получить детали заказа с товарами
+app.get('/api/orders/details/:transactionId', async (req, res) => {
+  try {
+    const { transactionId } = req.params;
+    
+    const orderDetails = await orderService.getOrderDetails(transactionId);
+    
+    res.json({ 
+      success: true, 
+      orderDetails 
+    });
+  } catch (error) {
+    console.error('Error fetching order details:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Создать сессию пользователя
 app.post('/api/session/create', async (req, res) => {
   try {

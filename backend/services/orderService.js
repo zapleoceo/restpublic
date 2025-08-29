@@ -337,6 +337,31 @@ class OrderService {
   }
 
   /**
+   * Получить детали заказа с товарами
+   */
+  async getOrderDetails(transactionId) {
+    try {
+      console.log(`🔍 Fetching order details for transaction ${transactionId}`);
+      
+      const response = await axios.get(
+        `${this.baseUrl}/dash.getTransaction?token=${this.getToken()}&transaction_id=${transactionId}`
+      );
+      
+      console.log(`📊 Order details response:`, response.data);
+      
+      if (response.data && response.data.response) {
+        return response.data.response;
+      }
+      
+      console.log(`⚠️ No order details for transaction ${transactionId}`);
+      return null;
+    } catch (error) {
+      console.error('Error fetching order details:', error);
+      throw new Error('Ошибка при получении деталей заказа');
+    }
+  }
+
+  /**
    * Получить прошлые заказы пользователя с пагинацией
    */
   async getUserPastOrders(userId, limit = 10, offset = 0) {
