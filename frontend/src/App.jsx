@@ -1,108 +1,110 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { CartProvider } from './contexts/CartContext';
-import { useCart } from './contexts/CartContext';
 import { useTranslation } from 'react-i18next';
-import './i18n';
-
-// Components
-import Header from './components/Header';
 import HomePage from './components/HomePage';
 import MenuPage from './components/MenuPage';
 import MenuPageWrapper from './components/MenuPageWrapper';
-import LoadingSpinner from './components/LoadingSpinner';
-import ErrorBoundary from './components/ErrorBoundary';
-import LoginPage from './components/LoginPage';
-import AdminPanel from './components/AdminPanel';
-import ProtectedRoute from './components/ProtectedRoute';
-
-// Page Components
+import FastAccessPage from './components/FastAccessPage';
+import LasertagPage from './components/LasertagPage';
 import ArcherytagPage from './components/ArcherytagPage';
 import BBQZonePage from './components/BBQZonePage';
+import QuestsPage from './components/QuestsPage';
+import GuitarPage from './components/GuitarPage';
 import BoardgamesPage from './components/BoardgamesPage';
 import CinemaPage from './components/CinemaPage';
-import GuitarPage from './components/GuitarPage';
-import LasertagPage from './components/LasertagPage';
-import QuestsPage from './components/QuestsPage';
 import YogaPage from './components/YogaPage';
-import FastAccessPage from './components/FastAccessPage';
-
-// CSS
+import LoadingSpinner from './components/LoadingSpinner';
+import ErrorBoundary from './components/ErrorBoundary';
+import AdminPanel from './components/AdminPanel';
+import LoginPage from './components/LoginPage';
+import ProtectedRoute from './components/ProtectedRoute';
 import './App.css';
 
-function AppContent() {
+function App() {
   const { t } = useTranslation();
-  const { setSession } = useCart();
+  const [menuData, setMenuData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Обработка параметра session в URL (для авторизации через Telegram)
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const sessionParam = urlParams.get('session');
-    
-    if (sessionParam) {
-      try {
-        const sessionData = JSON.parse(decodeURIComponent(sessionParam));
-        console.log('🔐 Получены данные сессии из URL:', sessionData);
-        
-        // Сохраняем сессию
-        setSession(sessionData);
-        
-        // Очищаем параметр из URL
-        const newUrl = new URL(window.location);
-        newUrl.searchParams.delete('session');
-        window.history.replaceState({}, '', newUrl);
-        
-        // Показываем уведомление об успешной авторизации
-        alert('✅ Авторизация через Telegram успешно завершена!');
-      } catch (error) {
-        console.error('❌ Ошибка обработки сессии из URL:', error);
+    fetchMenuData();
+  }, []);
+
+  const fetchMenuData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      console.log('🔄 Fetching menu data...');
+      const response = await fetch('/api/menu');
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
+
+      const data = await response.json();
+      console.log('✅ Menu data loaded:', { categories: data.categories.length, products: data.products.length });
+
+      setMenuData(data);
+    } catch (err) {
+      console.error('❌ Error fetching menu data:', err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
-  }, [setSession]);
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <LoadingSpinner />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-orange-400 text-6xl mb-4">⚠️</div>
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">{t('error')}</h1>
+          <p className="text-gray-600 mb-6">{error}</p>
+                     <button
+             onClick={fetchMenuData}
+             className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-lg transition-colors"
+           >
+             {t('try_again')}
+           </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <Router>
-      <div className="App">
-        <ErrorBoundary>
-          <Header />
+    <ErrorBoundary>
+      <Router>
+        <div className="min-h-screen bg-gray-50">
           <main>
             <Routes>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/menu" element={<MenuPageWrapper />} />
-              <Route path="/menu-view" element={<MenuPage />} />
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/admin" element={
-                <ProtectedRoute>
-                  <AdminPanel />
-                </ProtectedRoute>
-              } />
-              
-              {/* Activity Pages */}
-              <Route path="/archerytag" element={<ArcherytagPage />} />
-              <Route path="/bbq" element={<BBQZonePage />} />
-              <Route path="/boardgames" element={<BoardgamesPage />} />
-              <Route path="/cinema" element={<CinemaPage />} />
-              <Route path="/guitar" element={<GuitarPage />} />
-              <Route path="/lasertag" element={<LasertagPage />} />
-              <Route path="/quests" element={<QuestsPage />} />
-              <Route path="/yoga" element={<YogaPage />} />
-              <Route path="/fast-access" element={<FastAccessPage />} />
-              
-              {/* Fallback route */}
-              <Route path="*" element={<HomePage />} />
+              <Route path="/" element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
+              <Route path="/menu" element={<ProtectedRoute><MenuPageWrapper menuData={menuData} /></ProtectedRoute>} />
+              <Route path="/fast/:tableId" element={<ProtectedRoute><FastAccessPage /></ProtectedRoute>} />
+              <Route path="/fast/:tableId/menu" element={<ProtectedRoute><MenuPageWrapper menuData={menuData} /></ProtectedRoute>} />
+              <Route path="/lasertag" element={<ProtectedRoute><LasertagPage /></ProtectedRoute>} />
+              <Route path="/archerytag" element={<ProtectedRoute><ArcherytagPage /></ProtectedRoute>} />
+              <Route path="/bbq_zone" element={<ProtectedRoute><BBQZonePage /></ProtectedRoute>} />
+              <Route path="/quests" element={<ProtectedRoute><QuestsPage /></ProtectedRoute>} />
+              <Route path="/guitar" element={<ProtectedRoute><GuitarPage /></ProtectedRoute>} />
+              <Route path="/boardgames" element={<ProtectedRoute><BoardgamesPage /></ProtectedRoute>} />
+                              <Route path="/cinema" element={<ProtectedRoute><CinemaPage /></ProtectedRoute>} />
+                <Route path="/yoga" element={<ProtectedRoute><YogaPage /></ProtectedRoute>} />
+              <Route path="/admin" element={<AdminPanel />} />
+              <Route path="/admin/login" element={<LoginPage />} />
             </Routes>
           </main>
-        </ErrorBoundary>
-      </div>
-    </Router>
-  );
-}
-
-function App() {
-  return (
-    <CartProvider>
-      <AppContent />
-    </CartProvider>
+        </div>
+      </Router>
+    </ErrorBoundary>
   );
 }
 
