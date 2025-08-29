@@ -304,7 +304,7 @@ class OrderService {
       console.log(`🔍 Fetching orders for user ${userId}`);
       
       // Сначала пробуем получить через transactions
-      const dateFrom = '2025-01-01';
+      const dateFrom = '2025-08-01';
       const dateTo = new Date().toISOString().split('T')[0];
       
       const response = await axios.get(
@@ -343,7 +343,7 @@ class OrderService {
       console.log(`🔍 Fetching past orders for user ${userId}, limit=${limit}, offset=${offset}`);
       
       // Получаем через transactions
-      const dateFrom = '2025-01-01';
+      const dateFrom = '2025-08-01';
       const dateTo = new Date().toISOString().split('T')[0];
       
       const response = await axios.get(
