@@ -59,7 +59,7 @@ const AuthModal = ({ isOpen, onClose, telegramData = null }) => {
 
   const handleTelegramAuth = () => {
     // Открываем Telegram бота
-    const botUsername = 'goodzone_northrepublic_bot'; // Фиксированное имя бота
+    const botUsername = 'RestPublic_bot'; // Правильное имя бота
     const currentUrl = encodeURIComponent(window.location.href);
     const telegramUrl = `https://t.me/${botUsername}?start=auth_${currentUrl}`;
     window.open(telegramUrl, '_blank');
