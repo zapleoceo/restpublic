@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useParams, useLocation } from 'react-router-dom';
-import { ArrowLeft, CreditCard } from 'lucide-react';
+import { ArrowLeft, CreditCard, LogOut, User } from 'lucide-react';
 import { groupProductsByCategory, sortProducts } from '../utils/menuUtils';
 import { validateTableId, formatTableNumber } from '../utils/tableUtils';
 import { menuService } from '../services/menuService';
@@ -25,6 +25,7 @@ const MenuPage = ({ menuData }) => {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [showMyOrders, setShowMyOrders] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [showUserTooltip, setShowUserTooltip] = useState(false);
   const { tableId } = useParams();
   const location = useLocation();
   
@@ -114,6 +115,25 @@ const MenuPage = ({ menuData }) => {
 
   // Обработчики корзины
   const handleCartOpen = () => setIsCartOpen(true);
+
+  const handleLogout = () => {
+    setSession(null);
+    setShowUserTooltip(false);
+  };
+
+  // Закрываем всплывающую подсказку при клике вне её
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (showUserTooltip && !event.target.closest('.user-tooltip-container')) {
+        setShowUserTooltip(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showUserTooltip]);
   const handleCartClose = () => setIsCartOpen(false);
 
   // Если нет категорий, показываем сообщение
@@ -173,16 +193,39 @@ const MenuPage = ({ menuData }) => {
                 if (currentSession) {
                   // Авторизованный пользователь - показываем "Мои заказы"
                   return (
-                    <button
-                      onClick={() => setShowMyOrders(true)}
-                      className="inline-flex items-center px-3 py-2 text-gray-600 hover:text-orange-600 transition-colors"
-                      title={t('my_orders.title')}
-                    >
-                      <CreditCard className="w-5 h-5" />
-                      <span className="ml-2 text-sm font-medium hidden sm:inline">
-                        {t('my_orders.title')}
-                      </span>
-                    </button>
+                    <div className="relative user-tooltip-container">
+                      <button
+                        onClick={() => setShowMyOrders(true)}
+                        onMouseEnter={() => setShowUserTooltip(true)}
+                        onMouseLeave={() => setShowUserTooltip(false)}
+                        className="inline-flex items-center px-3 py-2 text-gray-600 hover:text-orange-600 transition-colors"
+                        title={t('my_orders.title')}
+                      >
+                        <CreditCard className="w-5 h-5" />
+                        <span className="ml-2 text-sm font-medium hidden sm:inline">
+                          {t('my_orders.title')}
+                        </span>
+                      </button>
+                      
+                      {/* Всплывающая подсказка */}
+                      {showUserTooltip && (
+                        <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg p-3 min-w-[200px] z-50">
+                          <div className="flex items-center space-x-2 mb-3">
+                            <User className="w-4 h-4 text-gray-500" />
+                            <span className="text-sm font-medium text-gray-800">
+                              {currentSession.userData?.lastName || ''} {currentSession.userData?.name || 'Гость'}
+                            </span>
+                          </div>
+                          <button
+                            onClick={handleLogout}
+                            className="w-full flex items-center justify-center space-x-2 px-3 py-2 text-sm text-red-600 hover:text-red-800 hover:bg-red-50 rounded-md transition-colors"
+                          >
+                            <LogOut className="w-4 h-4" />
+                            <span>Выйти</span>
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   );
                 } else {
                   // Неавторизованный пользователь - показываем "Войти"
