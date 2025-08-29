@@ -122,11 +122,31 @@ const MenuPage = ({ menuData }) => {
     setShowUserTooltip(false);
   };
 
+  // Обработчики для всплывающей подсказки с задержкой
+  const handleMouseEnter = () => {
+    if (tooltipTimeout) {
+      clearTimeout(tooltipTimeout);
+      setTooltipTimeout(null);
+    }
+    setShowUserTooltip(true);
+  };
+
+  const handleMouseLeave = () => {
+    const timeout = setTimeout(() => {
+      setShowUserTooltip(false);
+    }, 500); // 0.5 секунды задержки
+    setTooltipTimeout(timeout);
+  };
+
   // Закрываем всплывающую подсказку при клике вне её
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (showUserTooltip && !event.target.closest('.user-tooltip-container')) {
         setShowUserTooltip(false);
+        if (tooltipTimeout) {
+          clearTimeout(tooltipTimeout);
+          setTooltipTimeout(null);
+        }
       }
     };
 
@@ -134,7 +154,16 @@ const MenuPage = ({ menuData }) => {
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [showUserTooltip]);
+  }, [showUserTooltip, tooltipTimeout]);
+
+  // Очищаем таймаут при размонтировании
+  useEffect(() => {
+    return () => {
+      if (tooltipTimeout) {
+        clearTimeout(tooltipTimeout);
+      }
+    };
+  }, [tooltipTimeout]);
   const handleCartClose = () => setIsCartOpen(false);
 
   // Если нет категорий, показываем сообщение
@@ -197,8 +226,8 @@ const MenuPage = ({ menuData }) => {
                     <div className="relative user-tooltip-container">
                       <button
                         onClick={() => setShowMyOrders(true)}
-                        onMouseEnter={() => setShowUserTooltip(true)}
-                        onMouseLeave={() => setShowUserTooltip(false)}
+                        onMouseEnter={handleMouseEnter}
+                        onMouseLeave={handleMouseLeave}
                         className="inline-flex items-center px-3 py-2 text-gray-600 hover:text-orange-600 transition-colors"
                         title={t('my_orders.title')}
                       >
@@ -210,7 +239,18 @@ const MenuPage = ({ menuData }) => {
                       
                       {/* Всплывающая подсказка */}
                       {showUserTooltip && (
-                        <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg p-3 min-w-[200px] z-50">
+                        <>
+                          {/* Невидимая зона для перехода мыши */}
+                          <div 
+                            className="absolute top-full left-0 w-full h-1 bg-transparent"
+                            onMouseEnter={handleMouseEnter}
+                            onMouseLeave={handleMouseLeave}
+                          />
+                          <div 
+                            className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg p-3 min-w-[200px] z-50"
+                            onMouseEnter={handleMouseEnter}
+                            onMouseLeave={handleMouseLeave}
+                          >
                           <div className="flex items-center space-x-2 mb-3">
                             <User className="w-4 h-4 text-gray-500" />
                             <span className="text-sm font-medium text-gray-800">
@@ -223,8 +263,9 @@ const MenuPage = ({ menuData }) => {
                           >
                             <LogOut className="w-4 h-4" />
                             <span>Выйти</span>
-                          </button>
-                        </div>
+                                                      </button>
+                          </div>
+                        </>
                       )}
                     </div>
                   );
