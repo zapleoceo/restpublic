@@ -303,15 +303,21 @@ class OrderService {
     try {
       console.log(`🔍 Fetching orders for user ${userId}`);
       
-      const response = await axios.get(`${this.baseUrl}/incomingOrders.getIncomingOrders?token=${this.getToken()}`);
+      // Сначала пробуем получить через transactions
+      const dateFrom = '2025-01-01';
+      const dateTo = new Date().toISOString().split('T')[0];
+      
+      const response = await axios.get(
+        `${this.baseUrl}/dash.getTransactions?token=${this.getToken()}&dateFrom=${dateFrom}&dateTo=${dateTo}`
+      );
       
       console.log(`📊 API response status: ${response.status}`);
       console.log(`📊 API response data:`, response.data);
       
-      if (response.data && response.data.response) {
-        // Фильтруем заказы по client_id и статусу (неоплаченные)
-        const userOrders = response.data.response.filter(order => {
-          console.log(`🔍 Checking order: client_id=${order.client_id}, status=${order.status}, userId=${userId}`);
+      if (response.data && response.data.response && response.data.response.data) {
+        // Фильтруем транзакции по client_id и статусу (неоплаченные)
+        const userOrders = response.data.response.data.filter(order => {
+          console.log(`🔍 Checking transaction: client_id=${order.client_id}, status=${order.status}, userId=${userId}`);
           return order.client_id === parseInt(userId) && 
                  order.status !== 'paid' && 
                  order.status !== 'closed';
@@ -336,12 +342,18 @@ class OrderService {
     try {
       console.log(`🔍 Fetching past orders for user ${userId}, limit=${limit}, offset=${offset}`);
       
-      const response = await axios.get(`${this.baseUrl}/incomingOrders.getIncomingOrders?token=${this.getToken()}`);
+      // Получаем через transactions
+      const dateFrom = '2025-01-01';
+      const dateTo = new Date().toISOString().split('T')[0];
       
-      if (response.data && response.data.response) {
-        // Фильтруем заказы по client_id и статусу (оплаченные или закрытые)
-        const userOrders = response.data.response.filter(order => {
-          console.log(`🔍 Checking past order: client_id=${order.client_id}, status=${order.status}, userId=${userId}`);
+      const response = await axios.get(
+        `${this.baseUrl}/dash.getTransactions?token=${this.getToken()}&dateFrom=${dateFrom}&dateTo=${dateTo}`
+      );
+      
+      if (response.data && response.data.response && response.data.response.data) {
+        // Фильтруем транзакции по client_id и статусу (оплаченные или закрытые)
+        const userOrders = response.data.response.data.filter(order => {
+          console.log(`🔍 Checking past transaction: client_id=${order.client_id}, status=${order.status}, userId=${userId}`);
           return order.client_id === parseInt(userId) && 
                  (order.status === 'paid' || order.status === 'closed');
         });
