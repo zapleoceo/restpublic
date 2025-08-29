@@ -116,7 +116,10 @@ const CheckoutModal = ({ isOpen, onClose, onOrderSuccess, tableId }) => {
         withRegistration: hasActiveSession ? false : withRegistration, // Не предлагаем регистрацию если уже авторизованы
         customerData: hasActiveSession ? currentSession.userData : {
           name: formData.name.trim(),
-          phone: formData.phone.trim()
+          lastName: formData.lastName.trim(),
+          phone: formData.phone.trim(),
+          birthday: formData.birthday,
+          gender: formData.gender
         },
         clientId: hasActiveSession ? currentSession.userId : null // Используем clientId из сессии
       };

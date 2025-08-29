@@ -105,6 +105,11 @@ class OrderService {
     try {
       console.log('Creating client with data:', clientData);
       
+      // Проверяем, что номер телефона есть
+      if (!clientData.phone) {
+        throw new Error('Номер телефона обязателен для создания клиента');
+      }
+      
       // Форматируем номер телефона для Poster API
       let phone = clientData.phone;
       if (phone.startsWith('+')) {
@@ -114,6 +119,11 @@ class OrderService {
       phone = phone.replace(/\D/g, '');
       
       console.log('Formatted phone:', phone);
+      
+      // Проверяем, что номер телефона не пустой после форматирования
+      if (!phone) {
+        throw new Error('Номер телефона не может быть пустым после форматирования');
+      }
       
       // Создаем URLSearchParams для form data
       const formData = new URLSearchParams();
@@ -289,10 +299,13 @@ class OrderService {
     try {
       const { items, total, tableId, comment, customerData } = orderData;
 
-      // Сначала создаем минимального клиента с правильным именем
+      // Сначала создаем клиента с полными данными
       const clientData = {
         name: customerData.name || 'Гость',
-        phone: customerData.phone
+        lastName: customerData.lastName || '',
+        phone: customerData.phone,
+        birthday: customerData.birthday || '',
+        gender: customerData.gender || ''
       };
 
       const clientId = await this.createClient(clientData);

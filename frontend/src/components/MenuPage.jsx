@@ -26,6 +26,7 @@ const MenuPage = ({ menuData }) => {
   const [showMyOrders, setShowMyOrders] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showUserTooltip, setShowUserTooltip] = useState(false);
+  const [tooltipTimeout, setTooltipTimeout] = useState(null);
   const { tableId } = useParams();
   const location = useLocation();
   

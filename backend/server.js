@@ -536,8 +536,12 @@ app.post('/api/orders/create', async (req, res) => {
       return res.status(400).json({ error: 'Товары в заказе обязательны' });
     }
 
-    if (!customerData || !customerData.name || !customerData.phone) {
-      return res.status(400).json({ error: 'Имя и телефон обязательны' });
+    if (!customerData || !customerData.name) {
+      return res.status(400).json({ error: 'Имя обязательно' });
+    }
+
+    if (!customerData.phone) {
+      return res.status(400).json({ error: 'Номер телефона обязателен' });
     }
 
     let clientId;
