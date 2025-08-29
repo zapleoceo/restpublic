@@ -454,15 +454,15 @@ app.get('/api/admin/page/:path(*)/status', (req, res) => {
 
 
 
-// SPA fallback
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../index.html'));
-});
-
 // Error handler
 app.use((error, req, res, next) => {
   console.error('❌ Server error:', error);
   res.status(500).json({ error: 'Internal server error' });
+});
+
+// SPA fallback - должен быть последним
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../index.html'));
 });
 
 // Инициализация мониторинга SePay
