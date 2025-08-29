@@ -256,9 +256,9 @@ const MyOrdersModal = ({ isOpen, onClose, userId }) => {
                                                                                {orderDetails[order.transaction_id].products?.map((product, index) => (
                                           <tr key={index} className="border-t border-gray-100">
                                             <td className="px-4 py-2 text-sm text-gray-800">{product.product_name}</td>
-                                            <td className="px-4 py-2 text-center text-sm text-gray-600">{product.count}</td>
+                                            <td className="px-4 py-2 text-center text-sm text-gray-600">{product.count || product.num}</td>
                                             <td className="px-4 py-2 text-right text-sm font-medium">
-                                              {formatPrice(product.price)} ₫
+                                              {formatPrice(product.price || product.product_sum)} ₫
                                             </td>
                                           </tr>
                                         ))}

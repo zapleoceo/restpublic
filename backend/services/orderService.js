@@ -370,6 +370,20 @@ class OrderService {
         products: productsResponse.data?.response || []
       };
       
+      // Если products - это объект с ключами, преобразуем в массив
+      if (orderDetails.products && typeof orderDetails.products === 'object' && !Array.isArray(orderDetails.products)) {
+        orderDetails.products = Object.values(orderDetails.products);
+      }
+      
+      // Нормализуем данные товаров
+      if (orderDetails.products && Array.isArray(orderDetails.products)) {
+        orderDetails.products = orderDetails.products.map(product => ({
+          ...product,
+          price: product.product_sum || product.price, // Используем product_sum как цену
+          count: product.num || product.count // Используем num как количество
+        }));
+      }
+      
       return orderDetails;
     } catch (error) {
       console.error('Error fetching order details:', error);
