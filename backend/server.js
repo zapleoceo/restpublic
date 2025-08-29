@@ -766,10 +766,14 @@ app.post('/api/auth/telegram-callback', async (req, res) => {
       expiresAt: expiresAt.toISOString()
     };
 
+    // Формируем redirect URL для возврата в приложение
+    const frontendUrl = process.env.FRONTEND_URL || 'https://goodzone.zapleo.com';
+    const redirectUrl = `${frontendUrl}/?session=${encodeURIComponent(JSON.stringify(session))}`;
+
     res.json({ 
       success: true, 
       session,
-      redirectUrl: `/?session=${encodeURIComponent(JSON.stringify(session))}`
+      redirectUrl
     });
   } catch (error) {
     console.error('Error in telegram callback:', error);

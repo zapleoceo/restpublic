@@ -59,10 +59,13 @@ const AuthModal = ({ isOpen, onClose, telegramData = null }) => {
 
   const handleTelegramAuth = () => {
     // Открываем Telegram бота
-    const botUsername = process.env.REACT_APP_TELEGRAM_BOT_USERNAME || 'your_bot_username';
+    const botUsername = 'goodzone_northrepublic_bot'; // Фиксированное имя бота
     const currentUrl = encodeURIComponent(window.location.href);
     const telegramUrl = `https://t.me/${botUsername}?start=auth_${currentUrl}`;
     window.open(telegramUrl, '_blank');
+    
+    // Показываем инструкцию пользователю
+    alert('Откроется Telegram бот. Поделитесь своим контактом для авторизации, затем вернитесь в приложение.');
   };
 
   const handleSubmit = async (e) => {
