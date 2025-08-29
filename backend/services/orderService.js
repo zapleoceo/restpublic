@@ -301,18 +301,27 @@ class OrderService {
    */
   async getUserOrders(userId) {
     try {
+      console.log(`🔍 Fetching orders for user ${userId}`);
+      
       const response = await axios.get(`${this.baseUrl}/incomingOrders.getIncomingOrders?token=${this.getToken()}`);
+      
+      console.log(`📊 API response status: ${response.status}`);
+      console.log(`📊 API response data:`, response.data);
       
       if (response.data && response.data.response) {
         // Фильтруем заказы по client_id и статусу (неоплаченные)
-        const userOrders = response.data.response.filter(order => 
-          order.client_id === parseInt(userId) && 
-          order.status !== 'paid'
-        );
+        const userOrders = response.data.response.filter(order => {
+          console.log(`🔍 Checking order: client_id=${order.client_id}, status=${order.status}, userId=${userId}`);
+          return order.client_id === parseInt(userId) && 
+                 order.status !== 'paid' && 
+                 order.status !== 'closed';
+        });
         
+        console.log(`✅ Found ${userOrders.length} unpaid orders for user ${userId}`);
         return userOrders;
       }
       
+      console.log(`⚠️ No response data for user ${userId}`);
       return [];
     } catch (error) {
       console.error('Error fetching user orders:', error);
@@ -325,19 +334,28 @@ class OrderService {
    */
   async getUserPastOrders(userId, limit = 10, offset = 0) {
     try {
+      console.log(`🔍 Fetching past orders for user ${userId}, limit=${limit}, offset=${offset}`);
+      
       const response = await axios.get(`${this.baseUrl}/incomingOrders.getIncomingOrders?token=${this.getToken()}`);
       
       if (response.data && response.data.response) {
-        // Фильтруем заказы по client_id и статусу (оплаченные)
-        const userOrders = response.data.response.filter(order => 
-          order.client_id === parseInt(userId) && 
-          order.status === 'paid'
-        );
+        // Фильтруем заказы по client_id и статусу (оплаченные или закрытые)
+        const userOrders = response.data.response.filter(order => {
+          console.log(`🔍 Checking past order: client_id=${order.client_id}, status=${order.status}, userId=${userId}`);
+          return order.client_id === parseInt(userId) && 
+                 (order.status === 'paid' || order.status === 'closed');
+        });
+        
+        console.log(`✅ Found ${userOrders.length} past orders for user ${userId}`);
         
         // Применяем пагинацию
-        return userOrders.slice(offset, offset + limit);
+        const paginatedOrders = userOrders.slice(offset, offset + limit);
+        console.log(`📄 Returning ${paginatedOrders.length} orders (paginated)`);
+        
+        return paginatedOrders;
       }
       
+      console.log(`⚠️ No response data for past orders user ${userId}`);
       return [];
     } catch (error) {
       console.error('Error fetching user past orders:', error);
