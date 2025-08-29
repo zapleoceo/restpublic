@@ -277,8 +277,7 @@ const MenuPage = ({ menuData }) => {
                           >
                             <LogOut className="w-4 h-4" />
                             <span>Выйти</span>
-                                                      </button>
-                          </div>
+                          </button>
                         </div>
                       )}
                     </div>
