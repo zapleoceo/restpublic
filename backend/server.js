@@ -460,11 +460,6 @@ app.use((error, req, res, next) => {
   res.status(500).json({ error: 'Internal server error' });
 });
 
-// SPA fallback - должен быть последним
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../index.html'));
-});
-
 // Инициализация мониторинга SePay
 let sepayMonitor = null;
 
@@ -875,7 +870,10 @@ async function sendQRToTelegram(chatId, amount, comment, qrUrl) {
     }
 }
 
-
+// SPA fallback - должен быть последним
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../index.html'));
+});
 
 app.listen(PORT, async () => {
   console.log(`🚀 RestPublic Backend v${process.env.APP_VERSION || '2.1.1'} running on port ${PORT}`);
