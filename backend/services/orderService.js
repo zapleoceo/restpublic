@@ -184,6 +184,25 @@ class OrderService {
     try {
       const { items, total, tableId, comment, clientId, customerData, withRegistration } = orderData;
 
+      // Проверяем, есть ли активный заказ за последние 6 часов
+      const activeOrder = await this.findActiveOrder(clientId);
+      
+      if (activeOrder) {
+        console.log(`🔄 Found active order ${activeOrder.transaction_id}, adding items to it`);
+        
+        // Добавляем товары к существующему заказу
+        const updatedOrder = await this.addToExistingOrder(activeOrder.transaction_id, items);
+        
+        return {
+          order: updatedOrder,
+          isExistingOrder: true,
+          existingOrderId: activeOrder.transaction_id
+        };
+      }
+
+      // Если активного заказа нет, создаем новый
+      console.log(`🆕 No active order found, creating new order`);
+
       // Подготавливаем товары для заказа
       const products = items.map(item => {
         // Получаем числовую цену
@@ -249,7 +268,10 @@ class OrderService {
       console.log('Order creation response:', response.data);
 
       if (response.data && response.data.response) {
-        return response.data.response;
+        return {
+          order: response.data.response,
+          isExistingOrder: false
+        };
       }
 
       throw new Error('Неверный ответ от API при создании заказа');
@@ -275,21 +297,41 @@ class OrderService {
 
       const clientId = await this.createClient(clientData);
       
-      // Создаем заказ для этого клиента
-      const order = await this.createOrder({
-        items,
-        total,
-        tableId,
-        comment,
-        clientId,
-        customerData: clientData,
-        withRegistration: false
-      });
+      // Проверяем, есть ли активный заказ за последние 6 часов
+      const activeOrder = await this.findActiveOrder(clientId);
+      
+      if (activeOrder) {
+        console.log(`🔄 Found active order ${activeOrder.transaction_id}, adding items to it`);
+        
+        // Добавляем товары к существующему заказу
+        const updatedOrder = await this.addToExistingOrder(activeOrder.transaction_id, items);
+        
+        return {
+          order: updatedOrder,
+          client: { client_id: clientId },
+          isExistingOrder: true,
+          existingOrderId: activeOrder.transaction_id
+        };
+      } else {
+        console.log(`🆕 No active order found, creating new order`);
+        
+        // Создаем новый заказ
+        const order = await this.createOrder({
+          items,
+          total,
+          tableId,
+          comment,
+          clientId,
+          customerData: clientData,
+          withRegistration: false
+        });
 
-      return {
-        order,
-        client: { client_id: clientId }
-      };
+        return {
+          order,
+          client: { client_id: clientId },
+          isExistingOrder: false
+        };
+      }
     } catch (error) {
       console.error('Error creating guest order:', error);
       throw new Error('Ошибка при создании заказа для гостя');
@@ -388,6 +430,139 @@ class OrderService {
     } catch (error) {
       console.error('Error fetching order details:', error);
       throw new Error('Ошибка при получении деталей заказа');
+    }
+  }
+
+  /**
+   * Найти активный заказ пользователя (не старше 6 часов)
+   */
+  async findActiveOrder(userId) {
+    try {
+      console.log(`🔍 Finding active order for user ${userId}`);
+      
+      // Вычисляем время 6 часов назад
+      const sixHoursAgo = new Date();
+      sixHoursAgo.setHours(sixHoursAgo.getHours() - 6);
+      const dateFrom = sixHoursAgo.toISOString().split('T')[0];
+      const dateTo = new Date().toISOString().split('T')[0];
+      
+      const response = await axios.get(
+        `${this.baseUrl}/dash.getTransactions?token=${this.getToken()}&dateFrom=${dateFrom}&dateTo=${dateTo}`
+      );
+      
+      if (response.data && response.data.response) {
+        // Ищем активные заказы (статус 0 или 1) для данного пользователя
+        const activeOrders = response.data.response.filter(order => {
+          const isUserOrder = order.client_id.toString() === userId.toString();
+          const isActive = order.status === '0' || order.status === 0 || 
+                          order.status === '1' || order.status === 1;
+          const isRecent = new Date(parseInt(order.date_start)) > sixHoursAgo;
+          
+          console.log(`🔍 Checking order ${order.transaction_id}: user=${isUserOrder}, active=${isActive}, recent=${isRecent}`);
+          
+          return isUserOrder && isActive && isRecent;
+        });
+        
+        // Возвращаем самый свежий заказ
+        if (activeOrders.length > 0) {
+          const latestOrder = activeOrders.reduce((latest, current) => {
+            return parseInt(current.date_start) > parseInt(latest.date_start) ? current : latest;
+          });
+          
+          console.log(`✅ Found active order ${latestOrder.transaction_id} for user ${userId}`);
+          return latestOrder;
+        }
+      }
+      
+      console.log(`⚠️ No active orders found for user ${userId}`);
+      return null;
+    } catch (error) {
+      console.error('Error finding active order:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Добавить товары к существующему заказу
+   */
+  async addToExistingOrder(transactionId, items) {
+    try {
+      console.log(`🔍 Adding items to existing order ${transactionId}:`, items);
+      
+      // Получаем текущие товары заказа
+      const currentProductsResponse = await axios.get(
+        `${this.baseUrl}/dash.getTransactionProducts?token=${this.getToken()}&transaction_id=${transactionId}`
+      );
+      
+      let currentProducts = [];
+      if (currentProductsResponse.data?.response) {
+        // Если products - это объект с ключами, преобразуем в массив
+        if (typeof currentProductsResponse.data.response === 'object' && !Array.isArray(currentProductsResponse.data.response)) {
+          currentProducts = Object.values(currentProductsResponse.data.response);
+        } else {
+          currentProducts = currentProductsResponse.data.response;
+        }
+      }
+      
+      console.log(`📊 Current products in order:`, currentProducts);
+      
+      // Подготавливаем новые товары
+      const newProducts = items.map(item => {
+        let price = item.price;
+        if (typeof price === 'object' && price !== null) {
+          price = price['1'] || Object.values(price)[0] || 0;
+        }
+        price = parseFloat(price) || 0;
+
+        return {
+          product_id: item.product_id,
+          count: item.quantity,
+          price: Math.round(price * 100) // Poster API ожидает цену в копейках
+        };
+      });
+      
+      // Объединяем существующие и новые товары
+      const allProducts = [...currentProducts, ...newProducts];
+      
+      // Группируем товары по product_id и суммируем количества
+      const groupedProducts = {};
+      allProducts.forEach(product => {
+        const key = product.product_id;
+        if (groupedProducts[key]) {
+          groupedProducts[key].count += product.count;
+        } else {
+          groupedProducts[key] = { ...product };
+        }
+      });
+      
+      const finalProducts = Object.values(groupedProducts);
+      console.log(`📦 Final products for order:`, finalProducts);
+      
+      // Обновляем заказ с новыми товарами
+      const updatePayload = {
+        products: finalProducts
+      };
+      
+      const response = await axios.post(
+        `${this.baseUrl}/incomingOrders.updateIncomingOrder?token=${this.getToken()}&incoming_order_id=${transactionId}`,
+        updatePayload,
+        {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+      
+      console.log('Order update response:', response.data);
+      
+      if (response.data && response.data.response) {
+        return response.data.response;
+      }
+      
+      throw new Error('Неверный ответ от API при обновлении заказа');
+    } catch (error) {
+      console.error('Error adding to existing order:', error);
+      throw new Error('Ошибка при добавлении к существующему заказу: ' + (error.response?.data?.error || error.message));
     }
   }
 

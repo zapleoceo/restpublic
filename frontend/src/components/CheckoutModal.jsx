@@ -6,10 +6,14 @@ import { formatPrice } from '../utils/priceUtils';
 
 const CheckoutModal = ({ isOpen, onClose, onOrderSuccess, tableId }) => {
   const { t } = useTranslation();
-  const { items, total, setSession } = useCart();
+  const { items, total, setSession, getCurrentSession } = useCart();
   const [withRegistration, setWithRegistration] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  
+  // Проверяем, есть ли активная сессия
+  const currentSession = getCurrentSession();
+  const hasActiveSession = !!currentSession;
   
   // Form data
   const [formData, setFormData] = useState({
@@ -53,13 +57,15 @@ const CheckoutModal = ({ isOpen, onClose, onOrderSuccess, tableId }) => {
     setError('');
 
     try {
-      // Validate required fields
-      if (!formData.name.trim()) {
-        throw new Error(t('checkout.name') + ' обязательно');
-      }
+      // Validate required fields only for non-authenticated users
+      if (!hasActiveSession) {
+        if (!formData.name.trim()) {
+          throw new Error(t('checkout.name') + ' обязательно');
+        }
 
-      if (!formData.phone.trim()) {
-        throw new Error(t('checkout.phone') + ' обязателен');
+        if (!formData.phone.trim()) {
+          throw new Error(t('checkout.phone') + ' обязателен');
+        }
       }
 
       // Prepare order data
@@ -73,11 +79,12 @@ const CheckoutModal = ({ isOpen, onClose, onOrderSuccess, tableId }) => {
         total,
         tableId,
         comment: formData.comment.trim(),
-        withRegistration,
-        customerData: {
+        withRegistration: hasActiveSession ? false : withRegistration, // Не предлагаем регистрацию если уже авторизованы
+        customerData: hasActiveSession ? currentSession.userData : {
           name: formData.name.trim(),
           phone: formData.phone.trim()
-        }
+        },
+        clientId: hasActiveSession ? currentSession.userId : null // Используем clientId из сессии
       };
 
       // Use unified endpoint
@@ -150,42 +157,58 @@ const CheckoutModal = ({ isOpen, onClose, onOrderSuccess, tableId }) => {
 
           {/* Content */}
           <div className="p-4 max-h-[calc(90vh-120px)] overflow-y-auto">
-            {/* Registration Option */}
-            <div className="mb-6">
-              <label className="flex items-start space-x-3 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={withRegistration}
-                  onChange={(e) => setWithRegistration(e.target.checked)}
-                  className="mt-1 h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300 rounded"
-                />
-                <div className="text-sm">
-                  <div className="font-medium text-gray-900">
-                    {t('order_form_fields.register_for_discount')}
+            {/* Registration Option - только если нет активной сессии */}
+            {!hasActiveSession && (
+              <div className="mb-6">
+                <label className="flex items-start space-x-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={withRegistration}
+                    onChange={(e) => setWithRegistration(e.target.checked)}
+                    className="mt-1 h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300 rounded"
+                  />
+                  <div className="text-sm">
+                    <div className="font-medium text-gray-900">
+                      {t('order_form_fields.register_for_discount')}
+                    </div>
+                    <div className="text-gray-500 mt-1">
+                      {t('order_form_fields.register_description')}
+                    </div>
                   </div>
-                  <div className="text-gray-500 mt-1">
-                    {t('order_form_fields.register_description')}
-                  </div>
-                </div>
-              </label>
-            </div>
-
-            {/* Form */}
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {/* Name */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  {t('checkout.name')} *
                 </label>
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-                  required
-                />
               </div>
+            )}
+
+            {/* Информация о пользователе, если есть сессия */}
+            {hasActiveSession && (
+              <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+                <div className="flex items-center space-x-2 mb-2">
+                  <UserCheck className="w-5 h-5 text-green-600" />
+                  <span className="font-medium text-green-800">Вы авторизованы</span>
+                </div>
+                <div className="text-sm text-green-700">
+                  Заказ будет добавлен к вашему существующему заказу (если он есть) или создан новый.
+                </div>
+              </div>
+            )}
+
+            {/* Form - показываем поля только если нет активной сессии */}
+            {!hasActiveSession && (
+              <form onSubmit={handleSubmit} className="space-y-4">
+                {/* Name */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    {t('checkout.name')} *
+                  </label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                    required
+                  />
+                </div>
 
               {/* Additional fields for registration */}
               {withRegistration && (
@@ -326,6 +349,58 @@ const CheckoutModal = ({ isOpen, onClose, onOrderSuccess, tableId }) => {
                 {loading ? 'Создание заказа...' : t('checkout.place_order')}
               </button>
             </form>
+            )}
+
+            {/* Форма для авторизованных пользователей */}
+            {hasActiveSession && (
+              <form onSubmit={handleSubmit} className="space-y-4">
+                {/* Comment */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    {t('checkout.comment')}
+                  </label>
+                  <textarea
+                    name="comment"
+                    value={formData.comment}
+                    onChange={handleInputChange}
+                    rows="3"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                    placeholder="Особые пожелания к заказу..."
+                  />
+                </div>
+
+                {/* Order Summary */}
+                <div className="border-t pt-4 mt-6">
+                  <h3 className="font-medium text-gray-900 mb-3">{t('checkout.order_summary')}</h3>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span>Сумма заказа:</span>
+                      <span>{formatPrice(total)}</span>
+                    </div>
+                    <div className="flex justify-between font-semibold text-lg border-t pt-2">
+                      <span>{t('cart.total')}:</span>
+                      <span className="text-orange-600">{formatPrice(total)}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Error message */}
+                {error && (
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-red-700 text-sm">
+                    {error}
+                  </div>
+                )}
+
+                {/* Submit button */}
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full bg-orange-500 hover:bg-orange-600 disabled:bg-orange-300 text-white py-3 px-4 rounded-lg font-medium transition-colors"
+                >
+                  {loading ? 'Добавление к заказу...' : 'Добавить к заказу'}
+                </button>
+              </form>
+            )}
           </div>
         </div>
       </div>
