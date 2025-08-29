@@ -93,6 +93,7 @@ const cartReducer = (state, action) => {
       const newItemCount = updatedItems.reduce((sum, item) => sum + item.quantity, 0);
 
       return {
+        ...state,
         items: updatedItems,
         total: newTotal,
         itemCount: newItemCount
@@ -107,6 +108,7 @@ const cartReducer = (state, action) => {
       const newItemCount = updatedItems.reduce((sum, item) => sum + item.quantity, 0);
 
       return {
+        ...state,
         items: updatedItems,
         total: newTotal,
         itemCount: newItemCount
@@ -134,6 +136,7 @@ const cartReducer = (state, action) => {
       const newItemCount = updatedItems.reduce((sum, item) => sum + item.quantity, 0);
 
       return {
+        ...state,
         items: updatedItems,
         total: newTotal,
         itemCount: newItemCount
