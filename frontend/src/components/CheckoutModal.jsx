@@ -6,8 +6,8 @@ import { formatPrice } from '../utils/priceUtils';
 
 const CheckoutModal = ({ isOpen, onClose, onOrderSuccess, tableId }) => {
   const { t } = useTranslation();
-  const { items, total } = useCart();
-  const [orderType, setOrderType] = useState('guest'); // 'guest' or 'register'
+  const { items, total, setSession } = useCart();
+  const [withRegistration, setWithRegistration] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   
@@ -32,7 +32,7 @@ const CheckoutModal = ({ isOpen, onClose, onOrderSuccess, tableId }) => {
         gender: '',
         comment: ''
       });
-      setOrderType('guest');
+      setWithRegistration(false);
       setError('');
     }
   }, [isOpen]);
@@ -58,16 +58,11 @@ const CheckoutModal = ({ isOpen, onClose, onOrderSuccess, tableId }) => {
         throw new Error(t('checkout.name') + ' обязательно');
       }
 
-      if (orderType === 'guest' && !formData.phone.trim()) {
-        throw new Error(t('checkout.phone') + ' обязателен');
-      }
-
-      // Регистрация временно отключена, все заказы создаются как гостевые
       if (!formData.phone.trim()) {
         throw new Error(t('checkout.phone') + ' обязателен');
       }
 
-      // Prepare order data - все заказы создаются как гостевые
+      // Prepare order data
       const orderData = {
         items: items.map(item => ({
           product_id: item.product_id,
@@ -78,17 +73,15 @@ const CheckoutModal = ({ isOpen, onClose, onOrderSuccess, tableId }) => {
         total,
         tableId,
         comment: formData.comment.trim(),
-        orderType: 'guest', // Принудительно гостевой заказ
+        withRegistration,
         customerData: {
           name: formData.name.trim(),
           phone: formData.phone.trim()
         }
       };
 
-      // Determine API endpoint based on order type
-      const endpoint = orderType === 'guest' 
-        ? '/api/orders/create-guest' 
-        : '/api/orders/create';
+      // Use unified endpoint
+      const endpoint = '/api/orders/create';
 
       const response = await fetch(endpoint, {
         method: 'POST',
@@ -106,8 +99,13 @@ const CheckoutModal = ({ isOpen, onClose, onOrderSuccess, tableId }) => {
       const result = await response.json();
       console.log('Order created successfully:', result);
 
+      // Save session if provided
+      if (result.session) {
+        setSession(result.session);
+      }
+
       // Success - call success callback
-      onOrderSuccess();
+      onOrderSuccess(result);
       
     } catch (err) {
       console.error('Order creation error:', err);
@@ -117,7 +115,7 @@ const CheckoutModal = ({ isOpen, onClose, onOrderSuccess, tableId }) => {
     }
   };
 
-  const discountAmount = orderType === 'register' ? total * 0.2 : 0;
+  const discountAmount = withRegistration ? total * 0.2 : 0;
   const finalTotal = total - discountAmount;
 
   return (
@@ -149,32 +147,24 @@ const CheckoutModal = ({ isOpen, onClose, onOrderSuccess, tableId }) => {
 
           {/* Content */}
           <div className="p-4 max-h-[calc(90vh-120px)] overflow-y-auto">
-            {/* Order Type Selection */}
+            {/* Registration Option */}
             <div className="mb-6">
-              <div className="grid grid-cols-2 gap-3">
-                <button
-                  type="button"
-                  onClick={() => setOrderType('guest')}
-                  className={`p-3 rounded-lg border-2 transition-colors ${
-                    orderType === 'guest'
-                      ? 'border-orange-500 bg-orange-50 text-orange-700'
-                      : 'border-gray-200 text-gray-700 hover:border-gray-300'
-                  }`}
-                >
-                  <User className="w-5 h-5 mx-auto mb-2" />
-                  <div className="text-sm font-medium">{t('checkout.guest_order')}</div>
-                </button>
-                <button
-                  type="button"
-                  disabled
-                  className="p-3 rounded-lg border-2 transition-colors opacity-50 cursor-not-allowed border-gray-200 text-gray-500"
-                  title="Регистрация временно недоступна"
-                >
-                  <UserCheck className="w-5 h-5 mx-auto mb-2" />
-                  <div className="text-sm font-medium">{t('checkout.register_discount')}</div>
-                  <div className="text-xs text-gray-400 mt-1">Скоро</div>
-                </button>
-              </div>
+              <label className="flex items-start space-x-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={withRegistration}
+                  onChange={(e) => setWithRegistration(e.target.checked)}
+                  className="mt-1 h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300 rounded"
+                />
+                <div className="text-sm">
+                  <div className="font-medium text-gray-900">
+                    {t('order_form_fields.register_for_discount')}
+                  </div>
+                  <div className="text-gray-500 mt-1">
+                    {t('order_form_fields.register_description')}
+                  </div>
+                </div>
+              </label>
             </div>
 
             {/* Form */}
@@ -195,7 +185,7 @@ const CheckoutModal = ({ isOpen, onClose, onOrderSuccess, tableId }) => {
               </div>
 
               {/* Additional fields for registration */}
-              {orderType === 'register' && (
+              {withRegistration && (
                 <>
                   {/* Last Name */}
                   <div>
@@ -274,7 +264,7 @@ const CheckoutModal = ({ isOpen, onClose, onOrderSuccess, tableId }) => {
                   placeholder="+84 XXX XXX XXX"
                   required
                 />
-                {orderType === 'register' && (
+                {withRegistration && (
                   <p className="text-xs text-gray-500 mt-1">
                     Мы пришлем вам проверочный код в телеграм
                   </p>
@@ -304,7 +294,7 @@ const CheckoutModal = ({ isOpen, onClose, onOrderSuccess, tableId }) => {
                     <span>Сумма заказа:</span>
                     <span>{formatPrice(total)}</span>
                   </div>
-                  {orderType === 'register' && discountAmount > 0 && (
+                  {withRegistration && discountAmount > 0 && (
                     <div className="flex justify-between text-green-600">
                       <span>{t('checkout.first_order_discount')}:</span>
                       <span>-{formatPrice(discountAmount)}</span>

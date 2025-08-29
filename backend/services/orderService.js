@@ -57,6 +57,48 @@ class OrderService {
   }
 
   /**
+   * Найти клиента по номеру телефона
+   */
+  async findClientByPhone(phone) {
+    try {
+      console.log('Finding client with phone:', phone);
+      
+      // Форматируем номер телефона для поиска
+      let formattedPhone = phone;
+      if (formattedPhone.startsWith('+')) {
+        formattedPhone = formattedPhone.substring(1);
+      }
+      formattedPhone = formattedPhone.replace(/\D/g, '');
+      
+      console.log('Searching for formatted phone:', formattedPhone);
+      
+      const response = await axios.get(`${this.baseUrl}/clients.getClients?token=${this.getToken()}`);
+
+      console.log('Client search response:', response.data);
+      
+      if (response.data && response.data.response) {
+        // Фильтруем клиентов по номеру телефона
+        const client = response.data.response.find(c => {
+          const clientPhone = c.phone || c.phone_number || '';
+          const cleanClientPhone = clientPhone.replace(/\D/g, '');
+          return cleanClientPhone === formattedPhone;
+        });
+        
+        if (client) {
+          return {
+            client: client
+          };
+        }
+      }
+
+      return null;
+    } catch (error) {
+      console.error('Error finding client by phone:', error.response?.data || error.message);
+      throw new Error('Ошибка при поиске клиента');
+    }
+  }
+
+  /**
    * Создать нового клиента
    */
   async createClient(clientData) {
@@ -91,10 +133,8 @@ class OrderService {
       console.log('Client creation response:', response.data);
 
       if (response.data && response.data.response) {
-        // Poster API возвращает только ID клиента, создаем объект
-        return {
-          client_id: response.data.response
-        };
+        // Poster API возвращает только ID клиента
+        return response.data.response;
       }
 
       throw new Error('Неверный ответ от API при создании клиента');
@@ -142,7 +182,7 @@ class OrderService {
    */
   async createOrder(orderData) {
     try {
-      const { items, total, tableId, comment, clientId, isFirstOrder, customerData } = orderData;
+      const { items, total, tableId, comment, clientId, customerData, withRegistration } = orderData;
 
       // Подготавливаем товары для заказа
       const products = items.map(item => {
@@ -187,8 +227,8 @@ class OrderService {
         orderPayload.client_id = clientId;
       }
 
-      // Добавляем скидку 20% если это первый заказ согласно документации
-      if (isFirstOrder) {
+      // Добавляем скидку 20% если пользователь выбрал регистрацию
+      if (withRegistration) {
         orderPayload.discounts = [
           { "type": "percent", "value": 20 }
         ];
@@ -233,7 +273,7 @@ class OrderService {
         phone: customerData.phone
       };
 
-      const client = await this.createClient(clientData);
+      const clientId = await this.createClient(clientData);
       
       // Создаем заказ для этого клиента
       const order = await this.createOrder({
@@ -241,18 +281,67 @@ class OrderService {
         total,
         tableId,
         comment,
-        clientId: client.client_id,
-        customerData: clientData, // Передаем данные клиента для комментария
-        isFirstOrder: true // Для гостя всегда первый заказ, но без скидки
+        clientId,
+        customerData: clientData,
+        withRegistration: false
       });
 
       return {
         order,
-        client
+        client: { client_id: clientId }
       };
     } catch (error) {
       console.error('Error creating guest order:', error);
       throw new Error('Ошибка при создании заказа для гостя');
+    }
+  }
+
+  /**
+   * Получить заказы пользователя (неоплаченные)
+   */
+  async getUserOrders(userId) {
+    try {
+      const response = await axios.get(`${this.baseUrl}/incomingOrders.getIncomingOrders?token=${this.getToken()}`);
+      
+      if (response.data && response.data.response) {
+        // Фильтруем заказы по client_id и статусу (неоплаченные)
+        const userOrders = response.data.response.filter(order => 
+          order.client_id === parseInt(userId) && 
+          order.status !== 'paid'
+        );
+        
+        return userOrders;
+      }
+      
+      return [];
+    } catch (error) {
+      console.error('Error fetching user orders:', error);
+      throw new Error('Ошибка при получении заказов пользователя');
+    }
+  }
+
+  /**
+   * Получить прошлые заказы пользователя с пагинацией
+   */
+  async getUserPastOrders(userId, limit = 10, offset = 0) {
+    try {
+      const response = await axios.get(`${this.baseUrl}/incomingOrders.getIncomingOrders?token=${this.getToken()}`);
+      
+      if (response.data && response.data.response) {
+        // Фильтруем заказы по client_id и статусу (оплаченные)
+        const userOrders = response.data.response.filter(order => 
+          order.client_id === parseInt(userId) && 
+          order.status === 'paid'
+        );
+        
+        // Применяем пагинацию
+        return userOrders.slice(offset, offset + limit);
+      }
+      
+      return [];
+    } catch (error) {
+      console.error('Error fetching user past orders:', error);
+      throw new Error('Ошибка при получении прошлых заказов пользователя');
     }
   }
 }

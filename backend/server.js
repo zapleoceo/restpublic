@@ -535,18 +535,23 @@ app.post('/api/orders/check-first', async (req, res) => {
 
 app.post('/api/orders/create', async (req, res) => {
   try {
-    const { items, total, tableId, comment, customerData } = req.body;
+    const { items, total, tableId, comment, customerData, withRegistration } = req.body;
     
     if (!items || !items.length) {
       return res.status(400).json({ error: 'Товары в заказе обязательны' });
     }
 
-    // Сначала проверяем/создаем клиента по номеру телефона
+    if (!customerData || !customerData.name || !customerData.phone) {
+      return res.status(400).json({ error: 'Имя и телефон обязательны' });
+    }
+
     let clientId;
-    if (customerData && customerData.phone) {
-      const existingClient = await orderService.checkExistingClient(customerData.phone);
-      if (existingClient.exists) {
-        // Если клиент существует, используем его ID
+
+    // Проверяем существование клиента по телефону
+    if (customerData.phone) {
+      const existingClient = await orderService.findClientByPhone(customerData.phone);
+      
+      if (existingClient) {
         clientId = existingClient.client.client_id;
         console.log(`✅ Найден существующий клиент с ID: ${clientId}`);
       } else {
@@ -559,9 +564,6 @@ app.post('/api/orders/create', async (req, res) => {
       return res.status(400).json({ error: 'Номер телефона обязателен для привязки заказа к пользователю' });
     }
 
-    // Проверяем первый ли это заказ
-    const isFirstOrder = await orderService.checkFirstOrder(clientId);
-
     // Создаем заказ
     const order = await orderService.createOrder({
       items,
@@ -569,18 +571,92 @@ app.post('/api/orders/create', async (req, res) => {
       tableId,
       comment,
       clientId,
-      isFirstOrder,
-      customerData
+      customerData,
+      withRegistration: withRegistration || false
     });
+
+    // Создаем сессию для пользователя
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + 30);
+    const session = {
+      userId: clientId,
+      userData: customerData,
+      expiresAt: expiresAt.toISOString()
+    };
 
     res.json({ 
       success: true, 
       order, 
-      isFirstOrder,
-      discount: isFirstOrder ? total * 0.2 : 0
+      session,
+      discount: withRegistration ? total * 0.2 : 0
     });
   } catch (error) {
     console.error('Error in create order endpoint:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Получить заказы пользователя (неоплаченные)
+app.get('/api/orders/user/:userId', async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const orders = await orderService.getUserOrders(userId);
+    res.json({ success: true, orders });
+  } catch (error) {
+    console.error('Error fetching user orders:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Получить прошлые заказы пользователя с пагинацией
+app.get('/api/orders/user/:userId/past', async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { limit = 10, offset = 0 } = req.query;
+    const orders = await orderService.getUserPastOrders(userId, parseInt(limit), parseInt(offset));
+    res.json({ success: true, orders });
+  } catch (error) {
+    console.error('Error fetching user past orders:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Создать сессию пользователя
+app.post('/api/session/create', async (req, res) => {
+  try {
+    const { userId, userData } = req.body;
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + 30); // 30 дней
+    
+    const session = {
+      userId,
+      userData,
+      expiresAt: expiresAt.toISOString()
+    };
+    
+    res.json({ success: true, session });
+  } catch (error) {
+    console.error('Error creating session:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Обновить сессию пользователя
+app.post('/api/session/update', async (req, res) => {
+  try {
+    const { userId, userData } = req.body;
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + 30); // 30 дней
+    
+    const session = {
+      userId,
+      userData,
+      expiresAt: expiresAt.toISOString()
+    };
+    
+    res.json({ success: true, session });
+  } catch (error) {
+    console.error('Error updating session:', error);
     res.status(500).json({ error: error.message });
   }
 });
@@ -605,10 +681,20 @@ app.post('/api/orders/create-guest', async (req, res) => {
       customerData
     });
 
+    // Создаем сессию для пользователя
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + 30);
+    const session = {
+      userId: result.client.client_id,
+      userData: customerData,
+      expiresAt: expiresAt.toISOString()
+    };
+
     res.json({ 
       success: true, 
       order: result.order,
-      client: result.client
+      client: result.client,
+      session
     });
   } catch (error) {
     console.error('Error in create guest order endpoint:', error);

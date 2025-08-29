@@ -15,20 +15,58 @@ const getNumericPrice = (price) => {
   return parseFloat(price) || 0;
 };
 
+// Session utilities
+const SESSION_KEY = 'user_session';
+
+const getSession = () => {
+  try {
+    const session = localStorage.getItem(SESSION_KEY);
+    return session ? JSON.parse(session) : null;
+  } catch (error) {
+    console.error('Error getting session:', error);
+    return null;
+  }
+};
+
+const saveSession = (session) => {
+  try {
+    localStorage.setItem(SESSION_KEY, JSON.stringify(session));
+  } catch (error) {
+    console.error('Error saving session:', error);
+  }
+};
+
+const clearSession = () => {
+  try {
+    localStorage.removeItem(SESSION_KEY);
+  } catch (error) {
+    console.error('Error clearing session:', error);
+  }
+};
+
+const isSessionValid = (session) => {
+  if (!session || !session.expiresAt) return false;
+  return new Date(session.expiresAt) > new Date();
+};
+
 // Action types для reducer
 const CART_ACTIONS = {
   ADD_ITEM: 'ADD_ITEM',
   REMOVE_ITEM: 'REMOVE_ITEM',
   UPDATE_QUANTITY: 'UPDATE_QUANTITY',
   CLEAR_CART: 'CLEAR_CART',
-  LOAD_CART: 'LOAD_CART'
+  LOAD_CART: 'LOAD_CART',
+  SET_SESSION: 'SET_SESSION',
+  UPDATE_SESSION: 'UPDATE_SESSION',
+  CLEAR_SESSION: 'CLEAR_SESSION'
 };
 
 // Начальное состояние корзины
 const initialState = {
   items: [],
   total: 0,
-  itemCount: 0
+  itemCount: 0,
+  session: null
 };
 
 // Reducer для управления состоянием корзины
@@ -103,10 +141,19 @@ const cartReducer = (state, action) => {
     }
 
     case CART_ACTIONS.CLEAR_CART:
-      return initialState;
+      return { ...initialState, session: state.session };
 
     case CART_ACTIONS.LOAD_CART:
-      return action.payload;
+      return { ...action.payload, session: state.session };
+
+    case CART_ACTIONS.SET_SESSION:
+      return { ...state, session: action.payload.session };
+
+    case CART_ACTIONS.UPDATE_SESSION:
+      return { ...state, session: action.payload.session };
+
+    case CART_ACTIONS.CLEAR_SESSION:
+      return { ...state, session: null };
 
     default:
       return state;
@@ -117,7 +164,7 @@ const cartReducer = (state, action) => {
 export const CartProvider = ({ children }) => {
   const [state, dispatch] = useReducer(cartReducer, initialState);
 
-  // Загружаем корзину из localStorage при инициализации
+  // Загружаем корзину и сессию из localStorage при инициализации
   useEffect(() => {
     const savedCart = localStorage.getItem('cart');
     if (savedCart) {
@@ -128,6 +175,14 @@ export const CartProvider = ({ children }) => {
         console.error('Error loading cart from localStorage:', error);
         localStorage.removeItem('cart');
       }
+    }
+
+    // Загружаем сессию
+    const session = getSession();
+    if (session && isSessionValid(session)) {
+      dispatch({ type: CART_ACTIONS.SET_SESSION, payload: { session } });
+    } else if (session && !isSessionValid(session)) {
+      clearSession();
     }
   }, []);
 
@@ -158,15 +213,40 @@ export const CartProvider = ({ children }) => {
     return item ? item.quantity : 0;
   };
 
+  // Session functions
+  const setSession = (session) => {
+    saveSession(session);
+    dispatch({ type: CART_ACTIONS.SET_SESSION, payload: { session } });
+  };
+
+  const updateSession = (session) => {
+    saveSession(session);
+    dispatch({ type: CART_ACTIONS.UPDATE_SESSION, payload: { session } });
+  };
+
+  const clearUserSession = () => {
+    clearSession();
+    dispatch({ type: CART_ACTIONS.CLEAR_SESSION });
+  };
+
+  const getCurrentSession = () => {
+    return state.session;
+  };
+
   const value = {
     items: state.items,
     total: state.total,
     itemCount: state.itemCount,
+    session: state.session,
     addToCart,
     removeFromCart,
     updateQuantity,
     clearCart,
-    getItemQuantity
+    getItemQuantity,
+    setSession,
+    updateSession,
+    clearUserSession,
+    getCurrentSession
   };
 
   return (

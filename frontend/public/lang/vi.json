@@ -99,13 +99,36 @@
     "email": "Email",
     "delivery_address": "Địa chỉ giao hàng",
     "delivery_address_placeholder": "Địa chỉ giao hàng (nếu cần)",
-    "additional_notes": "Ghi chú bổ sung",
+    "additional_notes": "Yêu cầu bổ sung",
     "notes_placeholder": "Yêu cầu đặc biệt cho đơn hàng",
     "your_order": "Đơn hàng của bạn:",
     "cancel": "Hủy",
-    "fill_name_phone": "Vui lòng điền tên và số điện thoại"
+    "fill_name_phone": "Vui lòng điền tên và số điện thoại",
+    "register_for_discount": "Đăng ký và nhận giảm giá 20%",
+    "register_description": "Khi đăng ký, bạn sẽ nhận được giảm giá 20% cho đơn hàng"
   },
   "back": "Quay lại",
+  "my_orders": {
+    "title": "Đơn hàng của tôi",
+    "unpaid_orders": "Đơn hàng chưa thanh toán",
+    "past_orders": "đơn hàng trước đây",
+    "all_orders_loaded": "Đây là tất cả đơn hàng của bạn với chúng tôi",
+    "load_more_orders": "Tải đơn hàng trước đây",
+    "pay_order": "thanh toán đơn hàng",
+    "pay_all_orders": "thanh toán tất cả đơn hàng",
+    "no_orders": "Bạn chưa có đơn hàng nào",
+    "order_number": "Đơn hàng #",
+    "order_date": "Ngày đặt hàng",
+    "order_status": "Trạng thái",
+    "order_total": "Tổng cộng",
+    "status_unpaid": "Chưa thanh toán",
+    "status_paid": "Đã thanh toán"
+  },
+  "payment": {
+    "title": "Thanh toán",
+    "online_payment_development": "THANH TOÁN TRỰC TUYẾN VẪN ĐANG PHÁT TRIỂN",
+    "coming_soon": "Sắp có"
+  },
   "guitar": {
     "title": "Guitar Circle",
     "subtitle": "Guitar tâm hồn bên lửa trại",

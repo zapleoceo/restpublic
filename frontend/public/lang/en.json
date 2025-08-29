@@ -99,13 +99,36 @@
     "email": "Email",
     "delivery_address": "Delivery Address",
     "delivery_address_placeholder": "Delivery address (if required)",
-    "additional_notes": "Additional Notes",
-    "notes_placeholder": "Special requests for the order",
-    "your_order": "Your Order:",
+    "additional_notes": "Additional wishes",
+    "notes_placeholder": "Special wishes for the order",
+    "your_order": "Your order:",
     "cancel": "Cancel",
-    "fill_name_phone": "Please fill in your name and phone number"
+    "fill_name_phone": "Please fill in your name and phone",
+    "register_for_discount": "Register and get 20% discount",
+    "register_description": "When registering, you will receive a 20% discount on your order"
   },
   "back": "Back",
+  "my_orders": {
+    "title": "My Orders",
+    "unpaid_orders": "Unpaid Orders",
+    "past_orders": "past orders",
+    "all_orders_loaded": "These are all your orders with us",
+    "load_more_orders": "Load past orders",
+    "pay_order": "pay order",
+    "pay_all_orders": "pay all orders",
+    "no_orders": "You don't have any orders yet",
+    "order_number": "Order #",
+    "order_date": "Order Date",
+    "order_status": "Status",
+    "order_total": "Total",
+    "status_unpaid": "Unpaid",
+    "status_paid": "Paid"
+  },
+  "payment": {
+    "title": "Payment",
+    "online_payment_development": "ONLINE PAYMENT STILL IN DEVELOPMENT",
+    "coming_soon": "Coming soon"
+  },
   "guitar": {
     "title": "Guitar Circle",
     "subtitle": "Soulful guitar by the campfire",

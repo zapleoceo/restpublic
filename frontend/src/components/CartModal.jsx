@@ -1,15 +1,17 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { X, Plus, Minus, Trash2, ShoppingCart } from 'lucide-react';
+import { X, Plus, Minus, Trash2, ShoppingCart, CreditCard } from 'lucide-react';
 import { useCart } from '../contexts/CartContext';
 import { formatPrice } from '../utils/priceUtils';
 import { getImageUrl, isImageAvailable } from '../utils/imageUtils';
 import CheckoutModal from './CheckoutModal';
+import MyOrdersModal from './MyOrdersModal';
 
 const CartModal = ({ isOpen, onClose, tableId }) => {
   const { t } = useTranslation();
-  const { items, total, updateQuantity, removeFromCart, clearCart } = useCart();
+  const { items, total, updateQuantity, removeFromCart, clearCart, getCurrentSession } = useCart();
   const [showCheckout, setShowCheckout] = useState(false);
+  const [showMyOrders, setShowMyOrders] = useState(false);
 
   if (!isOpen) return null;
 
@@ -177,6 +179,16 @@ const CartModal = ({ isOpen, onClose, tableId }) => {
                       {t('cart.checkout')}
                     </button>
                   </div>
+
+                  {/* My Orders link */}
+                  {getCurrentSession() && (
+                    <button 
+                      onClick={() => setShowMyOrders(true)} 
+                      className="w-full text-center text-gray-600 hover:text-gray-800 transition-colors text-sm py-2"
+                    >
+                      {t('my_orders.title')}
+                    </button>
+                  )}
                 </div>
               </>
             )}
@@ -191,6 +203,15 @@ const CartModal = ({ isOpen, onClose, tableId }) => {
           onClose={handleCheckoutClose}
           onOrderSuccess={handleOrderSuccess}
           tableId={tableId}
+        />
+      )}
+
+      {/* My Orders Modal */}
+      {showMyOrders && (
+        <MyOrdersModal
+          isOpen={showMyOrders}
+          onClose={() => setShowMyOrders(false)}
+          userId={getCurrentSession()?.userId}
         />
       )}
     </>
