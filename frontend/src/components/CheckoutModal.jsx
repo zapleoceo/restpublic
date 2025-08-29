@@ -25,30 +25,55 @@ const CheckoutModal = ({ isOpen, onClose, onOrderSuccess, tableId }) => {
     comment: ''
   });
 
-  // Reset form when modal opens
-  useEffect(() => {
-    if (isOpen) {
-      setFormData({
-        name: '',
-        lastName: '',
-        phone: '',
-        birthday: '',
-        gender: '',
-        comment: ''
-      });
-      setWithRegistration(false);
-      setError('');
-    }
-  }, [isOpen]);
+     // Reset form when modal opens
+   useEffect(() => {
+     if (isOpen) {
+       setFormData({
+         name: '',
+         lastName: '',
+         phone: '+',
+         birthday: '',
+         gender: '',
+         comment: ''
+       });
+       setWithRegistration(false);
+       setError('');
+     }
+   }, [isOpen]);
 
   if (!isOpen) return null;
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    
+    if (name === 'phone') {
+      // Обработка поля телефона с нестираемым "+"
+      let phoneValue = value;
+      
+      // Если пользователь пытается удалить "+", не даем ему это сделать
+      if (!phoneValue.startsWith('+')) {
+        phoneValue = '+' + phoneValue;
+      }
+      
+      // Убираем все символы кроме цифр и "+"
+      phoneValue = phoneValue.replace(/[^\d+]/g, '');
+      
+      // Ограничиваем количество цифр (максимум 15 цифр после "+")
+      const digitsOnly = phoneValue.replace(/\D/g, '');
+      if (digitsOnly.length > 15) {
+        phoneValue = '+' + digitsOnly.substring(0, 15);
+      }
+      
+      setFormData(prev => ({
+        ...prev,
+        [name]: phoneValue
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -57,16 +82,25 @@ const CheckoutModal = ({ isOpen, onClose, onOrderSuccess, tableId }) => {
     setError('');
 
     try {
-      // Validate required fields only for non-authenticated users
-      if (!hasActiveSession) {
-        if (!formData.name.trim()) {
-          throw new Error(t('checkout.name') + ' обязательно');
-        }
+             // Validate required fields only for non-authenticated users
+       if (!hasActiveSession) {
+         if (!formData.name.trim()) {
+           throw new Error(t('checkout.name') + ' обязательно');
+         }
 
-        if (!formData.phone.trim()) {
-          throw new Error(t('checkout.phone') + ' обязателен');
-        }
-      }
+         if (!formData.phone.trim()) {
+           throw new Error(t('checkout.phone') + ' обязателен');
+         }
+         
+         // Проверяем количество цифр в телефоне (минимум 10, максимум 15)
+         const phoneDigits = formData.phone.replace(/\D/g, '');
+         if (phoneDigits.length < 10) {
+           throw new Error('Номер телефона должен содержать минимум 10 цифр');
+         }
+         if (phoneDigits.length > 15) {
+           throw new Error('Номер телефона не должен содержать более 15 цифр');
+         }
+       }
 
       // Prepare order data
       const orderData = {
@@ -179,18 +213,20 @@ const CheckoutModal = ({ isOpen, onClose, onOrderSuccess, tableId }) => {
               </div>
             )}
 
-            {/* Информация о пользователе, если есть сессия */}
-            {hasActiveSession && (
-              <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
-                <div className="flex items-center space-x-2 mb-2">
-                  <UserCheck className="w-5 h-5 text-green-600" />
-                  <span className="font-medium text-green-800">Вы авторизованы</span>
-                </div>
-                <div className="text-sm text-green-700">
-                  Заказ будет добавлен к вашему существующему заказу (если он есть) или создан новый.
-                </div>
-              </div>
-            )}
+                         {/* Информация о пользователе, если есть сессия */}
+             {hasActiveSession && (
+               <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+                 <div className="flex items-center space-x-2 mb-2">
+                   <UserCheck className="w-5 h-5 text-green-600" />
+                   <span className="font-medium text-green-800">
+                     {currentSession.userData?.lastName || ''} {currentSession.userData?.name || 'Гость'}
+                   </span>
+                 </div>
+                 <div className="text-sm text-green-700">
+                   Заказ будет добавлен к вашему существующему заказу (если он есть) или создан новый.
+                 </div>
+               </div>
+             )}
 
             {/* Form - показываем поля только если нет активной сессии */}
             {!hasActiveSession && (
