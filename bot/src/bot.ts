@@ -1,4 +1,4 @@
-import { Telegraf, Markup, session } from 'telegraf';
+import { Telegraf, Markup, session, Context } from 'telegraf';
 import dotenv from 'dotenv';
 import fetch from 'node-fetch';
 import { menuHandler } from './handlers/menuHandler.js';
@@ -6,7 +6,18 @@ import { menuHandler } from './handlers/menuHandler.js';
 // Загружаем переменные окружения
 dotenv.config();
 
-const bot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN!);
+// Определяем интерфейс для сессии
+interface SessionData {
+  returnUrl?: string;
+  authMode?: boolean;
+}
+
+// Расширяем контекст для поддержки сессий
+interface MyContext extends Context {
+  session?: SessionData;
+}
+
+const bot = new Telegraf<MyContext>(process.env.TELEGRAM_BOT_TOKEN!);
 
 // Настройка сессий
 bot.use(session());
@@ -106,7 +117,7 @@ bot.on('contact', async (ctx) => {
         })
       });
       
-      const result = await response.json();
+      const result = await response.json() as any;
       
       if (result.success) {
         await ctx.reply(
