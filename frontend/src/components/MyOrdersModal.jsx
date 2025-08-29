@@ -140,8 +140,8 @@ const MyOrdersModal = ({ isOpen, onClose, userId }) => {
 
   const formatPrice = (price) => {
     // Если цена в копейках, делим на 100
-    const priceInRubles = typeof price === 'string' ? parseInt(price) / 100 : price / 100;
-    return new Intl.NumberFormat('ru-RU').format(priceInRubles);
+    const priceInDong = typeof price === 'string' ? parseInt(price) / 100 : price / 100;
+    return new Intl.NumberFormat('vi-VN').format(priceInDong);
   };
 
   if (!isOpen) return null;
@@ -180,63 +180,54 @@ const MyOrdersModal = ({ isOpen, onClose, userId }) => {
                    <div className="space-y-4">
                      {orders.map((order) => (
                        <div key={order.transaction_id} className="border rounded-lg p-4 bg-gray-50">
-                         {/* Основная информация о заказе */}
-                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
-                           {/* Колонка 1: Номер заказа и дата */}
-                           <div className="space-y-2">
-                             <div className="flex items-center">
-                               <Hash className="mr-2" size={16} />
-                               <span className="font-medium">
-                                 {t('my_orders.order_number')}{order.transaction_id}
-                               </span>
-                             </div>
-                             <div className="flex items-center">
-                               <Calendar className="mr-2" size={16} />
-                               <span className="text-sm text-gray-600">
-                                 {formatDate(order.date_start)}
-                               </span>
-                             </div>
-                           </div>
-                           
-                           {/* Колонка 2: Цена и кнопки */}
-                           <div className="flex items-center justify-between">
-                             <div className="flex items-center">
-                               <DollarSign className="mr-2" size={16} />
-                               <span className="font-semibold text-lg">
-                                 {formatPrice(order.sum)} ₽
-                               </span>
-                             </div>
-                             <div className="flex space-x-2">
-                               <button
-                                 onClick={() => toggleOrderExpansion(order.transaction_id)}
-                                 className="flex items-center text-blue-600 hover:text-blue-800 text-sm"
-                               >
-                                 {expandedOrders.has(order.transaction_id) ? (
-                                   <ChevronUp className="mr-1" size={14} />
-                                 ) : (
-                                   <ChevronDown className="mr-1" size={14} />
-                                 )}
-                                 Подробнее
-                               </button>
-                               <button
-                                 onClick={() => handlePayOrder(order.transaction_id)}
-                                 className="flex items-center bg-blue-600 text-white px-3 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm"
-                               >
-                                 <CreditCard className="mr-1" size={14} />
-                                 {t('my_orders.pay_order')}
-                               </button>
-                             </div>
-                           </div>
-                           
-                           {/* Колонка 3: Комментарий */}
-                           <div className="text-sm text-gray-600">
-                             {order.transaction_comment && (
-                               <div className="truncate" title={order.transaction_comment}>
-                                 {order.transaction_comment}
-                               </div>
-                             )}
-                           </div>
-                         </div>
+                                                   {/* Основная информация о заказе */}
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
+                            {/* Колонка 1: Номер заказа и дата */}
+                            <div className="space-y-2">
+                              <div className="flex items-center">
+                                <Hash className="mr-2" size={16} />
+                                <span className="font-medium">
+                                  {t('my_orders.order_number')}{order.transaction_id}
+                                </span>
+                              </div>
+                              <div className="flex items-center">
+                                <Calendar className="mr-2" size={16} />
+                                <span className="text-sm text-gray-600">
+                                  {formatDate(order.date_start)}
+                                </span>
+                              </div>
+                            </div>
+                            
+                            {/* Колонка 2: Цена и кнопки */}
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center">
+                                <DollarSign className="mr-2" size={16} />
+                                <span className="font-semibold text-lg">
+                                  {formatPrice(order.sum)} ₫
+                                </span>
+                              </div>
+                              <div className="flex space-x-2">
+                                <button
+                                  onClick={() => toggleOrderExpansion(order.transaction_id)}
+                                  className="flex items-center text-blue-600 hover:text-blue-800 text-sm"
+                                >
+                                  {expandedOrders.has(order.transaction_id) ? (
+                                    <ChevronUp className="mr-1" size={14} />
+                                  ) : (
+                                    <ChevronDown className="mr-1" size={14} />
+                                  )}
+                                  Подробнее
+                                </button>
+                                <button
+                                  onClick={() => handlePayOrder(order.transaction_id)}
+                                  className="flex items-center bg-blue-600 text-white px-3 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm"
+                                >
+                                  <CreditCard className="mr-1" size={14} />
+                                  {t('my_orders.pay_order')}
+                                </button>
+                              </div>
+                            </div>
+                          </div>
                          
                          {/* Детали заказа (развернутая секция) */}
                          {expandedOrders.has(order.transaction_id) && (

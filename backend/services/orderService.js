@@ -343,18 +343,34 @@ class OrderService {
     try {
       console.log(`🔍 Fetching order details for transaction ${transactionId}`);
       
-      const response = await axios.get(
+      // Получаем детали транзакции
+      const transactionResponse = await axios.get(
         `${this.baseUrl}/dash.getTransaction?token=${this.getToken()}&transaction_id=${transactionId}`
       );
       
-      console.log(`📊 Order details response:`, response.data);
+      console.log(`📊 Transaction response:`, transactionResponse.data);
       
-      if (response.data && response.data.response) {
-        return response.data.response;
+      if (!transactionResponse.data || !transactionResponse.data.response) {
+        console.log(`⚠️ No transaction data for ${transactionId}`);
+        return null;
       }
       
-      console.log(`⚠️ No order details for transaction ${transactionId}`);
-      return null;
+      const transaction = transactionResponse.data.response;
+      
+      // Получаем состав заказа через другой endpoint
+      const productsResponse = await axios.get(
+        `${this.baseUrl}/dash.getTransactionProducts?token=${this.getToken()}&transaction_id=${transactionId}`
+      );
+      
+      console.log(`📊 Products response:`, productsResponse.data);
+      
+      // Объединяем данные
+      const orderDetails = {
+        ...transaction,
+        products: productsResponse.data?.response || []
+      };
+      
+      return orderDetails;
     } catch (error) {
       console.error('Error fetching order details:', error);
       throw new Error('Ошибка при получении деталей заказа');
