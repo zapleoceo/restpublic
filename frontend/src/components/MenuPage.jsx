@@ -17,7 +17,7 @@ import { useCart } from '../contexts/CartContext';
 
 const MenuPage = ({ menuData }) => {
   const { t } = useTranslation();
-  const { session, getCurrentSession } = useCart();
+  const { session, getCurrentSession, setSession } = useCart();
   const [activeTab, setActiveTab] = useState(0);
   const [sortType, setSortType] = useState('popularity'); // По умолчанию по популярности
   const [popularityData, setPopularityData] = useState({});
