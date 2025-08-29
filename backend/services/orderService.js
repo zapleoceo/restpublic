@@ -319,8 +319,8 @@ class OrderService {
         const userOrders = response.data.response.data.filter(order => {
           console.log(`🔍 Checking transaction: client_id=${order.client_id}, status=${order.status}, userId=${userId}`);
           return order.client_id === parseInt(userId) && 
-                 order.status !== 'paid' && 
-                 order.status !== 'closed';
+                 (order.status === '0' || order.status === 0 || 
+                  order.status === '1' || order.status === 1);
         });
         
         console.log(`✅ Found ${userOrders.length} unpaid orders for user ${userId}`);
@@ -355,7 +355,7 @@ class OrderService {
         const userOrders = response.data.response.data.filter(order => {
           console.log(`🔍 Checking past transaction: client_id=${order.client_id}, status=${order.status}, userId=${userId}`);
           return order.client_id === parseInt(userId) && 
-                 (order.status === 'paid' || order.status === 'closed');
+                 (order.status === '2' || order.status === 2);
         });
         
         console.log(`✅ Found ${userOrders.length} past orders for user ${userId}`);
