@@ -40,14 +40,17 @@ function App() {
         const session = JSON.parse(decodeURIComponent(sessionParam));
         console.log('🔐 Получена сессия из URL:', session);
         
-        // Сохраняем сессию в localStorage
-        localStorage.setItem('userSession', JSON.stringify(session));
+        // Сохраняем сессию в localStorage с правильным ключом
+        localStorage.setItem('user_session', JSON.stringify(session));
         
         // Очищаем URL от параметра session
         const newUrl = window.location.pathname;
         window.history.replaceState({}, document.title, newUrl);
         
         console.log('✅ Сессия сохранена, URL очищен');
+        
+        // Перезагружаем страницу для применения сессии
+        window.location.reload();
       } catch (error) {
         console.error('❌ Ошибка обработки сессии из URL:', error);
       }
