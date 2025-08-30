@@ -15,8 +15,8 @@ export const formatTableNumber = (tableId) => {
 
 // Создание URL для Telegram бота с номером столика
 export const createBotUrl = (tableId) => {
-  if (!validateTableId(tableId)) return 'https://t.me/goodzone_vn';
-  return `https://t.me/goodzone_vn?start=table_${tableId}`;
+  if (!validateTableId(tableId)) return 'https://t.me/gamezone_vietnam';
+  return `https://t.me/gamezone_vietnam?start=table_${tableId}`;
 };
 
 // Создание URL для меню с номером столика

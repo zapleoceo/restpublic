@@ -33,10 +33,10 @@ const ContactSection = () => {
            <div className="flex justify-center space-x-4">
              {/* Telegram */}
              <a
-               href="https://t.me/goodzone_vn"
+               href="https://t.me/gamezone_vietnam"
                target="_blank"
                rel="noopener noreferrer"
-               className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center hover:scale-110 transition-transform duration-200 shadow-lg hover:shadow-xl"
+               className="flex items-center space-x-2 text-blue-600 hover:text-blue-700 transition-colors"
              >
                <i className="fab fa-telegram text-white text-xl"></i>
              </a>
