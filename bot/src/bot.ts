@@ -1,7 +1,6 @@
 import { Telegraf, Markup, session, Context } from 'telegraf';
 import dotenv from 'dotenv';
 import fetch from 'node-fetch';
-import { menuHandler } from './handlers/menuHandler.js';
 
 // Загружаем переменные окружения
 dotenv.config();
@@ -22,85 +21,59 @@ const bot = new Telegraf<MyContext>(process.env.TELEGRAM_BOT_TOKEN!);
 // Настройка сессий
 bot.use(session());
 
-// Настройка команд бота (убираем /menu)
-bot.telegram.setMyCommands([
-  { command: 'start', description: '🚀 Запустить бота' },
-  { command: 'categories', description: '📋 Категории блюд' },
-  { command: 'help', description: '❓ Помощь' }
-]);
-
-// Создаем встроенную клавиатуру с тремя кнопками
-const mainKeyboard = Markup.keyboard([
-  ['🍽️ Меню', '📋 Категории'],
-  ['📞 Контакты']
-]).resize();
-
-// Клавиатура для запроса контакта
-const contactKeyboard = Markup.keyboard([
+// Клавиатура для авторизации
+const authKeyboard = Markup.keyboard([
   [Markup.button.contactRequest('📱 Поделиться контактом')],
   ['🔐 АВТОРИЗОВАТЬСЯ'],
   ['❌ Отмена']
 ]).resize();
 
+// Обычная клавиатура
+const mainKeyboard = Markup.keyboard([
+  ['🔐 АВТОРИЗОВАТЬСЯ']
+]).resize();
+
 // Обработчик команды /start
 bot.command('start', async (ctx) => {
-  // Временно логируем chat_id для настройки уведомлений SePay
-  const chat = ctx.chat;
-  const username = 'username' in chat ? chat.username : 'N/A';
-  const firstName = 'first_name' in chat ? chat.first_name : '';
-  const lastName = 'last_name' in chat ? chat.last_name : '';
-  console.log(`🆔 Chat ID: ${chat.id}, Username: @${username || 'N/A'}, Name: ${firstName || ''} ${lastName || ''}`);
-  
-  // Проверяем параметры команды start
   const startPayload = ctx.message.text.split(' ')[1];
   
   if (startPayload && startPayload.startsWith('auth_')) {
-    // Режим авторизации
+    // Режим авторизации из приложения
     const returnUrl = startPayload.replace('auth_', '');
     console.log(`🔐 Авторизация через Telegram. Return URL: ${returnUrl}`);
     
     await ctx.reply(
-      '🔐 Для авторизации в приложении GoodZone, пожалуйста, поделитесь своим контактом:',
-      contactKeyboard
+      '🔐 Для авторизации в приложении, пожалуйста, поделитесь своим контактом:',
+      authKeyboard
     );
     
-    // Сохраняем return URL в контексте пользователя
     ctx.session = { ...ctx.session, returnUrl, authMode: true };
   } else {
     // Обычный режим
     await ctx.reply(
-      '🍜 Добро пожаловать в North Republic!\n\nИспользуйте кнопки ниже для навигации:',
+      '🔐 Добро пожаловать! Для авторизации нажмите кнопку ниже:',
       mainKeyboard
     );
   }
 });
 
-// Обработчик команды /categories
-bot.command('categories', async (ctx) => {
-  await menuHandler.showMainMenu(ctx);
+// Обработчик кнопки "АВТОРИЗОВАТЬСЯ"
+bot.hears('🔐 АВТОРИЗОВАТЬСЯ', async (ctx) => {
+  await ctx.reply(
+    '🔐 Для авторизации в приложении, пожалуйста, поделитесь своим контактом:',
+    authKeyboard
+  );
+  ctx.session = { ...ctx.session, authMode: true };
 });
 
-// Обработчик команды /help
-bot.command('help', async (ctx) => {
-  const helpMessage = 
-    '🤖 *Помощь по использованию бота*\n\n' +
-    '🍽️ *Меню* - показать все блюда\n' +
-    '📋 *Категории* - выбрать категорию блюд\n' +
-    '📞 *Контакты* - информация о ресторане\n' +
-    '❓ *Помощь* - это сообщение\n\n' +
-    'Используйте кнопки внизу экрана для быстрой навигации!';
-
-  await ctx.reply(helpMessage, { parse_mode: 'Markdown' });
-});
-
-// Обработчик контактов (авторизация)
+// Обработчик контактов
 bot.on('contact', async (ctx) => {
   const contact = ctx.message.contact;
   const session = ctx.session;
   
   console.log(`📱 Получен контакт: ${contact.phone_number}, ${contact.first_name} ${contact.last_name || ''}`);
   
-  if (session?.authMode && session?.returnUrl) {
+  if (session?.authMode) {
     try {
       // Отправляем данные на backend
       const backendUrl = process.env.BACKEND_URL || 'https://goodzone.zapleo.com';
@@ -114,7 +87,7 @@ bot.on('contact', async (ctx) => {
           name: contact.first_name,
           lastName: contact.last_name || '',
           birthday: '',
-          sessionToken: session.returnUrl
+          sessionToken: session.returnUrl || ''
         })
       });
       
@@ -142,75 +115,32 @@ bot.on('contact', async (ctx) => {
       );
     }
   } else {
-    // Обычный контакт (не для авторизации)
     await ctx.reply(
-      '📱 Спасибо за контакт! Мы свяжемся с вами в ближайшее время.',
+      '📱 Спасибо за контакт! Для авторизации нажмите "🔐 АВТОРИЗОВАТЬСЯ".',
       mainKeyboard
     );
   }
 });
 
-// Обработчики текстовых сообщений (встроенные кнопки)
-bot.hears('🍽️ Меню', async (ctx) => {
-  await menuHandler.showAllProducts(ctx);
-});
-
-bot.hears('📋 Категории', async (ctx) => {
-  await menuHandler.showMainMenu(ctx);
-});
-
-bot.hears('📞 Контакты', async (ctx) => {
-  await menuHandler.showContact(ctx);
-});
-
+// Обработчик отмены
 bot.hears('❌ Отмена', async (ctx) => {
-  // Отмена авторизации
-  if (ctx.session?.authMode) {
-    ctx.session = { ...ctx.session, authMode: false, returnUrl: undefined };
-    await ctx.reply(
-      '❌ Авторизация отменена. Используйте кнопки ниже для навигации:',
-      mainKeyboard
-    );
-  } else {
-    await ctx.reply(
-      'Используйте кнопки внизу экрана для навигации или отправьте /help для получения справки.',
-      mainKeyboard
-    );
-  }
+  ctx.session = { ...ctx.session, authMode: false, returnUrl: undefined };
+  await ctx.reply(
+    '❌ Авторизация отменена. Для авторизации нажмите "🔐 АВТОРИЗОВАТЬСЯ".',
+    mainKeyboard
+  );
 });
 
-bot.hears('🔐 АВТОРИЗОВАТЬСЯ', async (ctx) => {
-  if (ctx.session?.authMode) {
-    await ctx.reply(
-      '🔐 Для авторизации нажмите кнопку "📱 Поделиться контактом" выше.',
-      contactKeyboard
-    );
-  } else {
-    await ctx.reply(
-      '🔐 Для авторизации в приложении, пожалуйста, поделитесь своим контактом:',
-      contactKeyboard
-    );
-    ctx.session = { ...ctx.session, authMode: true };
-  }
-});
-
-// Обработчик всех остальных текстовых сообщений
+// Обработчик всех остальных сообщений
 bot.on('text', async (ctx) => {
-  // Временно логируем chat_id для настройки уведомлений SePay
-  const chat = ctx.chat;
-  const username = 'username' in chat ? chat.username : 'N/A';
-  const firstName = 'first_name' in chat ? chat.first_name : '';
-  const lastName = 'last_name' in chat ? chat.last_name : '';
-  console.log(`🆔 Chat ID: ${chat.id}, Username: @${username || 'N/A'}, Name: ${firstName || ''} ${lastName || ''}, Text: ${ctx.message.text}`);
-  
   if (ctx.session?.authMode) {
     await ctx.reply(
       '🔐 Для авторизации нажмите кнопку "📱 Поделиться контактом" или "❌ Отмена" для отмены.',
-      contactKeyboard
+      authKeyboard
     );
   } else {
     await ctx.reply(
-      'Используйте кнопки внизу экрана для навигации или отправьте /help для получения справки.',
+      '🔐 Для авторизации нажмите кнопку "🔐 АВТОРИЗОВАТЬСЯ".',
       mainKeyboard
     );
   }
