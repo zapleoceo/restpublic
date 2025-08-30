@@ -21,6 +21,11 @@ const bot = new Telegraf<MyContext>(process.env.TELEGRAM_BOT_TOKEN!);
 // Настройка сессий
 bot.use(session());
 
+// Настройка команд бота (только start)
+bot.telegram.setMyCommands([
+  { command: 'start', description: '🚀 Запустить бота' }
+]);
+
 // Клавиатура для авторизации
 const authKeyboard = Markup.keyboard([
   [Markup.button.contactRequest('📱 Авторизоваться')]
@@ -53,6 +58,15 @@ bot.command('start', async (ctx) => {
       mainKeyboard
     );
   }
+});
+
+// Обработчик кнопки "📱 Авторизоваться"
+bot.hears('📱 Авторизоваться', async (ctx) => {
+  await ctx.reply(
+    '🔐 Для авторизации в приложении, пожалуйста, поделитесь своим контактом:',
+    authKeyboard
+  );
+  ctx.session = { ...ctx.session, authMode: true };
 });
 
 // Обработчик контактов
