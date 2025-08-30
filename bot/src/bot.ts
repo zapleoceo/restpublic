@@ -21,10 +21,8 @@ const bot = new Telegraf<MyContext>(process.env.TELEGRAM_BOT_TOKEN!);
 // Настройка сессий
 bot.use(session());
 
-// Настройка команд бота (только start)
-bot.telegram.setMyCommands([
-  { command: 'start', description: '🚀 Запустить бота' }
-]);
+// Убираем встроенное меню команд бота
+bot.telegram.deleteMyCommands();
 
 // Клавиатура для авторизации
 const authKeyboard = Markup.keyboard([
