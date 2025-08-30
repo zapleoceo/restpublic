@@ -28,7 +28,31 @@ function App() {
 
   useEffect(() => {
     fetchMenuData();
+    handleSessionFromUrl();
   }, []);
+
+  const handleSessionFromUrl = () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const sessionParam = urlParams.get('session');
+    
+    if (sessionParam) {
+      try {
+        const session = JSON.parse(decodeURIComponent(sessionParam));
+        console.log('🔐 Получена сессия из URL:', session);
+        
+        // Сохраняем сессию в localStorage
+        localStorage.setItem('userSession', JSON.stringify(session));
+        
+        // Очищаем URL от параметра session
+        const newUrl = window.location.pathname;
+        window.history.replaceState({}, document.title, newUrl);
+        
+        console.log('✅ Сессия сохранена, URL очищен');
+      } catch (error) {
+        console.error('❌ Ошибка обработки сессии из URL:', error);
+      }
+    }
+  };
 
   const fetchMenuData = async () => {
     try {
