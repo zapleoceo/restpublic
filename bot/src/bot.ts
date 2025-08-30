@@ -23,14 +23,12 @@ bot.use(session());
 
 // Клавиатура для авторизации
 const authKeyboard = Markup.keyboard([
-  [Markup.button.contactRequest('📱 Поделиться контактом')],
-  ['🔐 АВТОРИЗОВАТЬСЯ'],
-  ['❌ Отмена']
+  [Markup.button.contactRequest('📱 Авторизоваться')]
 ]).resize();
 
 // Обычная клавиатура
 const mainKeyboard = Markup.keyboard([
-  ['🔐 АВТОРИЗОВАТЬСЯ']
+  ['📱 Авторизоваться']
 ]).resize();
 
 // Обработчик команды /start
@@ -55,15 +53,6 @@ bot.command('start', async (ctx) => {
       mainKeyboard
     );
   }
-});
-
-// Обработчик кнопки "АВТОРИЗОВАТЬСЯ"
-bot.hears('🔐 АВТОРИЗОВАТЬСЯ', async (ctx) => {
-  await ctx.reply(
-    '🔐 Для авторизации в приложении, пожалуйста, поделитесь своим контактом:',
-    authKeyboard
-  );
-  ctx.session = { ...ctx.session, authMode: true };
 });
 
 // Обработчик контактов
@@ -121,31 +110,22 @@ bot.on('contact', async (ctx) => {
     }
   } else {
     await ctx.reply(
-      '📱 Спасибо за контакт! Для авторизации нажмите "🔐 АВТОРИЗОВАТЬСЯ".',
+      '📱 Спасибо за контакт! Для авторизации нажмите "📱 Авторизоваться".',
       mainKeyboard
     );
   }
-});
-
-// Обработчик отмены
-bot.hears('❌ Отмена', async (ctx) => {
-  ctx.session = { ...ctx.session, authMode: false, returnUrl: undefined };
-  await ctx.reply(
-    '❌ Авторизация отменена. Для авторизации нажмите "🔐 АВТОРИЗОВАТЬСЯ".',
-    mainKeyboard
-  );
 });
 
 // Обработчик всех остальных сообщений
 bot.on('text', async (ctx) => {
   if (ctx.session?.authMode) {
     await ctx.reply(
-      '🔐 Для авторизации нажмите кнопку "📱 Поделиться контактом" или "❌ Отмена" для отмены.',
+      '🔐 Для авторизации нажмите кнопку "📱 Авторизоваться" выше.',
       authKeyboard
     );
   } else {
     await ctx.reply(
-      '🔐 Для авторизации нажмите кнопку "🔐 АВТОРИЗОВАТЬСЯ".',
+      '🔐 Для авторизации нажмите кнопку "📱 Авторизоваться".',
       mainKeyboard
     );
   }
