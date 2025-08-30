@@ -16,7 +16,7 @@ const PORT = process.env.PORT || 3002;
 
 // Middleware
 app.use(cors({
-  origin: ['https://goodzone.zapleo.com', 'http://localhost:3000', 'http://localhost:5173', 'http://localhost:3001'],
+  origin: ['https://northrepublic.me', 'https://goodzone.zapleo.com', 'http://localhost:3000', 'http://localhost:5173', 'http://localhost:3001'],
   credentials: true
 }));
 
@@ -767,7 +767,7 @@ app.post('/api/auth/telegram-callback', async (req, res) => {
     };
 
     // Формируем redirect URL для возврата в приложение
-    const frontendUrl = process.env.FRONTEND_URL || 'https://goodzone.zapleo.com';
+    const frontendUrl = process.env.FRONTEND_URL || 'https://northrepublic.me';
     const redirectUrl = `${frontendUrl}/?session=${encodeURIComponent(JSON.stringify(session))}`;
 
     res.json({ 
