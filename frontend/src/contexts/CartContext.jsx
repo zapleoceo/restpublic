@@ -74,13 +74,31 @@ const cartReducer = (state, action) => {
   switch (action.type) {
     case CART_ACTIONS.ADD_ITEM: {
       const { product } = action.payload;
-      const existingItem = state.items.find(item => item.product_id === product.product_id);
+      
+      // Создаем уникальный ключ для товара с учетом модификаторов
+      const createItemKey = (item) => {
+        const baseKey = item.product_id;
+        if (!item.modificators || item.modificators.length === 0) {
+          return baseKey;
+        }
+        
+        // Сортируем модификаторы для стабильного ключа
+        const sortedModificators = item.modificators
+          .sort((a, b) => a.modificator_id - b.modificator_id)
+          .map(mod => `${mod.modificator_id}:${mod.modificator_products.sort().join(',')}`)
+          .join('|');
+        
+        return `${baseKey}_${sortedModificators}`;
+      };
+      
+      const newItemKey = createItemKey(product);
+      const existingItem = state.items.find(item => createItemKey(item) === newItemKey);
 
       let updatedItems;
       if (existingItem) {
         // Увеличиваем количество существующего товара
         updatedItems = state.items.map(item =>
-          item.product_id === product.product_id
+          createItemKey(item) === newItemKey
             ? { ...item, quantity: item.quantity + 1 }
             : item
         );
@@ -89,7 +107,20 @@ const cartReducer = (state, action) => {
         updatedItems = [...state.items, { ...product, quantity: 1 }];
       }
 
-      const newTotal = updatedItems.reduce((sum, item) => sum + (getNumericPrice(item.price) * item.quantity), 0);
+      const newTotal = updatedItems.reduce((sum, item) => {
+        let itemPrice = getNumericPrice(item.price);
+        
+        // Добавляем цену модификаторов
+        if (item.modificators && item.modificators.length > 0) {
+          item.modificators.forEach(modGroup => {
+            // Здесь нужно будет добавить логику расчета цены модификаторов
+            // Пока оставляем базовую цену
+          });
+        }
+        
+        return sum + (itemPrice * item.quantity);
+      }, 0);
+      
       const newItemCount = updatedItems.reduce((sum, item) => sum + item.quantity, 0);
 
       return {

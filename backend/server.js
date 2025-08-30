@@ -322,6 +322,37 @@ app.get('/api/products/popularity', async (req, res) => {
   }
 });
 
+// Endpoint для получения модификаторов товара
+app.get('/api/products/:productId/modificators', async (req, res) => {
+  try {
+    const { productId } = req.params;
+    const token = process.env.POSTER_API_TOKEN;
+    
+    if (!token) {
+      return res.status(500).json({ error: 'POSTER_API_TOKEN not configured' });
+    }
+
+    // Получаем модификаторы для товара
+    const response = await axios.get('https://joinposter.com/api/menu.getProductModificators', {
+      params: { 
+        token,
+        product_id: productId
+      },
+      httpsAgent: httpsAgent,
+      timeout: 10000
+    });
+
+    if (response.data && response.data.response) {
+      res.json({ modificators: response.data.response });
+    } else {
+      res.json({ modificators: [] });
+    }
+  } catch (error) {
+    console.error('❌ Ошибка при получении модификаторов:', error.message);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // ===== АВТОРИЗАЦИЯ API =====
 
 // Вход в админку
