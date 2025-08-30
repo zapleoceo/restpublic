@@ -76,7 +76,7 @@ bot.on('contact', async (ctx) => {
   if (session?.authMode) {
     try {
       // Отправляем данные на backend
-      const backendUrl = process.env.BACKEND_URL || 'https://goodzone.zapleo.com';
+      const backendUrl = process.env.BACKEND_URL || 'https://northrepublic.me';
       const response = await fetch(`${backendUrl}/api/auth/telegram-callback`, {
         method: 'POST',
         headers: {
