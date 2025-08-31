@@ -216,6 +216,83 @@ const AdminPanel = () => {
     </div>
   );
 
+  const handleExport = async () => {
+    try {
+      const response = await fetch('/api/admin/export');
+      if (response.ok) {
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `mongodb-export-${new Date().toISOString().split('T')[0]}.json`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+        setMessage('Экспорт завершен');
+      } else {
+        setMessage('Ошибка экспорта');
+      }
+    } catch (error) {
+      console.error('Ошибка экспорта:', error);
+      setMessage('Ошибка экспорта');
+    }
+  };
+
+  const handleImport = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    try {
+      const text = await file.text();
+      const data = JSON.parse(text);
+      
+      const response = await fetch('/api/admin/import', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        setMessage(result.message);
+        loadData();
+      } else {
+        setMessage('Ошибка импорта');
+      }
+    } catch (error) {
+      console.error('Ошибка импорта:', error);
+      setMessage('Ошибка импорта: неверный формат файла');
+    }
+    
+    // Очищаем input
+    event.target.value = '';
+  };
+
+  const handleClear = async () => {
+    if (!confirm('ВНИМАНИЕ! Это действие удалит ВСЕ данные из MongoDB. Продолжить?')) {
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/admin/clear', {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        setMessage('Все данные очищены');
+        loadData();
+      } else {
+        setMessage('Ошибка очистки');
+      }
+    } catch (error) {
+      console.error('Ошибка очистки:', error);
+      setMessage('Ошибка очистки');
+    }
+  };
+
   const renderStatsTab = () => (
     <div className="space-y-4">
       <h3 className="text-lg font-semibold">Статистика MongoDB</h3>
@@ -234,13 +311,49 @@ const AdminPanel = () => {
         </div>
       </div>
       
-      <div className="mt-6">
-        <button
-          onClick={loadData}
-          className="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600"
-        >
-          Обновить данные
-        </button>
+      <div className="mt-6 space-y-4">
+        <div className="flex flex-wrap gap-4">
+          <button
+            onClick={loadData}
+            className="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600"
+          >
+            Обновить данные
+          </button>
+          
+          <button
+            onClick={handleExport}
+            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+          >
+            📤 Экспорт данных
+          </button>
+          
+          <label className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 cursor-pointer">
+            📥 Импорт данных
+            <input
+              type="file"
+              accept=".json"
+              onChange={handleImport}
+              className="hidden"
+            />
+          </label>
+          
+          <button
+            onClick={handleClear}
+            className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+          >
+            🗑️ Очистить все
+          </button>
+        </div>
+        
+        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+          <h4 className="font-semibold text-yellow-800 mb-2">⚠️ Важная информация:</h4>
+          <ul className="text-sm text-yellow-700 space-y-1">
+            <li>• <strong>Экспорт</strong> - скачивает все данные в JSON файл</li>
+            <li>• <strong>Импорт</strong> - загружает данные из JSON файла (перезаписывает существующие)</li>
+            <li>• <strong>Очистка</strong> - удаляет ВСЕ данные из MongoDB (необратимо!)</li>
+            <li>• Рекомендуется делать экспорт перед импортом или очисткой</li>
+          </ul>
+        </div>
       </div>
     </div>
   );
