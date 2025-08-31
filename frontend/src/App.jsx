@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { HelmetProvider } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
 import HomePage from './components/HomePage';
 import MenuPage from './components/MenuPage';
@@ -110,33 +111,35 @@ function App() {
   }
 
   return (
-    <ErrorBoundary>
-      <Router>
-        <div className="min-h-screen bg-gray-50">
-          <main>
-            <Routes>
-              <Route path="/" element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
-              <Route path="/menu" element={<ProtectedRoute><MenuPageWrapper menuData={menuData} /></ProtectedRoute>} />
-              <Route path="/events" element={<ProtectedRoute><EventsPage /></ProtectedRoute>} />
-              <Route path="/events/:eventId" element={<ProtectedRoute><EventDetailPage /></ProtectedRoute>} />
-              <Route path="/fast/:tableId" element={<ProtectedRoute><FastAccessPage /></ProtectedRoute>} />
-              <Route path="/fast/:tableId/menu" element={<ProtectedRoute><MenuPageWrapper menuData={menuData} /></ProtectedRoute>} />
-              <Route path="/lasertag" element={<ProtectedRoute><LasertagPage /></ProtectedRoute>} />
-              <Route path="/archerytag" element={<ProtectedRoute><ArcherytagPage /></ProtectedRoute>} />
-              <Route path="/bbq_zone" element={<ProtectedRoute><BBQZonePage /></ProtectedRoute>} />
-              <Route path="/quests" element={<ProtectedRoute><QuestsPage /></ProtectedRoute>} />
-              <Route path="/guitar" element={<ProtectedRoute><GuitarPage /></ProtectedRoute>} />
-              <Route path="/boardgames" element={<ProtectedRoute><BoardgamesPage /></ProtectedRoute>} />
-              <Route path="/cinema" element={<ProtectedRoute><CinemaPage /></ProtectedRoute>} />
-              <Route path="/yoga" element={<ProtectedRoute><YogaPage /></ProtectedRoute>} />
-              <Route path="/admin" element={<AdminPanel />} />
-              <Route path="/admin/new" element={<NewAdminPanel />} />
-              <Route path="/admin/login" element={<LoginPage />} />
-            </Routes>
-          </main>
-        </div>
-      </Router>
-    </ErrorBoundary>
+    <HelmetProvider>
+      <ErrorBoundary>
+        <Router>
+          <div className="min-h-screen bg-gray-50">
+            <main>
+              <Routes>
+                <Route path="/" element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
+                <Route path="/menu" element={<ProtectedRoute><MenuPageWrapper menuData={menuData} /></ProtectedRoute>} />
+                <Route path="/events" element={<ProtectedRoute><EventsPage /></ProtectedRoute>} />
+                <Route path="/events/:eventId" element={<ProtectedRoute><EventDetailPage /></ProtectedRoute>} />
+                <Route path="/fast/:tableId" element={<ProtectedRoute><FastAccessPage /></ProtectedRoute>} />
+                <Route path="/fast/:tableId/menu" element={<ProtectedRoute><MenuPageWrapper menuData={menuData} /></ProtectedRoute>} />
+                <Route path="/lasertag" element={<ProtectedRoute><LasertagPage /></ProtectedRoute>} />
+                <Route path="/archerytag" element={<ProtectedRoute><ArcherytagPage /></ProtectedRoute>} />
+                <Route path="/bbq_zone" element={<ProtectedRoute><BBQZonePage /></ProtectedRoute>} />
+                <Route path="/quests" element={<ProtectedRoute><QuestsPage /></ProtectedRoute>} />
+                <Route path="/guitar" element={<ProtectedRoute><GuitarPage /></ProtectedRoute>} />
+                <Route path="/boardgames" element={<ProtectedRoute><BoardgamesPage /></ProtectedRoute>} />
+                <Route path="/cinema" element={<ProtectedRoute><CinemaPage /></ProtectedRoute>} />
+                <Route path="/yoga" element={<ProtectedRoute><YogaPage /></ProtectedRoute>} />
+                <Route path="/admin" element={<AdminPanel />} />
+                <Route path="/admin/new" element={<NewAdminPanel />} />
+                <Route path="/admin/login" element={<LoginPage />} />
+              </Routes>
+            </main>
+          </div>
+        </Router>
+      </ErrorBoundary>
+    </HelmetProvider>
   );
 }
 

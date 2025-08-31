@@ -9,6 +9,8 @@ const authModule = require('./auth');
 const orderService = require('./services/orderService');
 const mongoService = require('./services/mongoService');
 const adminRoutes = require('./routes/admin');
+const sectionsRoutes = require('./routes/sections');
+const eventsRoutes = require('./routes/events');
 const cookieParser = require('cookie-parser');
 require('dotenv').config();
 
@@ -547,6 +549,12 @@ app.get('/api/auth/status', authModule.requireAuth, (req, res) => {
 
 // Подключаем админ роуты
 app.use('/api/admin', adminRoutes);
+
+// Подключаем маршруты для секций
+app.use('/api/sections', sectionsRoutes);
+
+// Подключаем маршруты для событий
+app.use('/api/events', eventsRoutes);
 
 // Получить конфигурацию админки (защищено)
 app.get('/api/admin/config', authModule.requireAuth, authModule.requireAdmin, (req, res) => {
