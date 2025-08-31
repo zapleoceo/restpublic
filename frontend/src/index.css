@@ -8,11 +8,15 @@
   }
   
   body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    font-family: 'Roboto Flex', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
       'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
       sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Playfair Display', serif;
   }
 }
 
@@ -29,6 +33,24 @@
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
+  }
+
+  .section-header {
+    position: relative;
+  }
+
+  .section-header[data-num]::before {
+    content: attr(data-num);
+    position: absolute;
+    top: -10px;
+    left: -20px;
+    font-size: 0.75rem;
+    color: #468672;
+    font-weight: 500;
+  }
+
+  .target-section {
+    scroll-margin-top: 100px;
   }
 }
 
