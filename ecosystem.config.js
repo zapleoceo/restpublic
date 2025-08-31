@@ -13,17 +13,18 @@ module.exports = {
         PORT: 3002
       },
       APP_VERSION: '3.0.0'
-    },
-    {
-      name: 'northrepublic-bot',
-      script: 'bot/dist/bot.js',
-      instances: 1,
-      autorestart: true,
-      watch: false,
-      max_memory_restart: '1G',
-      env: {
-        NODE_ENV: 'production'
-      }
     }
+    // Временно отключен бот из-за rate limiting
+    // {
+    //   name: 'northrepublic-bot',
+    //   script: 'bot/dist/bot.js',
+    //   instances: 1,
+    //   autorestart: true,
+    //   watch: false,
+    //   max_memory_restart: '1G',
+    //   env: {
+    //     NODE_ENV: 'production'
+    //   }
+    // }
   ]
 };
