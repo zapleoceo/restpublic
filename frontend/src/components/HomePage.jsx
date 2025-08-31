@@ -102,7 +102,7 @@ const HomePage = () => {
   }, [sectionsLoading, sections]);
 
   // Фильтруем только активные секции
-  const sections = Object.keys(enabledSections)
+  const activeSections = Object.keys(enabledSections)
     .filter(key => enabledSections[key]?.enabled)
     .map(key => sectionsConfig[key])
     .filter(Boolean);
@@ -136,7 +136,7 @@ const HomePage = () => {
 
         {/* Services Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-4xl mx-auto">
-          {sections.map((section) => (
+          {activeSections.map((section) => (
             <Link
               key={section.id}
               to={section.link}
