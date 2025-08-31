@@ -168,9 +168,8 @@ async function main() {
   } catch (error) {
     console.error('💥 Ошибка миграции:', error);
     process.exit(1);
-  } finally {
-    await mongoService.disconnect();
   }
+  // НЕ отключаем MongoDB - оставляем соединение для API
 }
 
 // Запуск миграции

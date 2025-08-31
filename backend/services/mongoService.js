@@ -56,6 +56,8 @@ class MongoService {
     if (this.client) {
       await this.client.close();
       this.isConnected = false;
+      this.client = null;
+      this.db = null;
       console.log('✅ MongoDB отключена');
     }
   }
