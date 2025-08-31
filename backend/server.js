@@ -5,7 +5,6 @@ const path = require('path');
 const https = require('https');
 const FormData = require('form-data');
 const SePayMonitor = require('./sepay-monitor');
-const adminModule = require('./admin');
 const authModule = require('./auth');
 const orderService = require('./services/orderService');
 const mongoService = require('./services/mongoService');
