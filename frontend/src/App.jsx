@@ -18,7 +18,8 @@ import ErrorBoundary from './components/ErrorBoundary';
 import AdminPanel from './components/AdminPanel';
 import LoginPage from './components/LoginPage';
 import ProtectedRoute from './components/ProtectedRoute';
-import { EventsPage } from './pages';
+import { EventsPage, EventDetailPage } from './pages';
+import { NewAdminPanel } from './components/admin';
 import './App.css';
 
 function App() {
@@ -117,6 +118,7 @@ function App() {
               <Route path="/" element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
               <Route path="/menu" element={<ProtectedRoute><MenuPageWrapper menuData={menuData} /></ProtectedRoute>} />
               <Route path="/events" element={<ProtectedRoute><EventsPage /></ProtectedRoute>} />
+              <Route path="/events/:eventId" element={<ProtectedRoute><EventDetailPage /></ProtectedRoute>} />
               <Route path="/fast/:tableId" element={<ProtectedRoute><FastAccessPage /></ProtectedRoute>} />
               <Route path="/fast/:tableId/menu" element={<ProtectedRoute><MenuPageWrapper menuData={menuData} /></ProtectedRoute>} />
               <Route path="/lasertag" element={<ProtectedRoute><LasertagPage /></ProtectedRoute>} />
@@ -128,6 +130,7 @@ function App() {
               <Route path="/cinema" element={<ProtectedRoute><CinemaPage /></ProtectedRoute>} />
               <Route path="/yoga" element={<ProtectedRoute><YogaPage /></ProtectedRoute>} />
               <Route path="/admin" element={<AdminPanel />} />
+              <Route path="/admin/new" element={<NewAdminPanel />} />
               <Route path="/admin/login" element={<LoginPage />} />
             </Routes>
           </main>
