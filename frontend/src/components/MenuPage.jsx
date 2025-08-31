@@ -6,7 +6,8 @@ import { groupProductsByCategory, sortProducts } from '../utils/menuUtils';
 import { validateTableId, formatTableNumber } from '../utils/tableUtils';
 import { menuService } from '../services/menuService';
 import ProductCard from './ProductCard';
-import LanguageSwitcher from './LanguageSwitcher';
+import { Header, Footer } from './layout';
+import { SEOHead } from './seo/SEOHead';
 import SortSelector from './SortSelector';
 import LoadingSpinner from './LoadingSpinner';
 import CartButton from './CartButton';
@@ -207,205 +208,123 @@ const MenuPage = ({ menuData }) => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            {/* Кнопка назад */}
-            <Link 
-              to={isFastAccess ? `/fast/${currentTableId}` : "/"}
-              className="inline-flex items-center px-3 py-2 text-gray-600 hover:text-orange-600 transition-colors"
-            >
-              <ArrowLeft className="mr-2 w-4 h-4" />
-              {t('back')}
-            </Link>
-
-            {/* Заголовок */}
-            <div className="text-center">
-              <h1 className="text-xl font-semibold text-gray-900">{t('menu.title')}</h1>
-              {isFastAccess && currentTableId && (
-                <p className="text-sm text-orange-600 font-medium">
-                  {formatTableNumber(currentTableId)}
-                </p>
-              )}
-            </div>
-
-            {/* Переключатель языка, мои заказы и корзина */}
-            <div className="flex items-center space-x-3">
-              <LanguageSwitcher />
-              
-              {/* Auth/My Orders button */}
-              {(() => {
-                const currentSession = getCurrentSession();
-                console.log('🔍 MenuPage - Current session:', currentSession);
+    <div className="menu-page min-h-screen bg-neutral-50">
+      <SEOHead 
+        title="Меню - North Republic"
+        description="Полное меню ресторана North Republic с блюдами и напитками"
+        keywords="меню, блюда, напитки, ресторан, North Republic"
+      />
+      
+      <Header />
+      
+      <main className="main-content pt-16">
+        <div className="container mx-auto px-4 py-8">
+          {/* Заголовок страницы */}
+          <div className="mb-8">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center space-x-4">
+                <Link 
+                  to={isFastAccess ? `/fast/${currentTableId}` : '/'}
+                  className="flex items-center space-x-2 text-primary-600 hover:text-primary-700 transition-colors"
+                >
+                  <ArrowLeft className="w-5 h-5" />
+                  <span className="font-medium">
+                    {isFastAccess ? t('menu.back_to_table') : t('menu.back_to_home')}
+                  </span>
+                </Link>
                 
-                if (currentSession) {
-                  // Авторизованный пользователь - показываем "Мои заказы"
-                  return (
-                    <div className="relative user-tooltip-container">
-                      <button
-                        onClick={() => setShowMyOrders(true)}
-                        onMouseEnter={handleMouseEnter}
-                        onMouseLeave={handleMouseLeave}
-                        className="inline-flex items-center px-3 py-2 text-gray-600 hover:text-orange-600 transition-colors"
-                        title={t('my_orders.title')}
-                      >
-                        <CreditCard className="w-5 h-5" />
-                        <span className="ml-2 text-sm font-medium hidden sm:inline">
-                          {t('my_orders.title')}
-                        </span>
-                      </button>
-                      
-                      {/* Всплывающая подсказка */}
-                      {showUserTooltip && (
-                        <div 
-                          className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg p-3 min-w-[200px] z-50 tooltip-content"
-                          onMouseEnter={handleDropdownMouseEnter}
-                          onMouseLeave={handleDropdownMouseLeave}
-                          style={{ paddingTop: '4px' }} // Добавляем невидимую зону сверху
-                        >
-                          <div className="flex items-center space-x-2 mb-3">
-                            <User className="w-4 h-4 text-gray-500" />
-                            <span className="text-sm font-medium text-gray-800">
-                              {currentSession.userData?.lastName || ''} {currentSession.userData?.name || 'Гость'}
-                            </span>
-                          </div>
-                          <button
-                            onClick={handleLogout}
-                            className="w-full flex items-center justify-center space-x-2 px-3 py-2 text-sm text-red-600 hover:text-red-800 hover:bg-red-50 rounded-md transition-colors"
-                          >
-                            <LogOut className="w-4 h-4" />
-                            <span>Выйти</span>
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  );
-                } else {
-                  // Неавторизованный пользователь - показываем "Войти"
-                  return (
-                    <button
-                      onClick={() => setShowAuthModal(true)}
-                      className="inline-flex items-center px-3 py-2 text-gray-600 hover:text-orange-600 transition-colors"
-                      title={t('auth.login')}
-                    >
-                      <CreditCard className="w-5 h-5" />
-                      <span className="ml-2 text-sm font-medium hidden sm:inline">
-                        {t('auth.login')}
-                      </span>
-                    </button>
-                  );
-                }
-              })()}
+                {isFastAccess && currentTableId && (
+                  <div className="px-3 py-1 bg-primary-100 text-primary-800 rounded-full text-sm font-medium">
+                    {t('menu.table')} {formatTableNumber(currentTableId)}
+                  </div>
+                )}
+              </div>
               
-              <CartButton onClick={handleCartOpen} />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Tabs */}
-      <div className="bg-white border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex space-x-8 overflow-x-auto">
-            {groupedCategories.map((category, index) => (
-              <button
-                key={category.category_id}
-                onClick={() => setActiveTab(index)}
-                className={`py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors ${
-                  activeTab === index
-                    ? 'border-orange-500 text-orange-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }`}
-              >
-                {category.category_name}
-                <span className="ml-2 text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">
-                  {category.products.length}
-                </span>
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {groupedCategories[activeTab] && (
-          <div>
-            {/* Category header with sort selector */}
-            <div className="mb-8">
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <h2 className="text-3xl font-bold text-gray-900 mb-2">
-                    {groupedCategories[activeTab].category_name}
-                  </h2>
-                  <p className="text-gray-600">
-                    {groupedCategories[activeTab].products.length} {t('menu.dishes')}
-                  </p>
-                </div>
-                <div className="flex items-center space-x-4">
-                  {loadingPopularity && (
-                    <div className="flex items-center space-x-2 text-sm text-gray-500">
-                      <LoadingSpinner size="sm" compact={true} />
-                      <span>{t('loading_popularity')}</span>
-                    </div>
-                  )}
-                  <SortSelector 
-                    sortType={sortType} 
-                    onSortChange={handleSortChange} 
-                  />
-                </div>
+              <div className="flex items-center space-x-4">
+                <SortSelector 
+                  value={sortType} 
+                  onChange={setSortType} 
+                />
+                
+                <CartButton onClick={() => setIsCartOpen(true)} />
               </div>
             </div>
+            
+            <h1 className="text-3xl font-serif font-bold text-primary-900">
+              {t('menu.title')}
+            </h1>
+            <p className="text-neutral-600 mt-2">
+              {t('menu.subtitle')}
+            </p>
+          </div>
 
-            {/* Products grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-3">
-              {groupedCategories[activeTab].products.map((product) => (
-                <ProductCard key={product.product_id} product={product} />
+          {/* Навигация по категориям */}
+          {groupedCategories.length > 0 && (
+            <div className="mb-8">
+              <div className="flex flex-wrap gap-2">
+                {groupedCategories.map((category, index) => (
+                  <button
+                    key={category.category_id}
+                    onClick={() => setActiveTab(index)}
+                    className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                      activeTab === index
+                        ? 'bg-primary-500 text-white'
+                        : 'bg-white text-neutral-700 hover:bg-neutral-100 border border-neutral-200'
+                    }`}
+                  >
+                    {category.category_name}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Контент категории */}
+          {loadingPopularity ? (
+            <div className="flex justify-center py-12">
+              <LoadingSpinner />
+            </div>
+          ) : groupedCategories.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {groupedCategories[activeTab]?.products.map((product) => (
+                <ProductCard
+                  key={product.product_id}
+                  product={product}
+                  tableId={currentTableId}
+                />
               ))}
             </div>
+          ) : (
+            <div className="text-center py-12">
+              <div className="text-6xl mb-4">🍽️</div>
+              <h3 className="text-xl font-serif font-bold text-primary-900 mb-2">
+                {t('menu.no_products')}
+              </h3>
+              <p className="text-neutral-600">
+                {t('menu.no_products_desc')}
+              </p>
+            </div>
+          )}
+        </div>
+      </main>
+      
+      <Footer />
 
-            {/* Empty state */}
-            {groupedCategories[activeTab].products.length === 0 && (
-              <div className="text-center py-12">
-                <div className="text-6xl mb-4">🍽️</div>
-                <h3 className="text-lg font-medium text-gray-900 mb-2">
-                  {t('no_dishes_in_category')}
-                </h3>
-                <p className="text-gray-600">
-                  {t('new_dishes_coming_soon')}
-                </p>
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-
-      {/* Cart Modal */}
+      {/* Модальные окна */}
       <CartModal 
         isOpen={isCartOpen} 
-        onClose={handleCartClose} 
-        tableId={currentTableId}
+        onClose={() => setIsCartOpen(false)} 
       />
-
-      {/* My Orders Modal */}
-      {showMyOrders && (
-        <MyOrdersModal
-          isOpen={showMyOrders}
-          onClose={() => setShowMyOrders(false)}
-          userId={session?.userId}
-        />
-      )}
-
-      {/* Auth Modal */}
-      {showAuthModal && (
-        <AuthModal
-          isOpen={showAuthModal}
-          onClose={() => setShowAuthModal(false)}
-          telegramData={session?.userData}
-        />
-      )}
+      
+      <MyOrdersModal 
+        isOpen={showMyOrders} 
+        onClose={() => setShowMyOrders(false)} 
+      />
+      
+      <AuthModal 
+        isOpen={showAuthModal} 
+        onClose={() => setShowAuthModal(false)} 
+      />
     </div>
   );
 };
