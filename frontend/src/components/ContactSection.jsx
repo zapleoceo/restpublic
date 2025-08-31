@@ -1,6 +1,5 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { getSiteName } from '../constants/siteConfig';
 
 const ContactSection = () => {
   const { t, i18n } = useTranslation();
@@ -19,7 +18,7 @@ const ContactSection = () => {
               allowFullScreen=""
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
-              title={`${getSiteName(i18n.language)} Location`}
+              title="North Republic Location"
               className="w-full"
             ></iframe>
           </div>

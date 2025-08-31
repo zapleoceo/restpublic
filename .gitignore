@@ -37,6 +37,8 @@ out/
 .serverless/
 .fusebox/
 .dynamodb/
+assets/
+frontend/dist/
 
 # ===========================================
 # IDE and Editor Files

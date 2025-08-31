@@ -48,7 +48,7 @@ jobs:
         command_timeout: 60m
         script: |
           cd /var/www/northrepubli_usr/data/www/northrepublic.me
-          echo "🚀 Начинаем автодеплой Production..."
+          echo "🚀 Начинаем автодеплой Production v5.0..."
           echo "📅 Время: $(date)"
           echo "📁 Директория: $(pwd)"
           echo "🔧 Проверяем Git статус..."
@@ -60,7 +60,7 @@ jobs:
           # Выполняем деплой с подробным логированием
           ./deploy.sh
           
-          echo "✅ Автодеплой Production завершен!"
+          echo "✅ Автодеплой Production v5.0 завершен!"
           
     - name: Health check
       uses: appleboy/ssh-action@v1.0.3
@@ -98,11 +98,35 @@ jobs:
             fi
           done
           
+          # Проверяем MongoDB
+          echo "🔗 Проверяем MongoDB..."
+          if curl -f http://localhost:3002/api/admin/stats; then
+            echo "✅ MongoDB работает!"
+          else
+            echo "❌ MongoDB не отвечает"
+            exit 1
+          fi
+          
           # Проверяем frontend
           echo "🌐 Проверяем frontend..."
-          curl -f https://northrepublic.me > /dev/null || {
-            echo "❌ Frontend check failed"
+          if curl -f https://northrepublic.me | grep -q "North Republic"; then
+            echo "✅ Frontend работает!"
+          else
+            echo "❌ Frontend не отвечает"
             exit 1
-          }
+          fi
           
-          echo "✅ Все проверки пройдены успешно!"
+          echo "🎉 Все проверки пройдены успешно!"
+          
+    - name: Notify success
+      if: success()
+      run: |
+        echo "✅ Деплой успешно завершен!"
+        echo "🌐 Сайт: https://northrepublic.me"
+        echo "🔧 Админ панель: https://northrepublic.me/admin"
+        
+    - name: Notify failure
+      if: failure()
+      run: |
+        echo "❌ Деплой завершился с ошибкой!"
+        echo "Проверьте логи выше для деталей"

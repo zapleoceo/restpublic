@@ -18,7 +18,7 @@ const PORT = process.env.PORT || 3002;
 
 // Middleware
 app.use(cors({
-  origin: ['https://northrepublic.me', 'https://goodzone.zapleo.com', 'http://localhost:3000', 'http://localhost:5173', 'http://localhost:3001'],
+  origin: ['https://northrepublic.me', 'https://goodzone.zapleo.com', 'http://localhost:3000', 'http://localhost:5173'],
   credentials: true
 }));
 

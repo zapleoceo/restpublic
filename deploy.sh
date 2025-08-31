@@ -1,10 +1,10 @@
 #!/bin/bash
 
-# North Republic Deployment Script v4.1
+# North Republic Deployment Script v5.0
 # Этот скрипт автоматически обновляет код, собирает приложения и перезапускает сервисы
 set -e  # Остановить выполнение при ошибке
 
-echo "🚀 Начинаем деплой North Republic v4.1 (Production)..."
+echo "🚀 Начинаем деплой North Republic v5.0 (Production)..."
 
 cd /var/www/northrepubli_usr/data/www/northrepublic.me
 echo "📁 Рабочая директория: $(pwd)"
@@ -32,6 +32,8 @@ echo "🔧 Собираем Backend..."
 cd backend
 npm install
 mkdir -p ../logs
+echo "🔗 Инициализируем MongoDB..."
+node scripts/migrate-to-mongodb.js
 cd ..
 
 echo "🔨 Собираем Frontend..."
@@ -80,5 +82,6 @@ fi
 echo "🎉 Деплой North Republic завершен успешно!"
 echo "🌐 Сайт доступен по адресу: https://northrepublic.me"
 echo "📡 Backend API: http://localhost:3002/api/health"
+echo "🔧 Админ панель: https://northrepublic.me/admin"
 echo "📋 Логи backend: pm2 logs northrepublic-backend"
 echo "🔍 Проверить процессы: pm2 list"

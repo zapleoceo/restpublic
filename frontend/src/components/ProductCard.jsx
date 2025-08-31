@@ -6,39 +6,14 @@ import ProductImage from './ProductImage';
 import ProductName from './ProductName';
 import ProductPrice from './ProductPrice';
 import { useCart } from '../contexts/CartContext';
-import ModificatorsModal from './ModificatorsModal';
 
 const ProductCard = ({ product }) => {
   const { t } = useTranslation();
   const { addToCart, getItemQuantity } = useCart();
   const quantity = getItemQuantity(product.product_id);
-  
-  // Состояние для модалки модификаторов
-  const [showModificatorsModal, setShowModificatorsModal] = useState(false);
 
-  const handleAddToCart = async () => {
-    // Проверяем, есть ли у товара модификаторы
-    try {
-      const response = await fetch(`/api/products/${product.product_id}/modificators`);
-      if (response.ok) {
-        const data = await response.json();
-        if (data.modificators && data.modificators.length > 0) {
-          // Если есть модификаторы, показываем модалку
-          setShowModificatorsModal(true);
-          return;
-        }
-      }
-    } catch (error) {
-      console.error('Ошибка при проверке модификаторов:', error);
-    }
-    
-    // Если модификаторов нет или произошла ошибка, добавляем товар как обычно
+  const handleAddToCart = () => {
     addToCart(product);
-  };
-
-  const handleModificatorsConfirm = (productWithModificators) => {
-    setShowModificatorsModal(false);
-    addToCart(productWithModificators);
   };
 
   return (
@@ -74,13 +49,6 @@ const ProductCard = ({ product }) => {
         </div>
       </Card>
 
-      {/* Модалка для выбора модификаторов */}
-      <ModificatorsModal
-        isOpen={showModificatorsModal}
-        onClose={() => setShowModificatorsModal(false)}
-        product={product}
-        onConfirm={handleModificatorsConfirm}
-      />
     </>
   );
 };

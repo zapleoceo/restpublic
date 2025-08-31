@@ -12,7 +12,7 @@ module.exports = {
         NODE_ENV: 'production',
         PORT: 3002
       },
-      APP_VERSION: '2.4.15'
+      APP_VERSION: '3.0.0'
     },
     {
       name: 'northrepublic-bot',
