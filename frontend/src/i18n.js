@@ -9,7 +9,10 @@ i18n
   .use(initReactI18next)
   .init({
     backend: {
-      loadPath: '/lang/{{lng}}.json',
+      loadPath: '/api/translations/{{lng}}',
+      // Fallback на файлы если API недоступен
+      allowMultiLoading: false,
+      crossDomain: false,
     },
     fallbackLng: 'ru',
     debug: false,

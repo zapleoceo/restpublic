@@ -8,6 +8,7 @@ const SePayMonitor = require('./sepay-monitor');
 const adminModule = require('./admin');
 const authModule = require('./auth');
 const orderService = require('./services/orderService');
+const mongoService = require('./services/mongoService');
 const cookieParser = require('cookie-parser');
 require('dotenv').config();
 
@@ -39,6 +40,25 @@ const httpsAgent = new https.Agent({
   secureProtocol: 'TLSv1_2_method'
 });
 
+// Инициализация MongoDB
+let mongoInitialized = false;
+
+async function initializeMongoDB() {
+  if (!mongoInitialized) {
+    try {
+      await mongoService.connect();
+      mongoInitialized = true;
+      console.log('✅ MongoDB инициализирована');
+    } catch (error) {
+      console.error('❌ Ошибка инициализации MongoDB:', error);
+      mongoInitialized = false;
+    }
+  }
+}
+
+// Инициализируем MongoDB при запуске
+initializeMongoDB();
+
 // API роуты
 app.get('/api/health', (req, res) => {
   res.json({ 
@@ -46,7 +66,8 @@ app.get('/api/health', (req, res) => {
     timestamp: new Date().toISOString(),
     version: process.env.APP_VERSION || '2.1.1',
     buildDate: '2025-08-19',
-    features: ['price-normalization']
+    features: ['price-normalization', 'mongodb-configs'],
+    mongodb: mongoInitialized ? 'connected' : 'disconnected'
   });
 });
 
@@ -349,6 +370,125 @@ app.get('/api/products/:productId/modificators', async (req, res) => {
     }
   } catch (error) {
     console.error('❌ Ошибка при получении модификаторов:', error.message);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// ===== MONGODB API ENDPOINTS =====
+
+// Получение переводов из MongoDB
+app.get('/api/translations/:language', async (req, res) => {
+  try {
+    await initializeMongoDB();
+    
+    const { language } = req.params;
+    const translations = await mongoService.getTranslations(language);
+    
+    if (translations) {
+      res.json(translations);
+    } else {
+      // Fallback на файл если нет в БД
+      const filePath = path.join(__dirname, '../frontend/public/lang', `${language}.json`);
+      if (require('fs').existsSync(filePath)) {
+        const fileData = JSON.parse(require('fs').readFileSync(filePath, 'utf8'));
+        res.json(fileData);
+      } else {
+        res.status(404).json({ error: 'Переводы не найдены' });
+      }
+    }
+  } catch (error) {
+    console.error('❌ Ошибка получения переводов:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Обновление переводов в MongoDB
+app.put('/api/translations/:language', async (req, res) => {
+  try {
+    await initializeMongoDB();
+    
+    const { language } = req.params;
+    const data = req.body;
+    
+    await mongoService.setTranslations(language, data);
+    res.json({ success: true, message: `Переводы ${language} обновлены` });
+  } catch (error) {
+    console.error('❌ Ошибка обновления переводов:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Получение конфигурации сайта из MongoDB
+app.get('/api/config/site-config', async (req, res) => {
+  try {
+    await initializeMongoDB();
+    
+    const config = await mongoService.getConfig('site_config');
+    
+    if (config) {
+      res.json(config);
+    } else {
+      // Fallback на статическую конфигурацию
+      const defaultConfig = {
+        SITE_NAME: {
+          ru: 'Республика Север',
+          en: 'North Republic',
+          vi: 'Cộng hòa Bắc'
+        },
+        SITE_DESCRIPTION: {
+          ru: 'Развлекательный комплекс',
+          en: 'Entertainment Complex',
+          vi: 'Khu giải trí'
+        }
+      };
+      res.json(defaultConfig);
+    }
+  } catch (error) {
+    console.error('❌ Ошибка получения конфигурации сайта:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Получение конфигурации секций из MongoDB
+app.get('/api/config/sections', async (req, res) => {
+  try {
+    await initializeMongoDB();
+    
+    const sections = await mongoService.getConfig('sections');
+    
+    if (sections) {
+      res.json(sections);
+    } else {
+      res.status(404).json({ error: 'Конфигурация секций не найдена' });
+    }
+  } catch (error) {
+    console.error('❌ Ошибка получения секций:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Обновление конфигурации секций
+app.put('/api/config/sections', async (req, res) => {
+  try {
+    await initializeMongoDB();
+    
+    const data = req.body;
+    await mongoService.setConfig('sections', data);
+    res.json({ success: true, message: 'Конфигурация секций обновлена' });
+  } catch (error) {
+    console.error('❌ Ошибка обновления секций:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Endpoint для запуска миграции
+app.post('/api/migrate-to-mongodb', async (req, res) => {
+  try {
+    const { main } = require('./scripts/migrate-to-mongodb');
+    await main();
+    res.json({ success: true, message: 'Миграция выполнена успешно' });
+  } catch (error) {
+    console.error('❌ Ошибка миграции:', error);
     res.status(500).json({ error: error.message });
   }
 });

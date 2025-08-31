@@ -3,10 +3,13 @@ import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import LanguageSwitcher from './LanguageSwitcher';
 import ContactSection from './ContactSection';
-import { getSiteName } from '../constants/siteConfig';
+import useSiteConfig from '../hooks/useSiteConfig';
+import useSiteSections from '../hooks/useSiteSections';
 
 const HomePage = () => {
   const { t, i18n } = useTranslation();
+  const { getSiteName } = useSiteConfig();
+  const { sections, loading: sectionsLoading, getEnabledSections } = useSiteSections();
   const [enabledSections, setEnabledSections] = useState({});
   const [loading, setLoading] = useState(true);
 
@@ -69,22 +72,34 @@ const HomePage = () => {
   };
 
   useEffect(() => {
-    loadEnabledSections();
-  }, []);
-
-  const loadEnabledSections = async () => {
-    try {
-      const response = await fetch('/api/sections');
-      if (response.ok) {
-        const data = await response.json();
-        setEnabledSections(data.sections);
-      }
-    } catch (error) {
-      console.error('Ошибка загрузки секций:', error);
-    } finally {
+    if (!sectionsLoading && sections) {
+      // Используем секции из API хука
+      const apiEnabledSections = getEnabledSections();
+      
+      // Объединяем с статической конфигурацией для совместимости
+      const mergedSections = {};
+      Object.entries(apiEnabledSections).forEach(([key, section]) => {
+        if (sectionsConfig[key]) {
+          mergedSections[key] = {
+            ...sectionsConfig[key],
+            ...section,
+            enabled: section.enabled
+          };
+        }
+      });
+      
+      setEnabledSections(mergedSections);
+      setLoading(false);
+    } else if (!sectionsLoading && !sections) {
+      // Fallback на статическую конфигурацию
+      const allSections = {};
+      Object.keys(sectionsConfig).forEach(key => {
+        allSections[key] = { ...sectionsConfig[key], enabled: true };
+      });
+      setEnabledSections(allSections);
       setLoading(false);
     }
-  };
+  }, [sectionsLoading, sections]);
 
   // Фильтруем только активные секции
   const sections = Object.keys(enabledSections)
