@@ -53,7 +53,6 @@ smart_npm_install() {
     local dir="$1"
     local description="$2"
     
-    cd "$dir"
     log "📁 Директория: $(pwd)"
     
     if has_package_changes "$dir"; then
@@ -62,8 +61,6 @@ smart_npm_install() {
     else
         log "📦 Изменений в package.json нет - пропускаем npm install"
     fi
-    
-    cd - > /dev/null
 }
 
 log "🚀 ========================================="
@@ -116,16 +113,20 @@ log "🔧 ========================================="
 # Запускаем сборку backend в фоне
 log "🔧 Запускаем сборку backend в фоне..."
 (
+    cd backend
     smart_npm_install "backend" "Установка зависимостей backend"
     run_with_timeout 30 "mkdir -p ../logs" "Создание директории logs"
+    cd ..
 ) &
 BACKEND_PID=$!
 
 # Запускаем сборку bot в фоне
 log "🤖 Запускаем сборку bot в фоне..."
 (
+    cd bot
     smart_npm_install "bot" "Установка зависимостей bot"
     run_with_timeout 60 "npm run build" "Сборка bot"
+    cd ..
 ) &
 BOT_PID=$!
 
