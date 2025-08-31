@@ -11,6 +11,8 @@ const AdminPanel = () => {
   const [message, setMessage] = useState('');
   const [editingItem, setEditingItem] = useState(null);
   const [editData, setEditData] = useState('');
+  const [versions, setVersions] = useState({});
+  const [selectedConfig, setSelectedConfig] = useState(null);
 
   useEffect(() => {
     loadData();
@@ -39,6 +41,17 @@ const AdminPanel = () => {
         const configsData = await configsResponse.json();
         setConfigs(configsData.data);
       }
+
+      // Загружаем версии для всех конфигураций
+      const versionsData = {};
+      for (const configType of Object.keys(configsData?.data || {})) {
+        const versionsResponse = await fetch(`/api/admin/configs/${configType}/versions`);
+        if (versionsResponse.ok) {
+          const versionData = await versionsResponse.json();
+          versionsData[configType] = versionData.data;
+        }
+      }
+      setVersions(versionsData);
     } catch (error) {
       console.error('Ошибка загрузки данных:', error);
       setMessage('Ошибка загрузки данных');
@@ -174,32 +187,47 @@ const AdminPanel = () => {
         <div key={type} className="border rounded-lg p-4">
           <div className="flex justify-between items-center mb-2">
             <h4 className="font-medium">Тип: {type}</h4>
-            {editingItem?.type === 'config' && editingItem?.key === type ? (
-              <div className="flex space-x-2">
-                <button
-                  onClick={saveEdit}
-                  className="bg-green-500 text-white px-3 py-1 rounded text-sm hover:bg-green-600"
-                >
-                  Сохранить
-                </button>
-                <button
-                  onClick={cancelEdit}
-                  className="bg-gray-500 text-white px-3 py-1 rounded text-sm hover:bg-gray-600"
-                >
-                  Отмена
-                </button>
-              </div>
-            ) : (
-              <button
-                onClick={() => startEditing('config', type, data)}
-                className="bg-green-500 text-white px-3 py-1 rounded text-sm hover:bg-green-600"
-              >
-                Редактировать
-              </button>
-            )}
+            <div className="flex space-x-2">
+              {editingItem?.type === 'config' && editingItem?.key === type ? (
+                <>
+                  <button
+                    onClick={saveEdit}
+                    className="bg-green-500 text-white px-3 py-1 rounded text-sm hover:bg-green-600"
+                  >
+                    Сохранить
+                  </button>
+                  <button
+                    onClick={cancelEdit}
+                    className="bg-gray-500 text-white px-3 py-1 rounded text-sm hover:bg-gray-600"
+                  >
+                    Отмена
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    onClick={() => startEditing('config', type, data)}
+                    className="bg-green-500 text-white px-3 py-1 rounded text-sm hover:bg-green-600"
+                  >
+                    Редактировать
+                  </button>
+                  <button
+                    onClick={() => setSelectedConfig(type)}
+                    className="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600"
+                  >
+                    Версии
+                  </button>
+                </>
+              )}
+            </div>
           </div>
           <div className="text-sm text-gray-600 mb-2">
             Ключей: {Object.keys(data).length}
+            {versions[type] && (
+              <span className="ml-2 text-blue-600">
+                • Версия: {versions[type].currentVersion || 1}
+              </span>
+            )}
           </div>
           {editingItem?.type === 'config' && editingItem?.key === type && (
             <div className="mt-4">
@@ -290,6 +318,28 @@ const AdminPanel = () => {
     } catch (error) {
       console.error('Ошибка очистки:', error);
       setMessage('Ошибка очистки');
+    }
+  };
+
+  const handleRestoreVersion = async (configType, version) => {
+    if (!confirm(`Восстановить конфигурацию ${configType} до версии ${version}?`)) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/admin/configs/${configType}/restore/${version}`, {
+        method: 'POST',
+      });
+
+      if (response.ok) {
+        setMessage(`Конфигурация ${configType} восстановлена до версии ${version}`);
+        loadData();
+      } else {
+        setMessage('Ошибка восстановления версии');
+      }
+    } catch (error) {
+      console.error('Ошибка восстановления:', error);
+      setMessage('Ошибка восстановления версии');
     }
   };
 
@@ -425,6 +475,65 @@ const AdminPanel = () => {
             {activeTab === 'configs' && renderConfigsTab()}
             {activeTab === 'stats' && renderStatsTab()}
           </div>
+
+          {/* Modal для версий */}
+          {selectedConfig && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+              <div className="bg-white rounded-lg p-6 max-w-4xl w-full mx-4 max-h-[80vh] overflow-y-auto">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-lg font-semibold">Версии конфигурации: {selectedConfig}</h3>
+                  <button
+                    onClick={() => setSelectedConfig(null)}
+                    className="text-gray-500 hover:text-gray-700"
+                  >
+                    ✕
+                  </button>
+                </div>
+                
+                {versions[selectedConfig]?.versions?.length > 0 ? (
+                  <div className="space-y-3">
+                    {versions[selectedConfig].versions.map((version, index) => (
+                      <div key={version.version} className="border rounded-lg p-4">
+                        <div className="flex justify-between items-center mb-2">
+                          <div>
+                            <span className="font-medium">Версия {version.version}</span>
+                            {version.version === versions[selectedConfig].currentVersion && (
+                              <span className="ml-2 bg-green-100 text-green-800 px-2 py-1 rounded text-xs">
+                                Текущая
+                              </span>
+                            )}
+                          </div>
+                          <div className="flex space-x-2">
+                            <span className="text-sm text-gray-500">
+                              {new Date(version.createdAt).toLocaleString()}
+                            </span>
+                            {version.version !== versions[selectedConfig].currentVersion && (
+                              <button
+                                onClick={() => handleRestoreVersion(selectedConfig, version.version)}
+                                className="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600"
+                              >
+                                Восстановить
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                        <div className="text-sm text-gray-600 mb-2">
+                          {version.comment}
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          Ключей: {Object.keys(version.data).length}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center text-gray-500 py-8">
+                    Версии не найдены
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

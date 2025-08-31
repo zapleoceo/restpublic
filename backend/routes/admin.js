@@ -99,6 +99,80 @@ router.put('/configs/:type', requireAuth, async (req, res) => {
   }
 });
 
+// Получить историю версий конфигурации
+router.get('/configs/:type/versions', requireAuth, async (req, res) => {
+  try {
+    const { type } = req.params;
+    const db = mongoService.getDatabase();
+    
+    const versions = await db.collection('configs').findOne(
+      { type },
+      { projection: { versions: 1, currentVersion: 1 } }
+    );
+    
+    res.json({
+      success: true,
+      data: {
+        versions: versions?.versions || [],
+        currentVersion: versions?.currentVersion || 1
+      }
+    });
+  } catch (error) {
+    console.error('Ошибка получения версий:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Ошибка получения версий'
+    });
+  }
+});
+
+// Восстановить версию конфигурации
+router.post('/configs/:type/restore/:version', requireAuth, async (req, res) => {
+  try {
+    const { type, version } = req.params;
+    const versionNum = parseInt(version);
+    
+    if (isNaN(versionNum)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Неверный номер версии'
+      });
+    }
+    
+    const db = mongoService.getDatabase();
+    const config = await db.collection('configs').findOne({ type });
+    
+    if (!config || !config.versions) {
+      return res.status(404).json({
+        success: false,
+        error: 'Конфигурация или версии не найдены'
+      });
+    }
+    
+    const targetVersion = config.versions.find(v => v.version === versionNum);
+    if (!targetVersion) {
+      return res.status(404).json({
+        success: false,
+        error: 'Версия не найдена'
+      });
+    }
+    
+    // Восстанавливаем данные из версии
+    await mongoService.setConfig(type, targetVersion.data);
+    
+    res.json({
+      success: true,
+      message: `Конфигурация ${type} восстановлена до версии ${versionNum}`
+    });
+  } catch (error) {
+    console.error('Ошибка восстановления версии:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Ошибка восстановления версии'
+    });
+  }
+});
+
 // Получить статистику MongoDB
 router.get('/stats', requireAuth, async (req, res) => {
   try {

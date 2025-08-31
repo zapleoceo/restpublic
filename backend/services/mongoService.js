@@ -105,13 +105,30 @@ class MongoService {
 
   async setConfig(type, data) {
     const db = this.getDatabase();
+    
+    // Получаем текущую конфигурацию
+    const currentConfig = await db.collection('configs').findOne({ type });
+    const currentVersion = currentConfig?.version || 0;
+    const newVersion = currentVersion + 1;
+    
+    // Создаем запись версии
+    const versionRecord = {
+      version: newVersion,
+      data: currentConfig?.data || {},
+      createdAt: new Date(),
+      comment: `Автоматическое сохранение версии ${newVersion}`
+    };
+    
+    // Обновляем конфигурацию с новой версией
     const result = await db.collection('configs').replaceOne(
       { type },
       {
         type,
         data,
         updatedAt: new Date(),
-        version: 1
+        version: newVersion,
+        currentVersion: newVersion,
+        versions: currentConfig?.versions ? [...currentConfig.versions.slice(-9), versionRecord] : [versionRecord]
       },
       { upsert: true }
     );
