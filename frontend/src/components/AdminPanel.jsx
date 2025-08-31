@@ -9,6 +9,8 @@ const AdminPanel = () => {
   const [stats, setStats] = useState({});
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
+  const [editingItem, setEditingItem] = useState(null);
+  const [editData, setEditData] = useState('');
 
   useEffect(() => {
     loadData();
@@ -57,6 +59,8 @@ const AdminPanel = () => {
 
       if (response.ok) {
         setMessage(`Переводы для ${language} обновлены`);
+        setEditingItem(null);
+        setEditData('');
         loadData();
       } else {
         setMessage('Ошибка обновления переводов');
@@ -79,6 +83,8 @@ const AdminPanel = () => {
 
       if (response.ok) {
         setMessage(`Конфигурация ${type} обновлена`);
+        setEditingItem(null);
+        setEditData('');
         loadData();
       } else {
         setMessage('Ошибка обновления конфигурации');
@@ -89,6 +95,29 @@ const AdminPanel = () => {
     }
   };
 
+  const startEditing = (type, key, data) => {
+    setEditingItem({ type, key });
+    setEditData(JSON.stringify(data, null, 2));
+  };
+
+  const saveEdit = () => {
+    try {
+      const parsed = JSON.parse(editData);
+      if (editingItem.type === 'translation') {
+        updateTranslation(editingItem.key, parsed);
+      } else if (editingItem.type === 'config') {
+        updateConfig(editingItem.key, parsed);
+      }
+    } catch (error) {
+      setMessage('Неверный JSON формат');
+    }
+  };
+
+  const cancelEdit = () => {
+    setEditingItem(null);
+    setEditData('');
+  };
+
   const renderTranslationsTab = () => (
     <div className="space-y-4">
       <h3 className="text-lg font-semibold">Управление переводами</h3>
@@ -96,26 +125,43 @@ const AdminPanel = () => {
         <div key={language} className="border rounded-lg p-4">
           <div className="flex justify-between items-center mb-2">
             <h4 className="font-medium">Язык: {language}</h4>
-            <button
-              onClick={() => {
-                const newData = prompt('Введите новые переводы (JSON):', JSON.stringify(data, null, 2));
-                if (newData) {
-                  try {
-                    const parsed = JSON.parse(newData);
-                    updateTranslation(language, parsed);
-                  } catch (error) {
-                    setMessage('Неверный JSON формат');
-                  }
-                }
-              }}
-              className="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600"
-            >
-              Редактировать
-            </button>
+            {editingItem?.type === 'translation' && editingItem?.key === language ? (
+              <div className="flex space-x-2">
+                <button
+                  onClick={saveEdit}
+                  className="bg-green-500 text-white px-3 py-1 rounded text-sm hover:bg-green-600"
+                >
+                  Сохранить
+                </button>
+                <button
+                  onClick={cancelEdit}
+                  className="bg-gray-500 text-white px-3 py-1 rounded text-sm hover:bg-gray-600"
+                >
+                  Отмена
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => startEditing('translation', language, data)}
+                className="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600"
+              >
+                Редактировать
+              </button>
+            )}
           </div>
-          <div className="text-sm text-gray-600">
+          <div className="text-sm text-gray-600 mb-2">
             Ключей: {Object.keys(data).length}
           </div>
+          {editingItem?.type === 'translation' && editingItem?.key === language && (
+            <div className="mt-4">
+              <textarea
+                value={editData}
+                onChange={(e) => setEditData(e.target.value)}
+                className="w-full h-64 p-2 border rounded font-mono text-sm"
+                placeholder="Введите JSON данные..."
+              />
+            </div>
+          )}
         </div>
       ))}
     </div>
@@ -128,26 +174,43 @@ const AdminPanel = () => {
         <div key={type} className="border rounded-lg p-4">
           <div className="flex justify-between items-center mb-2">
             <h4 className="font-medium">Тип: {type}</h4>
-            <button
-              onClick={() => {
-                const newData = prompt('Введите новую конфигурацию (JSON):', JSON.stringify(data, null, 2));
-                if (newData) {
-                  try {
-                    const parsed = JSON.parse(newData);
-                    updateConfig(type, parsed);
-                  } catch (error) {
-                    setMessage('Неверный JSON формат');
-                  }
-                }
-              }}
-              className="bg-green-500 text-white px-3 py-1 rounded text-sm hover:bg-green-600"
-            >
-              Редактировать
-            </button>
+            {editingItem?.type === 'config' && editingItem?.key === type ? (
+              <div className="flex space-x-2">
+                <button
+                  onClick={saveEdit}
+                  className="bg-green-500 text-white px-3 py-1 rounded text-sm hover:bg-green-600"
+                >
+                  Сохранить
+                </button>
+                <button
+                  onClick={cancelEdit}
+                  className="bg-gray-500 text-white px-3 py-1 rounded text-sm hover:bg-gray-600"
+                >
+                  Отмена
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => startEditing('config', type, data)}
+                className="bg-green-500 text-white px-3 py-1 rounded text-sm hover:bg-green-600"
+              >
+                Редактировать
+              </button>
+            )}
           </div>
-          <div className="text-sm text-gray-600">
+          <div className="text-sm text-gray-600 mb-2">
             Ключей: {Object.keys(data).length}
           </div>
+          {editingItem?.type === 'config' && editingItem?.key === type && (
+            <div className="mt-4">
+              <textarea
+                value={editData}
+                onChange={(e) => setEditData(e.target.value)}
+                className="w-full h-64 p-2 border rounded font-mono text-sm"
+                placeholder="Введите JSON данные..."
+              />
+            </div>
+          )}
         </div>
       ))}
     </div>
@@ -169,6 +232,15 @@ const AdminPanel = () => {
           <div className="text-2xl font-bold text-purple-600">{stats.total || 0}</div>
           <div className="text-sm text-gray-600">Всего записей</div>
         </div>
+      </div>
+      
+      <div className="mt-6">
+        <button
+          onClick={loadData}
+          className="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600"
+        >
+          Обновить данные
+        </button>
       </div>
     </div>
   );
