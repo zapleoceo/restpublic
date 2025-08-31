@@ -8,6 +8,7 @@ const SePayMonitor = require('./sepay-monitor');
 const authModule = require('./auth');
 const orderService = require('./services/orderService');
 const mongoService = require('./services/mongoService');
+const adminModule = require('./services/adminModule');
 const adminRoutes = require('./routes/admin');
 const sectionsRoutes = require('./routes/sections');
 const eventsRoutes = require('./routes/events');
