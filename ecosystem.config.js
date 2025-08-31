@@ -1,3 +1,5 @@
+const APP_VERSION = '3.0.2';
+
 module.exports = {
   apps: [
     {
@@ -12,7 +14,7 @@ module.exports = {
         NODE_ENV: 'production',
         PORT: 3002
       },
-      APP_VERSION: '3.0.1'
+      APP_VERSION: APP_VERSION
     }
     // Временно отключен бот из-за rate limiting
     // {
