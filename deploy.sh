@@ -75,11 +75,13 @@ log "💾 Память: $(free -h | grep Mem | awk '{print $2}')"
 log "💽 Диск: $(df -h . | tail -1 | awk '{print $4}') свободно"
 
 # Переходим в рабочую директорию
-run_with_timeout 10 "cd /var/www/northrepubli_usr/data/www/northrepublic.me" "Переход в рабочую директорию"
+cd /var/www/northrepubli_usr/data/www/northrepublic.me
+log "📁 Рабочая директория: $(pwd)"
 log "📁 Рабочая директория: $(pwd)"
 
 # Настройки Git для ускорения
-run_with_timeout 10 "git config --local core.editor /bin/true && git config --local merge.tool /bin/true" "Настройка Git"
+git config --local core.editor /bin/true
+git config --local merge.tool /bin/true
 export GIT_EDITOR=/bin/true
 export EDITOR=/bin/true
 
@@ -87,7 +89,7 @@ export EDITOR=/bin/true
 log "📥 Проверяем изменения в репозитории..."
 if git fetch origin main && [ "$(git rev-parse HEAD)" != "$(git rev-parse origin/main)" ]; then
     log "🔄 Обнаружены изменения - обновляем код"
-    run_with_timeout 60 "git pull origin main --allow-unrelated-histories --no-edit" "Обновление кода"
+    git pull origin main --allow-unrelated-histories --no-edit
 else
     log "✅ Код уже актуален - пропускаем обновление"
 fi
