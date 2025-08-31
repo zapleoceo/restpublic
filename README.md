@@ -255,4 +255,5 @@ MIT License
 
 Для вопросов и предложений создавайте Issues в репозитории.#   T e s t   d e p l o y m e n t 
  
+ #   T e s t   c o m m i t   f o r   a u t o - d e p l o y  
  
