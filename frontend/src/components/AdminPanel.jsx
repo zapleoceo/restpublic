@@ -424,14 +424,14 @@ const AdminPanel = () => {
           <div className="border-b border-gray-200 px-6 py-4">
             <h1 className="text-2xl font-bold text-gray-900">Админ панель MongoDB</h1>
             <p className="text-gray-600 mt-1">Управление переводами и конфигурациями</p>
-          </div>
+            </div>
 
           {/* Message */}
           {message && (
             <div className="mx-6 mt-4 p-3 bg-blue-100 border border-blue-400 text-blue-700 rounded">
               {message}
-            </div>
-          )}
+                </div>
+              )}
 
           {/* Tabs */}
           <div className="border-b border-gray-200">
@@ -467,7 +467,7 @@ const AdminPanel = () => {
                 Статистика
               </button>
             </nav>
-          </div>
+            </div>
 
           {/* Content */}
           <div className="p-6">
@@ -488,8 +488,8 @@ const AdminPanel = () => {
                   >
                     ✕
                   </button>
-                </div>
-                
+        </div>
+
                 {versions[selectedConfig]?.versions?.length > 0 ? (
                   <div className="space-y-3">
                     {versions[selectedConfig].versions.map((version, index) => (
@@ -500,15 +500,15 @@ const AdminPanel = () => {
                             {version.version === versions[selectedConfig].currentVersion && (
                               <span className="ml-2 bg-green-100 text-green-800 px-2 py-1 rounded text-xs">
                                 Текущая
-                              </span>
+                    </span>
                             )}
-                          </div>
+                  </div>
                           <div className="flex space-x-2">
                             <span className="text-sm text-gray-500">
                               {new Date(version.createdAt).toLocaleString()}
                             </span>
                             {version.version !== versions[selectedConfig].currentVersion && (
-                              <button
+                <button
                                 onClick={() => handleRestoreVersion(selectedConfig, version.version)}
                                 className="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600"
                               >
@@ -523,16 +523,16 @@ const AdminPanel = () => {
                         <div className="text-xs text-gray-500">
                           Ключей: {Object.keys(version.data).length}
                         </div>
-                      </div>
-                    ))}
-                  </div>
+              </div>
+            ))}
+          </div>
                 ) : (
                   <div className="text-center text-gray-500 py-8">
                     Версии не найдены
-                  </div>
+        </div>
                 )}
-              </div>
-            </div>
+                  </div>
+                </div>
           )}
         </div>
       </div>

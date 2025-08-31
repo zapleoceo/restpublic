@@ -127,36 +127,8 @@ playwright-report/
 test-results.xml
 
 # ===========================================
-# Documentation with secrets
-# ===========================================
-TZ*.md
-TZ_*.md
-*.TZ
-*.tz
-technical_assignment*.md
-requirements*.md
-specification*.md
-# README.md - НЕ исключаем, это основная документация проекта
-
-# ===========================================
-# Temporary API response files
-# ===========================================
-*_response.json
-*_sales.json
-*_statistics.json
-products_*.json
-analytics_*.json
-
-# ===========================================
-# Git commands (accidentally created files)
-# ===========================================
-et --hard c200f2e
-
-# ===========================================
 # Cursor AI files with secrets
 # ===========================================
-.cursor/
-cursor/
 .cursor/
 
 # ===========================================
@@ -189,7 +161,6 @@ deploy_backup.sh
 # ===========================================
 # Package Manager Files
 # ===========================================
-# package-lock.json - НЕ исключаем, нужен для воспроизводимых сборок
 yarn.lock
 pnpm-lock.yaml
 .npmrc
@@ -207,6 +178,4 @@ development/
 # ===========================================
 # Production Build Artifacts
 # ===========================================
-# assets/ - НЕ исключаем, могут быть важные статические файлы
-# public/assets/ - НЕ исключаем, могут быть важные статические файлы
 static/
