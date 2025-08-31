@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# North Republic Deployment Script v5.1
+# North Republic Deployment Script v5.2
 # Этот скрипт автоматически обновляет код, собирает приложения и перезапускает сервисы
 set -e  # Остановить выполнение при ошибке
 
@@ -9,154 +9,178 @@ log() {
     echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1"
 }
 
-# Функция для выполнения команды с таймаутом
-run_with_timeout() {
-    local timeout=$1
+# Функция для выполнения команды с подробным логированием
+run_command() {
+    local description="$1"
     local command="$2"
-    local description="$3"
     
-    log "⏱️ Выполняем: $description (таймаут: ${timeout}s)"
-    log "🔧 Команда: $command"
+    log "🚀 НАЧИНАЕМ: $description"
+    log "📋 Команда: $command"
+    log "⏰ Время начала: $(date)"
     
-    if timeout $timeout bash -c "$command"; then
-        log "✅ $description завершено успешно"
+    # Выполняем команду и сохраняем exit code
+    if eval "$command"; then
+        log "✅ УСПЕШНО: $description"
+        log "⏰ Время завершения: $(date)"
     else
-        log "❌ $description не завершено за $timeout секунд или завершилось с ошибкой"
-        return 1
+        local exit_code=$?
+        log "❌ ОШИБКА: $description (exit code: $exit_code)"
+        log "⏰ Время ошибки: $(date)"
+        return $exit_code
     fi
 }
 
-# Функция для проверки доступности порта
-wait_for_port() {
-    local port=$1
-    local service=$2
-    local max_attempts=30
-    local attempt=1
-    
-    log "🔍 Ожидаем запуска $service на порту $port..."
-    
-    while [ $attempt -le $max_attempts ]; do
-        if curl -s http://localhost:$port/api/health > /dev/null 2>&1; then
-            log "✅ $service доступен на порту $port"
-            return 0
-        fi
-        
-        log "⏳ Попытка $attempt/$max_attempts - $service еще не готов..."
-        sleep 2
-        attempt=$((attempt + 1))
-    done
-    
-    log "❌ $service не стал доступен за $((max_attempts * 2)) секунд"
-    return 1
+# Функция для проверки процесса
+check_process() {
+    local process_name="$1"
+    log "🔍 Проверяем процесс: $process_name"
+    if pgrep -f "$process_name" > /dev/null; then
+        log "✅ Процесс $process_name запущен"
+        pgrep -f "$process_name" | xargs ps -p
+    else
+        log "❌ Процесс $process_name не найден"
+    fi
 }
 
-log "🚀 Начинаем деплой North Republic v5.1 (Production)..."
+log "🚀 ========================================="
+log "🚀 НАЧИНАЕМ ДЕПЛОЙ North Republic v5.2"
+log "🚀 ========================================="
 log "📅 Время начала: $(date)"
 log "💻 Система: $(uname -a)"
 log "💾 Память: $(free -h | grep Mem | awk '{print $2}')"
 log "💽 Диск: $(df -h . | tail -1 | awk '{print $4}') свободно"
 
-cd /var/www/northrepubli_usr/data/www/northrepublic.me
+# Переходим в рабочую директорию
+run_command "Переход в рабочую директорию" "cd /var/www/northrepubli_usr/data/www/northrepublic.me"
 log "📁 Рабочая директория: $(pwd)"
 log "📊 Размер директории: $(du -sh . | cut -f1)"
 
-# Настройки Git для предотвращения открытия редактора
-log "🔧 Настраиваем Git..."
-git config --local core.editor /bin/true
-git config --local merge.tool /bin/true
+# Настройки Git
+run_command "Настройка Git" "git config --local core.editor /bin/true && git config --local merge.tool /bin/true"
 export GIT_EDITOR=/bin/true
 export EDITOR=/bin/true
 
-log "📥 Обновляем код из репозитория..."
-log "📋 Текущий статус Git:"
-git status --porcelain || true
+# Проверяем Git статус
+run_command "Проверка Git статуса" "git status --porcelain"
+log "📋 Последние коммиты:"
+git log --oneline -3 || log "⚠️ Не удалось получить историю коммитов"
 
-# Используем --allow-unrelated-histories для решения проблемы с очищенной историей
-if ! run_with_timeout 60 "git pull origin main --allow-unrelated-histories --no-edit" "Git pull"; then
-    log "⚠️ Обычный pull не удался, выполняем принудительный reset..."
-    run_with_timeout 30 "git fetch origin" "Git fetch"
-    run_with_timeout 30 "git reset --hard origin/main" "Git reset"
-fi
+# Обновляем код
+run_command "Обновление кода из репозитория" "git pull origin main --allow-unrelated-histories --no-edit"
 
-log "📋 Статус после обновления:"
-git log --oneline -3 || true
+# Останавливаем PM2 процессы
+log "🛑 ========================================="
+log "🛑 ОСТАНОВКА PM2 ПРОЦЕССОВ"
+log "🛑 ========================================="
 
-log "🛑 Останавливаем PM2 процессы..."
-pm2 stop all || log "⚠️ PM2 процессы не найдены или уже остановлены"
-pm2 delete all || log "⚠️ PM2 процессы не найдены для удаления"
+run_command "Остановка всех PM2 процессов" "pm2 stop all"
+run_command "Удаление всех PM2 процессов" "pm2 delete all"
 
-log "🔧 Собираем Backend..."
-cd backend
-log "📦 Устанавливаем зависимости backend..."
-if ! run_with_timeout 120 "npm install" "Backend npm install"; then
-    log "❌ Ошибка установки зависимостей backend"
+log "📊 Статус PM2 после остановки:"
+pm2 list
+
+# Сборка Backend
+log "🔧 ========================================="
+log "🔧 СБОРКА BACKEND"
+log "🔧 ========================================="
+
+run_command "Переход в директорию backend" "cd backend"
+log "📁 Директория backend: $(pwd)"
+
+run_command "Установка зависимостей backend" "npm install"
+log "📦 Зависимости backend установлены"
+
+run_command "Создание директории logs" "mkdir -p ../logs"
+log "📁 Директория logs создана"
+
+# MongoDB миграция
+log "🔗 ========================================="
+log "🔗 MONGODB МИГРАЦИЯ"
+log "🔗 ========================================="
+
+log "🔍 Проверяем доступность MongoDB..."
+if ! timeout 10 bash -c 'until nc -z 127.0.0.1 27017; do sleep 1; done'; then
+    log "❌ MongoDB недоступна на порту 27017"
     exit 1
 fi
+log "✅ MongoDB доступна на порту 27017"
 
-mkdir -p ../logs
-log "🔗 Инициализируем MongoDB..."
-if ! run_with_timeout 60 "node scripts/migrate-to-mongodb.js" "MongoDB migration"; then
-    log "❌ Ошибка миграции MongoDB"
-    exit 1
-fi
-cd ..
+log "🚀 Запускаем миграцию MongoDB..."
+run_command "MongoDB миграция" "node scripts/migrate-to-mongodb.js"
+log "✅ Миграция MongoDB завершена"
 
-log "🔨 Собираем Frontend..."
-cd frontend
-log "📦 Устанавливаем зависимости frontend..."
-if ! run_with_timeout 180 "npm install" "Frontend npm install"; then
-    log "❌ Ошибка установки зависимостей frontend"
-    exit 1
-fi
+run_command "Возврат в корневую директорию" "cd .."
+log "📁 Вернулись в: $(pwd)"
 
-log "🏗️ Собираем frontend..."
-if ! run_with_timeout 300 "npm run build" "Frontend build"; then
-    log "❌ Ошибка сборки frontend"
-    log "📋 Проверяем логи сборки..."
-    npm run build 2>&1 | tail -20 || true
-    exit 1
-fi
+# Сборка Frontend
+log "🔨 ========================================="
+log "🔨 СБОРКА FRONTEND"
+log "🔨 ========================================="
 
-log "📋 Копируем собранные файлы frontend..."
-if ! run_with_timeout 30 "cp -r dist/* ../" "Copy frontend files"; then
-    log "❌ Ошибка копирования файлов frontend"
-    exit 1
-fi
-cd ..
+run_command "Переход в директорию frontend" "cd frontend"
+log "📁 Директория frontend: $(pwd)"
+log "📊 Размер node_modules: $(du -sh node_modules 2>/dev/null || echo 'не существует')"
 
-log "🤖 Собираем Telegram Bot..."
-cd bot
-log "📦 Устанавливаем зависимости bot..."
-if ! run_with_timeout 120 "npm install" "Bot npm install"; then
-    log "❌ Ошибка установки зависимостей bot"
-    exit 1
-fi
+run_command "Установка зависимостей frontend" "npm install"
+log "📦 Зависимости frontend установлены"
 
-log "🏗️ Собираем bot..."
-if ! run_with_timeout 60 "npm run build" "Bot build"; then
-    log "❌ Ошибка сборки bot"
-    exit 1
-fi
-cd ..
+log "🏗️ Запускаем сборку frontend..."
+run_command "Сборка frontend" "npm run build"
+log "✅ Сборка frontend завершена"
 
-log "🔐 Настраиваем права доступа..."
-chmod +x bot/dist/bot.js
-chown -R northrepubli_usr:northrepubli_usr .
+log "📋 Копируем собранные файлы..."
+run_command "Копирование файлов frontend" "cp -r dist/* ../"
+log "✅ Файлы frontend скопированы"
 
-log "🚀 Запускаем процессы через PM2..."
-if ! run_with_timeout 60 "pm2 start ecosystem.config.js --update-env" "PM2 start"; then
-    log "❌ Ошибка запуска PM2 процессов"
-    exit 1
-fi
+run_command "Возврат в корневую директорию" "cd .."
+log "📁 Вернулись в: $(pwd)"
+
+# Сборка Bot
+log "🤖 ========================================="
+log "🤖 СБОРКА TELEGRAM BOT"
+log "🤖 ========================================="
+
+run_command "Переход в директорию bot" "cd bot"
+log "📁 Директория bot: $(pwd)"
+
+run_command "Установка зависимостей bot" "npm install"
+log "📦 Зависимости bot установлены"
+
+run_command "Сборка bot" "npm run build"
+log "✅ Сборка bot завершена"
+
+run_command "Возврат в корневую директорию" "cd .."
+log "📁 Вернулись в: $(pwd)"
+
+# Настройка прав доступа
+log "🔐 ========================================="
+log "🔐 НАСТРОЙКА ПРАВ ДОСТУПА"
+log "🔐 ========================================="
+
+run_command "Установка прав на bot.js" "chmod +x bot/dist/bot.js"
+run_command "Изменение владельца файлов" "chown -R northrepubli_usr:northrepubli_usr ."
+log "✅ Права доступа настроены"
+
+# Запуск PM2 процессов
+log "🚀 ========================================="
+log "🚀 ЗАПУСК PM2 ПРОЦЕССОВ"
+log "🚀 ========================================="
+
+run_command "Запуск PM2 процессов" "pm2 start ecosystem.config.js --update-env"
+log "✅ PM2 процессы запущены"
 
 log "📊 Статус PM2 процессов:"
 pm2 list
 
-log "✅ Проверяем статус деплоя..."
+# Проверка процессов
+log "🔍 ========================================="
+log "🔍 ПРОВЕРКА ПРОЦЕССОВ"
+log "🔍 ========================================="
+
+log "⏳ Ожидаем запуска процессов..."
 sleep 10
 
-# Проверяем статус PM2 процессов
-log "🔍 Проверяем backend..."
+log "🔍 Проверяем backend процесс..."
 if pm2 list | grep -q "northrepublic-backend.*online"; then
     log "✅ Backend успешно запущен через PM2"
 else
@@ -166,7 +190,7 @@ else
     exit 1
 fi
 
-log "🔍 Проверяем bot..."
+log "🔍 Проверяем bot процесс..."
 if pm2 list | grep -q "northrepublic-bot.*online"; then
     log "✅ Bot успешно запущен через PM2"
 else
@@ -185,23 +209,48 @@ else
     exit 1
 fi
 
-# Ждем запуска backend
-if wait_for_port 3002 "Backend"; then
-    log "✅ Backend API доступен"
-else
-    log "❌ Backend API недоступен"
-    log "📋 Логи backend:"
-    pm2 logs northrepublic-backend --lines 20 || log "❌ PM2 логи недоступны"
-    exit 1
-fi
+# Проверка доступности backend
+log "🔍 ========================================="
+log "🔍 ПРОВЕРКА ДОСТУПНОСТИ BACKEND"
+log "🔍 ========================================="
 
-log "🎉 Деплой North Republic v5.1 завершен успешно!"
+log "⏳ Ожидаем запуска backend API..."
+for i in {1..30}; do
+    log "🔍 Попытка $i/30 - проверка backend API..."
+    if curl -s http://localhost:3002/api/health > /dev/null 2>&1; then
+        log "✅ Backend API доступен на попытке $i"
+        break
+    fi
+    
+    if [ $i -eq 30 ]; then
+        log "❌ Backend API не стал доступен за 30 попыток"
+        log "📋 Логи backend:"
+        pm2 logs northrepublic-backend --lines 20 || log "❌ PM2 логи недоступны"
+        exit 1
+    fi
+    
+    sleep 2
+done
+
+# Финальная проверка
+log "🎉 ========================================="
+log "🎉 ДЕПЛОЙ ЗАВЕРШЕН УСПЕШНО!"
+log "🎉 ========================================="
+
 log "📅 Время завершения: $(date)"
 log "🌐 Сайт доступен по адресу: https://northrepublic.me"
 log "📡 Backend API: http://localhost:3002/api/health"
 log "🔧 Админ панель: https://northrepublic.me/admin"
-log "📋 Логи backend: pm2 logs northrepublic-backend"
-log "📋 Логи bot: pm2 logs northrepublic-bot"
-log "🔍 Проверить процессы: pm2 list"
+
+log "📊 Финальная статистика:"
 log "💾 Использование памяти: $(free -h | grep Mem | awk '{print $3"/"$2}')"
 log "💽 Использование диска: $(df -h . | tail -1 | awk '{print $3"/"$2}')"
+
+log "📋 Команды для мониторинга:"
+log "🔍 Проверить процессы: pm2 list"
+log "📋 Логи backend: pm2 logs northrepublic-backend"
+log "📋 Логи bot: pm2 logs northrepublic-bot"
+
+log "🚀 ========================================="
+log "🚀 ДЕПЛОЙ North Republic v5.2 ЗАВЕРШЕН!"
+log "🚀 ========================================="
