@@ -1,17 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const { MongoClient } = require('mongodb');
-
-// Подключение к MongoDB
-const uri = process.env.MONGODB_URI || 'mongodb://localhost:27017';
-const client = new MongoClient(uri);
+const mongoService = require('../services/mongoService');
 
 // Получить все секции
 router.get('/', async (req, res) => {
   try {
-    await client.connect();
-    const database = client.db('northrepublic');
-    const sections = database.collection('sections');
+    const db = mongoService.getDatabase();
+    const sections = db.collection('sections');
     
     const sectionsData = await sections.find({}).toArray();
     
@@ -25,8 +20,6 @@ router.get('/', async (req, res) => {
   } catch (error) {
     console.error('Ошибка получения секций:', error);
     res.status(500).json({ error: 'Ошибка сервера' });
-  } finally {
-    await client.close();
   }
 });
 
@@ -35,9 +28,8 @@ router.get('/:sectionId', async (req, res) => {
   try {
     const { sectionId } = req.params;
     
-    await client.connect();
-    const database = client.db('northrepublic');
-    const sections = database.collection('sections');
+    const db = mongoService.getDatabase();
+    const sections = db.collection('sections');
     
     const section = await sections.findOne({ sectionId });
     
@@ -49,8 +41,6 @@ router.get('/:sectionId', async (req, res) => {
   } catch (error) {
     console.error('Ошибка получения секции:', error);
     res.status(500).json({ error: 'Ошибка сервера' });
-  } finally {
-    await client.close();
   }
 });
 
@@ -60,9 +50,8 @@ router.put('/:sectionId', async (req, res) => {
     const { sectionId } = req.params;
     const sectionData = req.body;
     
-    await client.connect();
-    const database = client.db('northrepublic');
-    const sections = database.collection('sections');
+    const db = mongoService.getDatabase();
+    const sections = db.collection('sections');
     
     // Добавляем метаданные
     const sectionDocument = {
@@ -87,8 +76,6 @@ router.put('/:sectionId', async (req, res) => {
   } catch (error) {
     console.error('Ошибка сохранения секции:', error);
     res.status(500).json({ error: 'Ошибка сервера' });
-  } finally {
-    await client.close();
   }
 });
 
@@ -97,9 +84,8 @@ router.delete('/:sectionId', async (req, res) => {
   try {
     const { sectionId } = req.params;
     
-    await client.connect();
-    const database = client.db('northrepublic');
-    const sections = database.collection('sections');
+    const db = mongoService.getDatabase();
+    const sections = db.collection('sections');
     
     const result = await sections.deleteOne({ sectionId });
     
@@ -114,8 +100,6 @@ router.delete('/:sectionId', async (req, res) => {
   } catch (error) {
     console.error('Ошибка удаления секции:', error);
     res.status(500).json({ error: 'Ошибка сервера' });
-  } finally {
-    await client.close();
   }
 });
 
