@@ -9,6 +9,7 @@ const adminModule = require('./admin');
 const authModule = require('./auth');
 const orderService = require('./services/orderService');
 const mongoService = require('./services/mongoService');
+const adminRoutes = require('./routes/admin');
 const cookieParser = require('cookie-parser');
 require('dotenv').config();
 
@@ -544,6 +545,9 @@ app.get('/api/auth/status', authModule.requireAuth, (req, res) => {
 });
 
 // ===== АДМИНКА API =====
+
+// Подключаем админ роуты
+app.use('/api/admin', adminRoutes);
 
 // Получить конфигурацию админки (защищено)
 app.get('/api/admin/config', authModule.requireAuth, authModule.requireAdmin, (req, res) => {
