@@ -18,6 +18,7 @@ import ErrorBoundary from './components/ErrorBoundary';
 import AdminPanel from './components/AdminPanel';
 import LoginPage from './components/LoginPage';
 import ProtectedRoute from './components/ProtectedRoute';
+import { EventsPage } from './pages';
 import './App.css';
 
 function App() {
@@ -115,6 +116,7 @@ function App() {
             <Routes>
               <Route path="/" element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
               <Route path="/menu" element={<ProtectedRoute><MenuPageWrapper menuData={menuData} /></ProtectedRoute>} />
+              <Route path="/events" element={<ProtectedRoute><EventsPage /></ProtectedRoute>} />
               <Route path="/fast/:tableId" element={<ProtectedRoute><FastAccessPage /></ProtectedRoute>} />
               <Route path="/fast/:tableId/menu" element={<ProtectedRoute><MenuPageWrapper menuData={menuData} /></ProtectedRoute>} />
               <Route path="/lasertag" element={<ProtectedRoute><LasertagPage /></ProtectedRoute>} />
@@ -123,8 +125,8 @@ function App() {
               <Route path="/quests" element={<ProtectedRoute><QuestsPage /></ProtectedRoute>} />
               <Route path="/guitar" element={<ProtectedRoute><GuitarPage /></ProtectedRoute>} />
               <Route path="/boardgames" element={<ProtectedRoute><BoardgamesPage /></ProtectedRoute>} />
-                              <Route path="/cinema" element={<ProtectedRoute><CinemaPage /></ProtectedRoute>} />
-                <Route path="/yoga" element={<ProtectedRoute><YogaPage /></ProtectedRoute>} />
+              <Route path="/cinema" element={<ProtectedRoute><CinemaPage /></ProtectedRoute>} />
+              <Route path="/yoga" element={<ProtectedRoute><YogaPage /></ProtectedRoute>} />
               <Route path="/admin" element={<AdminPanel />} />
               <Route path="/admin/login" element={<LoginPage />} />
             </Routes>
