@@ -1,4 +1,4 @@
-# Updated: 2025-08-31 - Workflow access test
+# Updated: 2025-08-31 - Improved deployment workflow
 name: Deploy to Production
 
 on:
@@ -49,7 +49,7 @@ jobs:
         command_timeout: 60m
         script: |
           cd /var/www/northrepubli_usr/data/www/northrepublic.me
-          echo "🚀 Начинаем автодеплой Production v5.0..."
+          echo "🚀 Начинаем автодеплой Production v5.1..."
           echo "📅 Время: $(date)"
           echo "📁 Директория: $(pwd)"
           echo "🔧 Проверяем Git статус..."
@@ -61,7 +61,7 @@ jobs:
           # Выполняем деплой с подробным логированием
           ./deploy.sh
           
-          echo "✅ Автодеплой Production v5.0 завершен!"
+          echo "✅ Автодеплой Production v5.1 завершен!"
           
     - name: Health check
       uses: appleboy/ssh-action@v1.0.3
@@ -99,12 +99,14 @@ jobs:
             fi
           done
           
-          # Проверяем MongoDB
+          # Проверяем MongoDB через health endpoint
           echo "🔗 Проверяем MongoDB..."
-          if curl -f http://localhost:3002/api/admin/stats; then
-            echo "✅ MongoDB работает!"
+          health_response=$(curl -s http://localhost:3002/api/health)
+          if echo "$health_response" | grep -q '"mongodb":"connected"'; then
+            echo "✅ MongoDB подключена!"
           else
-            echo "❌ MongoDB не отвечает"
+            echo "❌ MongoDB не подключена"
+            echo "Ответ health endpoint: $health_response"
             exit 1
           fi
           
@@ -117,6 +119,18 @@ jobs:
             exit 1
           fi
           
+          # Проверяем bot
+          echo "🤖 Проверяем Telegram bot..."
+          bot_status=$(pm2 list | grep northrepublic-bot | awk '{print $10}')
+          if [ "$bot_status" = "online" ]; then
+            echo "✅ Bot работает!"
+          else
+            echo "❌ Bot не работает (статус: $bot_status)"
+            echo "📋 Логи bot:"
+            pm2 logs northrepublic-bot --lines 5 || echo "❌ PM2 логи недоступны"
+            exit 1
+          fi
+          
           echo "🎉 Все проверки пройдены успешно!"
           
     - name: Notify success
@@ -125,9 +139,11 @@ jobs:
         echo "✅ Деплой успешно завершен!"
         echo "🌐 Сайт: https://northrepublic.me"
         echo "🔧 Админ панель: https://northrepublic.me/admin"
+        echo "📡 Backend API: http://localhost:3002/api/health"
         
     - name: Notify failure
       if: failure()
       run: |
         echo "❌ Деплой завершился с ошибкой!"
         echo "Проверьте логи выше для деталей"
+        echo "🔧 Для ручной проверки: ssh nr 'cd www/northrepublic.me && pm2 list && pm2 logs'"
