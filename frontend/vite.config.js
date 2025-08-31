@@ -11,6 +11,13 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     sourcemap: false,
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true
+      }
+    },
     rollupOptions: {
       output: {
         manualChunks: {
@@ -20,5 +27,12 @@ export default defineConfig({
         }
       }
     }
+  },
+  // Оптимизации для ускорения сборки
+  optimizeDeps: {
+    include: ['react', 'react-dom', 'react-router-dom', 'lucide-react']
+  },
+  esbuild: {
+    target: 'es2020'
   }
 })
