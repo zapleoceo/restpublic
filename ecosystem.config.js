@@ -12,7 +12,7 @@ module.exports = {
         NODE_ENV: 'production',
         PORT: 3002
       },
-      APP_VERSION: '3.0.0'
+      APP_VERSION: '3.0.1'
     }
     // Временно отключен бот из-за rate limiting
     // {
