@@ -778,7 +778,7 @@ h1, h2, h3, h4, h5, h6 {
 .s-header__content {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   height: var(--header-height);
   background: linear-gradient(
     to right,
@@ -793,6 +793,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .s-header__block {
   z-index: 101;
+  display: flex;
   align-items: center;
 }
 
@@ -800,12 +801,8 @@ h1, h2, h3, h4, h5, h6 {
 .header-logo {
   z-index: 3;
   line-height: 1;
-  transform: translate(0, calc(-50% + 0.2rem));
-  position: absolute;
-  left: calc(var(--gutter) * 2);
-  top: 50%;
-  position: relative;
   overflow: hidden;
+  position: relative;
 }
 
 .header-logo a {
