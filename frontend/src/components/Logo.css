@@ -1,0 +1,39 @@
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.logo-background {
+  width: 2rem;
+  height: 2rem;
+  background: linear-gradient(to bottom right, #f97316, #ef4444);
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: white;
+}
+
+.logo-text {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #111827;
+  font-family: var(--type-body);
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 768px) {
+  .logo-text {
+    display: none;
+  }
+  
+  .logo-container {
+    gap: 0;
+  }
+}

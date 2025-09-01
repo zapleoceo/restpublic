@@ -1,28 +1,30 @@
 .language-switcher {
   position: relative;
   display: inline-block;
+  margin-right: var(--vspace-0_375);
 }
 
 .language-switcher__button {
   display: flex;
   align-items: center;
-  padding: 4px 8px;
+  padding: 0 var(--vspace-0_375);
   background: transparent;
   border: none;
-  color: #374151;
-  font-size: 14px;
-  font-weight: 600;
+  font-family: var(--type-body);
+  font-weight: 500;
+  color: var(--color-text-light);
+  font-size: inherit;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition-property: color, background-color;
+  transition-duration: 0.3s;
 }
 
 .language-switcher__button:hover {
-  background: #f9fafb;
-  border-radius: 4px;
+  color: var(--color-text);
 }
 
 .language-switcher__current {
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .language-switcher__dropdown {

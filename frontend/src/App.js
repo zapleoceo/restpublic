@@ -1,6 +1,8 @@
 import React, { useEffect } from 'react';
 import LanguageSwitcher from './components/LanguageSwitcher';
+import Logo from './components/Logo';
 import './components/LanguageSwitcher.css';
+import './components/Logo.css';
 
 function App() {
   useEffect(() => {
@@ -34,11 +36,7 @@ function App() {
       <header className="s-header">
         <div className="container s-header__content">
           <div className="s-header__block">
-            <div className="header-logo">
-              <a className="logo" href="index.html">
-                <img src="/images/logo.svg" alt="Homepage" />
-              </a>
-            </div>
+            <Logo />
             <a className="header-menu-toggle" href="#0"><span>Menu</span></a>
           </div>
           
@@ -51,14 +49,14 @@ function App() {
             </ul>
             
             <div className="header-contact">
-              <a href="tel:+" className="header-contact__num btn">
+              <LanguageSwitcher />
+              <a href="tel:+84349338758" className="header-contact__num btn">
                 <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" strokeWidth="1.5" width="24" height="24" color="#000000">
                   <defs><style>{`.cls-6376396cc3a86d32eae6f0dc-1{fill:none;stroke:currentColor;stroke-miterlimit:10;}`}</style></defs>
                   <path className="cls-6376396cc3a86d32eae6f0dc-1" d="M19.64,21.25c-2.54,2.55-8.38.83-13-3.84S.2,6.9,2.75,4.36L5.53,1.57,10.9,6.94l-2,2A2.18,2.18,0,0,0,8.9,12L12,15.1a2.18,2.18,0,0,0,3.07,0l2-2,5.37,5.37Z"></path>
                 </svg>
                 +84349338758
               </a>
-              <LanguageSwitcher />
             </div>
           </nav>
         </div>
@@ -358,9 +356,7 @@ function App() {
         <div className="row s-footer__main">
           <div className="column xl-3 lg-12 footer-block s-footer__main-start">
             <div className="s-footer__logo">
-              <a className="logo" href="index.html">
-                <img src="/images/logo.svg" alt="Homepage" />
-              </a>
+              <Logo />
             </div>
             <ul className="s-footer__social social-list">
               <li><a href="#0">FB</a></li>
