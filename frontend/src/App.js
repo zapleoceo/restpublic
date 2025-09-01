@@ -74,7 +74,7 @@ function App() {
 
           <figure className="intro-pic-primary">
             <img src="/images/intro-pic-primary.jpg" 
-                 srcSet="/images/intro-pic-primary.jpg 1x, /images/intro-pic-primary@2x.jpg 2x" alt="" />
+                 srcSet="/images/intro-pic-primary.jpg 1x, /images/intro-pic-primary@2x.jpg 2x" alt="Grilled salmon steak with asparagus and microgreens" />
           </figure>
               
           <div className="intro-block-content">
