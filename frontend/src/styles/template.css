@@ -109,6 +109,7 @@
   
   /* easing functions */
   --ease-smooth: cubic-bezier(0.25, 0.1, 0.25, 1);
+  --ease-smooth-in-out: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* ===================================================================
@@ -639,10 +640,29 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .tab-nav__list a:hover,
-.tab-nav__list a.active {
+.tab-nav__list a.active,
+.tab-nav__list li[data-tab-active] a {
   background-color: var(--color-bg-primary);
   border-color: var(--color-bg-primary);
   color: var(--color-white);
+}
+
+.tab-nav__list li[data-tab-active] {
+  border-bottom: 1px solid var(--color-bg-primary);
+}
+
+.tab-nav__list li[data-tab-active] a::before {
+  color: var(--color-text);
+}
+
+.tab-nav__list li[data-tab-active] a svg {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(0);
+}
+
+.tab-nav__list li[data-tab-active] a svg path {
+  fill: var(--color-white);
 }
 
 .tab-content {
@@ -650,7 +670,24 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .tab-content__item {
-  display: none;
+  opacity: 0;
+  visibility: hidden;
+  height: 0;
+  overflow: hidden;
+  position: absolute;
+  top: 100px;
+}
+
+.tab-content__item[data-tab-active] {
+  opacity: 1;
+  visibility: visible;
+  height: auto;
+  transition-property: opacity, visibility, top;
+  transition-duration: 0.9s;
+  transition-timing-function: var(--ease-smooth-in-out);
+  transition-delay: 0s;
+  position: relative;
+  top: 0;
 }
 
 .tab-content__item.active {

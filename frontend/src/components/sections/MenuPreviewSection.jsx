@@ -45,18 +45,17 @@ export const MenuPreviewSection = () => {
           <nav className="tab-nav">
             <ul className="tab-nav__list">
               {popularCategories.map((category, index) => (
-                <li key={category.id}>
+                <li key={category.id} {...(activeTab === index ? { 'data-tab-active': true } : {})}>
                   <a 
                     href={`#tab-${category.id}`}
                     onClick={(e) => {
                       e.preventDefault();
                       setActiveTab(index);
                     }}
-                    className={activeTab === index ? 'active' : ''}
                   >
                     <span>{category.name}</span>
-                    <svg>
-                      <path d="M9 5l7 7-7 7" />
+                    <svg clipRule="evenodd" fillRule="evenodd" strokeLinejoin="round" strokeMiterlimit="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path d="m14.523 18.787s4.501-4.505 6.255-6.26c.146-.146.219-.338.219-.53s-.073-.383-.219-.53c-1.753-1.754-6.255-6.258-6.255-6.258-.144-.145-.334-.217-.524-.217-.193 0-.385.074-.532.221-.293.292-.295.766-.004 1.056l4.978 4.978h-14.692c-.414 0-.75.336-.75.75s.336.75.75.75h14.692l-4.979 4.979c-.289.289-.286.762.006 1.054.148.148.341.222.533.222.19 0 .378-.072.522-.215z" fillRule="nonzero"/>
                     </svg>
                   </a>
                 </li>
@@ -64,8 +63,8 @@ export const MenuPreviewSection = () => {
               <li>
                 <Link to="/menu" className="view-all-link">
                   <span>{t('menu.view_all') || "Полное меню"}</span>
-                  <svg>
-                    <path d="M9 5l7 7-7 7" />
+                  <svg clipRule="evenodd" fillRule="evenodd" strokeLinejoin="round" strokeMiterlimit="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="m14.523 18.787s4.501-4.505 6.255-6.26c.146-.146.219-.338.219-.53s-.073-.383-.219-.53c-1.753-1.754-6.255-6.258-6.255-6.258-.144-.145-.334-.217-.524-.217-.193 0-.385.074-.532.221-.293.292-.295.766-.004 1.056l4.978 4.978h-14.692c-.414 0-.75.336-.75.75s.336.75.75.75h14.692l-4.979 4.979c-.289.289-.286.762.006 1.054.148.148.341.222.533.222.19 0 .378-.072.522-.215z" fillRule="nonzero"/>
                   </svg>
                 </Link>
               </li>
@@ -79,9 +78,8 @@ export const MenuPreviewSection = () => {
               <div 
                 key={category.id} 
                 id={`tab-${category.id}`} 
-                className={`menu-block__group tab-content__item ${
-                  activeTab === index ? 'active' : ''
-                }`}
+                className="menu-block__group tab-content__item"
+                {...(activeTab === index ? { 'data-tab-active': true } : {})}
               >
                 <h6 className="menu-block__cat-name">{category.name}</h6>
                 <ul className="menu-list">
