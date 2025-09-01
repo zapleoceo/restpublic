@@ -1,0 +1,53 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Deploy to server
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.PRODUCTION_HOST }}
+        username: ${{ secrets.PRODUCTION_USER }}
+        key: ${{ secrets.PRODUCTION_SSH_KEY }}
+        script: |
+          echo "🚀 Starting deployment..."
+          cd /var/www/northrepubli_usr/data/www/northrepublic.me || { echo "❌ Failed to change directory"; exit 1; }
+          echo "📁 Current directory: $(pwd)"
+          echo "📋 Checking deploy.sh file..."
+          ls -la deploy.sh || { echo "❌ deploy.sh not found"; exit 1; }
+          echo "🔧 Setting execute permissions..."
+          chmod +x deploy.sh || { echo "❌ Failed to set permissions"; exit 1; }
+          echo "🚀 Running deployment script..."
+          bash deploy.sh || { echo "❌ Deployment script failed"; exit 1; }
+          echo "✅ Deployment completed successfully"
+          
+    - name: Health Check
+      run: |
+        echo "⏳ Waiting for services to start..."
+        sleep 30
+        echo "🔍 Checking application health..."
+        
+        # Check main site
+        if curl -f --connect-timeout 10 --retry 3 --retry-delay 5 https://northrepublic.me/; then
+          echo "✅ Main site is accessible"
+        else
+          echo "❌ Main site is not accessible"
+          exit 1
+        fi
+        
+        # Check API health endpoint
+        if curl -f --connect-timeout 10 --retry 3 --retry-delay 5 https://northrepublic.me/api/health; then
+          echo "✅ API health check passed"
+        else
+          echo "❌ API health check failed"
+          exit 1
+        fi
+        
+        echo "🎉 All health checks passed!"
