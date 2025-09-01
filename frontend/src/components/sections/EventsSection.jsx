@@ -17,7 +17,7 @@ export const EventsSection = () => {
     return (
       <section id="events" className="container s-events target-section">
         <div className="text-center">
-          <div className="loading-spinner"></div>
+          <div className="text-2xl" style={{ color: 'var(--color-text)' }}>⏳ Загружаем события...</div>
         </div>
       </section>
     );

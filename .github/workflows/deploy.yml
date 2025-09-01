@@ -17,8 +17,16 @@ jobs:
         username: ${{ secrets.PRODUCTION_USER }}
         key: ${{ secrets.PRODUCTION_SSH_KEY }}
         script: |
-          cd /var/www/northrepubli_usr/data/www/northrepublic.me
-          ./deploy.sh
+          echo "🚀 Starting deployment..."
+          cd /var/www/northrepubli_usr/data/www/northrepublic.me || { echo "❌ Failed to change directory"; exit 1; }
+          echo "📁 Current directory: $(pwd)"
+          echo "📋 Checking deploy.sh file..."
+          ls -la deploy.sh || { echo "❌ deploy.sh not found"; exit 1; }
+          echo "🔧 Setting execute permissions..."
+          chmod +x deploy.sh || { echo "❌ Failed to set permissions"; exit 1; }
+          echo "🚀 Running deployment script..."
+          bash deploy.sh || { echo "❌ Deployment script failed"; exit 1; }
+          echo "✅ Deployment completed successfully"
           
     - name: Health Check
       run: |

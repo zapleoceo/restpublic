@@ -85,7 +85,7 @@ function App() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--color-bg)' }}>
         <LoadingSpinner />
       </div>
     );
@@ -93,11 +93,11 @@ function App() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--color-bg)' }}>
         <div className="text-center">
           <div className="text-orange-400 text-6xl mb-4">⚠️</div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">{t('error')}</h1>
-          <p className="text-gray-600 mb-6">{error}</p>
+          <h1 className="text-2xl font-bold mb-4" style={{ color: 'var(--color-headings)' }}>{t('error')}</h1>
+          <p className="mb-6" style={{ color: 'var(--color-text)' }}>{error}</p>
           <button
             onClick={fetchMenuData}
             className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-lg transition-colors"
@@ -117,7 +117,7 @@ function App() {
         )}
         <Router>
           <SmoothScroll>
-            <div className="min-h-screen bg-gray-50">
+            <div className="min-h-screen" style={{ backgroundColor: 'var(--color-bg)' }}>
               <main>
                 <Routes>
                   <Route path="/" element={<ProtectedRoute><HomePage /></ProtectedRoute>} />

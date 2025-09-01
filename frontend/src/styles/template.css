@@ -140,6 +140,15 @@ body {
   -ms-text-size-adjust: 100%;
 }
 
+/* Убираем белый фон из App.jsx */
+#root,
+#root > div,
+#root > div > main,
+#root > div > main > div,
+#root > div > main > div > main {
+  background-color: var(--color-bg) !important;
+}
+
 /* ===================================================================
  * # GRID SYSTEM
  * ------------------------------------------------------------------ */
@@ -777,10 +786,10 @@ h1, h2, h3, h4, h5, h6 {
 
 .service-card {
   display: block;
-  padding: 3rem 2rem;
+  padding: 2rem 1.5rem;
   background-color: var(--color-neutral-900);
   border: 1px solid var(--color-neutral-850);
-  border-radius: 1rem;
+  border-radius: 0.8rem;
   text-align: center;
   text-decoration: none;
   transition: all 0.3s var(--ease-smooth);
@@ -797,17 +806,17 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .service-card__icon img {
-  width: 6rem;
-  height: 6rem;
+  width: 4.8rem;
+  height: 4.8rem;
   object-fit: contain;
 }
 
 .service-card__title {
   font-family: var(--font-2);
-  font-size: 2rem;
-  font-weight: 600;
+  font-size: 1.8rem;
+  font-weight: 500;
   color: var(--color-headings);
-  margin-bottom: 1rem;
+  margin-bottom: 0.8rem;
 }
 
 .service-card__description {
@@ -1045,22 +1054,59 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* ===================================================================
- * # LOADING SPINNER
+ * # PRELOADER (ORIGINAL FROM TEMPLATE)
  * ------------------------------------------------------------------ */
 
 .loading-spinner {
-  width: 4rem;
-  height: 4rem;
-  border: 0.3rem solid var(--color-neutral-800);
-  border-top: 0.3rem solid var(--color-1);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
+  position: relative;
+  width: 4px;
+  height: 4px;
+  padding: 0;
+  display: inline-block;
   margin: 0 auto;
 }
 
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+.loading-spinner > div,
+.loading-spinner::before,
+.loading-spinner::after {
+  content: "";
+  background: var(--color-1);
+  width: 4px;
+  height: 4px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-radius: 50%;
+}
+
+.loading-spinner::before {
+  left: 15px;
+}
+
+.loading-spinner::after {
+  left: -15px;
+}
+
+/* dots fade animation */
+.loading-spinner > div,
+.loading-spinner::before,
+.loading-spinner::after {
+  animation: dots-fade 1.6s infinite ease;
+  animation-delay: 0.4s;
+}
+
+.loading-spinner::before {
+  animation-delay: 0.8s;
+}
+
+.loading-spinner::after {
+  animation-delay: 0s;
+}
+
+@keyframes dots-fade {
+  0% { opacity: 1; }
+  40% { opacity: 0.2; }
+  80% { opacity: 1; }
 }
 
 /* ===================================================================
@@ -1125,8 +1171,8 @@ h1, h2, h3, h4, h5, h6 {
   content: "";
   position: absolute;
   left: 50%; top: 50%;
-  width: var(--logo-width);
-  height: var(--logo-width);
+  width: calc(var(--logo-width) * 0.6);
+  height: calc(var(--logo-width) * 0.6);
   transform: translate(-50%, -50%);
   z-index: 1;
   background: rgb(54, 107, 91); /* стартовый primary green */
@@ -1138,8 +1184,8 @@ h1, h2, h3, h4, h5, h6 {
   content: "";
   position: absolute;
   left: 50%; top: 50%;
-  width: var(--logo-width);
-  height: var(--logo-width);
+  width: calc(var(--logo-width) * 0.6);
+  height: calc(var(--logo-width) * 0.6);
   transform: translate(-50%, -50%);
   z-index: 1;
   pointer-events: none;
@@ -1155,7 +1201,7 @@ h1, h2, h3, h4, h5, h6 {
 @keyframes colorShift {
   0%   { background: rgb(54, 107, 91); }  /* Primary green */
   33%  { background: #b1885e; }           /* Secondary brown */
-  66%  { background: #E6A8E6; }           /* Soft pastel fuchsia */
+  66%  { background: #8f9291; }           /* Neutral gray instead of fuchsia */
   100% { background: rgb(54, 107, 91); }
 }
 
