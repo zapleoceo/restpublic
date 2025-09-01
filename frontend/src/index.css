@@ -19,20 +19,6 @@
     overflow: hidden;
   }
 
-  .section-header {
-    position: relative;
-  }
-
-  .section-header[data-num]::before {
-    content: attr(data-num);
-    position: absolute;
-    top: -10px;
-    left: -20px;
-    font-size: 0.75rem;
-    color: #468672;
-    font-weight: 500;
-  }
-
   .target-section {
     scroll-margin-top: 100px;
   }
