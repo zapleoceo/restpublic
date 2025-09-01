@@ -1,5 +1,6 @@
 @import './styles/template.css';
-@tailwind base;
+
+/* Отключаем базовые стили Tailwind, чтобы не конфликтовали с шаблоном */
 @tailwind components;
 @tailwind utilities;
 

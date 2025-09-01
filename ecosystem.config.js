@@ -1,4 +1,4 @@
-const APP_VERSION = '3.0.8';
+const APP_VERSION = '3.1.0';
 
 module.exports = {
   apps: [
