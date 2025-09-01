@@ -822,7 +822,7 @@ h1, h2, h3, h4, h5, h6 {
   height: var(--logo-width);
   transform: translate(-50%, -50%);
   z-index: 1;
-  background: #FF1493; /* стартовый Deep Pink */
+  background: rgb(54, 107, 91); /* стартовый primary green */
   border-radius: 40% 60% 60% 40% / 30% 40% 60% 70%;
   animation: colorShift 8s infinite ease-in-out, morph 12s infinite ease-in-out;
 }
@@ -846,11 +846,10 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 @keyframes colorShift {
-  0%   { background: #FF1493; }  /* Deep Pink */
-  25%  { background: #00BFFF; }  /* Deep Sky Blue */
-  50%  { background: #FF00FF; }  /* Magenta */
-  75%  { background: #00FFFF; }  /* Cyan */
-  100% { background: #FF1493; }
+  0%   { background: rgb(54, 107, 91); }  /* Primary green */
+  33%  { background: #b1885e; }           /* Secondary brown */
+  66%  { background: #E6A8E6; }           /* Soft pastel fuchsia */
+  100% { background: rgb(54, 107, 91); }
 }
 
 @keyframes morph {
