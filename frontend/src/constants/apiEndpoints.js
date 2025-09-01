@@ -7,4 +7,14 @@ export const API_ENDPOINTS = {
   poster: '/api/poster',
 };
 
-export const BASE_URL = import.meta.env.VITE_API_URL || 'https://northrepublic.me';
+// Определяем базовый URL в зависимости от окружения
+const getBaseUrl = () => {
+  // В production всегда используем https://northrepublic.me
+  if (window.location.hostname === 'northrepublic.me' || window.location.hostname === 'www.northrepublic.me') {
+    return 'https://northrepublic.me';
+  }
+  // В development используем localhost
+  return 'http://localhost:3002';
+};
+
+export const BASE_URL = getBaseUrl();
