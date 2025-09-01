@@ -1,6 +1,6 @@
 {
   "name": "northrepublic-backend",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Backend API for North Republic website",
   "main": "server.js",
   "scripts": {

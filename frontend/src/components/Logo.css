@@ -8,9 +8,10 @@
 .header-logo {
   z-index: 3;
   line-height: 1;
-  overflow: visible;
-  position: relative;
-  top: 10px;
+  transform: translate(0, calc(-50% + 0.2rem));
+  position: absolute;
+  left: calc(var(--gutter) * 2);
+  top: 50%;
 }
 
 /* Ссылка логотипа */
@@ -67,7 +68,6 @@
   padding: 1rem;
   border-radius: 50%;
   transition: all 0.3s var(--ease-smooth);
-  pointer-events: none;
   -webkit-mask-image: radial-gradient(circle, rgba(0,0,0,1) 70%, rgba(0,0,0,0) 100%);
   mask-image: radial-gradient(circle, rgba(0,0,0,1) 70%, rgba(0,0,0,0) 100%);
 }
@@ -97,9 +97,5 @@
 @media (max-width: 768px) {
   :root {
     --logo-width: 9.8rem;
-  }
-  
-  .header-logo {
-    top: 5px;
   }
 }

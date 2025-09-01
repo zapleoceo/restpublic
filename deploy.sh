@@ -57,7 +57,7 @@ ssh nr "cd /var/www/northrepubli_usr/data/www/northrepublic.me/backend && npm ci
 
 # Настройка токена Poster API
 log_info "Configuring Poster API token..."
-ssh nr "cd /var/www/northrepubli_usr/data/www/northrepublic.me/backend && sed -i 's/your_poster_api_token_here/922371:489411264005b482039f38b8ee21f6fb/' config.env"
+ssh nr "cd /var/www/northrepubli_usr/data/www/northrepublic.me/backend && sed -i 's/your_poster_api_token_here/$POSTER_API_TOKEN/' config.env"
 
 # Запуск backend
 log_info "Starting backend service..."
