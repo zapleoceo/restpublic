@@ -1,6 +1,6 @@
 {
   "name": "northrepublic-frontend",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "North Republic website",
   "main": "index.js",
   "scripts": {

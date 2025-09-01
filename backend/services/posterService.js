@@ -97,8 +97,8 @@ class PosterService {
         if (!hasVisibleSpot) return false;
       }
       
-      // Filter by category - convert to string for comparison
-      return String(product.category_id) === String(categoryId);
+      // Filter by category - use menu_category_id
+      return String(product.menu_category_id) === String(categoryId);
     });
   }
 
@@ -176,7 +176,17 @@ class PosterService {
 
   // Normalize price (divide by 100 to convert from minor units)
   normalizePrice(price) {
-    return price ? parseFloat(price) / 100 : 0;
+    if (!price) return 0;
+    
+    // Handle price object with spot keys
+    if (typeof price === 'object' && price !== null) {
+      // Get first available price
+      const firstPrice = Object.values(price)[0];
+      return firstPrice ? parseFloat(firstPrice) / 100 : 0;
+    }
+    
+    // Handle string/number price
+    return parseFloat(price) / 100;
   }
 
   // Format price for display

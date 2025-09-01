@@ -117,7 +117,7 @@ const DynamicMenu = () => {
                     }}
                     className={activeCategory === category.category_id ? 'active' : ''}
                   >
-                    <span>{category.name_en || category.name}</span>
+                    <span>{category.category_name}</span>
                     <svg clipRule="evenodd" fillRule="evenodd" strokeLinejoin="round" strokeMiterlimit="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                       <path d="m14.523 18.787s4.501-4.505 6.255-6.26c.146-.146.219-.338.219-.53s-.073-.383-.219-.53c-1.753-1.754-6.255-6.258-6.255-6.258-.144-.145-.334-.217-.524-.217-.193 0-.385.074-.532.221-.293.292-.295.766-.004 1.056l4.978 4.978h-14.692c-.414 0-.75.336-.75.75s.336.75.75.75h14.692l-4.979 4.979c-.289.289-.286.762.006 1.054.148.148.341.222.533.222.19 0 .378-.072.522-.215z" fillRule="nonzero"/>
                     </svg>
@@ -138,9 +138,9 @@ const DynamicMenu = () => {
                   {popularProducts.map((product) => (
                     <li key={product.product_id} className="menu-list__item">
                       <div className="menu-list__item-desc">
-                        <h4>{product.name_en || product.name}</h4>
-                        {product.description && (
-                          <p>{product.description}</p>
+                        <h4>{product.product_name}</h4>
+                        {product.product_production_description && (
+                          <p>{product.product_production_description}</p>
                         )}
                       </div>
                       <div className="menu-list__item-price">
@@ -169,7 +169,7 @@ const DynamicMenu = () => {
                   className={`menu-block__group tab-content__item ${isActive ? 'active' : ''}`}
                 >
                   <h6 className="menu-block__cat-name">
-                    {category.name_en || category.name}
+                    {category.category_name}
                   </h6>
                   
                   {categoryProducts.length > 0 ? (
@@ -177,15 +177,15 @@ const DynamicMenu = () => {
                       {categoryProducts.map((product) => (
                         <li key={product.product_id} className="menu-list__item">
                           <div className="menu-list__item-desc">
-                            <h4>{product.name_en || product.name}</h4>
-                            {product.description && (
-                              <p>{product.description}</p>
-                            )}
-                          </div>
-                          <div className="menu-list__item-price">
-                            <span>$</span>
-                            {product.price_formatted || menuService.formatPrice(product.price)}
-                          </div>
+                                                    <h4>{product.product_name}</h4>
+                        {product.product_production_description && (
+                          <p>{product.product_production_description}</p>
+                        )}
+                      </div>
+                      <div className="menu-list__item-price">
+                        <span>$</span>
+                        {product.price_formatted || menuService.formatPrice(product.price)}
+                      </div>
                         </li>
                       ))}
                     </ul>
