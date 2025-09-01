@@ -1,6 +1,6 @@
 {
   "name": "northrepublic-frontend",
-  "version": "1.0.4",
+  "version": "1.0.6",
   "description": "North Republic website",
   "main": "index.js",
   "scripts": {
@@ -10,6 +10,7 @@
     "eject": "react-scripts eject"
   },
   "dependencies": {
+    "lucide-react": "^0.542.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-scripts": "5.0.1"

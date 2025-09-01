@@ -50,8 +50,9 @@ function App() {
               <li><a className="smoothscroll" href="#gallery">Gallery</a></li>
             </ul>
             
+            <LanguageSwitcher />
+            
             <div className="header-contact">
-              <LanguageSwitcher />
               <a href="tel:+84349338758" className="header-contact__num btn">
                 <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" strokeWidth="1.5" width="24" height="24" color="#000000">
                   <defs><style>{`.cls-6376396cc3a86d32eae6f0dc-1{fill:none;stroke:currentColor;stroke-miterlimit:10;}`}</style></defs>

@@ -64,8 +64,8 @@ class MenuService {
         if (!hasVisibleSpot) return false;
       }
       
-      // Фильтруем по категории
-      return product.category_id === categoryId;
+      // Фильтруем по категории - конвертируем в строку для сравнения
+      return String(product.category_id) === String(categoryId);
     });
   }
 

@@ -5,14 +5,13 @@
 }
 
 .language-switcher__button {
-  display: flex;
-  align-items: center;
-  padding: 0 var(--vspace-0_375);
-  background: transparent;
-  border: none;
+  display: block;
   font-family: var(--type-body);
   font-weight: 500;
   color: var(--color-text-light);
+  padding: 0 var(--vspace-0_375);
+  background: transparent;
+  border: none;
   font-size: inherit;
   cursor: pointer;
   transition-property: color, background-color;
@@ -71,14 +70,18 @@
   border-radius: 0 0 6px 6px;
 }
 
-/* Стили для размещения в header-contact */
-.header-contact .language-switcher {
+/* Стили для размещения в header-nav */
+.header-nav .language-switcher {
   display: inline-flex;
   align-items: center;
   margin-right: var(--vspace-0_5);
+  transform: translate(0, calc(-50% + 0.2rem));
+  position: absolute;
+  right: calc(var(--gutter) * 2 + 200px); /* Позиция между меню и телефоном */
+  top: 50%;
 }
 
-.header-contact .language-switcher__button {
+.header-nav .language-switcher__button {
   color: var(--color-text-light);
   font-size: 0.875rem;
   font-weight: 500;
@@ -86,6 +89,6 @@
   transition-duration: 0.3s;
 }
 
-.header-contact .language-switcher__button:hover {
+.header-nav .language-switcher__button:hover {
   color: var(--color-text);
 }

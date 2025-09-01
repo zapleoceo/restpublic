@@ -63,6 +63,7 @@ class PosterService {
       categories = await this.makeRequest('menu.getCategories');
       this.cache.set(cacheKey, categories);
       console.log(`📦 Cached ${categories.length} categories`);
+      console.log('Categories:', categories);
     }
     
     return categories;
@@ -77,6 +78,7 @@ class PosterService {
       products = await this.makeRequest('menu.getProducts');
       this.cache.set(cacheKey, products);
       console.log(`📦 Cached ${products.length} products`);
+      console.log('Sample products:', products.slice(0, 3));
     }
     
     return products;
@@ -95,8 +97,8 @@ class PosterService {
         if (!hasVisibleSpot) return false;
       }
       
-      // Filter by category
-      return product.category_id === categoryId;
+      // Filter by category - convert to string for comparison
+      return String(product.category_id) === String(categoryId);
     });
   }
 
