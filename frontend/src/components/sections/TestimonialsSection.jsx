@@ -12,7 +12,7 @@ export const TestimonialsSection = () => {
       {
         id: 1,
         author: "Anna",
-        photo: "/img/avatar-placeholder.jpg",
+        photo: "/img/avatars/user-01.jpg",
         text: "На сегодня это лучший кинотеатр под открытым небом💛 надеюсь мы вместе посмотрим и обсудим ещё много фильмов.) Шикарный звук, большой хороший экран, свобода , где хочешь там и лежишь смотришь.) Спасибо огромное организаторам.) шаурма от Олега тоже была вкусна.) 🙃🌊👍",
         active: true,
         order: 1
@@ -48,7 +48,7 @@ export const TestimonialsSection = () => {
                   <div key={testimonial.id} className="testimonials-slider__slide swiper-slide">
                     <div className="testimonials-slider__author">
                       <img 
-                        src={testimonial.photo || '/img/avatar-placeholder.jpg'} 
+                        src={testimonial.photo || '/img/avatars/user-01.jpg'} 
                         alt={testimonial.author} 
                         className="testimonials-slider__avatar"
                       />

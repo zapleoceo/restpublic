@@ -20,7 +20,7 @@ export const AboutSection = () => {
             <h2 className="text-display-title">{aboutContent.title}</h2>
           </div>
           <figure className="about-pic-primary">
-            <img src={aboutContent.image} alt="About" />
+            <img src={aboutContent.image || "/img/about-pic-primary.jpg"} alt="About" />
           </figure>
         </div>
         

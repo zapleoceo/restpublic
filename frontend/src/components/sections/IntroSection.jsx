@@ -26,7 +26,7 @@ export const IntroSection = () => {
         
         <figure className="intro-pic-primary">
           <img 
-            src={introContent.background_image || "/img/hero-bg.jpg"} 
+            src={introContent.background_image || "/img/intro-pic-primary.jpg"} 
             alt="North Republic" 
           />
         </figure>
