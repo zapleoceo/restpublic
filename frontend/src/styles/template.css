@@ -819,26 +819,20 @@ h1, h2, h3, h4, h5, h6 {
   top: 0; left: 0;
   width: 100%; height: 100%;
   z-index: 1;
-  animation: gradientMove 10s infinite linear;
-  background: linear-gradient(135deg, #ff512f, #dd2476, #ffeb3b, #2196f3);
+  animation: bgmove 8s ease-in-out infinite;
+  background: linear-gradient(45deg, #ff1493, #00bfff, #ff00ff, #00ffff);
   background-size: 400% 400%;
-  opacity: 0.8;
+  opacity: 0.9;
   border-radius: 50%;
   padding: 1rem;
   margin: 0;
   vertical-align: bottom;
 }
 
-@keyframes gradientMove {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
+@keyframes bgmove {
+  0% {background-position: 0% 50%;}
+  50% {background-position: 100% 50%;}
+  100% {background-position: 0% 50%;}
 }
 
 .header-logo img {
@@ -851,6 +845,8 @@ h1, h2, h3, h4, h5, h6 {
   border-radius: 50%;
   transition: all 0.3s var(--ease-smooth);
   pointer-events: none;
+  -webkit-mask-image: radial-gradient(circle, rgba(0,0,0,1) 70%, rgba(0,0,0,0) 100%);
+  mask-image: radial-gradient(circle, rgba(0,0,0,1) 70%, rgba(0,0,0,0) 100%);
 }
 
 .header-logo:hover img {

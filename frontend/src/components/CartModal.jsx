@@ -50,7 +50,7 @@ const CartModal = ({ isOpen, onClose, tableId }) => {
           {/* Header */}
           <div className="flex items-center justify-between p-4 border-b">
             <div className="flex items-center space-x-2">
-              <ShoppingCart className="w-5 h-5 text-orange-500" />
+              <ShoppingCart className="w-5 h-5 text-primary-600" />
               <h2 className="text-lg font-semibold text-gray-900">
                 {t('cart.title')}
               </h2>
@@ -78,7 +78,7 @@ const CartModal = ({ isOpen, onClose, tableId }) => {
                   </p>
                   <button
                     onClick={onClose}
-                    className="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg transition-colors"
+                    className="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors"
                   >
                     {t('cart.continue_shopping')}
                   </button>
@@ -116,7 +116,7 @@ const CartModal = ({ isOpen, onClose, tableId }) => {
                         <h4 className="text-sm font-medium text-gray-900 truncate">
                           {item.product_name}
                         </h4>
-                        <p className="text-sm text-orange-600 font-semibold">
+                        <p className="text-sm text-primary-600 font-semibold">
                           {formatPrice(item.price)}
                         </p>
                       </div>
@@ -158,7 +158,7 @@ const CartModal = ({ isOpen, onClose, tableId }) => {
                     <span className="text-lg font-semibold text-gray-900">
                       {t('cart.total')}:
                     </span>
-                    <span className="text-xl font-bold text-orange-600">
+                    <span className="text-xl font-bold text-primary-600">
                       {formatPrice(total)}
                     </span>
                   </div>
@@ -173,7 +173,7 @@ const CartModal = ({ isOpen, onClose, tableId }) => {
                     </button>
                     <button
                       onClick={handleCheckout}
-                      className="flex-1 px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg transition-colors font-medium"
+                      className="flex-1 px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors font-medium"
                     >
                       {t('cart.checkout')}
                     </button>

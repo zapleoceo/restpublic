@@ -8,7 +8,7 @@ const CartButton = ({ onClick, className = '' }) => {
   return (
     <button
       onClick={onClick}
-      className={`relative inline-flex items-center justify-center w-12 h-12 bg-orange-500 hover:bg-orange-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 ${className}`}
+      className={`relative inline-flex items-center justify-center w-12 h-12 bg-primary-600 hover:bg-primary-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 ${className}`}
     >
       <ShoppingCart className="w-6 h-6" />
       {itemCount > 0 && (
