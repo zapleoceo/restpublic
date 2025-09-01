@@ -812,6 +812,52 @@ h1, h2, h3, h4, h5, h6 {
   width: var(--logo-width);
   margin: 0;
   vertical-align: bottom;
+  padding: 1rem;
+  border-radius: 50%;
+  background: radial-gradient(circle, 
+    rgba(255,255,255,0.9) 0%, 
+    rgba(244,249,247,0.8) 25%, 
+    rgba(177,136,94,0.6) 50%, 
+    rgba(70,134,114,0.4) 75%, 
+    rgba(19,20,20,0.2) 100%
+  );
+  backdrop-filter: blur(10px);
+  transition: all 0.3s var(--ease-smooth);
+  animation: logoGlow 4s ease-in-out infinite alternate;
+}
+
+.header-logo img:hover {
+  transform: scale(1.05);
+  background: radial-gradient(circle, 
+    rgba(255,255,255,1) 0%, 
+    rgba(244,249,247,0.9) 25%, 
+    rgba(177,136,94,0.7) 50%, 
+    rgba(70,134,114,0.5) 75%, 
+    rgba(19,20,20,0.3) 100%
+  );
+}
+
+@keyframes logoGlow {
+  0% {
+    background: radial-gradient(circle, 
+      rgba(255,255,255,0.9) 0%, 
+      rgba(244,249,247,0.8) 25%, 
+      rgba(177,136,94,0.6) 50%, 
+      rgba(70,134,114,0.4) 75%, 
+      rgba(19,20,20,0.2) 100%
+    );
+    box-shadow: 0 0 20px rgba(70,134,114,0.3);
+  }
+  100% {
+    background: radial-gradient(circle, 
+      rgba(255,255,255,0.95) 0%, 
+      rgba(249,247,243,0.85) 25%, 
+      rgba(177,136,94,0.65) 50%, 
+      rgba(70,134,114,0.45) 75%, 
+      rgba(19,20,20,0.25) 100%
+    );
+    box-shadow: 0 0 30px rgba(177,136,94,0.4);
+  }
 }
 
 /* main navigation */
