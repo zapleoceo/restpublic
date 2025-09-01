@@ -1,6 +1,18 @@
-import { formatPrice, getMainPrice } from './priceUtils';
+export const formatPrice = (price) => {
+  if (!price && price !== 0) return 'Цена не указана';
+  
+  const numPrice = typeof price === 'object' ? 
+    getMainPrice(price) : parseFloat(price);
+  
+  if (isNaN(numPrice)) return 'Цена не указана';
+  
+  return `${numPrice.toLocaleString('vi-VN')} ₫`;
+};
 
-export { formatPrice, getMainPrice };
+export const getMainPrice = (priceObject) => {
+  if (!priceObject) return null;
+  return priceObject['1'] || Object.values(priceObject)[0];
+};
 
 export const formatDate = (date) => {
   return new Date(date).toLocaleDateString('ru-RU');

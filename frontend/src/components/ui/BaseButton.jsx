@@ -1,3 +1,5 @@
+import { cn } from '../../utils/styles';
+
 export const BaseButton = ({ 
   variant = 'primary', 
   size = 'md', 
@@ -20,7 +22,7 @@ export const BaseButton = ({
     lg: 'px-6 py-3 text-base'
   };
 
-  const classes = `${baseClasses} ${variants[variant]} ${sizes[size]} ${className}`;
+  const classes = cn(baseClasses, variants[variant], sizes[size], className);
 
   return (
     <button className={classes} {...props}>

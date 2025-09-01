@@ -1,58 +1,46 @@
-// Общий сервис для работы с API
-class ApiService {
-  constructor(baseURL = '') {
-    this.baseURL = baseURL;
-  }
+import axios from 'axios';
+import { BASE_URL } from '../constants/apiEndpoints';
 
-  async request(endpoint, options = {}) {
-    const url = `${this.baseURL}${endpoint}`;
-    
-    const defaultOptions = {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    };
+const apiClient = axios.create({
+  baseURL: BASE_URL,
+  timeout: 10000,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
 
-    const config = {
-      ...defaultOptions,
-      ...options,
-      headers: {
-        ...defaultOptions.headers,
-        ...options.headers,
-      },
-    };
-
-    try {
-      const response = await fetch(url, config);
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
-      return await response.json();
-    } catch (error) {
-      console.error('API request failed:', error);
-      throw error;
+// Request interceptor
+apiClient.interceptors.request.use(
+  (config) => {
+    // Добавляем токен авторизации если есть
+    const token = localStorage.getItem('authToken');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
     }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
   }
+);
 
-  async get(endpoint, params = {}) {
-    const queryString = new URLSearchParams(params).toString();
-    const url = queryString ? `${endpoint}?${queryString}` : endpoint;
-    
-    return this.request(url, { method: 'GET' });
+// Response interceptor
+apiClient.interceptors.response.use(
+  (response) => {
+    return response.data;
+  },
+  (error) => {
+    console.error('API Error:', error);
+    return Promise.reject(error);
   }
+);
 
-  async post(endpoint, data = {}) {
-    return this.request(endpoint, {
-      method: 'POST',
-      body: JSON.stringify(data),
-    });
-  }
-}
+export const apiService = {
+  get: (url, config) => apiClient.get(url, config),
+  post: (url, data, config) => apiClient.post(url, data, config),
+  put: (url, data, config) => apiClient.put(url, data, config),
+  delete: (url, config) => apiClient.delete(url, config),
+  patch: (url, data, config) => apiClient.patch(url, data, config),
+};
 
-// Экземпляр для работы с нашим API
-export const apiService = new ApiService();
-
-// Экспорт класса для создания других экземпляров
-export default ApiService;
+export default apiService;

@@ -1,51 +1,77 @@
-import React from 'react';
+import { Link } from 'react-router-dom';
+import { SectionWrapper } from './SectionWrapper';
+import { SectionHeader } from './SectionHeader';
 import { useTranslation } from '../../hooks/useTranslation';
 import { useSiteContent } from '../../hooks/useSiteContent';
-import { Link } from 'react-router-dom';
 
 export const ServicesSection = () => {
   const { t } = useTranslation();
   const { content } = useSiteContent();
   
-  const servicesContent = content?.services || {
-    title: "Услуги",
-    description: "Широкий спектр развлечений для всех возрастов",
+  const servicesContent = content.services || {
+    title: t('services.title'),
     items: [
-      { id: 'lasertag', name: 'Лазертаг', icon: '/img/lazertag/icon.png', link: '/lasertag' },
-      { id: 'archery', name: 'Стрельба из лука', icon: '/img/archery/icon.png', link: '/archerytag' },
-      { id: 'cinema', name: 'Кинотеатр', icon: '/img/cinema/icon.png', link: '/cinema' },
-      { id: 'bbq', name: 'BBQ зона', icon: '/img/bbq/icon.png', link: '/bbq_zone' },
-      { id: 'quests', name: 'Квесты', icon: '/img/quests/icon.png', link: '/quests' },
-      { id: 'guitar', name: 'Гитара', icon: '/img/guitar/icon.png', link: '/guitar' },
-      { id: 'boardgames', name: 'Настольные игры', icon: '/img/boardgames/icon.png', link: '/boardgames' },
-      { id: 'yoga', name: 'Йога', icon: '/img/yoga/icon.png', link: '/yoga' },
-      { id: 'bathhouse', name: 'Банный комплекс', icon: '/img/bathhouse/icon.png', link: '/bathhouse' }
+      {
+        id: "lasertag",
+        title: "Лазертаг",
+        description: "Командная игра",
+        icon: "/template/images/icons/icon-close.svg",
+        link: "/lasertag",
+        active: true,
+        order: 1
+      },
+      {
+        id: "archery",
+        title: "Archery Tag", 
+        description: "Лучный бой",
+        icon: "/template/images/icons/icon-close.svg",
+        link: "/archerytag",
+        active: true,
+        order: 2
+      },
+      {
+        id: "cinema",
+        title: "Кинотеатр",
+        description: "Под открытым небом",
+        icon: "/template/images/icons/icon-close.svg",
+        link: "/cinema",
+        active: true,
+        order: 3
+      },
+      {
+        id: "bbq",
+        title: "BBQ зона",
+        description: "Мангалы и отдых",
+        icon: "/template/images/icons/icon-close.svg",
+        link: "/bbq",
+        active: true,
+        order: 4
+      }
     ]
   };
-
-  const services = servicesContent.items || [];
-
+  
   return (
-    <section id="services" className="container s-services target-section">
+    <SectionWrapper id="services" className="s-services">
       <div className="row s-services__content">
         <div className="column xl-12">
-          <div className="section-header" data-num="03">
-            <h2 className="text-display-title">{servicesContent.title}</h2>
-          </div>
+          <SectionHeader number="03" title={servicesContent.title} />
           
           <div className="services-grid">
-            {services.map(service => (
-              <Link key={service.id} to={service.link} className="service-card">
-                <div className="service-card__icon">
-                  <img src={service.icon} alt={service.name} />
-                </div>
-                <h3 className="service-card__title">{service.name}</h3>
-                <p className="service-card__description">{service.description}</p>
-              </Link>
-            ))}
+            {servicesContent.items
+              .filter(service => service.active)
+              .sort((a, b) => a.order - b.order)
+              .map(service => (
+                <Link key={service.id} to={service.link} className="service-card">
+                  <div className="service-card__icon">
+                    <img src={service.icon} alt={service.title} />
+                  </div>
+                  <h3 className="service-card__title">{service.title}</h3>
+                  <p className="service-card__description">{service.description}</p>
+                </Link>
+              ))}
           </div>
         </div>
       </div>
-    </section>
+    </SectionWrapper>
   );
 };

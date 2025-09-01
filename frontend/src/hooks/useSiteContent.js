@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { apiService } from '../services/apiService';
+import sectionsService from '../services/sectionsService';
 
 export const useSiteContent = () => {
   const [content, setContent] = useState({});
@@ -9,10 +9,13 @@ export const useSiteContent = () => {
   useEffect(() => {
     const fetchContent = async () => {
       try {
-        const data = await apiService.get('/api/sections');
+        setLoading(true);
+        const data = await sectionsService.getAllSections();
         setContent(data);
+        setError(null);
       } catch (err) {
         setError(err.message);
+        console.error('Error fetching site content:', err);
       } finally {
         setLoading(false);
       }

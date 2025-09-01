@@ -20,3 +20,7 @@ export const getResponsiveClass = (base, responsive) => {
     .map(([breakpoint, value]) => `${breakpoint}:${value}`)
     .join(' ')}`;
 };
+
+export const cn = (...classes) => {
+  return classes.filter(Boolean).join(' ');
+};
