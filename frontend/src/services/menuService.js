@@ -88,6 +88,24 @@ class MenuService {
     });
   }
 
+  // Получение популярных продуктов
+  async getPopularProducts(limit = 5) {
+    try {
+      const response = await fetch(`${this.baseURL}/api/menu/popular?limit=${limit}`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      return data.products || [];
+    } catch (error) {
+      console.error('Error fetching popular products:', error);
+      // Fallback: возвращаем первые 5 видимых продуктов
+      const allProducts = await this.getAllProducts();
+      return allProducts.slice(0, limit);
+    }
+  }
+
   // Нормализация цены (деление на 100)
   normalizePrice(price) {
     return price ? parseFloat(price) / 100 : 0;
@@ -110,6 +128,12 @@ class MenuService {
     };
     
     return `https://joinposter.com/api/image?image_id=${imageId}&size=${sizes[size] || sizes.medium}`;
+  }
+
+  // Очистка кэша
+  clearCache() {
+    this.cache.menu = null;
+    this.cache.timestamp = null;
   }
 }
 

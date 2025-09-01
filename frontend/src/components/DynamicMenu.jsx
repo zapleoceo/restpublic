@@ -4,6 +4,7 @@ import menuService from '../services/menuService';
 const DynamicMenu = () => {
   const [categories, setCategories] = useState([]);
   const [products, setProducts] = useState({});
+  const [popularProducts, setPopularProducts] = useState([]);
   const [activeCategory, setActiveCategory] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -20,6 +21,10 @@ const DynamicMenu = () => {
       // Загружаем категории
       const categoriesData = await menuService.getCategories();
       setCategories(categoriesData);
+
+      // Загружаем популярные продукты
+      const popularData = await menuService.getPopularProducts(5);
+      setPopularProducts(popularData);
 
       // Загружаем продукты для каждой категории
       const productsData = {};
@@ -125,6 +130,34 @@ const DynamicMenu = () => {
 
         <div className="column xl-6 lg-6 md-12 s-menu__content-end">
           <div className="tab-content menu-block">
+            {/* Популярные продукты - показываем в начале */}
+            <div className="menu-block__group tab-content__item active">
+              <h6 className="menu-block__cat-name">Most Popular</h6>
+              {popularProducts.length > 0 ? (
+                <ul className="menu-list">
+                  {popularProducts.map((product) => (
+                    <li key={product.product_id} className="menu-list__item">
+                      <div className="menu-list__item-desc">
+                        <h4>{product.name_en || product.name}</h4>
+                        {product.description && (
+                          <p>{product.description}</p>
+                        )}
+                      </div>
+                      <div className="menu-list__item-price">
+                        <span>$</span>
+                        {product.price_formatted || menuService.formatPrice(product.price)}
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <div className="empty-category">
+                  <p>No popular products available</p>
+                </div>
+              )}
+            </div>
+
+            {/* Категории продуктов */}
             {categories.map((category) => {
               const categoryProducts = products[category.category_id] || [];
               const isActive = activeCategory === category.category_id;
@@ -151,7 +184,7 @@ const DynamicMenu = () => {
                           </div>
                           <div className="menu-list__item-price">
                             <span>$</span>
-                            {menuService.formatPrice(product.price)}
+                            {product.price_formatted || menuService.formatPrice(product.price)}
                           </div>
                         </li>
                       ))}
