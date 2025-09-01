@@ -1347,6 +1347,111 @@ h1, h2, h3, h4, h5, h6 {
   transform: translateY(-50%);
 }
 
+/* ===================================================================
+ * # LANGUAGE SWITCHER
+ * ------------------------------------------------------------------ */
+
+.language-switcher {
+  position: relative;
+  display: inline-block;
+}
+
+.language-switcher__button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background-color: transparent;
+  border: 1px solid var(--color-neutral-800);
+  border-radius: 0.5rem;
+  color: var(--color-text);
+  font-family: var(--font-1);
+  font-size: 1.4rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s var(--ease-smooth);
+}
+
+.language-switcher__button:hover {
+  background-color: var(--color-neutral-900);
+  border-color: var(--color-bg-primary);
+  color: var(--color-white);
+}
+
+.language-switcher__icon {
+  width: 1.6rem;
+  height: 1.6rem;
+}
+
+.language-switcher__current {
+  text-transform: uppercase;
+  letter-spacing: 0.1rem;
+}
+
+.language-switcher__dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 0.5rem;
+  min-width: 8rem;
+  background-color: var(--color-neutral-900);
+  border: 1px solid var(--color-neutral-800);
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-0.5rem);
+  transition: all 0.3s var(--ease-smooth);
+  z-index: 50;
+}
+
+.language-switcher:hover .language-switcher__dropdown {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.language-switcher__option {
+  display: block;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  text-align: left;
+  background-color: transparent;
+  border: none;
+  color: var(--color-text);
+  font-family: var(--font-1);
+  font-size: 1.4rem;
+  font-weight: 400;
+  cursor: pointer;
+  transition: all 0.3s var(--ease-smooth);
+  text-transform: uppercase;
+  letter-spacing: 0.1rem;
+}
+
+.language-switcher__option:first-child {
+  border-top-left-radius: 0.5rem;
+  border-top-right-radius: 0.5rem;
+}
+
+.language-switcher__option:last-child {
+  border-bottom-left-radius: 0.5rem;
+  border-bottom-right-radius: 0.5rem;
+}
+
+.language-switcher__option:hover {
+  background-color: var(--color-neutral-850);
+  color: var(--color-white);
+}
+
+.language-switcher__option--active {
+  background-color: var(--color-bg-primary);
+  color: var(--color-white);
+}
+
+.language-switcher__option--active:hover {
+  background-color: var(--color-bg-primary-light);
+}
+
 @media screen and (max-width: 1024px) {
   .header-menu-toggle {
     display: block;

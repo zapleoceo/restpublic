@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from '../../hooks/useTranslation';
 import LanguageSwitcher from '../LanguageSwitcher';
 import CartButton from '../CartButton';
@@ -7,6 +7,10 @@ import CartButton from '../CartButton';
 export const Header = () => {
   const { t } = useTranslation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const location = useLocation();
+  
+  // Показываем корзину только на страницах menu и fast
+  const showCart = location.pathname.includes('/menu') || location.pathname.includes('/fast');
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -73,7 +77,7 @@ export const Header = () => {
           <div className="header-contact">
             <div className="header-actions">
               <LanguageSwitcher />
-              <CartButton />
+              {showCart && <CartButton />}
             </div>
           </div>
         </nav>

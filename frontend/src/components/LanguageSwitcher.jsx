@@ -1,5 +1,5 @@
 import React from 'react';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from '../hooks/useTranslation';
 import { Globe } from 'lucide-react';
 
 const LanguageSwitcher = () => {
@@ -7,7 +7,7 @@ const LanguageSwitcher = () => {
 
   const languages = [
     { code: 'en', name: 'EN' },
-    { code: 'ru', name: 'RU' },
+    { code: 'ru', name: 'RU' }, 
     { code: 'vi', name: 'VI' }
   ];
 
@@ -18,19 +18,19 @@ const LanguageSwitcher = () => {
   };
 
   return (
-    <div className="relative group">
-      <button className="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-600 hover:text-orange-600 hover:bg-orange-50 transition-colors">
-        <Globe className="w-4 h-4" />
-        <span className="text-sm font-medium">{currentLanguage.name}</span>
+    <div className="language-switcher">
+      <button className="language-switcher__button">
+        <Globe className="language-switcher__icon" />
+        <span className="language-switcher__current">{currentLanguage.name}</span>
       </button>
       
-      <div className="absolute right-0 mt-2 w-32 bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+      <div className="language-switcher__dropdown">
         {languages.map((language) => (
           <button
             key={language.code}
             onClick={() => handleLanguageChange(language.code)}
-            className={`w-full text-left px-4 py-2 text-sm hover:bg-orange-50 transition-colors ${
-              i18n.language === language.code ? 'text-orange-600 bg-orange-50' : 'text-gray-700'
+            className={`language-switcher__option ${
+              i18n.language === language.code ? 'language-switcher__option--active' : ''
             }`}
           >
             {language.name}
