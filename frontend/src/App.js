@@ -91,12 +91,12 @@ function App() {
                 crafted coffees and delectable pastries embrace your senses.
               </p>
               
-              <ul className="intro-block-content__social">
-                <li><a href="#0">FB</a></li>
-                <li><a href="#0">IG</a></li>
-                <li><a href="#0">PI</a></li>
-                <li><a href="#0">X</a></li>
-              </ul>
+                             <ul className="intro-block-content__social">
+                 <li><a href="https://facebook.com/vngamezone" target="_blank" rel="noopener noreferrer">FB</a></li>
+                 <li><a href="https://www.instagram.com/gamezone.vn/" target="_blank" rel="noopener noreferrer">IG</a></li>
+                 <li><a href="https://www.tiktok.com/@gamezone.vn" target="_blank" rel="noopener noreferrer">TT</a></li>
+                 <li><a href="https://t.me/gamezone_vietnam" target="_blank" rel="noopener noreferrer">TG</a></li>
+               </ul>
             </div>
           </div>
 

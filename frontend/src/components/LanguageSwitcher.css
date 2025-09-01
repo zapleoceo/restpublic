@@ -6,25 +6,19 @@
 .language-switcher__button {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 8px 12px;
+  padding: 4px 8px;
   background: transparent;
-  border: 1px solid #e5e7eb;
-  border-radius: 6px;
+  border: none;
   color: #374151;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .language-switcher__button:hover {
   background: #f9fafb;
-  border-color: #d1d5db;
-}
-
-.language-switcher__icon {
-  color: #6b7280;
+  border-radius: 4px;
 }
 
 .language-switcher__current {

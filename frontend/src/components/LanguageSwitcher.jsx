@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Globe } from 'lucide-react';
 
 const LanguageSwitcher = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -23,7 +22,6 @@ const LanguageSwitcher = () => {
         className="language-switcher__button"
         onClick={() => setIsOpen(!isOpen)}
       >
-        <Globe className="language-switcher__icon" size={16} />
         <span className="language-switcher__current">{currentLanguage}</span>
       </button>
       
