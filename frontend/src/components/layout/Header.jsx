@@ -19,7 +19,7 @@ export const Header = () => {
           <div className="header-logo">
             <Link to="/" className="logo">
               <img 
-                src="/img/logo.svg" 
+                src="/img/logo.png" 
                 alt="North Republic" 
               />
             </Link>
@@ -66,11 +66,6 @@ export const Header = () => {
             <li>
               <Link to="/events">
                 {t('nav.events_calendar') || "Календарь"}
-              </Link>
-            </li>
-            <li>
-              <Link to="/menu">
-                {t('nav.full_menu') || "Полное меню"}
               </Link>
             </li>
           </ul>
