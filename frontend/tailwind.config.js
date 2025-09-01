@@ -7,26 +7,41 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Цвета из шаблона Lounge
         primary: {
-          50: '#f4f9f7',
-          100: '#daede5',
-          500: '#468672',
-          600: '#366b5b',
-          900: '#253c35',
+          50: '#fef7f0',
+          100: '#fdecd8',
+          200: '#fbd5b0',
+          300: '#f8b87d',
+          400: '#f59347',
+          500: '#f2751f',
+          600: '#e35d14',
+          700: '#bc4513',
+          800: '#963816',
+          900: '#7a3016',
         },
         secondary: {
-          50: '#f9f7f3',
-          100: '#f2ede2',
-          500: '#b1885e',
-          600: '#a47652',
-          900: '#5a4134',
+          50: '#fdf4ff',
+          100: '#fae8ff',
+          200: '#f5d0fe',
+          300: '#f0abfc',
+          400: '#e879f9',
+          500: '#d946ef',
+          600: '#c026d3',
+          700: '#a21caf',
+          800: '#86198f',
+          900: '#701a75',
         },
         neutral: {
-          50: '#efefef',
-          500: '#5f6362',
-          900: '#131414',
-          950: '#090a0a',
+          50: '#fafafa',
+          100: '#f5f5f5',
+          200: '#e5e5e5',
+          300: '#d4d4d4',
+          400: '#a3a3a3',
+          500: '#737373',
+          600: '#525252',
+          700: '#404040',
+          800: '#262626',
+          900: '#171717',
         }
       },
       fontFamily: {
@@ -34,8 +49,8 @@ export default {
         'serif': ['"Playfair Display"', 'serif'],
       },
       animation: {
-        'fade-in': 'fadeIn 0.5s ease-out',
-        'slide-up': 'slideUp 0.3s ease-out',
+        'fade-in': 'fadeIn 0.5s ease-in-out',
+        'slide-up': 'slideUp 0.5s ease-out',
       },
       keyframes: {
         fadeIn: {

@@ -5,14 +5,7 @@ export const getColorClass = (color, shade = 500) => {
 };
 
 export const getSpacingClass = (size) => {
-  const spacingMap = {
-    xs: 'space-y-1',
-    sm: 'space-y-2', 
-    md: 'space-y-4',
-    lg: 'space-y-6',
-    xl: 'space-y-8'
-  };
-  return spacingMap[size] || spacingMap.md;
+  return `p-${size}`;
 };
 
 export const getResponsiveClass = (base, responsive) => {

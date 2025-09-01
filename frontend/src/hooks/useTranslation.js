@@ -5,7 +5,6 @@ export const useTranslation = () => {
   
   const changeLanguage = (language) => {
     i18n.changeLanguage(language);
-    localStorage.setItem('language', language);
   };
 
   const currentLanguage = i18n.language;
@@ -14,6 +13,5 @@ export const useTranslation = () => {
     t,
     changeLanguage,
     currentLanguage,
-    isReady: i18n.isInitialized,
   };
 };

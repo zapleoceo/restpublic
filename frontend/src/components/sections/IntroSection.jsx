@@ -7,79 +7,40 @@ export const IntroSection = () => {
   const { content } = useSiteContent();
   
   const introContent = content.intro || {
-    title: t('intro.title'),
-    subtitle: t('intro.subtitle'),
-    background_image: '/template/images/intro-pic-primary.jpg'
+    title: t('section.intro.title'),
+    subtitle: t('section.intro.subtitle'),
+    description: 'Откройте для себя уникальный мир развлечений и отдыха в North Republic.',
+    image: '/template/images/intro-pic-primary.jpg'
   };
-  
+
   return (
-    <SectionWrapper id="intro" className="s-intro">
-      <div className="grid-block s-intro__content">
-        <div className="intro-header">
-          <div className="intro-header__overline">
-            {t('intro.welcome')}
-          </div>
-          <h1 className="intro-header__big-type">
+    <SectionWrapper id="intro" className="min-h-screen flex items-center">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <div className="space-y-6">
+          <h1 className="text-4xl md:text-6xl font-bold text-gray-900 leading-tight">
             {introContent.title}
           </h1>
-        </div>
-        
-        <figure className="intro-pic-primary">
-          <img 
-            src={introContent.background_image} 
-            alt="North Republic"
-            srcSet={`${introContent.background_image} 1x, ${introContent.background_image.replace('.jpg', '@2x.jpg')} 2x`}
-          />
-        </figure>
-        
-        <div className="intro-block-content">
-          <figure className="intro-block-content__pic">
-            <img 
-              src="/template/images/intro-pic-secondary.jpg" 
-              alt="North Republic"
-              srcSet="/template/images/intro-pic-secondary.jpg 1x, /template/images/intro-pic-secondary@2x.jpg 2x"
-            />
-          </figure>
-          
-          <div className="intro-block-content__text-wrap">
-            <p className="intro-block-content__text">
-              {introContent.subtitle}
-            </p>
-            
-            <ul className="intro-block-content__social">
-              <li><a href="#0">FB</a></li>
-              <li><a href="#0">IG</a></li>
-              <li><a href="#0">PI</a></li>
-              <li><a href="#0">X</a></li>
-            </ul>
+          <p className="text-xl md:text-2xl text-gray-600">
+            {introContent.subtitle}
+          </p>
+          <p className="text-lg text-gray-500">
+            {introContent.description}
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4">
+            <button className="bg-primary-600 text-white px-8 py-3 rounded-lg text-lg font-semibold hover:bg-primary-700 transition-colors">
+              {t('button.learn_more')}
+            </button>
+            <button className="border-2 border-primary-600 text-primary-600 px-8 py-3 rounded-lg text-lg font-semibold hover:bg-primary-600 hover:text-white transition-colors">
+              {t('button.book_now')}
+            </button>
           </div>
         </div>
-
-        <div className="intro-scroll">
-          <button 
-            className="smoothscroll"
-            onClick={() => {
-              const aboutSection = document.querySelector('#about');
-              if (aboutSection) {
-                aboutSection.scrollIntoView({ behavior: 'smooth' });
-              }
-            }}
-          >
-            <span className="intro-scroll__circle-text"></span>
-            <span className="intro-scroll__text u-screen-reader-text">Scroll Down</span>
-            <div className="intro-scroll__icon">
-              <svg 
-                clipRule="evenodd" 
-                fillRule="evenodd" 
-                strokeLinejoin="round" 
-                strokeMiterlimit="2" 
-                viewBox="0 0 24 24" 
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path d="m5.214 14.522s4.505 4.502 6.259 6.255c.146.147.338.22.53.22s.384-.073.53-.22c1.754-1.752 6.249-6.244 6.249-6.244.144-.144.216-.334.217-.523 0-.193-.074-.386-.221-.534-.293-.293-.766-.294-1.057-.004l-4.968 4.968v-14.692c0-.414-.336-.75-.75-.75s-.75.336-.75.75v14.692l-4.979-4.978c-.289-.289-.761-.287-1.054.006-.148.148-.222.341-.221.534 0 .189.071.377.215.52z" fillRule="nonzero"/>
-              </svg>
-            </div>
-          </button>
+        <div className="relative">
+          <img
+            src={introContent.image}
+            alt="North Republic"
+            className="w-full h-auto rounded-lg shadow-2xl"
+          />
         </div>
       </div>
     </SectionWrapper>

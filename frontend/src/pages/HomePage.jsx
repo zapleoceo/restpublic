@@ -6,12 +6,12 @@ import { TestimonialsSection } from '../components/sections/TestimonialsSection'
 
 export const HomePage = () => {
   return (
-    <div className="s-pagewrap ss-home">
+    <main>
       <IntroSection />
       <AboutSection />
       <ServicesSection />
       <EventsSection />
       <TestimonialsSection />
-    </div>
+    </main>
   );
 };

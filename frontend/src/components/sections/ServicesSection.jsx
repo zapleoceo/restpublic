@@ -9,68 +9,55 @@ export const ServicesSection = () => {
   const { content } = useSiteContent();
   
   const servicesContent = content.services || {
-    title: t('services.title'),
-    items: [
+    title: t('section.services.title'),
+    services: [
       {
-        id: "lasertag",
-        title: "Лазертаг",
-        description: "Командная игра",
-        icon: "/template/images/icons/icon-close.svg",
-        link: "/lasertag",
-        active: true,
-        order: 1
+        title: 'Лазертаг',
+        description: 'Захватывающие игры в современном лазертаг-арене',
+        icon: '🎯',
+        link: '/services/lasertag'
       },
       {
-        id: "archery",
-        title: "Archery Tag", 
-        description: "Лучный бой",
-        icon: "/template/images/icons/icon-close.svg",
-        link: "/archerytag",
-        active: true,
-        order: 2
+        title: 'Квесты',
+        description: 'Увлекательные квесты для всех возрастов',
+        icon: '🔍',
+        link: '/services/quests'
       },
       {
-        id: "cinema",
-        title: "Кинотеатр",
-        description: "Под открытым небом",
-        icon: "/template/images/icons/icon-close.svg",
-        link: "/cinema",
-        active: true,
-        order: 3
+        title: 'BBQ зона',
+        description: 'Уютная зона для барбекю и отдыха',
+        icon: '🍖',
+        link: '/services/bbq'
       },
       {
-        id: "bbq",
-        title: "BBQ зона",
-        description: "Мангалы и отдых",
-        icon: "/template/images/icons/icon-close.svg",
-        link: "/bbq",
-        active: true,
-        order: 4
+        title: 'Стрельба из лука',
+        description: 'Традиционная стрельба из лука',
+        icon: '🏹',
+        link: '/services/archery'
       }
     ]
   };
-  
+
   return (
-    <SectionWrapper id="services" className="s-services">
-      <div className="row s-services__content">
-        <div className="column xl-12">
-          <SectionHeader number="03" title={servicesContent.title} />
-          
-          <div className="services-grid">
-            {servicesContent.items
-              .filter(service => service.active)
-              .sort((a, b) => a.order - b.order)
-              .map(service => (
-                <Link key={service.id} to={service.link} className="service-card">
-                  <div className="service-card__icon">
-                    <img src={service.icon} alt={service.title} />
-                  </div>
-                  <h3 className="service-card__title">{service.title}</h3>
-                  <p className="service-card__description">{service.description}</p>
-                </Link>
-              ))}
-          </div>
-        </div>
+    <SectionWrapper id="services">
+      <SectionHeader number="02" title={servicesContent.title} />
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        {servicesContent.services.map((service, index) => (
+          <Link
+            key={index}
+            to={service.link}
+            className="group block p-6 bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300 border border-gray-200 hover:border-primary-300"
+          >
+            <div className="text-4xl mb-4">{service.icon}</div>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-primary-600 transition-colors">
+              {service.title}
+            </h3>
+            <p className="text-gray-600">
+              {service.description}
+            </p>
+          </Link>
+        ))}
       </div>
     </SectionWrapper>
   );

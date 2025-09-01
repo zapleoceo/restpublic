@@ -10,78 +10,72 @@ export const EventsSection = () => {
   const { content } = useSiteContent();
   
   const eventsContent = content.events || {
-    title: t('events.title'),
-    description: 'Будущие события',
-    items: [
+    title: t('section.events.title'),
+    events: [
       {
-        id: 1,
-        title: "Киновечер под звездами",
-        shortDescription: "Показ фильма под открытым небом",
-        poster: "/template/images/gallery/gallery-01.jpg",
-        date: "2025-02-15T18:00:00.000Z",
-        active: true
+        title: 'Турнир по лазертагу',
+        date: '2024-01-15T18:00:00',
+        description: 'Еженедельный турнир для всех желающих',
+        image: '/template/images/sample-image.jpg',
+        link: '/events/lasertag-tournament'
       },
       {
-        id: 2,
-        title: "Концерт живой музыки",
-        shortDescription: "Вечер с местными музыкантами",
-        poster: "/template/images/gallery/gallery-02.jpg",
-        date: "2025-02-20T19:00:00.000Z",
-        active: true
+        title: 'Мастер-класс по стрельбе из лука',
+        date: '2024-01-20T14:00:00',
+        description: 'Обучение традиционной стрельбе из лука',
+        image: '/template/images/sample-image.jpg',
+        link: '/events/archery-masterclass'
       },
       {
-        id: 3,
-        title: "Фестиваль еды",
-        shortDescription: "Дегустация блюд разных кухонь",
-        poster: "/template/images/gallery/gallery-03.jpg",
-        date: "2025-02-25T16:00:00.000Z",
-        active: true
+        title: 'Квест "Тайны Северной Республики"',
+        date: '2024-01-25T19:00:00',
+        description: 'Новый захватывающий квест для команд',
+        image: '/template/images/sample-image.jpg',
+        link: '/events/quest-mysteries'
       }
     ]
   };
-  
+
   return (
-    <SectionWrapper id="events" className="s-events">
-      <div className="row s-events__content">
-        <div className="column xl-12">
-          <SectionHeader number="04" title={eventsContent.title} />
-          
-          <div className="swiper-container events-slider">
-            <div className="swiper-wrapper">
-              {eventsContent.items
-                .filter(event => event.active)
-                .map((event, index) => (
-                  <div key={event.id} className="events-slider__slide swiper-slide">
-                    <Link to={`/events/${event.id}`} className="event-card">
-                      <div className="event-card__poster">
-                        <img 
-                          src={event.poster} 
-                          alt={event.title} 
-                          className="event-card__image"
-                        />
-                        <div className="event-card__overlay">
-                          <div className="event-card__date">
-                            {formatEventDate(event.date)}
-                          </div>
-                          <h3 className="event-card__title">{event.title}</h3>
-                          <p className="event-card__description">{event.shortDescription}</p>
-                        </div>
-                      </div>
-                    </Link>
-                  </div>
-                ))}
+    <SectionWrapper id="events" className="bg-gray-50">
+      <SectionHeader number="03" title={eventsContent.title} />
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {eventsContent.events.map((event, index) => (
+          <Link
+            key={index}
+            to={event.link}
+            className="group block bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden"
+          >
+            <div className="aspect-video overflow-hidden">
+              <img
+                src={event.image}
+                alt={event.title}
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              />
             </div>
-            <div className="swiper-pagination"></div>
-            <div className="swiper-button-next"></div>
-            <div className="swiper-button-prev"></div>
-          </div>
-          
-          <div className="events-view-all">
-            <Link to="/events" className="btn btn--primary">
-              {t('events.view_calendar')}
-            </Link>
-          </div>
-        </div>
+            <div className="p-6">
+              <div className="text-sm text-primary-600 font-medium mb-2">
+                {formatEventDate(event.date)}
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-primary-600 transition-colors">
+                {event.title}
+              </h3>
+              <p className="text-gray-600">
+                {event.description}
+              </p>
+            </div>
+          </Link>
+        ))}
+      </div>
+      
+      <div className="text-center mt-12">
+        <Link
+          to="/events"
+          className="inline-flex items-center px-6 py-3 bg-primary-600 text-white rounded-lg font-semibold hover:bg-primary-700 transition-colors"
+        >
+          Все события
+        </Link>
       </div>
     </SectionWrapper>
   );

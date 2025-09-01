@@ -10,12 +10,10 @@ export const useSiteContent = () => {
     const fetchContent = async () => {
       try {
         setLoading(true);
-        const data = await sectionsService.getAllSections();
-        setContent(data);
-        setError(null);
+        const sections = await sectionsService.getAllSections();
+        setContent(sections);
       } catch (err) {
         setError(err.message);
-        console.error('Error fetching site content:', err);
       } finally {
         setLoading(false);
       }

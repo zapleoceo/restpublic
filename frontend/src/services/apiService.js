@@ -12,7 +12,6 @@ const apiClient = axios.create({
 // Request interceptor
 apiClient.interceptors.request.use(
   (config) => {
-    // Добавляем токен авторизации если есть
     const token = localStorage.getItem('authToken');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -27,10 +26,13 @@ apiClient.interceptors.request.use(
 // Response interceptor
 apiClient.interceptors.response.use(
   (response) => {
-    return response.data;
+    return response;
   },
   (error) => {
-    console.error('API Error:', error);
+    if (error.response?.status === 401) {
+      localStorage.removeItem('authToken');
+      window.location.href = '/login';
+    }
     return Promise.reject(error);
   }
 );

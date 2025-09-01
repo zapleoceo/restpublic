@@ -3,155 +3,67 @@ import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import Backend from 'i18next-http-backend';
 
-// Локальные переводы (fallback)
 const resources = {
   ru: {
     translation: {
-      nav: {
-        home: 'Главная',
-        about: 'О нас',
-        menu: 'Меню',
-        services: 'Услуги',
-        events: 'События',
-        events_calendar: 'Календарь',
-        full_menu: 'Полное меню',
-      },
-      intro: {
-        welcome: 'Добро пожаловать в',
-        title: 'Республика Север',
-        subtitle: 'Развлекательный комплекс с рестораном, кинотеатром под открытым небом и множеством активностей для всей семьи.',
-      },
-      about: {
-        title: 'О нас',
-      },
-      menu: {
-        title: 'Наше меню',
-        view_all: 'Смотреть все',
-      },
-      services: {
-        title: 'Наши услуги',
-      },
-      events: {
-        title: 'Афиша',
-        view_calendar: 'Смотреть календарь',
-        calendar_title: 'Календарь событий',
-        calendar_subtitle: 'Все предстоящие события в Республике Север',
-        calendar_view: 'Календарь',
-        list_view: 'Список',
-      },
-      testimonials: {
-        title: 'Отзывы гостей',
-      },
-      common: {
-        loading: 'Загрузка...',
-        error: 'Произошла ошибка',
-        save: 'Сохранить',
-        cancel: 'Отмена',
-        edit: 'Редактировать',
-        delete: 'Удалить',
-        active: 'Активна',
-        inactive: 'Неактивна',
-      },
-    },
+      'nav.home': 'Главная',
+      'nav.menu': 'Меню',
+      'nav.events': 'События',
+      'nav.about': 'О нас',
+      'nav.contact': 'Контакты',
+      'section.intro.title': 'Добро пожаловать в North Republic',
+      'section.intro.subtitle': 'Уникальное место для отдыха и развлечений',
+      'section.about.title': 'О нас',
+      'section.services.title': 'Услуги',
+      'section.events.title': 'События',
+      'section.testimonials.title': 'Отзывы',
+      'button.learn_more': 'Узнать больше',
+      'button.book_now': 'Забронировать',
+      'language.ru': 'Русский',
+      'language.en': 'English',
+      'language.vi': 'Tiếng Việt',
+    }
   },
   en: {
     translation: {
-      nav: {
-        home: 'Home',
-        about: 'About',
-        menu: 'Menu',
-        services: 'Services',
-        events: 'Events',
-        events_calendar: 'Calendar',
-        full_menu: 'Full Menu',
-      },
-      intro: {
-        welcome: 'Welcome to',
-        title: 'North Republic',
-        subtitle: 'Entertainment complex with restaurant, open-air cinema and many activities for the whole family.',
-      },
-      about: {
-        title: 'About Us',
-      },
-      menu: {
-        title: 'Our Menu',
-        view_all: 'View All',
-      },
-      services: {
-        title: 'Our Services',
-      },
-      events: {
-        title: 'Events',
-        view_calendar: 'View Calendar',
-        calendar_title: 'Events Calendar',
-        calendar_subtitle: 'All upcoming events at North Republic',
-        calendar_view: 'Calendar',
-        list_view: 'List',
-      },
-      testimonials: {
-        title: 'Guest Reviews',
-      },
-      common: {
-        loading: 'Loading...',
-        error: 'An error occurred',
-        save: 'Save',
-        cancel: 'Cancel',
-        edit: 'Edit',
-        delete: 'Delete',
-        active: 'Active',
-        inactive: 'Inactive',
-      },
-    },
+      'nav.home': 'Home',
+      'nav.menu': 'Menu',
+      'nav.events': 'Events',
+      'nav.about': 'About',
+      'nav.contact': 'Contact',
+      'section.intro.title': 'Welcome to North Republic',
+      'section.intro.subtitle': 'A unique place for rest and entertainment',
+      'section.about.title': 'About Us',
+      'section.services.title': 'Services',
+      'section.events.title': 'Events',
+      'section.testimonials.title': 'Testimonials',
+      'button.learn_more': 'Learn More',
+      'button.book_now': 'Book Now',
+      'language.ru': 'Русский',
+      'language.en': 'English',
+      'language.vi': 'Tiếng Việt',
+    }
   },
   vi: {
     translation: {
-      nav: {
-        home: 'Trang chủ',
-        about: 'Về chúng tôi',
-        menu: 'Thực đơn',
-        services: 'Dịch vụ',
-        events: 'Sự kiện',
-        events_calendar: 'Lịch',
-        full_menu: 'Thực đơn đầy đủ',
-      },
-      intro: {
-        welcome: 'Chào mừng đến',
-        title: 'Cộng hòa Bắc',
-        subtitle: 'Khu phức hợp giải trí với nhà hàng, rạp chiếu phim ngoài trời và nhiều hoạt động cho cả gia đình.',
-      },
-      about: {
-        title: 'Về chúng tôi',
-      },
-      menu: {
-        title: 'Thực đơn của chúng tôi',
-        view_all: 'Xem tất cả',
-      },
-      services: {
-        title: 'Dịch vụ của chúng tôi',
-      },
-      events: {
-        title: 'Sự kiện',
-        view_calendar: 'Xem lịch',
-        calendar_title: 'Lịch sự kiện',
-        calendar_subtitle: 'Tất cả sự kiện sắp tới tại Cộng hòa Bắc',
-        calendar_view: 'Lịch',
-        list_view: 'Danh sách',
-      },
-      testimonials: {
-        title: 'Đánh giá của khách',
-      },
-      common: {
-        loading: 'Đang tải...',
-        error: 'Đã xảy ra lỗi',
-        save: 'Lưu',
-        cancel: 'Hủy',
-        edit: 'Chỉnh sửa',
-        delete: 'Xóa',
-        active: 'Hoạt động',
-        inactive: 'Không hoạt động',
-      },
-    },
-  },
+      'nav.home': 'Trang chủ',
+      'nav.menu': 'Thực đơn',
+      'nav.events': 'Sự kiện',
+      'nav.about': 'Về chúng tôi',
+      'nav.contact': 'Liên hệ',
+      'section.intro.title': 'Chào mừng đến với North Republic',
+      'section.intro.subtitle': 'Nơi độc đáo để nghỉ ngơi và giải trí',
+      'section.about.title': 'Về chúng tôi',
+      'section.services.title': 'Dịch vụ',
+      'section.events.title': 'Sự kiện',
+      'section.testimonials.title': 'Đánh giá',
+      'button.learn_more': 'Tìm hiểu thêm',
+      'button.book_now': 'Đặt ngay',
+      'language.ru': 'Русский',
+      'language.en': 'English',
+      'language.vi': 'Tiếng Việt',
+    }
+  }
 };
 
 i18n
@@ -161,19 +73,13 @@ i18n
   .init({
     resources,
     fallbackLng: 'ru',
-    debug: import.meta.env.DEV,
-    
+    debug: false,
     interpolation: {
       escapeValue: false,
     },
-    
     detection: {
       order: ['localStorage', 'navigator'],
       caches: ['localStorage'],
-    },
-    
-    backend: {
-      loadPath: '/locales/{{lng}}/{{ns}}.json',
     },
   });
 

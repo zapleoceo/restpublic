@@ -8,31 +8,47 @@ export const AboutSection = () => {
   const { content } = useSiteContent();
   
   const aboutContent = content.about || {
-    title: t('about.title'),
-    content: `
-      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quasi earum, ut consequuntur pariatur fugiat aliquam voluptatem officia blanditiis ipsa laboriosam ad velit voluptate nisi saepe quisquam minima culpa eaque amet.</p>
-      <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Dolorem vero sit neque sequi eius illum at porro aperiam. Iusto reiciendis reprehenderit ipsa molestias sit eaque velit, veritatis quod, cum exercitationem doloribus eos cumque, ipsam voluptate! Nam doloribus quibusdam eos ipsum optio animi ea ex. Atque neque nesciunt numquam fugiat inventore!</p>
-    `,
-    images: ['/template/images/about-pic-primary.jpg']
+    title: t('section.about.title'),
+    description: 'North Republic - это уникальное место, где каждый найдет что-то для себя. Мы предлагаем широкий спектр развлечений и услуг для всех возрастов.',
+    features: [
+      'Современные развлечения',
+      'Профессиональный персонал',
+      'Уютная атмосфера',
+      'Доступные цены'
+    ],
+    image: '/template/images/about-pic-primary.jpg'
   };
-  
-  return (
-    <SectionWrapper id="about" className="s-about">
-      <div className="row s-about__content">
-        <div className="column xl-4 lg-5 md-12 s-about__content-start">
-          <SectionHeader number="01" title={aboutContent.title} />
-          
-          <figure className="about-pic-primary">
-            <img 
-              src={aboutContent.images?.[0] || '/template/images/about-pic-primary.jpg'} 
-              alt="About North Republic"
-              srcSet={`${aboutContent.images?.[0] || '/template/images/about-pic-primary.jpg'} 1x, ${(aboutContent.images?.[0] || '/template/images/about-pic-primary.jpg').replace('.jpg', '@2x.jpg')} 2x`}
-            />
-          </figure>
-        </div>
 
-        <div className="column xl-6 lg-6 md-12 s-about__content-end">
-          <div dangerouslySetInnerHTML={{ __html: aboutContent.content }} />
+  return (
+    <SectionWrapper id="about" className="bg-gray-50">
+      <SectionHeader number="01" title={aboutContent.title} />
+      
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <div className="space-y-6">
+          <p className="text-lg text-gray-600 leading-relaxed">
+            {aboutContent.description}
+          </p>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {aboutContent.features.map((feature, index) => (
+              <div key={index} className="flex items-center space-x-3">
+                <div className="w-2 h-2 bg-primary-600 rounded-full"></div>
+                <span className="text-gray-700">{feature}</span>
+              </div>
+            ))}
+          </div>
+          
+          <button className="bg-primary-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-primary-700 transition-colors">
+            {t('button.learn_more')}
+          </button>
+        </div>
+        
+        <div className="relative">
+          <img
+            src={aboutContent.image}
+            alt="О нас"
+            className="w-full h-auto rounded-lg shadow-xl"
+          />
         </div>
       </div>
     </SectionWrapper>
