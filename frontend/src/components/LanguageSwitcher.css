@@ -20,7 +20,7 @@
 }
 
 .language-switcher__button:hover {
-  color: var(--color-text);
+  color: var(--color-white);
 }
 
 .language-switcher__current {
@@ -69,4 +69,20 @@
 
 .language-switcher__option:last-child {
   border-radius: 0 0 6px 6px;
+}
+
+/* Стили для размещения в header-contact */
+.header-contact .language-switcher {
+  display: inline-flex;
+  align-items: center;
+  margin-right: var(--vspace-0_5);
+}
+
+.header-contact .language-switcher__button {
+  color: var(--color-text);
+  font-size: 0.875rem;
+}
+
+.header-contact .language-switcher__button:hover {
+  color: var(--color-white);
 }
