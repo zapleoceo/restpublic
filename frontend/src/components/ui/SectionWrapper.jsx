@@ -1,3 +1,6 @@
+import React from 'react';
+
+// Компонент-обертка для секций согласно шаблону Lounge
 export const SectionWrapper = ({ 
   id, 
   className = '', 
@@ -5,7 +8,7 @@ export const SectionWrapper = ({
 }) => (
   <section 
     id={id} 
-    className={`container mx-auto px-4 py-16 target-section ${className}`}
+    className={`container target-section ${className}`}
   >
     {children}
   </section>

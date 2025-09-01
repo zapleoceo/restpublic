@@ -1,6 +1,4 @@
 import React from 'react';
-import { SectionWrapper } from '../ui/SectionWrapper';
-import { SectionHeader } from '../ui/SectionHeader';
 import { useTranslation } from '../../hooks/useTranslation';
 import { useSiteContent } from '../../hooks/useSiteContent';
 
@@ -36,47 +34,47 @@ export const TestimonialsSection = () => {
   }
 
   return (
-    <SectionWrapper id="testimonials" className="s-testimonials bg-neutral-50">
-      <div className="text-center mb-12">
-        <SectionHeader number="05" title={testimonialsContent.title} />
-      </div>
-      
-      {activeTestimonials.length > 0 ? (
-        <div className="swiper-container testimonials-slider max-w-4xl mx-auto">
-          <div className="swiper-wrapper">
-            {testimonialsForCarousel.map((testimonial, index) => (
-              <div key={testimonial.id} className="testimonials-slider__slide swiper-slide">
-                <div className="bg-white rounded-xl shadow-lg p-8 text-center">
-                  <div className="testimonials-slider__author mb-6">
-                    <img 
-                      src={testimonial.photo || '/img/avatar-placeholder.jpg'} 
-                      alt={testimonial.author} 
-                      className="testimonials-slider__avatar w-16 h-16 rounded-full mx-auto mb-4 object-cover"
-                    />
-                    <cite className="testimonials-slider__cite text-lg font-serif font-bold text-primary-900">
-                      {testimonial.author}
-                    </cite>
-                  </div>
-                  <blockquote className="text-neutral-700 leading-relaxed italic">
-                    "{testimonial.text}"
-                  </blockquote>
-                </div>
-              </div>
-            ))}
+    <section id="testimonials" className="container s-testimonials">
+      <div className="row s-testimonials__content">
+        <div className="column xl-12">
+          <div className="section-header" data-num="05">
+            <h2 className="text-display-title">{testimonialsContent.title}</h2>
           </div>
-          <div className="swiper-pagination mt-6"></div>
+          
+          {activeTestimonials.length > 0 ? (
+            <div className="swiper-container testimonials-slider">
+              <div className="swiper-wrapper">
+                {testimonialsForCarousel.map((testimonial, index) => (
+                  <div key={testimonial.id} className="testimonials-slider__slide swiper-slide">
+                    <div className="testimonials-slider__author">
+                      <img 
+                        src={testimonial.photo || '/img/avatar-placeholder.jpg'} 
+                        alt={testimonial.author} 
+                        className="testimonials-slider__avatar"
+                      />
+                      <cite className="testimonials-slider__cite">
+                        {testimonial.author}
+                      </cite>
+                    </div>
+                    <p>{testimonial.text}</p>
+                  </div>
+                ))}
+              </div>
+              <div className="swiper-pagination"></div>
+            </div>
+          ) : (
+            <div className="text-center py-12">
+              <div className="text-6xl mb-4">💬</div>
+              <h3 className="text-xl font-serif font-bold text-primary-900 mb-2">
+                Отзывы скоро появятся
+              </h3>
+              <p className="text-neutral-600">
+                Наши гости поделятся своими впечатлениями
+              </p>
+            </div>
+          )}
         </div>
-      ) : (
-        <div className="text-center py-12">
-          <div className="text-6xl mb-4">💬</div>
-          <h3 className="text-xl font-serif font-bold text-primary-900 mb-2">
-            Отзывы скоро появятся
-          </h3>
-          <p className="text-neutral-600">
-            Наши гости поделятся своими впечатлениями
-          </p>
-        </div>
-      )}
-    </SectionWrapper>
+      </div>
+    </section>
   );
 };

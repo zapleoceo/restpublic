@@ -1,5 +1,4 @@
-import { SectionWrapper } from '../ui/SectionWrapper';
-import { SectionHeader } from '../ui/SectionHeader';
+import React from 'react';
 import { useTranslation } from '../../hooks/useTranslation';
 import { useSiteContent } from '../../hooks/useSiteContent';
 
@@ -9,30 +8,28 @@ export const AboutSection = () => {
   
   const aboutContent = content?.about || {
     title: "О нас",
-    content: "<p>Мы - развлекательный комплекс, где каждый найдет что-то для себя.</p>"
+    description: "Республика Север - это современный развлекательный комплекс, где вы можете насладиться отличной кухней, активными играми и приятным отдыхом.",
+    image: "/img/about-main.jpg"
   };
   
   return (
-    <SectionWrapper id="about" className="s-about bg-neutral-50">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-        <div className="s-about__content-start">
-          <SectionHeader number="01" title={aboutContent.title} />
-          <figure className="about-pic-primary mb-6">
-            <img 
-              src="/img/about-main.jpg" 
-              alt="About" 
-              className="w-full h-auto rounded-lg shadow-lg"
-            />
+    <section id="about" className="container s-about target-section">
+      <div className="row s-about__content">
+        <div className="column xl-4 lg-5 md-12 s-about__content-start">
+          <div className="section-header" data-num="01">
+            <h2 className="text-display-title">{aboutContent.title}</h2>
+          </div>
+          <figure className="about-pic-primary">
+            <img src={aboutContent.image} alt="About" />
           </figure>
         </div>
         
-        <div className="s-about__content-end">
-          <div 
-            className="prose prose-lg max-w-none"
-            dangerouslySetInnerHTML={{ __html: aboutContent.content }} 
-          />
+        <div className="column xl-6 lg-6 md-12 s-about__content-end">
+          <div className="about-content">
+            <p>{aboutContent.description}</p>
+          </div>
         </div>
       </div>
-    </SectionWrapper>
+    </section>
   );
 };

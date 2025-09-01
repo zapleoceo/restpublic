@@ -12,7 +12,7 @@ import {
 
 const HomePage = () => {
   return (
-    <div className="home-page">
+    <div className="s-pagewrap ss-home">
       <SEOHead 
         title="Главная"
         description="Добро пожаловать в North Republic - развлекательный комплекс с рестораном, лазертагом, кинотеатром и многим другим в Хошимине"
@@ -21,15 +21,13 @@ const HomePage = () => {
       
       <Header />
       
-      <main className="main-content pt-16">
-        <div className="sections-container">
-          <IntroSection />
-          <AboutSection />
-          <MenuPreviewSection />
-          <ServicesSection />
-          <EventsSection />
-          <TestimonialsSection />
-        </div>
+      <main className="s-content">
+        <IntroSection />
+        <AboutSection />
+        <MenuPreviewSection />
+        <ServicesSection />
+        <EventsSection />
+        <TestimonialsSection />
       </main>
       
       <Footer />

@@ -1,7 +1,4 @@
 import React, { useState } from 'react';
-import { SectionWrapper } from '../ui/SectionWrapper';
-import { SectionHeader } from '../ui/SectionHeader';
-import { BaseButton } from '../ui/BaseButton';
 import { useTranslation } from '../../hooks/useTranslation';
 import { useMenuData } from '../../hooks/useMenuData';
 import { formatPrice } from '../../utils/formatters';
@@ -10,20 +7,26 @@ import { Link } from 'react-router-dom';
 export const MenuPreviewSection = () => {
   const { t } = useTranslation();
   const { menuData, loading } = useMenuData();
-  const [activeCategory, setActiveCategory] = useState(0);
+  const [activeTab, setActiveTab] = useState(0);
 
   if (loading || !menuData) {
     return (
-      <SectionWrapper id="menu" className="s-menu">
+      <section id="menu" className="container s-menu target-section">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500 mx-auto"></div>
+          <div className="loading-spinner"></div>
         </div>
-      </SectionWrapper>
+      </section>
     );
   }
 
   // Получаем 5 самых популярных категорий
-  const popularCategories = menuData.categories?.slice(0, 5) || [];
+  const popularCategories = menuData.categories?.slice(0, 5).map(category => {
+    // Заменяем "Signature Blends" на "Популярное"
+    if (category.name === 'Signature Blends') {
+      return { ...category, name: 'Популярное' };
+    }
+    return category;
+  }) || [];
   
   // Для каждой категории берем 5 самых популярных блюд
   const getPopularProducts = (categoryId) => {
@@ -32,38 +35,37 @@ export const MenuPreviewSection = () => {
   };
 
   return (
-    <SectionWrapper id="menu" className="s-menu">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-        <div className="s-menu__content-start">
-          <SectionHeader number="02" title={t('menu.title') || "Меню"} />
+    <section id="menu" className="container s-menu target-section">
+      <div className="row s-menu__content">
+        <div className="column xl-4 lg-5 md-12 s-menu__content-start">
+          <div className="section-header" data-num="02">
+            <h2 className="text-display-title">{t('menu.title') || "Меню ресторана"}</h2>
+          </div>
           
           <nav className="tab-nav">
-            <ul className="tab-nav__list space-y-2">
+            <ul className="tab-nav__list">
               {popularCategories.map((category, index) => (
                 <li key={category.id}>
-                  <button
-                    onClick={() => setActiveCategory(index)}
-                    className={`w-full text-left p-4 rounded-lg transition-colors ${
-                      activeCategory === index 
-                        ? 'bg-primary-500 text-white' 
-                        : 'bg-neutral-50 hover:bg-neutral-100 text-neutral-700'
-                    }`}
+                  <a 
+                    href={`#tab-${category.id}`}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setActiveTab(index);
+                    }}
+                    className={activeTab === index ? 'active' : ''}
                   >
-                    <span className="font-medium">{category.name}</span>
-                    <svg className="w-4 h-4 ml-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    <span>{category.name}</span>
+                    <svg>
+                      <path d="M9 5l7 7-7 7" />
                     </svg>
-                  </button>
+                  </a>
                 </li>
               ))}
               <li>
-                <Link 
-                  to="/menu" 
-                  className="w-full text-left p-4 rounded-lg transition-colors bg-secondary-500 hover:bg-secondary-600 text-white font-medium block"
-                >
+                <Link to="/menu" className="view-all-link">
                   <span>{t('menu.view_all') || "Полное меню"}</span>
-                  <svg className="w-4 h-4 ml-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  <svg>
+                    <path d="M9 5l7 7-7 7" />
                   </svg>
                 </Link>
               </li>
@@ -71,29 +73,25 @@ export const MenuPreviewSection = () => {
           </nav>
         </div>
         
-        <div className="s-menu__content-end">
+        <div className="column xl-6 lg-6 md-12 s-menu__content-end">
           <div className="tab-content menu-block">
             {popularCategories.map((category, index) => (
               <div 
                 key={category.id} 
+                id={`tab-${category.id}`} 
                 className={`menu-block__group tab-content__item ${
-                  activeCategory === index ? 'block' : 'hidden'
+                  activeTab === index ? 'active' : ''
                 }`}
               >
-                <h6 className="menu-block__cat-name text-xl font-serif font-bold text-primary-900 mb-6">
-                  {category.name}
-                </h6>
-                <ul className="menu-list space-y-4">
+                <h6 className="menu-block__cat-name">{category.name}</h6>
+                <ul className="menu-list">
                   {getPopularProducts(category.id).map(product => (
-                    <li key={product.id} className="menu-list__item flex justify-between items-center p-4 bg-white rounded-lg shadow-sm">
+                    <li key={product.id} className="menu-list__item">
                       <div className="menu-list__item-desc">
-                        <h4 className="font-medium text-neutral-900">{product.name}</h4>
-                        {product.description && (
-                          <p className="text-sm text-neutral-600 mt-1">{product.description}</p>
-                        )}
+                        <h4>{product.name}</h4>
                       </div>
-                      <div className="menu-list__item-price text-lg font-bold text-primary-600">
-                        {formatPrice(product.price)}
+                      <div className="menu-list__item-price">
+                        <span>₫</span>{formatPrice(product.price)}
                       </div>
                     </li>
                   ))}
@@ -103,6 +101,6 @@ export const MenuPreviewSection = () => {
           </div>
         </div>
       </div>
-    </SectionWrapper>
+    </section>
   );
 };
