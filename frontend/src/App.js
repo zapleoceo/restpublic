@@ -56,7 +56,7 @@ function App() {
                   <defs><style>{`.cls-6376396cc3a86d32eae6f0dc-1{fill:none;stroke:currentColor;stroke-miterlimit:10;}`}</style></defs>
                   <path className="cls-6376396cc3a86d32eae6f0dc-1" d="M19.64,21.25c-2.54,2.55-8.38.83-13-3.84S.2,6.9,2.75,4.36L5.53,1.57,10.9,6.94l-2,2A2.18,2.18,0,0,0,8.9,12L12,15.1a2.18,2.18,0,0,0,3.07,0l2-2,5.37,5.37Z"></path>
                 </svg>
-                +7 (999) 123-45-67
+                +84349338758
               </a>
               <LanguageSwitcher />
             </div>
@@ -382,7 +382,7 @@ function App() {
               <h6>Contacts</h6>
               <ul className="link-list">
                 <li><a href="mailto:#0">contact@northrepublic.com</a></li>
-                                        <li><a href="tel:+79991234567">+7 (999) 123-45-67</a></li>
+                                        <li><a href="tel:+84349338758">+84349338758</a></li>
               </ul>
             </div>
             <div className="grid-cols__column footer-block">
