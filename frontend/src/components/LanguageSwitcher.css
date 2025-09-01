@@ -1,0 +1,76 @@
+.language-switcher {
+  position: relative;
+  display: inline-block;
+}
+
+.language-switcher__button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background: transparent;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  color: #374151;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.language-switcher__button:hover {
+  background: #f9fafb;
+  border-color: #d1d5db;
+}
+
+.language-switcher__icon {
+  color: #6b7280;
+}
+
+.language-switcher__current {
+  font-weight: 600;
+}
+
+.language-switcher__dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 4px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  z-index: 1000;
+  min-width: 80px;
+}
+
+.language-switcher__option {
+  display: block;
+  width: 100%;
+  padding: 8px 12px;
+  background: transparent;
+  border: none;
+  text-align: left;
+  font-size: 14px;
+  color: #374151;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.language-switcher__option:hover {
+  background: #f9fafb;
+}
+
+.language-switcher__option--active {
+  background: #f3f4f6;
+  color: #1f2937;
+  font-weight: 600;
+}
+
+.language-switcher__option:first-child {
+  border-radius: 6px 6px 0 0;
+}
+
+.language-switcher__option:last-child {
+  border-radius: 0 0 6px 6px;
+}

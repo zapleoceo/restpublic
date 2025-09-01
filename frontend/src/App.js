@@ -1,4 +1,6 @@
 import React, { useEffect } from 'react';
+import LanguageSwitcher from './components/LanguageSwitcher';
+import './components/LanguageSwitcher.css';
 
 function App() {
   useEffect(() => {
@@ -56,6 +58,7 @@ function App() {
                 </svg>
                 +7 (999) 123-45-67
               </a>
+              <LanguageSwitcher />
             </div>
           </nav>
         </div>
