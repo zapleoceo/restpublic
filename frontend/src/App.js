@@ -1,8 +1,10 @@
 import React, { useEffect } from 'react';
 import LanguageSwitcher from './components/LanguageSwitcher';
 import Logo from './components/Logo';
+import DynamicMenu from './components/DynamicMenu';
 import './components/LanguageSwitcher.css';
 import './components/Logo.css';
+import './components/DynamicMenu.css';
 
 function App() {
   useEffect(() => {
@@ -138,120 +140,7 @@ function App() {
       </section>
 
       {/* menu */}
-      <section id="menu" className="container s-menu target-section">
-        <div className="row s-menu__content">
-          <div className="column xl-4 lg-5 md-12 s-menu__content-start">
-            <div className="section-header" data-num="02">
-              <h2 className="text-display-title">Our Menu</h2>
-            </div>
-
-            <nav className="tab-nav">
-              <ul className="tab-nav__list">
-                <li>
-                  <a href="#tab-signature-blends">
-                    <span>Signature Blends</span>
-                    <svg clipRule="evenodd" fillRule="evenodd" strokeLinejoin="round" strokeMiterlimit="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                      <path d="m14.523 18.787s4.501-4.505 6.255-6.26c.146-.146.219-.338.219-.53s-.073-.383-.219-.53c-1.753-1.754-6.255-6.258-6.255-6.258-.144-.145-.334-.217-.524-.217-.193 0-.385.074-.532.221-.293.292-.295.766-.004 1.056l4.978 4.978h-14.692c-.414 0-.75.336-.75.75s.336.75.75.75h14.692l-4.979 4.979c-.289.289-.286.762.006 1.054.148.148.341.222.533.222.19 0 .378-.072.522-.215z" fillRule="nonzero"/>
-                    </svg>
-                  </a>
-                </li>
-                <li>
-                  <a href="#tab-pastries">
-                    <span>Freshly Baked Pastries</span>
-                    <svg clipRule="evenodd" fillRule="evenodd" strokeLinejoin="round" strokeMiterlimit="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                      <path d="m14.523 18.787s4.501-4.505 6.255-6.26c.146-.146.219-.338.219-.53s-.073-.383-.219-.53c-1.753-1.754-6.255-6.258-6.255-6.258-.144-.145-.334-.217-.524-.217-.193 0-.385.074-.532.221-.293.292-.295.766-.004 1.056l4.978 4.978h-14.692c-.414 0-.75.336-.75.75s.336.75.75.75h14.692l-4.979 4.979c-.289.289-.286.762.006 1.054.148.148.341.222.533.222.19 0 .378-.072.522-.215z" fillRule="nonzero"/>
-                    </svg>
-                  </a>
-                </li>
-                <li>
-                  <a href="#tab-gourmet-treats">
-                    <span>Gourmet Treats</span>
-                    <svg clipRule="evenodd" fillRule="evenodd" strokeLinejoin="round" strokeMiterlimit="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                      <path d="m14.523 18.787s4.501-4.505 6.255-6.26c.146-.146.219-.338.219-.53s-.073-.383-.219-.53c-1.753-1.754-6.255-6.258-6.255-6.258-.144-.145-.334-.217-.524-.217-.193 0-.385.074-.532.221-.293.292-.295.766-.004 1.056l4.978 4.978h-14.692c-.414 0-.75.336-.75.75s.336.75.75.75h14.692l-4.979 4.979c-.289.289-.286.762.006 1.054.148.148.341.222.533.222.19 0 .378-.072.522-.215z" fillRule="nonzero"/>
-                    </svg>
-                  </a>
-                </li>
-              </ul>
-            </nav>
-          </div>
-
-          <div className="column xl-6 lg-6 md-12 s-menu__content-end">
-            <div className="tab-content menu-block">
-              <div id="tab-signature-blends" className="menu-block__group tab-content__item">
-                <h6 className="menu-block__cat-name">Signature Blends</h6>
-                <ul className="menu-list">
-                  <li className="menu-list__item">
-                    <div className="menu-list__item-desc">
-                      <h4>Lounge Elegance Espresso</h4>
-                      <p>Rich and full-bodied, our signature espresso blend with notes of dark chocolate and toasted nuts.</p>
-                    </div>
-                    <div className="menu-list__item-price">
-                      <span>$</span>3.50
-                    </div>
-                  </li>
-                  <li className="menu-list__item">
-                    <div className="menu-list__item-desc">
-                      <h4>Velvet Mocha Delight</h4>
-                      <p>Silky mocha infused with a hint of vanilla, crowned with velvety whipped cream.</p>
-                    </div>
-                    <div className="menu-list__item-price">
-                      <span>$</span>4.25
-                    </div>
-                  </li>
-                </ul>
-              </div>
-
-              <div id="tab-pastries" className="menu-block__group tab-content__item">
-                <h6 className="menu-block__cat-name">Freshly Baked Pastries</h6>
-                <ul className="menu-list">
-                  <li className="menu-list__item">
-                    <div className="menu-list__item-desc">
-                      <h4>Buttery Croissants</h4>
-                      <p>Flaky and buttery croissants baked to perfection.</p>
-                    </div>
-                    <div className="menu-list__item-price">
-                      <span>$</span>2.50
-                    </div>
-                  </li>
-                  <li className="menu-list__item">
-                    <div className="menu-list__item-desc">
-                      <h4>Flaky Almond Danishes</h4>
-                      <p>Delicate pastries filled with almond paste and sliced almonds.</p>
-                    </div>
-                    <div className="menu-list__item-price">
-                      <span>$</span>3.00
-                    </div>
-                  </li>
-                </ul>
-              </div>
-
-              <div id="tab-gourmet-treats" className="menu-block__group tab-content__item">
-                <h6 className="menu-block__cat-name">Gourmet Treats</h6>
-                <ul className="menu-list">
-                  <li className="menu-list__item">
-                    <div className="menu-list__item-desc">
-                      <h4>Artisanal Dark Chocolate Truffles</h4>
-                      <p>Luxurious dark chocolate truffles dusted with cocoa powder.</p>
-                    </div>
-                    <div className="menu-list__item-price">
-                      <span>$</span>2.75
-                    </div>
-                  </li>
-                  <li className="menu-list__item">
-                    <div className="menu-list__item-desc">
-                      <h4>Handcrafted Praline Bonbons</h4>
-                      <p>Praline-filled bonbons topped with a caramelized nut.</p>
-                    </div>
-                    <div className="menu-list__item-price">
-                      <span>$</span>3.00
-                    </div>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <DynamicMenu />
 
       {/* gallery */}
       <section id="gallery" className="container s-gallery target-section">
