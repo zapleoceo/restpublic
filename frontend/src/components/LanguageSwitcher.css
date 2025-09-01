@@ -1,7 +1,7 @@
 .language-switcher {
   position: relative;
   display: inline-block;
-  margin-right: var(--vspace-0_375);
+  margin-right: var(--vspace-0_5);
 }
 
 .language-switcher__button {
@@ -20,7 +20,7 @@
 }
 
 .language-switcher__button:hover {
-  color: var(--color-white);
+  color: var(--color-text);
 }
 
 .language-switcher__current {
@@ -79,10 +79,13 @@
 }
 
 .header-contact .language-switcher__button {
-  color: var(--color-text);
+  color: var(--color-text-light);
   font-size: 0.875rem;
+  font-weight: 500;
+  transition-property: color, background-color;
+  transition-duration: 0.3s;
 }
 
 .header-contact .language-switcher__button:hover {
-  color: var(--color-white);
+  color: var(--color-text);
 }
