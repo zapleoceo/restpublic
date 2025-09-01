@@ -110,6 +110,13 @@
   /* easing functions */
   --ease-smooth: cubic-bezier(0.25, 0.1, 0.25, 1);
   --ease-smooth-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  
+  /* text sizes */
+  --text-xs: 1.2rem;
+  --text-sm: 1.4rem;
+  
+  /* additional vspace */
+  --vspace-0_625: calc(0.625 * var(--vspace-base));
 }
 
 /* ===================================================================
@@ -624,44 +631,74 @@ h1, h2, h3, h4, h5, h6 {
 
 .tab-nav__list {
   list-style: none;
+  display: flex;
+  flex-direction: column;
   margin: 0;
   padding: 0;
+  border-top: 1px solid var(--color-neutral-800);
+  counter-reset: ctr;
 }
 
 .tab-nav__list li {
-  margin-bottom: 1rem;
+  padding-left: 0;
+  border-bottom: 1px solid var(--color-neutral-800);
 }
 
 .tab-nav__list a {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 1.5rem 2rem;
-  font-family: var(--font-2);
-  font-size: 1.8rem;
-  font-weight: 500;
+  height: 100%;
   color: var(--color-text);
+  padding-top: var(--vspace-0_75);
+  padding-bottom: var(--vspace-0_75);
+  padding-left: var(--vspace-0_75);
+  padding-right: var(--vspace-0_75);
+  font-family: var(--font-2);
+  font-size: 1.6rem;
+  font-weight: 400;
   text-decoration: none;
-  background-color: var(--color-neutral-850);
-  border: 1px solid var(--color-neutral-800);
-  border-radius: 0.8rem;
+  background-color: transparent;
+  border: none;
+  border-radius: 0;
   transition: all 0.3s var(--ease-smooth);
 }
 
-.tab-nav__list a:hover,
-.tab-nav__list a.active,
-.tab-nav__list li[data-tab-active] a {
-  background-color: var(--color-bg-primary);
-  border-color: var(--color-bg-primary);
-  color: var(--color-white);
+.tab-nav__list a::before {
+  display: block;
+  content: counter(ctr, decimal-leading-zero) ".";
+  font-size: var(--text-xs);
+  margin-right: var(--vspace-0_625);
+  color: var(--color-text-light);
+  counter-increment: ctr;
+}
+
+.tab-nav__list a svg {
+  height: var(--vspace-0_5);
+  width: var(--vspace-0_5);
+  margin-left: auto;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(-2rem);
+  transition-property: opacity, visibility, transform;
+  transition-duration: 0.3s;
+  transition-timing-function: var(--ease-smooth);
+}
+
+.tab-nav__list a svg path {
+  fill: var(--color-text);
 }
 
 .tab-nav__list li[data-tab-active] {
   border-bottom: 1px solid var(--color-bg-primary);
 }
 
+.tab-nav__list li[data-tab-active] a {
+  background-color: var(--color-bg-primary);
+  color: var(--color-white);
+}
+
 .tab-nav__list li[data-tab-active] a::before {
-  color: var(--color-text);
+  color: var(--color-text-light);
 }
 
 .tab-nav__list li[data-tab-active] a svg {
@@ -672,6 +709,19 @@ h1, h2, h3, h4, h5, h6 {
 
 .tab-nav__list li[data-tab-active] a svg path {
   fill: var(--color-white);
+}
+
+.tab-nav__list a:hover,
+.tab-nav__list a:focus {
+  background-color: var(--color-neutral-900);
+  color: var(--color-text);
+}
+
+.tab-nav__list a:hover svg,
+.tab-nav__list a:focus svg {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(0);
 }
 
 .tab-content {
