@@ -1,4 +1,6 @@
-const mongoService = require('./backend/services/mongoService');
+#!/usr/bin/env node
+
+const mongoService = require('../services/mongoService');
 
 async function addTestData() {
   try {
@@ -113,7 +115,7 @@ async function addTestData() {
     await db.collection('sections').deleteMany({});
     const result = await db.collection('sections').insertMany(sections);
     
-    console.log(`✅ Добавлено ${result.insertedCount} секций`);
+    console.log('✅ Добавлено ' + result.insertedCount + ' секций');
     
     // Проверяем результат
     const allSections = await db.collection('sections').find({}).toArray();
