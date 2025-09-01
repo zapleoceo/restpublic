@@ -1,26 +1,8 @@
 @import './styles/template.css';
 
-/* Отключаем базовые стили Tailwind, чтобы не конфликтовали с шаблоном */
+/* Минимальные Tailwind стили для утилит */
 @tailwind components;
 @tailwind utilities;
-
-@layer base {
-  html {
-    scroll-behavior: smooth;
-  }
-  
-  body {
-    font-family: 'Roboto Flex', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-      'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-      sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
-
-  h1, h2, h3, h4, h5, h6 {
-    font-family: 'Playfair Display', serif;
-  }
-}
 
 @layer components {
   .line-clamp-2 {
