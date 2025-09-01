@@ -3635,18 +3635,23 @@ td:last-child {
     --pic-primary-mleft: calc(var(--pic-primary-width) / 2);
 
     width              : var(--pic-primary-width);
+    height             : 600px;
     display            : inline-flex;
     padding-left       : var(--gutter);
     padding-right      : var(--gutter);
     position           : absolute;
     top                : var(--content-padding-top);
     left               : calc(50% - var(--pic-primary-mleft));
+    overflow           : hidden;
 }
 
 .intro-pic-primary img {
     margin        : 0;
     vertical-align: bottom;
-    aspect-ratio  : 1200/1650;
+    width         : 100%;
+    height        : 100%;
+    object-fit    : cover;
+    object-position: center;
 }
 
 .intro-block-content {

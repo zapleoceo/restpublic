@@ -58,7 +58,7 @@ jobs:
           
           # Configure Poster API token
           echo "🔧 Configuring Poster API token..."
-          sed -i 's/your_poster_api_token_here/${{ secrets.POSTER_API_TOKEN }}/' config.env
+          sed -i 's/your_poster_api_token_here/'\"\${{ secrets.POSTER_API_TOKEN }}\"'/' config.env
           
           # Restart backend with PM2
           echo "🔄 Restarting backend service..."

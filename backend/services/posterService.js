@@ -135,7 +135,7 @@ class PosterService {
         }
         
         // Sort products by sales and filter visible ones
-        const sortedProducts = allProducts
+        const sortedProducts = (Array.isArray(allProducts) ? allProducts : [])
           .filter(product => {
             if (product.hidden === "1") return false;
             if (product.spots && Array.isArray(product.spots)) {
@@ -158,7 +158,7 @@ class PosterService {
         console.error('Error getting popular products:', error);
         // Fallback: return first 5 visible products
         const allProducts = await this.getProducts();
-        popularProducts = allProducts
+        popularProducts = (Array.isArray(allProducts) ? allProducts : [])
           .filter(product => {
             if (product.hidden === "1") return false;
             if (product.spots && Array.isArray(product.spots)) {
