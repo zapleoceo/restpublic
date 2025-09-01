@@ -21,7 +21,7 @@ import LoginPage from './components/LoginPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import { EventsPage, EventDetailPage } from './pages';
 import { NewAdminPanel } from './components/admin';
-import { SmoothScroll } from './components/ui';
+import { SmoothScroll, Preloader } from './components/ui';
 import './App.css';
 
 function App() {
@@ -29,6 +29,7 @@ function App() {
   const [menuData, setMenuData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [preloaderVisible, setPreloaderVisible] = useState(true);
 
   useEffect(() => {
     fetchMenuData();
@@ -111,6 +112,9 @@ function App() {
   return (
     <HelmetProvider>
       <ErrorBoundary>
+        {preloaderVisible && (
+          <Preloader onLoaded={() => setPreloaderVisible(false)} />
+        )}
         <Router>
           <SmoothScroll>
             <div className="min-h-screen bg-gray-50">
