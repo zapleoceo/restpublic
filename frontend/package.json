@@ -1,6 +1,6 @@
 {
   "name": "northrepublic-frontend",
-  "version": "2.3.3",
+  "version": "2.3.4",
   "description": "Modern React frontend for North Republic restaurant menu",
   "type": "module",
   "scripts": {
