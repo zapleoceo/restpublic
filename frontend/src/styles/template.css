@@ -780,7 +780,13 @@ h1, h2, h3, h4, h5, h6 {
   align-items: center;
   justify-content: center;
   height: var(--header-height);
-  background-color: var(--color-bg);
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    var(--color-bg) 10%,
+    var(--color-bg) 90%,
+    transparent 100%
+  );
   padding: 0 calc(var(--gutter) * 2);
   position: relative;
 }
@@ -798,6 +804,8 @@ h1, h2, h3, h4, h5, h6 {
   position: absolute;
   left: calc(var(--gutter) * 2);
   top: 50%;
+  position: relative;
+  overflow: hidden;
 }
 
 .header-logo a {
@@ -806,11 +814,6 @@ h1, h2, h3, h4, h5, h6 {
   padding: 0;
   outline: 0;
   border: none;
-}
-
-.header-logo {
-  position: relative;
-  overflow: hidden;
 }
 
 .header-logo::before {
