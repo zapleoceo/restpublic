@@ -17,29 +17,81 @@ jobs:
       with:
         node-version: '20'
         cache: 'npm'
-        cache-dependency-path: frontend/package-lock.json
         
-    - name: Install dependencies
+    - name: Install Frontend Dependencies
       run: |
         cd frontend
         npm ci --legacy-peer-deps
         
-    - name: Build frontend
+    - name: Build Frontend
       run: |
         cd frontend
         npm run build
         
-    - name: Deploy to server
+    - name: Install Backend Dependencies
+      run: |
+        cd backend
+        npm ci
+        
+    - name: Deploy to Production Server
       uses: appleboy/ssh-action@v1.0.3
       with:
-        host: ${{ secrets.SSH_HOST }}
-        username: ${{ secrets.SSH_USER }}
-        key: ${{ secrets.SSH_KEY }}
+        host: ${{ secrets.PRODUCTION_HOST }}
+        username: ${{ secrets.PRODUCTION_USER }}
+        key: ${{ secrets.PRODUCTION_SSH_KEY }}
         port: 22
         script: |
+          echo "🚀 Starting deployment to production..."
+          
+          # Navigate to project directory
           cd /var/www/northrepubli_usr/data/www/northrepublic.me
+          
+          # Pull latest changes
+          echo "📥 Pulling latest changes from Git..."
           git pull origin main
-          cd frontend
+          
+          # Install backend dependencies
+          echo "📦 Installing backend dependencies..."
+          cd backend
+          npm ci
+          
+          # Configure Poster API token
+          echo "🔧 Configuring Poster API token..."
+          sed -i 's/your_poster_api_token_here/922371:489411264005b482039f38b8ee21f6fb/' config.env
+          
+          # Restart backend with PM2
+          echo "🔄 Restarting backend service..."
+          pm2 stop northrepublic-backend || true
+          pm2 delete northrepublic-backend || true
+          pm2 start server.js --name northrepublic-backend
+          pm2 save
+          
+          # Install frontend dependencies
+          echo "📦 Installing frontend dependencies..."
+          cd ../frontend
           npm ci --legacy-peer-deps
+          
+          # Build frontend
+          echo "🔨 Building frontend..."
           npm run build
-          echo "Deployment completed successfully!"
+          
+          # Copy built files to public directory
+          echo "📁 Copying built files..."
+          cp -r dist/* ../
+          
+          # Check services status
+          echo "📊 Checking services status..."
+          pm2 list
+          
+          # Health check
+          echo "🏥 Performing health check..."
+          sleep 10
+          curl -f http://localhost:3002/api/health || echo "❌ Backend health check failed"
+          
+          echo "✅ Deployment completed successfully!"
+          
+    - name: Health Check
+      run: |
+        echo "🏥 Final health check..."
+        sleep 30
+        curl -f https://northrepublic.me/api/health || echo "❌ Production health check failed"
