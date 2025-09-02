@@ -3,7 +3,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const compression = require('compression');
 const morgan = require('morgan');
-require('dotenv').config({ path: '../.env' });
+require('dotenv').config({ path: './.env' });
 
 // Debug: Check if environment variables are loaded
 console.log('🔍 Environment variables check:');
