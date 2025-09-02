@@ -44,10 +44,12 @@ jobs:
           echo "🚀 Starting deployment to production..."
           
           # Navigate to project directory
-          cd /var/www/northrepubli_usr/data/www/northrepublic.me
+          PROJECT_DIR="/var/www/northrepubli_usr/data/www/northrepublic.me"
+          cd $PROJECT_DIR
           
           # Pull latest changes
           echo "📥 Pulling latest changes from Git..."
+          git fetch origin
           git reset --hard origin/main
           git clean -fd
           
@@ -55,10 +57,6 @@ jobs:
           echo "📦 Installing backend dependencies..."
           cd backend
           npm install
-          
-          # Configure Poster API token
-          echo "🔧 Configuring Poster API token..."
-          sed -i 's/your_poster_api_token_here/'\"\${{ secrets.POSTER_API_TOKEN }}\"'/' config.env
           
           # Restart backend with PM2
           echo "🔄 Restarting backend service..."
@@ -76,9 +74,11 @@ jobs:
           echo "🔨 Building frontend..."
           npm run build
           
-          # Copy built files to public directory
-          echo "📁 Copying built files..."
-          cp -r build/* ../
+          # Copy built files and images to public directory
+          echo "📁 Copying built files and images..."
+          cd ..
+          cp -r frontend/build/* .
+          cp -r frontend/public/images .
           
           # Check services status
           echo "📊 Checking services status..."

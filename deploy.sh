@@ -39,39 +39,36 @@ if ! ssh nr "echo 'Connection successful'" > /dev/null 2>&1; then
 fi
 
 # Переход в директорию проекта на сервере
-log_info "Navigating to project directory..."
-ssh nr "cd /var/www/northrepubli_usr/data/www/northrepublic.me"
+PROJECT_DIR="/var/www/northrepubli_usr/data/www/northrepublic.me"
+log_info "Navigating to project directory: $PROJECT_DIR"
 
 # Остановка старых процессов
 log_info "Stopping old processes..."
-ssh nr "pm2 stop northrepublic-backend || true"
-ssh nr "pm2 delete northrepublic-backend || true"
+ssh nr "cd $PROJECT_DIR && pm2 stop northrepublic-backend || true"
+ssh nr "cd $PROJECT_DIR && pm2 delete northrepublic-backend || true"
 
 # Обновление кода из Git
 log_info "Pulling latest changes from Git..."
-ssh nr "cd /var/www/northrepubli_usr/data/www/northrepublic.me && git pull origin main"
+ssh nr "cd $PROJECT_DIR && git fetch origin && git reset --hard origin/main && git clean -fd"
 
 # Backend deployment
 log_info "Deploying backend..."
-ssh nr "cd /var/www/northrepubli_usr/data/www/northrepublic.me/backend && npm ci"
-
-# Настройка токена Poster API
-log_info "Configuring Poster API token..."
-ssh nr "cd /var/www/northrepubli_usr/data/www/northrepublic.me/backend && sed -i 's/your_poster_api_token_here/'\"\$POSTER_API_TOKEN\"'/' config.env"
+ssh nr "cd $PROJECT_DIR/backend && npm install"
 
 # Запуск backend
 log_info "Starting backend service..."
-ssh nr "cd /var/www/northrepubli_usr/data/www/northrepublic.me/backend && pm2 start server.js --name northrepublic-backend"
+ssh nr "cd $PROJECT_DIR/backend && pm2 start server.js --name northrepublic-backend"
 ssh nr "pm2 save"
 
 # Frontend deployment
 log_info "Deploying frontend..."
-ssh nr "cd /var/www/northrepubli_usr/data/www/northrepublic.me/frontend && npm ci --legacy-peer-deps"
-ssh nr "cd /var/www/northrepubli_usr/data/www/northrepublic.me/frontend && npm run build"
+ssh nr "cd $PROJECT_DIR/frontend && npm ci --legacy-peer-deps"
+ssh nr "cd $PROJECT_DIR/frontend && npm run build"
 
-# Копирование собранных файлов
-log_info "Copying built files..."
-ssh nr "cd /var/www/northrepubli_usr/data/www/northrepublic.me/frontend && cp -r dist/* ../"
+# Копирование собранных файлов и images
+log_info "Copying built files and images..."
+ssh nr "cd $PROJECT_DIR && cp -r frontend/build/* ."
+ssh nr "cd $PROJECT_DIR && cp -r frontend/public/images ."
 
 # Проверка статуса сервисов
 log_info "Checking services status..."
