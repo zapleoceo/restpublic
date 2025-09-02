@@ -3,7 +3,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const compression = require('compression');
 const morgan = require('morgan');
-require('dotenv').config({ path: './.env' });
+require('dotenv').config({ path: '/var/www/northrepubli_usr/data/www/northrepublic.me/.env' });
 
 const posterRoutes = require('./routes/poster');
 const menuRoutes = require('./routes/menu');
