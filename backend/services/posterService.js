@@ -5,6 +5,11 @@ class PosterService {
     this.baseURL = process.env.POSTER_API_URL || 'https://joinposter.com/api/v3';
     this.token = process.env.POSTER_API_TOKEN;
     
+    console.log('🔧 PosterService constructor - Environment variables:');
+    console.log('  POSTER_API_TOKEN:', this.token ? '***configured***' : 'NOT CONFIGURED');
+    console.log('  POSTER_API_URL:', this.baseURL || 'NOT CONFIGURED');
+    console.log('  All env vars:', Object.keys(process.env).filter(key => key.includes('POSTER')));
+    
     if (!this.token) {
       console.warn('⚠️ POSTER_API_TOKEN not configured');
     }
@@ -31,8 +36,8 @@ class PosterService {
         ...params
       });
 
-      const url = `${this.apiUrl}/${endpoint}?${queryParams.toString()}`;
-      console.log(`📡 Poster API Request: ${this.apiUrl}/${endpoint}`);
+      const url = `${this.baseURL}/${endpoint}?${queryParams.toString()}`;
+      console.log(`📡 Poster API Request: ${this.baseURL}/${endpoint}`);
 
       const response = await this.api.get(url);
       
