@@ -20,6 +20,7 @@ const DynamicMenu = () => {
 
       // Загружаем категории
       const categoriesData = await menuService.getCategories();
+      console.log('Loaded categories:', categoriesData);
       setCategories(categoriesData);
 
       // Загружаем продукты для каждой категории
@@ -33,6 +34,7 @@ const DynamicMenu = () => {
         
         // Загружаем популярные продукты категории
         const categoryPopular = await menuService.getPopularProductsByCategory(category.category_id, 5);
+        console.log(`Popular products for category ${category.category_id}:`, categoryPopular);
         popularData[category.category_id] = categoryPopular;
       }
       

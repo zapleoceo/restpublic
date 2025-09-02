@@ -690,7 +690,7 @@
         ssMobileMenu();
         ssScrollSpy();
         // ssGLightbox(); // Disabled - GLightbox not available
-        ssSwiper();
+        // ssSwiper(); // Disabled - Swiper not available
         sstabs();
         ssMailChimpForm();
         ssAlertBoxes();

@@ -115,7 +115,7 @@ class MenuService {
       }
       
       const data = await response.json();
-      return data.products || [];
+      return data.popular_products || [];
     } catch (error) {
       console.error('Error fetching popular products by category:', error);
       // Fallback: возвращаем первые 5 видимых продуктов из категории
