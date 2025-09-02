@@ -5,10 +5,26 @@ const posterService = require('../services/posterService');
 // Get all menu data (categories + products)
 router.get('/', async (req, res) => {
   try {
-    const [categories, products] = await Promise.all([
-      posterService.getCategories(),
-      posterService.getProducts()
-    ]);
+    console.log('🔄 Starting menu data fetch...');
+    
+    let categories = [];
+    let products = [];
+    
+    try {
+      categories = await posterService.getCategories();
+      console.log(`✅ Categories fetched: ${categories.length}`);
+    } catch (error) {
+      console.error('❌ Categories fetch failed:', error.message);
+      categories = [];
+    }
+    
+    try {
+      products = await posterService.getProducts();
+      console.log(`✅ Products fetched: ${products.length}`);
+    } catch (error) {
+      console.error('❌ Products fetch failed:', error.message);
+      products = [];
+    }
 
     // Process products to normalize prices and add images
     const processedProducts = products.map(product => ({
