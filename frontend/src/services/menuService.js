@@ -106,6 +106,24 @@ class MenuService {
     }
   }
 
+  // Получение популярных продуктов по категории
+  async getPopularProductsByCategory(categoryId, limit = 5) {
+    try {
+      const response = await fetch(`${this.baseURL}/api/menu/categories/${categoryId}/popular?limit=${limit}`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      return data.products || [];
+    } catch (error) {
+      console.error('Error fetching popular products by category:', error);
+      // Fallback: возвращаем первые 5 видимых продуктов из категории
+      const categoryProducts = await this.getProductsByCategory(categoryId);
+      return categoryProducts.slice(0, limit);
+    }
+  }
+
   // Нормализация цены (деление на 100)
   normalizePrice(price) {
     return price ? parseFloat(price) / 100 : 0;

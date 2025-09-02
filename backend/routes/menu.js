@@ -107,6 +107,37 @@ router.get('/popular', async (req, res) => {
   }
 });
 
+// Get popular products by category
+router.get('/categories/:categoryId/popular', async (req, res) => {
+  try {
+    const { categoryId } = req.params;
+    const limit = parseInt(req.query.limit) || 5;
+    const popularProducts = await posterService.getPopularProductsByCategory(categoryId, limit);
+
+    // Process products to normalize prices and add images
+    const processedProducts = popularProducts.map(product => ({
+      ...product,
+      price_normalized: posterService.normalizePrice(product.price),
+      price_formatted: posterService.formatPrice(product.price),
+      image_url: posterService.getProductImage(product.photo)
+    }));
+
+    res.json({
+      category_id: categoryId,
+      products: processedProducts,
+      limit,
+      count: processedProducts.length,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('Category Popular Products API Error:', error);
+    res.status(500).json({
+      error: 'Failed to fetch category popular products',
+      message: error.message
+    });
+  }
+});
+
 // Get product by ID
 router.get('/products/:productId', async (req, res) => {
   try {

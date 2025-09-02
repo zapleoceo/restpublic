@@ -174,6 +174,75 @@ class PosterService {
     return popularProducts;
   }
 
+  // Get popular products by category
+  async getPopularProductsByCategory(categoryId, limit = 5) {
+    let popularProducts = this.cache.get(`popular_category_${categoryId}_${limit}`);
+    
+    if (!popularProducts) {
+      try {
+        // Get sales data for the last 30 days
+        const dateTo = new Date();
+        const dateFrom = new Date();
+        dateFrom.setDate(dateFrom.getDate() - 30);
+        
+        const salesData = await this.makeRequest('dash.getProductsSales', {
+          date_from: dateFrom,
+          date_to: dateTo
+        });
+        
+        // Get products from specific category
+        const categoryProducts = await this.getProductsByCategory(categoryId);
+        
+        // Create a map of product sales
+        const productSales = {};
+        if (salesData && Array.isArray(salesData)) {
+          salesData.forEach(sale => {
+            if (sale.product_id && sale.count) {
+              productSales[sale.product_id] = (productSales[sale.product_id] || 0) + parseInt(sale.count);
+            }
+          });
+        }
+        
+        // Sort products by sales and filter visible ones
+        const sortedProducts = (Array.isArray(categoryProducts) ? categoryProducts : [])
+          .filter(product => {
+            if (product.hidden === "1") return false;
+            if (product.spots && Array.isArray(product.spots)) {
+              const hasVisibleSpot = product.spots.some(spot => spot.visible !== "0");
+              if (!hasVisibleSpot) return false;
+            }
+            return true;
+          })
+          .sort((a, b) => {
+            const salesA = productSales[a.product_id] || 0;
+            const salesB = productSales[b.product_id] || 0;
+            return salesB - salesA;
+          })
+          .slice(0, limit);
+        
+        popularProducts = sortedProducts;
+        this.cache.set(`popular_category_${categoryId}_${limit}`, popularProducts, 1800); // Cache for 30 minutes
+        console.log(`📦 Cached ${popularProducts.length} popular products for category ${categoryId}`);
+      } catch (error) {
+        console.error('Error getting popular products by category:', error);
+        // Fallback: return first 5 visible products from category
+        const categoryProducts = await this.getProductsByCategory(categoryId);
+        popularProducts = (Array.isArray(categoryProducts) ? categoryProducts : [])
+          .filter(product => {
+            if (product.hidden === "1") return false;
+            if (product.spots && Array.isArray(product.spots)) {
+              const hasVisibleSpot = product.spots.some(spot => spot.visible !== "0");
+              if (!hasVisibleSpot) return false;
+            }
+            return true;
+          })
+          .slice(0, limit);
+      }
+    }
+    
+    return popularProducts;
+  }
+
   // Normalize price (divide by 100 to convert from minor units)
   normalizePrice(price) {
     if (!price) return 0;

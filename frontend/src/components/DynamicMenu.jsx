@@ -4,7 +4,7 @@ import menuService from '../services/menuService';
 const DynamicMenu = () => {
   const [categories, setCategories] = useState([]);
   const [products, setProducts] = useState({});
-  const [popularProducts, setPopularProducts] = useState([]);
+  const [categoryPopularProducts, setCategoryPopularProducts] = useState({});
   const [activeCategory, setActiveCategory] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -22,17 +22,22 @@ const DynamicMenu = () => {
       const categoriesData = await menuService.getCategories();
       setCategories(categoriesData);
 
-      // Загружаем популярные продукты
-      const popularData = await menuService.getPopularProducts(5);
-      setPopularProducts(popularData);
-
       // Загружаем продукты для каждой категории
       const productsData = {};
+      const popularData = {};
+      
       for (const category of categoriesData) {
+        // Загружаем все продукты категории
         const categoryProducts = await menuService.getProductsByCategory(category.category_id);
         productsData[category.category_id] = categoryProducts;
+        
+        // Загружаем популярные продукты категории
+        const categoryPopular = await menuService.getPopularProductsByCategory(category.category_id, 5);
+        popularData[category.category_id] = categoryPopular;
       }
+      
       setProducts(productsData);
+      setCategoryPopularProducts(popularData);
 
       // Устанавливаем первую категорию как активную
       if (categoriesData.length > 0) {
@@ -130,36 +135,10 @@ const DynamicMenu = () => {
 
         <div className="column xl-6 lg-6 md-12 s-menu__content-end">
           <div className="tab-content menu-block">
-            {/* Популярные продукты - показываем в начале */}
-            <div className="menu-block__group tab-content__item active">
-              <h6 className="menu-block__cat-name">Most Popular</h6>
-              {popularProducts.length > 0 ? (
-                <ul className="menu-list">
-                  {popularProducts.map((product) => (
-                    <li key={product.product_id} className="menu-list__item">
-                      <div className="menu-list__item-desc">
-                        <h4>{product.product_name}</h4>
-                        {product.product_production_description && (
-                          <p>{product.product_production_description}</p>
-                        )}
-                      </div>
-                      <div className="menu-list__item-price">
-                        <span>$</span>
-                        {product.price_formatted || menuService.formatPrice(product.price)}
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <div className="empty-category">
-                  <p>No popular products available</p>
-                </div>
-              )}
-            </div>
-
             {/* Категории продуктов */}
             {categories.map((category) => {
               const categoryProducts = products[category.category_id] || [];
+              const popularProducts = categoryPopularProducts[category.category_id] || [];
               const isActive = activeCategory === category.category_id;
               
               return (
@@ -172,26 +151,27 @@ const DynamicMenu = () => {
                     {category.category_name}
                   </h6>
                   
-                  {categoryProducts.length > 0 ? (
+                  {/* Показываем топ-5 популярных продуктов категории */}
+                  {popularProducts.length > 0 ? (
                     <ul className="menu-list">
-                      {categoryProducts.map((product) => (
+                      {popularProducts.map((product) => (
                         <li key={product.product_id} className="menu-list__item">
                           <div className="menu-list__item-desc">
-                                                    <h4>{product.product_name}</h4>
-                        {product.product_production_description && (
-                          <p>{product.product_production_description}</p>
-                        )}
-                      </div>
-                      <div className="menu-list__item-price">
-                        <span>$</span>
-                        {product.price_formatted || menuService.formatPrice(product.price)}
-                      </div>
+                            <h4>{product.product_name}</h4>
+                            {product.product_production_description && (
+                              <p>{product.product_production_description}</p>
+                            )}
+                          </div>
+                          <div className="menu-list__item-price">
+                            <span>$</span>
+                            {product.price_formatted || menuService.formatPrice(product.price)}
+                          </div>
                         </li>
                       ))}
                     </ul>
                   ) : (
                     <div className="empty-category">
-                      <p>No products in this category</p>
+                      <p>No popular products in this category</p>
                     </div>
                   )}
                 </div>
