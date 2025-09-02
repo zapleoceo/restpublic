@@ -51,9 +51,20 @@ class PosterService {
   async getCategories() {
     const allCategories = await this.makeRequest('menu.getCategories');
     
-    // Filter only visible categories
+    // Filter only visible categories (check if category is visible in any spot)
     const categories = allCategories.filter(category => {
-      return category.category_hidden !== "1";
+      // Check if category is hidden
+      if (category.category_hidden === "1") {
+        return false;
+      }
+      
+      // Check if category is visible in any spot
+      if (category.visible && Array.isArray(category.visible)) {
+        return category.visible.some(spot => spot.visible === "1");
+      }
+      
+      // If no visibility info, assume visible
+      return true;
     });
     
     console.log(`📋 Retrieved ${categories.length} visible categories (filtered from ${allCategories.length} total)`);
