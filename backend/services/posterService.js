@@ -38,6 +38,8 @@ class PosterService {
 
       const url = `${endpoint}?${queryParams.toString()}`;
       console.log(`📡 Poster API Request: ${this.baseURL}/${endpoint}`);
+      console.log(`🔗 Full URL: ${this.baseURL}/${url}`);
+      console.log(`🔑 Token: ${this.token.substring(0, 10)}...`);
 
       const response = await this.api.get(url);
       
