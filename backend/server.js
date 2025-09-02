@@ -5,12 +5,6 @@ const compression = require('compression');
 const morgan = require('morgan');
 require('dotenv').config({ path: './.env' });
 
-// Debug: Check if environment variables are loaded
-console.log('🔍 Environment variables check:');
-console.log('POSTER_API_TOKEN:', process.env.POSTER_API_TOKEN ? '✅ Loaded' : '❌ Not loaded');
-console.log('POSTER_API_URL:', process.env.POSTER_API_URL || '❌ Not loaded');
-console.log('NODE_ENV:', process.env.NODE_ENV || '❌ Not loaded');
-
 const posterRoutes = require('./routes/poster');
 const menuRoutes = require('./routes/menu');
 
