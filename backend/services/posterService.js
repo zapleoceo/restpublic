@@ -2,7 +2,7 @@ const axios = require('axios');
 
 class PosterService {
   constructor() {
-    this.baseURL = process.env.POSTER_API_URL || 'https://joinposter.com/api/v3';
+    this.baseURL = process.env.POSTER_API_URL || 'https://joinposter.com/api';
     this.token = process.env.POSTER_API_TOKEN;
     
     console.log('🔧 PosterService constructor - Environment variables:');
@@ -58,7 +58,7 @@ class PosterService {
   async getCategories() {
     const allCategories = await this.makeRequest('menu.getCategories');
     
-    // Filter only visible categories (check if category is visible in any spot)
+    // Filter only visible categories according to Poster API documentation
     const categories = allCategories.filter(category => {
       // Check if category is hidden
       if (category.category_hidden === "1") {
@@ -93,85 +93,18 @@ class PosterService {
       // Check if product is not hidden
       if (product.hidden === "1") return false;
       
-      // Check visibility in spots
+      // Check visibility in spots according to Poster API documentation
       if (product.spots && Array.isArray(product.spots)) {
         const hasVisibleSpot = product.spots.some(spot => spot.visible !== "0");
         if (!hasVisibleSpot) return false;
       }
       
-      // Filter by category - use menu_category_id
-      return String(product.menu_category_id) === String(categoryId);
+      // Check if product belongs to the specified category
+      return product.menu_category_id === categoryId;
     });
   }
 
-  // Get popular products (top 5 by sales)
-  async getPopularProducts(limit = 5) {
-    try {
-      // Get sales data for the last 30 days
-      const today = new Date();
-      const thirtyDaysAgo = new Date(today.getTime() - (30 * 24 * 60 * 60 * 1000));
-      
-      const dateFrom = thirtyDaysAgo.toISOString().slice(0, 10).replace(/-/g, '');
-      const dateTo = today.toISOString().slice(0, 10).replace(/-/g, '');
-      
-      const salesData = await this.makeRequest('dash.getProductsSales', {
-        date_from: dateFrom,
-        date_to: dateTo
-      });
-      
-      // Get all products to match with sales data
-      const allProducts = await this.getProducts();
-      
-      // Create a map of product sales
-      const productSales = {};
-      if (salesData && Array.isArray(salesData)) {
-        salesData.forEach(sale => {
-          if (sale.product_id && sale.count) {
-            productSales[sale.product_id] = (productSales[sale.product_id] || 0) + parseInt(sale.count);
-          }
-        });
-      }
-      
-      // Sort products by sales and filter visible ones
-      const sortedProducts = (Array.isArray(allProducts) ? allProducts : [])
-        .filter(product => {
-          if (product.hidden === "1") return false;
-          if (product.spots && Array.isArray(product.spots)) {
-            const hasVisibleSpot = product.spots.some(spot => spot.visible !== "0");
-            if (!hasVisibleSpot) return false;
-          }
-          return true;
-        })
-        .sort((a, b) => {
-          const salesA = productSales[a.product_id] || 0;
-          const salesB = productSales[b.product_id] || 0;
-          return salesB - salesA;
-        })
-        .slice(0, limit);
-      
-      console.log(`📋 Retrieved ${sortedProducts.length} popular products`);
-      return sortedProducts;
-    } catch (error) {
-      console.error('Error getting popular products:', error);
-      // Fallback: return first 5 visible products
-      const allProducts = await this.getProducts();
-      const fallbackProducts = (Array.isArray(allProducts) ? allProducts : [])
-        .filter(product => {
-          if (product.hidden === "1") return false;
-          if (product.spots && Array.isArray(product.spots)) {
-            const hasVisibleSpot = product.spots.some(spot => spot.visible !== "0");
-            if (!hasVisibleSpot) return false;
-          }
-          return true;
-        })
-        .slice(0, limit);
-      
-      console.log(`📋 Fallback: Retrieved ${fallbackProducts.length} products`);
-      return fallbackProducts;
-    }
-  }
-
-  // Get popular products by category
+  // Get popular products by category (using sales data)
   async getPopularProductsByCategory(categoryId, limit = 5) {
     try {
       // Get sales data for the last 30 days
@@ -179,9 +112,17 @@ class PosterService {
       const dateFrom = new Date();
       dateFrom.setDate(dateFrom.getDate() - 30);
       
+      // Format dates as YYYYMMDD according to Poster API documentation
+      const formatDate = (date) => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}${month}${day}`;
+      };
+      
       const salesData = await this.makeRequest('dash.getProductsSales', {
-        date_from: dateFrom,
-        date_to: dateTo
+        date_from: formatDate(dateFrom),
+        date_to: formatDate(dateTo)
       });
       
       // Get products from specific category
@@ -269,8 +210,6 @@ class PosterService {
     
     return `https://joinposter.com/api/image?image_id=${imageId}&size=${sizes[size] || sizes.medium}`;
   }
-
-
 }
 
 module.exports = new PosterService();

@@ -94,40 +94,12 @@ router.get('/categories/:categoryId/products', async (req, res) => {
   }
 });
 
-// Get popular products
-router.get('/popular', async (req, res) => {
-  try {
-    const limit = parseInt(req.query.limit) || 5;
-    const popularProducts = await posterService.getPopularProducts(limit);
-
-    // Process products to normalize prices and add images
-    const processedProducts = popularProducts.map(product => ({
-      ...product,
-      price_normalized: posterService.normalizePrice(product.price),
-      price_formatted: posterService.formatPrice(product.price),
-      image_url: posterService.getProductImage(product.photo)
-    }));
-
-    res.json({
-      products: processedProducts,
-      limit,
-      count: processedProducts.length,
-      timestamp: new Date().toISOString()
-    });
-  } catch (error) {
-    console.error('Popular Products API Error:', error);
-    res.status(500).json({
-      error: 'Failed to fetch popular products',
-      message: error.message
-    });
-  }
-});
-
 // Get popular products by category
 router.get('/categories/:categoryId/popular', async (req, res) => {
   try {
     const { categoryId } = req.params;
     const limit = parseInt(req.query.limit) || 5;
+    
     const popularProducts = await posterService.getPopularProductsByCategory(categoryId, limit);
 
     // Process products to normalize prices and add images
@@ -140,35 +112,35 @@ router.get('/categories/:categoryId/popular', async (req, res) => {
 
     res.json({
       category_id: categoryId,
-      products: processedProducts,
-      limit,
+      popular_products: processedProducts,
       count: processedProducts.length,
+      limit,
       timestamp: new Date().toISOString()
     });
   } catch (error) {
-    console.error('Category Popular Products API Error:', error);
+    console.error('Popular Products API Error:', error);
     res.status(500).json({
-      error: 'Failed to fetch category popular products',
+      error: 'Failed to fetch popular products',
       message: error.message
     });
   }
 });
 
-// Get product by ID
+// Get specific product
 router.get('/products/:productId', async (req, res) => {
   try {
     const { productId } = req.params;
     const products = await posterService.getProducts();
     const product = products.find(p => p.product_id === productId);
-
+    
     if (!product) {
       return res.status(404).json({
         error: 'Product not found',
-        product_id: productId
+        message: `Product with ID ${productId} not found`
       });
     }
 
-    // Process product to normalize price and add image
+    // Process product to normalize prices and add images
     const processedProduct = {
       ...product,
       price_normalized: posterService.normalizePrice(product.price),
@@ -188,7 +160,5 @@ router.get('/products/:productId', async (req, res) => {
     });
   }
 });
-
-
 
 module.exports = router;

@@ -11,6 +11,9 @@ router.get('/:method', async (req, res) => {
     // Remove token from params if present (we'll add it in the service)
     delete params.token;
     
+    console.log(`📡 Poster API Proxy GET: ${method}`);
+    console.log(`📋 Params:`, params);
+    
     const result = await posterService.makeRequest(method, params);
     res.json(result);
   } catch (error) {
@@ -31,6 +34,10 @@ router.post('/:method', async (req, res) => {
     
     // Remove token from params if present
     delete params.token;
+    
+    console.log(`📡 Poster API Proxy POST: ${method}`);
+    console.log(`📋 Params:`, params);
+    console.log(`📦 Body:`, body);
     
     // For POST requests, we need to handle the body differently
     // This is a simplified version - you might need to adjust based on specific Poster API requirements
