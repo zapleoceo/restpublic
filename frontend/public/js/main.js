@@ -689,7 +689,7 @@
         ssMoveHeader();
         ssMobileMenu();
         ssScrollSpy();
-        ssGLightbox();
+        // ssGLightbox(); // Disabled - GLightbox not available
         ssSwiper();
         sstabs();
         ssMailChimpForm();
