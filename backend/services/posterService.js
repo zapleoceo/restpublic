@@ -3,7 +3,7 @@ const NodeCache = require('node-cache');
 
 class PosterService {
   constructor() {
-    this.baseURL = process.env.POSTER_API_BASE_URL || 'https://joinposter.com/api';
+    this.baseURL = process.env.POSTER_API_URL || 'https://joinposter.com/api/v3';
     this.token = process.env.POSTER_API_TOKEN;
     
     if (!this.token) {
