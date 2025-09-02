@@ -67,7 +67,7 @@ class PosterService {
       
       // Check if category is visible in any spot
       if (category.visible && Array.isArray(category.visible)) {
-        return category.visible.some(spot => spot.visible === "1");
+        return category.visible.some(spot => spot.visible === "1" || spot.visible === 1);
       }
       
       // If no visibility info, assume visible
