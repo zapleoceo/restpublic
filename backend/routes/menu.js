@@ -173,37 +173,6 @@ router.get('/products/:productId', async (req, res) => {
   }
 });
 
-// Cache management endpoints
-router.post('/cache/clear', async (req, res) => {
-  try {
-    posterService.clearCache();
-    res.json({
-      message: 'Cache cleared successfully',
-      timestamp: new Date().toISOString()
-    });
-  } catch (error) {
-    console.error('Cache Clear Error:', error);
-    res.status(500).json({
-      error: 'Failed to clear cache',
-      message: error.message
-    });
-  }
-});
 
-router.get('/cache/stats', async (req, res) => {
-  try {
-    const stats = posterService.getCacheStats();
-    res.json({
-      stats,
-      timestamp: new Date().toISOString()
-    });
-  } catch (error) {
-    console.error('Cache Stats Error:', error);
-    res.status(500).json({
-      error: 'Failed to get cache stats',
-      message: error.message
-    });
-  }
-});
 
 module.exports = router;

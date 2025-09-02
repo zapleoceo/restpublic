@@ -1,5 +1,4 @@
 const axios = require('axios');
-const NodeCache = require('node-cache');
 
 class PosterService {
   constructor() {
@@ -9,12 +8,6 @@ class PosterService {
     if (!this.token) {
       console.warn('⚠️ POSTER_API_TOKEN not configured');
     }
-    
-    // Cache configuration
-    this.cache = new NodeCache({
-      stdTTL: parseInt(process.env.CACHE_TTL) || 300000, // 5 minutes default
-      checkperiod: parseInt(process.env.CACHE_CHECK_PERIOD) || 60000 // 1 minute
-    });
     
     // Axios instance with default config
     this.api = axios.create({
@@ -56,31 +49,22 @@ class PosterService {
 
   // Get menu categories
   async getCategories() {
-    const cacheKey = 'poster_categories';
-    let categories = this.cache.get(cacheKey);
+    const allCategories = await this.makeRequest('menu.getCategories');
     
-    if (!categories) {
-      categories = await this.makeRequest('menu.getCategories');
-      this.cache.set(cacheKey, categories);
-      console.log(`📦 Cached ${categories.length} categories`);
-      console.log('Categories:', categories);
-    }
+    // Filter only visible categories
+    const categories = allCategories.filter(category => {
+      return category.category_hidden !== "1";
+    });
     
+    console.log(`📋 Retrieved ${categories.length} visible categories (filtered from ${allCategories.length} total)`);
     return categories;
   }
 
   // Get all products
   async getProducts() {
-    const cacheKey = 'poster_products';
-    let products = this.cache.get(cacheKey);
-    
-    if (!products) {
-      products = await this.makeRequest('menu.getProducts');
-      this.cache.set(cacheKey, products);
-      console.log(`📦 Cached ${products.length} products`);
-      console.log('Sample products:', products.slice(0, 3));
-    }
-    
+    const products = await this.makeRequest('menu.getProducts');
+    console.log(`📋 Retrieved ${products.length} products`);
+    console.log('Sample products:', products.slice(0, 3));
     return products;
   }
 
@@ -104,143 +88,134 @@ class PosterService {
 
   // Get popular products (top 5 by sales)
   async getPopularProducts(limit = 5) {
-    const cacheKey = `poster_popular_${limit}`;
-    let popularProducts = this.cache.get(cacheKey);
-    
-    if (!popularProducts) {
-      try {
-        // Get sales data for the last 30 days
-        const today = new Date();
-        const thirtyDaysAgo = new Date(today.getTime() - (30 * 24 * 60 * 60 * 1000));
-        
-        const dateFrom = thirtyDaysAgo.toISOString().slice(0, 10).replace(/-/g, '');
-        const dateTo = today.toISOString().slice(0, 10).replace(/-/g, '');
-        
-        const salesData = await this.makeRequest('dash.getProductsSales', {
-          date_from: dateFrom,
-          date_to: dateTo
+    try {
+      // Get sales data for the last 30 days
+      const today = new Date();
+      const thirtyDaysAgo = new Date(today.getTime() - (30 * 24 * 60 * 60 * 1000));
+      
+      const dateFrom = thirtyDaysAgo.toISOString().slice(0, 10).replace(/-/g, '');
+      const dateTo = today.toISOString().slice(0, 10).replace(/-/g, '');
+      
+      const salesData = await this.makeRequest('dash.getProductsSales', {
+        date_from: dateFrom,
+        date_to: dateTo
+      });
+      
+      // Get all products to match with sales data
+      const allProducts = await this.getProducts();
+      
+      // Create a map of product sales
+      const productSales = {};
+      if (salesData && Array.isArray(salesData)) {
+        salesData.forEach(sale => {
+          if (sale.product_id && sale.count) {
+            productSales[sale.product_id] = (productSales[sale.product_id] || 0) + parseInt(sale.count);
+          }
         });
-        
-        // Get all products to match with sales data
-        const allProducts = await this.getProducts();
-        
-        // Create a map of product sales
-        const productSales = {};
-        if (salesData && Array.isArray(salesData)) {
-          salesData.forEach(sale => {
-            if (sale.product_id && sale.count) {
-              productSales[sale.product_id] = (productSales[sale.product_id] || 0) + parseInt(sale.count);
-            }
-          });
-        }
-        
-        // Sort products by sales and filter visible ones
-        const sortedProducts = (Array.isArray(allProducts) ? allProducts : [])
-          .filter(product => {
-            if (product.hidden === "1") return false;
-            if (product.spots && Array.isArray(product.spots)) {
-              const hasVisibleSpot = product.spots.some(spot => spot.visible !== "0");
-              if (!hasVisibleSpot) return false;
-            }
-            return true;
-          })
-          .sort((a, b) => {
-            const salesA = productSales[a.product_id] || 0;
-            const salesB = productSales[b.product_id] || 0;
-            return salesB - salesA;
-          })
-          .slice(0, limit);
-        
-        popularProducts = sortedProducts;
-        this.cache.set(cacheKey, popularProducts, 1800); // Cache for 30 minutes
-        console.log(`📦 Cached ${popularProducts.length} popular products`);
-      } catch (error) {
-        console.error('Error getting popular products:', error);
-        // Fallback: return first 5 visible products
-        const allProducts = await this.getProducts();
-        popularProducts = (Array.isArray(allProducts) ? allProducts : [])
-          .filter(product => {
-            if (product.hidden === "1") return false;
-            if (product.spots && Array.isArray(product.spots)) {
-              const hasVisibleSpot = product.spots.some(spot => spot.visible !== "0");
-              if (!hasVisibleSpot) return false;
-            }
-            return true;
-          })
-          .slice(0, limit);
       }
+      
+      // Sort products by sales and filter visible ones
+      const sortedProducts = (Array.isArray(allProducts) ? allProducts : [])
+        .filter(product => {
+          if (product.hidden === "1") return false;
+          if (product.spots && Array.isArray(product.spots)) {
+            const hasVisibleSpot = product.spots.some(spot => spot.visible !== "0");
+            if (!hasVisibleSpot) return false;
+          }
+          return true;
+        })
+        .sort((a, b) => {
+          const salesA = productSales[a.product_id] || 0;
+          const salesB = productSales[b.product_id] || 0;
+          return salesB - salesA;
+        })
+        .slice(0, limit);
+      
+      console.log(`📋 Retrieved ${sortedProducts.length} popular products`);
+      return sortedProducts;
+    } catch (error) {
+      console.error('Error getting popular products:', error);
+      // Fallback: return first 5 visible products
+      const allProducts = await this.getProducts();
+      const fallbackProducts = (Array.isArray(allProducts) ? allProducts : [])
+        .filter(product => {
+          if (product.hidden === "1") return false;
+          if (product.spots && Array.isArray(product.spots)) {
+            const hasVisibleSpot = product.spots.some(spot => spot.visible !== "0");
+            if (!hasVisibleSpot) return false;
+          }
+          return true;
+        })
+        .slice(0, limit);
+      
+      console.log(`📋 Fallback: Retrieved ${fallbackProducts.length} products`);
+      return fallbackProducts;
     }
-    
-    return popularProducts;
   }
 
   // Get popular products by category
   async getPopularProductsByCategory(categoryId, limit = 5) {
-    let popularProducts = this.cache.get(`popular_category_${categoryId}_${limit}`);
-    
-    if (!popularProducts) {
-      try {
-        // Get sales data for the last 30 days
-        const dateTo = new Date();
-        const dateFrom = new Date();
-        dateFrom.setDate(dateFrom.getDate() - 30);
-        
-        const salesData = await this.makeRequest('dash.getProductsSales', {
-          date_from: dateFrom,
-          date_to: dateTo
+    try {
+      // Get sales data for the last 30 days
+      const dateTo = new Date();
+      const dateFrom = new Date();
+      dateFrom.setDate(dateFrom.getDate() - 30);
+      
+      const salesData = await this.makeRequest('dash.getProductsSales', {
+        date_from: dateFrom,
+        date_to: dateTo
+      });
+      
+      // Get products from specific category
+      const categoryProducts = await this.getProductsByCategory(categoryId);
+      
+      // Create a map of product sales
+      const productSales = {};
+      if (salesData && Array.isArray(salesData)) {
+        salesData.forEach(sale => {
+          if (sale.product_id && sale.count) {
+            productSales[sale.product_id] = (productSales[sale.product_id] || 0) + parseInt(sale.count);
+          }
         });
-        
-        // Get products from specific category
-        const categoryProducts = await this.getProductsByCategory(categoryId);
-        
-        // Create a map of product sales
-        const productSales = {};
-        if (salesData && Array.isArray(salesData)) {
-          salesData.forEach(sale => {
-            if (sale.product_id && sale.count) {
-              productSales[sale.product_id] = (productSales[sale.product_id] || 0) + parseInt(sale.count);
-            }
-          });
-        }
-        
-        // Sort products by sales and filter visible ones
-        const sortedProducts = (Array.isArray(categoryProducts) ? categoryProducts : [])
-          .filter(product => {
-            if (product.hidden === "1") return false;
-            if (product.spots && Array.isArray(product.spots)) {
-              const hasVisibleSpot = product.spots.some(spot => spot.visible !== "0");
-              if (!hasVisibleSpot) return false;
-            }
-            return true;
-          })
-          .sort((a, b) => {
-            const salesA = productSales[a.product_id] || 0;
-            const salesB = productSales[b.product_id] || 0;
-            return salesB - salesA;
-          })
-          .slice(0, limit);
-        
-        popularProducts = sortedProducts;
-        this.cache.set(`popular_category_${categoryId}_${limit}`, popularProducts, 1800); // Cache for 30 minutes
-        console.log(`📦 Cached ${popularProducts.length} popular products for category ${categoryId}`);
-      } catch (error) {
-        console.error('Error getting popular products by category:', error);
-        // Fallback: return first 5 visible products from category
-        const categoryProducts = await this.getProductsByCategory(categoryId);
-        popularProducts = (Array.isArray(categoryProducts) ? categoryProducts : [])
-          .filter(product => {
-            if (product.hidden === "1") return false;
-            if (product.spots && Array.isArray(product.spots)) {
-              const hasVisibleSpot = product.spots.some(spot => spot.visible !== "0");
-              if (!hasVisibleSpot) return false;
-            }
-            return true;
-          })
-          .slice(0, limit);
       }
+      
+      // Sort products by sales and filter visible ones
+      const sortedProducts = (Array.isArray(categoryProducts) ? categoryProducts : [])
+        .filter(product => {
+          if (product.hidden === "1") return false;
+          if (product.spots && Array.isArray(product.spots)) {
+            const hasVisibleSpot = product.spots.some(spot => spot.visible !== "0");
+            if (!hasVisibleSpot) return false;
+          }
+          return true;
+        })
+        .sort((a, b) => {
+          const salesA = productSales[a.product_id] || 0;
+          const salesB = productSales[b.product_id] || 0;
+          return salesB - salesA;
+        })
+        .slice(0, limit);
+      
+      console.log(`📋 Retrieved ${sortedProducts.length} popular products for category ${categoryId}`);
+      return sortedProducts;
+    } catch (error) {
+      console.error('Error getting popular products by category:', error);
+      // Fallback: return first 5 visible products from category
+      const categoryProducts = await this.getProductsByCategory(categoryId);
+      const fallbackProducts = (Array.isArray(categoryProducts) ? categoryProducts : [])
+        .filter(product => {
+          if (product.hidden === "1") return false;
+          if (product.spots && Array.isArray(product.spots)) {
+            const hasVisibleSpot = product.spots.some(spot => spot.visible !== "0");
+            if (!hasVisibleSpot) return false;
+          }
+          return true;
+        })
+        .slice(0, limit);
+      
+      console.log(`📋 Fallback: Retrieved ${fallbackProducts.length} products for category ${categoryId}`);
+      return fallbackProducts;
     }
-    
-    return popularProducts;
   }
 
   // Normalize price (divide by 100 to convert from minor units)
@@ -277,16 +252,7 @@ class PosterService {
     return `https://joinposter.com/api/image?image_id=${imageId}&size=${sizes[size] || sizes.medium}`;
   }
 
-  // Clear cache
-  clearCache() {
-    this.cache.flushAll();
-    console.log('🗑️ Cache cleared');
-  }
 
-  // Get cache stats
-  getCacheStats() {
-    return this.cache.getStats();
-  }
 }
 
 module.exports = new PosterService();
