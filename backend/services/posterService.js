@@ -56,7 +56,9 @@ class PosterService {
 
   // Get menu categories
   async getCategories() {
+    console.log(`🔍 getCategories() called`);
     const allCategories = await this.makeRequest('menu.getCategories');
+    console.log(`📥 Raw categories from Poster API:`, allCategories);
     
     // Filter only visible categories according to Poster API documentation
     const categories = allCategories.filter(category => {
@@ -75,12 +77,15 @@ class PosterService {
     });
     
     console.log(`📋 Retrieved ${categories.length} visible categories (filtered from ${allCategories.length} total)`);
+    console.log(`📋 Filtered categories:`, categories.map(c => ({ id: c.category_id, name: c.category_name })));
     return categories;
   }
 
   // Get all products
   async getProducts() {
+    console.log(`🔍 getProducts() called`);
     const products = await this.makeRequest('menu.getProducts');
+    console.log(`📥 Raw products from Poster API:`, products);
     console.log(`📋 Retrieved ${products.length} products`);
     console.log('Sample products:', products.slice(0, 3));
     return products;
