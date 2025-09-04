@@ -4,16 +4,35 @@ import './index.css'
 import App from './App.jsx'
 
 console.log('React app starting...');
-console.log('Root element:', document.getElementById('root'));
+
+// Принудительно показываем root элемент
+const rootElement = document.getElementById('root');
+if (rootElement) {
+  rootElement.style.display = 'block';
+  rootElement.style.visibility = 'visible';
+  rootElement.style.opacity = '1';
+  rootElement.style.zIndex = '9999';
+  rootElement.style.position = 'relative';
+  console.log('Root element found and made visible:', rootElement);
+} else {
+  console.error('Root element not found!');
+}
 
 try {
-  const root = createRoot(document.getElementById('root'));
+  const root = createRoot(rootElement);
   console.log('Root created successfully');
   
   // Сначала рендерим простой тест
   root.render(
     <StrictMode>
-      <div style={{ padding: '20px', backgroundColor: 'red', color: 'white', fontSize: '24px' }}>
+      <div style={{ 
+        padding: '20px', 
+        backgroundColor: 'red', 
+        color: 'white', 
+        fontSize: '24px',
+        position: 'relative',
+        zIndex: '10000'
+      }}>
         🎉 REACT APP IS WORKING! 🎉
       </div>
     </StrictMode>,
