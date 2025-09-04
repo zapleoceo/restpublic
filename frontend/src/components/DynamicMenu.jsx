@@ -8,6 +8,8 @@ const DynamicMenu = () => {
   const [activeCategory, setActiveCategory] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedCategoryProducts, setSelectedCategoryProducts] = useState([]);
 
   useEffect(() => {
     loadMenuData();
@@ -40,10 +42,16 @@ const DynamicMenu = () => {
       
       setProducts(productsData);
       setCategoryPopularProducts(popularData);
+      
+      console.log('Final products data:', productsData);
+      console.log('Final popular data:', popularData);
 
       // Устанавливаем первую категорию как активную
       if (categoriesData.length > 0) {
         setActiveCategory(categoriesData[0].category_id);
+        setSelectedCategory(categoriesData[0]);
+        setSelectedCategoryProducts(productsData[categoriesData[0].category_id] || []);
+        console.log('Active category set to:', categoriesData[0].category_id);
       }
 
     } catch (err) {
@@ -56,6 +64,12 @@ const DynamicMenu = () => {
 
   const handleCategoryClick = (categoryId) => {
     setActiveCategory(categoryId);
+    const category = categories.find(cat => cat.category_id === categoryId);
+    if (category) {
+      setSelectedCategory(category);
+      // Показываем все продукты из выбранной категории
+      setSelectedCategoryProducts(products[categoryId] || []);
+    }
   };
 
   if (loading) {
@@ -91,6 +105,7 @@ const DynamicMenu = () => {
   }
 
   if (categories.length === 0) {
+    console.log('No categories found, showing empty state');
     return (
       <section id="menu" className="container s-menu target-section">
         <div className="row s-menu__content">
@@ -103,6 +118,15 @@ const DynamicMenu = () => {
       </section>
     );
   }
+
+  console.log('Rendering DynamicMenu with:', {
+    categoriesCount: categories.length,
+    activeCategory,
+    selectedCategory: selectedCategory?.category_name,
+    selectedCategoryProductsCount: selectedCategoryProducts.length,
+    popularProductsKeys: Object.keys(categoryPopularProducts),
+    popularProductsCounts: Object.entries(categoryPopularProducts).map(([id, products]) => [id, products.length])
+  });
 
   return (
     <section id="menu" className="container s-menu target-section">
@@ -137,48 +161,44 @@ const DynamicMenu = () => {
 
         <div className="column xl-6 lg-6 md-12 s-menu__content-end">
           <div className="tab-content menu-block">
-            {/* Категории продуктов */}
-            {categories.map((category) => {
-              const categoryProducts = products[category.category_id] || [];
-              const popularProducts = categoryPopularProducts[category.category_id] || [];
-              const isActive = activeCategory === category.category_id;
-              
-              return (
-                <div 
-                  key={category.category_id}
-                  id={`tab-${category.category_id}`} 
-                  className={`menu-block__group tab-content__item ${isActive ? 'active' : ''}`}
-                >
-                  <h6 className="menu-block__cat-name">
-                    {category.category_name}
-                  </h6>
-                  
-                  {/* Показываем топ-5 популярных продуктов категории */}
-                  {popularProducts.length > 0 ? (
-                    <ul className="menu-list">
-                      {popularProducts.map((product) => (
-                        <li key={product.product_id} className="menu-list__item">
-                          <div className="menu-list__item-desc">
-                            <h4>{product.product_name}</h4>
-                            {product.product_production_description && (
-                              <p>{product.product_production_description}</p>
-                            )}
-                          </div>
-                          <div className="menu-list__item-price">
-                            <span>$</span>
-                            {product.price_formatted || menuService.formatPrice(product.price)}
-                          </div>
-                        </li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <div className="empty-category">
-                      <p>No popular products in this category</p>
-                    </div>
-                  )}
+            {/* Отображаем выбранную категорию со всеми продуктами */}
+            {selectedCategory && (
+              <div className="menu-block__group tab-content__item active">
+                <h6 className="menu-block__cat-name">
+                  {selectedCategory.category_name}
+                </h6>
+                
+                {selectedCategoryProducts.length > 0 ? (
+                  <ul className="menu-list">
+                    {selectedCategoryProducts.map((product) => (
+                      <li key={product.product_id} className="menu-list__item">
+                        <div className="menu-list__item-desc">
+                          <h4>{product.product_name}</h4>
+                          {product.product_production_description && (
+                            <p>{product.product_production_description}</p>
+                          )}
+                        </div>
+                        <div className="menu-list__item-price">
+                          <span>$</span>
+                          {product.price_formatted || menuService.formatPrice(product.price)}
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <div className="empty-category">
+                    <p>No products in this category</p>
+                  </div>
+                )}
+                
+                {/* Показываем общее количество продуктов в категории */}
+                <div className="category-info">
+                  <p className="category-total">
+                    Total products in category: {selectedCategoryProducts.length}
+                  </p>
                 </div>
-              );
-            })}
+              </div>
+            )}
           </div>
         </div>
       </div>

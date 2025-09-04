@@ -68,7 +68,7 @@ jobs:
           # Install frontend dependencies
           echo "📦 Installing frontend dependencies..."
           cd ../frontend
-          npm ci --legacy-peer-deps
+          npm ci --legacy-peer-deps || npm install --legacy-peer-deps
           
           # Build frontend
           echo "🔨 Building frontend..."
