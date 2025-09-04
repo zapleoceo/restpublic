@@ -114,10 +114,33 @@ const DynamicMenu = () => {
     return (
       <section id="menu" className="container s-menu target-section">
         <div className="row s-menu__content">
-          <div className="column xl-12">
-            <div className="loading-spinner">
-              <div className="spinner"></div>
-              <p>Loading menu...</p>
+          <div className="column xl-4 lg-5 md-12 s-menu__content-start">
+            <div className="section-header" data-num="02">
+              <div className="menu-loader__skeleton menu-loader__header"></div>
+            </div>
+            <nav className="tab-nav">
+              <ul className="tab-nav__list">
+                {[1, 2, 3, 4].map((i) => (
+                  <li key={i}>
+                    <div className="menu-loader__skeleton menu-loader__nav-item"></div>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          </div>
+          <div className="column xl-6 lg-6 md-12 s-menu__content-end">
+            <div className="tab-content menu-block">
+              <div className="menu-loader__category">
+                <div className="menu-loader__skeleton menu-loader__category-title"></div>
+                <div className="menu-loader__items">
+                  {[1, 2, 3, 4, 5].map((i) => (
+                    <div key={i} className="menu-loader__item">
+                      <div className="menu-loader__skeleton menu-loader__item-name"></div>
+                      <div className="menu-loader__skeleton menu-loader__item-price"></div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -235,15 +258,6 @@ const DynamicMenu = () => {
                   </div>
                 )}
                 
-                {/* Показываем информацию о популярных продуктах */}
-                <div className="category-info">
-                  <p className="category-total">
-                    Showing {categoryPopularProducts[category.category_id] ? Math.min(categoryPopularProducts[category.category_id].length, 5) : 0} popular dishes
-                    {products[category.category_id] && products[category.category_id].length > 5 && (
-                      <span> (out of {products[category.category_id].length} total)</span>
-                    )}
-                  </p>
-                </div>
               </div>
             ))}
           </div>
