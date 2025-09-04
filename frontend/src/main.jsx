@@ -5,22 +5,28 @@ import App from './App.jsx'
 
 console.log('React app starting...');
 
-// Принудительно показываем root элемент
-const rootElement = document.getElementById('root');
-if (rootElement) {
-  rootElement.style.display = 'block';
-  rootElement.style.visibility = 'visible';
-  rootElement.style.opacity = '1';
-  rootElement.style.zIndex = '9999';
-  rootElement.style.position = 'relative';
-  console.log('Root element found and made visible:', rootElement);
-} else {
-  console.error('Root element not found!');
+// Создаем новый контейнер для React, чтобы избежать конфликтов с шаблоном
+let reactContainer = document.getElementById('react-app');
+if (!reactContainer) {
+  reactContainer = document.createElement('div');
+  reactContainer.id = 'react-app';
+  reactContainer.style.cssText = `
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10000;
+    background: white;
+    overflow-y: auto;
+  `;
+  document.body.appendChild(reactContainer);
+  console.log('Created new React container:', reactContainer);
 }
 
 try {
-  const root = createRoot(rootElement);
-  console.log('Root created successfully');
+  const root = createRoot(reactContainer);
+  console.log('Root created successfully in new container');
   
   // Сначала рендерим простой тест
   root.render(
@@ -31,7 +37,7 @@ try {
         color: 'white', 
         fontSize: '24px',
         position: 'relative',
-        zIndex: '10000'
+        zIndex: '10001'
       }}>
         🎉 REACT APP IS WORKING! 🎉
       </div>
