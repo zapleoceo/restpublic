@@ -28,7 +28,7 @@ try {
   const root = createRoot(reactContainer);
   console.log('Root created successfully in new container');
   
-  // Сначала рендерим простой тест
+  // Сначала рендерим простой тест с версией
   root.render(
     <StrictMode>
       <div style={{ 
@@ -37,9 +37,16 @@ try {
         color: 'white', 
         fontSize: '24px',
         position: 'relative',
-        zIndex: '10001'
+        zIndex: '10001',
+        textAlign: 'center'
       }}>
         🎉 REACT APP IS WORKING! 🎉
+        <br />
+        <span style={{fontSize: '16px'}}>Version: 1.0.20</span>
+        <br />
+        <span style={{fontSize: '14px'}}>Container: #react-app</span>
+        <br />
+        <span style={{fontSize: '12px'}}>Build: {new Date().toISOString()}</span>
       </div>
     </StrictMode>,
   );
