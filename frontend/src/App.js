@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import LanguageSwitcher from './components/LanguageSwitcher';
 import Logo from './components/Logo';
 import DynamicMenu from './components/DynamicMenu';
@@ -7,21 +7,7 @@ import './components/Logo.css';
 import './components/DynamicMenu.css';
 
 function App() {
-  useEffect(() => {
-    // Загружаем скрипты из шаблона
-    const script1 = document.createElement('script');
-    script1.src = '/js/plugins.js';
-    document.body.appendChild(script1);
-
-    const script2 = document.createElement('script');
-    script2.src = '/js/main.js';
-    document.body.appendChild(script2);
-
-    return () => {
-      if (document.body.contains(script1)) document.body.removeChild(script1);
-      if (document.body.contains(script2)) document.body.removeChild(script2);
-    };
-  }, []);
+  // Убрали загрузку старых JS файлов - они конфликтуют с React
 
   return (
     <div id="page" className="s-pagewrap ss-home">
