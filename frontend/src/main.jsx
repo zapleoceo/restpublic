@@ -5,24 +5,22 @@ import App from './App.jsx'
 
 console.log('React app starting...');
 
-// Создаем новый контейнер для React, чтобы избежать конфликтов с шаблоном
-let reactContainer = document.getElementById('react-app');
+// Используем стандартный #root элемент
+const reactContainer = document.getElementById('root');
 if (!reactContainer) {
-  reactContainer = document.createElement('div');
-  reactContainer.id = 'react-app';
-  reactContainer.style.cssText = `
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 10000;
-    background: white;
-    overflow-y: auto;
-  `;
-  document.body.appendChild(reactContainer);
-  console.log('Created new React container:', reactContainer);
+  console.error('Root element not found!');
+  return;
 }
+
+// Очищаем root от старого контента
+reactContainer.innerHTML = '';
+reactContainer.style.cssText = `
+  position: relative;
+  z-index: 10000;
+  background: white;
+  min-height: 100vh;
+`;
+console.log('Using standard root element:', reactContainer);
 
 try {
   const root = createRoot(reactContainer);
@@ -44,7 +42,7 @@ try {
         <br />
         <span style={{fontSize: '16px'}}>Version: 1.0.20</span>
         <br />
-        <span style={{fontSize: '14px'}}>Container: #react-app</span>
+        <span style={{fontSize: '14px'}}>Container: #root</span>
         <br />
         <span style={{fontSize: '12px'}}>Build: {new Date().toISOString()}</span>
       </div>

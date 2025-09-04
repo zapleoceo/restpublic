@@ -21,7 +21,7 @@ const VersionInfo = () => {
       <div><strong>🚀 REACT APP VERSION</strong></div>
       <div>Version: {version}</div>
       <div>Build: {buildTime}</div>
-      <div>Container: #react-app</div>
+      <div>Container: #root</div>
       <div style={{color: '#00ff00'}}>✅ ACTIVE</div>
     </div>
   );
