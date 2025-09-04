@@ -70,6 +70,44 @@ const DynamicMenu = () => {
       // Показываем все продукты из выбранной категории
       setSelectedCategoryProducts(products[categoryId] || []);
     }
+    
+    // Интеграция с Template JS - активируем соответствующий таб
+    setTimeout(() => {
+      const tabElement = document.getElementById(`tab-${categoryId}`);
+      if (tabElement) {
+        // Активируем таб через Template JS логику
+        const tabLinks = document.querySelectorAll('.tab-nav__list a');
+        const tabPanels = document.querySelectorAll('.tab-content__item');
+        
+        // Сбрасываем все табы
+        tabLinks.forEach(link => {
+          link.setAttribute('tabindex', '-1');
+          link.setAttribute('aria-selected', 'false');
+          link.parentNode.removeAttribute('data-tab-active');
+          link.removeAttribute('data-tab-active');
+        });
+        
+        // Активируем нужный таб
+        const activeLink = document.querySelector(`a[href="#tab-${categoryId}"]`);
+        if (activeLink) {
+          activeLink.setAttribute('tabindex', '0');
+          activeLink.setAttribute('aria-selected', 'true');
+          activeLink.parentNode.setAttribute('data-tab-active', '');
+          activeLink.setAttribute('data-tab-active', '');
+        }
+        
+        // Активируем соответствующий панель
+        tabPanels.forEach(panel => {
+          if (panel.id === `tab-${categoryId}`) {
+            panel.setAttribute('aria-hidden', 'false');
+            panel.setAttribute('data-tab-active', '');
+          } else {
+            panel.setAttribute('aria-hidden', 'true');
+            panel.removeAttribute('data-tab-active');
+          }
+        });
+      }
+    }, 50);
   };
 
   if (loading) {
@@ -161,16 +199,22 @@ const DynamicMenu = () => {
 
         <div className="column xl-6 lg-6 md-12 s-menu__content-end">
           <div className="tab-content menu-block">
-            {/* Отображаем выбранную категорию со всеми продуктами */}
-            {selectedCategory && (
-              <div className="menu-block__group tab-content__item active">
+            {/* Создаем элементы для каждой категории с нужными ID */}
+            {categories.map((category) => (
+              <div 
+                key={category.category_id}
+                id={`tab-${category.category_id}`}
+                className={`menu-block__group tab-content__item ${activeCategory === category.category_id ? 'active' : ''}`}
+                aria-hidden={activeCategory === category.category_id ? 'false' : 'true'}
+                data-tab-active={activeCategory === category.category_id ? '' : undefined}
+              >
                 <h6 className="menu-block__cat-name">
-                  {selectedCategory.category_name}
+                  {category.category_name}
                 </h6>
                 
-                {selectedCategoryProducts.length > 0 ? (
+                {products[category.category_id] && products[category.category_id].length > 0 ? (
                   <ul className="menu-list">
-                    {selectedCategoryProducts.map((product) => (
+                    {products[category.category_id].map((product) => (
                       <li key={product.product_id} className="menu-list__item">
                         <div className="menu-list__item-desc">
                           <h4>{product.product_name}</h4>
@@ -194,11 +238,11 @@ const DynamicMenu = () => {
                 {/* Показываем общее количество продуктов в категории */}
                 <div className="category-info">
                   <p className="category-total">
-                    Total products in category: {selectedCategoryProducts.length}
+                    Total products in category: {products[category.category_id] ? products[category.category_id].length : 0}
                   </p>
                 </div>
               </div>
-            )}
+            ))}
           </div>
         </div>
       </div>
