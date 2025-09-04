@@ -31,29 +31,16 @@ fi
 echo "📤 Пушим изменения в Git..."
 git push origin main
 
-# Деплоим на сервер - ВСЕ ПЕРЕТИРАЕМ!
-echo "🌐 Деплою на сервер (ВСЕ ПЕРЕТИРАЮ)..."
-ssh nr "cd /var/www/northrepubli_usr/data/www/northrepublic.me && \
-    echo '🗑️  Очищаю все изменения на сервере...' && \
-    git reset --hard HEAD && \
-    git clean -fd && \
-    echo '📥 Обновляю код с Git...' && \
-    git pull origin main && \
-    echo '📦 Устанавливаю зависимости backend...' && \
-    cd backend && npm install && \
-    echo '🔨 Собираю frontend...' && \
-    cd ../frontend && npm run build && \
-    echo '📁 Копирую новые файлы...' && \
-    cd .. && rm -rf static && cp -r frontend/build/static . && \
-    echo '📄 Копирую index.html...' && \
-    cp frontend/build/index.html . && \
-    echo '🔄 Перезапускаю сервисы...' && \
-    pm2 restart all && \
-    echo '✅ Деплой завершен успешно!'"
-
 echo ""
-echo "🎉 Полный деплой на сервер завершен!"
-echo "🌐 Сайт: https://northrepublic.me"
-echo "📊 PM2 статус: ssh nr 'pm2 status'"
+echo "🎉 Деплой завершен!"
+echo "🌐 GitHub Actions автоматически задеплоит на сервер"
+echo "⏰ Ожидайте 2-3 минуты для автодеплоя"
 echo ""
-echo "🧪 Тестируйте сайт через 30 секунд"
+echo "💡 Для ручного деплоя выполните команды на сервере:"
+echo "   git reset --hard HEAD && git clean -fd"
+echo "   git pull origin main"
+echo "   cd backend && npm install"
+echo "   cd ../frontend && npm run build"
+echo "   cd .. && rm -rf static && cp -r frontend/build/static ."
+echo "   cp frontend/build/index.html ."
+echo "   pm2 restart all"
