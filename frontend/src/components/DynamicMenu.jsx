@@ -212,9 +212,9 @@ const DynamicMenu = () => {
                   {category.category_name}
                 </h6>
                 
-                {products[category.category_id] && products[category.category_id].length > 0 ? (
+                {categoryPopularProducts[category.category_id] && categoryPopularProducts[category.category_id].length > 0 ? (
                   <ul className="menu-list">
-                    {products[category.category_id].map((product) => (
+                    {categoryPopularProducts[category.category_id].slice(0, 5).map((product) => (
                       <li key={product.product_id} className="menu-list__item">
                         <div className="menu-list__item-desc">
                           <h4>{product.product_name}</h4>
@@ -231,14 +231,17 @@ const DynamicMenu = () => {
                   </ul>
                 ) : (
                   <div className="empty-category">
-                    <p>No products in this category</p>
+                    <p>No popular products in this category</p>
                   </div>
                 )}
                 
-                {/* Показываем общее количество продуктов в категории */}
+                {/* Показываем информацию о популярных продуктах */}
                 <div className="category-info">
                   <p className="category-total">
-                    Total products in category: {products[category.category_id] ? products[category.category_id].length : 0}
+                    Showing {categoryPopularProducts[category.category_id] ? Math.min(categoryPopularProducts[category.category_id].length, 5) : 0} popular dishes
+                    {products[category.category_id] && products[category.category_id].length > 5 && (
+                      <span> (out of {products[category.category_id].length} total)</span>
+                    )}
                   </p>
                 </div>
               </div>
