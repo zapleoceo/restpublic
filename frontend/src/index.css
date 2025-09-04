@@ -169,3 +169,24 @@ button:focus-visible {
     flex: 1;
   }
 }
+
+/* Menu scroll fixes */
+.menu-block {
+  overflow: visible !important;
+}
+
+.menu-block__group {
+  overflow: visible !important;
+}
+
+.menu-list {
+  overflow: visible !important;
+}
+
+.tab-content__item {
+  overflow: visible !important;
+}
+
+.tab-content {
+  overflow: visible !important;
+}
