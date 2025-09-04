@@ -5,17 +5,24 @@ import './i18n';
 import './styles/globals.css';
 
 function App() {
-  return (
-    <Router>
-      <div className="App">
-        <Header />
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          {/* Добавьте другие маршруты здесь */}
-        </Routes>
-      </div>
-    </Router>
-  );
+  console.log('App component rendering...');
+  
+  try {
+    return (
+      <Router>
+        <div className="App">
+          <Header />
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            {/* Добавьте другие маршруты здесь */}
+          </Routes>
+        </div>
+      </Router>
+    );
+  } catch (error) {
+    console.error('Error in App component:', error);
+    return <div>Error loading app</div>;
+  }
 }
 
 export default App;

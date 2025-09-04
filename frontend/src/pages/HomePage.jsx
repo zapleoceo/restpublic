@@ -6,14 +6,21 @@ import { TestimonialsSection } from '../components/sections/TestimonialsSection'
 import DynamicMenu from '../components/DynamicMenu';
 
 export const HomePage = () => {
-  return (
-    <main>
-      <IntroSection />
-      <AboutSection />
-      <DynamicMenu />
-      <ServicesSection />
-      <EventsSection />
-      <TestimonialsSection />
-    </main>
-  );
+  console.log('HomePage component rendering...');
+  
+  try {
+    return (
+      <main>
+        <IntroSection />
+        <AboutSection />
+        <DynamicMenu />
+        <ServicesSection />
+        <EventsSection />
+        <TestimonialsSection />
+      </main>
+    );
+  } catch (error) {
+    console.error('Error in HomePage component:', error);
+    return <div>Error loading HomePage</div>;
+  }
 };
