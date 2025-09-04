@@ -109,12 +109,11 @@ if [ -f "index.html" ]; then
     echo "✅ Локальная копия index.html обновлена"
     
     # Коммитим изменения
-    cd ..
+    cd /var/www/northrepubli_usr/data/www/northrepublic.me
     git add index.html
     git commit -m "Update: index.html with new JS file reference ($NEW_JS_FILE)" || echo "⚠️ Нет изменений для коммита"
     git push origin main
     echo "✅ Изменения отправлены в репозиторий"
-    cd /var/www/northrepubli_usr/data/www/northrepublic.me
 else
     echo "❌ Ошибка: index.html не найден для копирования"
 fi
