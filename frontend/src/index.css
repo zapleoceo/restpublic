@@ -190,3 +190,27 @@ button:focus-visible {
 .tab-content {
   overflow: visible !important;
 }
+
+/* Full menu link styles */
+.menu-full-link {
+  margin-top: 2rem;
+  text-align: center;
+  padding-top: 1rem;
+  border-top: 1px solid #e0e0e0;
+}
+
+.menu-full-link .btn {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  background-color: #d4af37;
+  color: #000;
+  text-decoration: none;
+  border-radius: 4px;
+  font-weight: 500;
+  transition: background-color 0.3s ease;
+}
+
+.menu-full-link .btn:hover {
+  background-color: #b8941f;
+  color: #000;
+}

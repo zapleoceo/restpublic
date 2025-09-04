@@ -258,6 +258,13 @@ const DynamicMenu = () => {
                   </div>
                 )}
                 
+                {/* Link to full menu */}
+                <div className="menu-full-link">
+                  <a href="/menu" className="btn btn--primary">
+                    Open full menu
+                  </a>
+                </div>
+                
               </div>
             ))}
           </div>
