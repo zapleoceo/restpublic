@@ -180,7 +180,7 @@ const DynamicMenu = () => {
                         </div>
                         <div className="menu-list__item-price">
                           <span>$</span>
-                          {product.price_formatted || menuService.formatPrice(product.price)}
+                          {menuService.formatPrice(product.price)}
                         </div>
                       </li>
                     ))}
