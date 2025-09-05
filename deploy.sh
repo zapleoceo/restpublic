@@ -56,8 +56,17 @@ if [ -f "index.html" ]; then
     echo "🔄 Обновляю ссылку на JS файл в index.html..."
     NEW_JS_FILE=$(ls static/js/main.*.js | head -1 | sed 's/.*\///')
     if [ -n "$NEW_JS_FILE" ]; then
-        sed -i "s/main\.[a-zA-Z0-9]*\.js/$NEW_JS_FILE/g" index.html
+        # Используем более точную замену с полным путем
+        sed -i "s|/static/js/main\.[a-zA-Z0-9]*\.js|/static/js/$NEW_JS_FILE|g" index.html
         echo "✅ Ссылка на JS файл обновлена: $NEW_JS_FILE"
+        
+        # Проверяем, что замена прошла успешно
+        if grep -q "/static/js/$NEW_JS_FILE" index.html; then
+            echo "✅ Проверка: ссылка на JS файл корректна"
+        else
+            echo "❌ Ошибка: ссылка на JS файл не обновилась"
+            exit 1
+        fi
     else
         echo "❌ Ошибка: JS файл не найден в static/js/"
         exit 1

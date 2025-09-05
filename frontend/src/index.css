@@ -191,6 +191,21 @@ button:focus-visible {
   overflow: visible !important;
 }
 
+/* Убираем скролл в правом блоке меню */
+.s-menu__content-end {
+  overflow: visible !important;
+}
+
+.menu-block {
+  overflow: visible !important;
+  max-height: none !important;
+}
+
+.tab-content__item {
+  overflow: visible !important;
+  max-height: none !important;
+}
+
 /* Full menu link styles */
 .menu-full-link {
   margin-top: 2rem;
