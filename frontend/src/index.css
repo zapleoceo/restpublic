@@ -328,7 +328,7 @@ button:focus-visible {
   padding-top: calc(var(--content-padding-top) / 3) !important;
 }
 
-/* Full Menu Button - centered on screen */
+/* Full Menu Button - centered in full width column */
 .full-menu-btn {
   display: inline-block;
   padding: 1rem 2rem;
@@ -342,15 +342,13 @@ button:focus-visible {
   border: 2px solid var(--color-primary, #d4af37);
   min-width: 150px;
   text-align: center;
-  position: relative;
-  left: 50%;
-  transform: translateX(-50%);
+  margin: 0 auto; /* Центрирование в колонке */
 }
 
 .full-menu-btn:hover {
   background-color: transparent;
   color: var(--color-primary, #d4af37);
-  transform: translateX(-50%) translateY(-2px);
+  transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
