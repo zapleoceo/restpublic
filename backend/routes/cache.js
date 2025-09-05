@@ -14,20 +14,16 @@ router.post('/update-menu', async (req, res) => {
     try {
         console.log('🔄 Обновление кэша меню...');
         
-        // Получаем данные от Poster API
-        const posterResponse = await axios.get('https://joinposter.com/api/menu.getMenu', {
-            headers: {
-                'Authorization': `Bearer ${process.env.POSTER_API_TOKEN}`,
-                'Content-Type': 'application/json'
-            },
+        // Получаем данные от нашего API (который уже работает)
+        const apiResponse = await axios.get('http://127.0.0.1:3002/api/menu', {
             timeout: 30000
         });
         
-        if (posterResponse.status !== 200) {
-            throw new Error(`Poster API вернул код: ${posterResponse.status}`);
+        if (apiResponse.status !== 200) {
+            throw new Error(`API вернул код: ${apiResponse.status}`);
         }
         
-        const menuData = posterResponse.data;
+        const menuData = apiResponse.data;
         
         // Сохраняем в MongoDB
         client = new MongoClient(mongoUrl);
