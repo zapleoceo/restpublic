@@ -261,15 +261,6 @@ const DynamicMenu = () => {
             ))}
           </div>
         </div>
-        
-        {/* Full Menu Button */}
-        <div className="row" style={{ marginTop: '2rem', textAlign: 'center' }}>
-          <div className="column">
-            <a href="/menu" className="btn btn--primary full-menu-btn">
-              Full Menu
-            </a>
-          </div>
-        </div>
       </div>
     </section>
   );
