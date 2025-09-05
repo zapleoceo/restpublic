@@ -2,6 +2,13 @@
 :root {
   --logo-width: 10.8rem;
   --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  
+  /* Цвета логотипа в соответствии с дизайн-системой сайта */
+  --logo-primary: #468672;    /* Основной зеленый */
+  --logo-secondary: #ffffff;  /* Белый */
+  --logo-accent: #8f9291;     /* Серый */
+  --logo-dark: #5f6362;       /* Темно-серый */
+  --logo-shadow: rgba(70, 134, 114, 0.3); /* Тень зеленого цвета */
 }
 
 /* Основной контейнер логотипа */
@@ -33,7 +40,7 @@
   height: calc(var(--logo-width) * 0.6);
   transform: translate(-50%, -50%);
   z-index: 1;
-  background: rgb(54, 107, 91);
+  background: var(--logo-primary);
   border-radius: 40% 60% 60% 40% / 30% 40% 60% 70%;
   animation: colorShift 8s infinite ease-in-out, morph 12s infinite ease-in-out;
 }
@@ -52,9 +59,9 @@
   border-radius: 40% 60% 60% 40% / 30% 40% 60% 70%;
   animation: morph 12s infinite ease-in-out;
   background: radial-gradient(circle,
-    rgba(0,0,0,0) 60%,
-    rgba(0,0,0,0.85) 92%,
-    rgba(0,0,0,1) 100%
+    rgba(255,255,255,0) 60%,
+    rgba(143,146,145,0.85) 92%,
+    var(--logo-dark) 100%
   );
 }
 
@@ -68,21 +75,37 @@
   padding: 1rem;
   border-radius: 50%;
   transition: all 0.3s var(--ease-smooth);
-  -webkit-mask-image: radial-gradient(circle, rgba(0,0,0,1) 70%, rgba(0,0,0,0) 100%);
-  mask-image: radial-gradient(circle, rgba(0,0,0,1) 70%, rgba(0,0,0,0) 100%);
+  -webkit-mask-image: radial-gradient(circle, rgba(255,255,255,1) 70%, rgba(255,255,255,0) 100%);
+  mask-image: radial-gradient(circle, rgba(255,255,255,1) 70%, rgba(255,255,255,0) 100%);
+  filter: brightness(1.1) contrast(1.1);
 }
 
 /* Hover эффект */
 .header-logo:hover img {
   transform: scale(1.05);
+  filter: brightness(1.2) contrast(1.2);
+}
+
+/* Дополнительные эффекты для интеграции с сайтом */
+.header-logo:hover::before {
+  background: var(--logo-dark);
+  box-shadow: 0 0 20px var(--logo-shadow);
+}
+
+.header-logo:hover::after {
+  background: radial-gradient(circle,
+    rgba(255,255,255,0) 50%,
+    rgba(70, 134, 114, 0.4) 80%,
+    var(--logo-primary) 100%
+  );
 }
 
 /* Анимация смены цветов */
 @keyframes colorShift {
-  0%   { background: #366b5b; }
-  33%  { background: #b1885e; }
-  66%  { background: #8f9291; }
-  100% { background: #366b5b; }
+  0%   { background: var(--logo-primary); } /* Основной зеленый */
+  33%  { background: var(--logo-secondary); } /* Белый */
+  66%  { background: var(--logo-accent); } /* Серый */
+  100% { background: var(--logo-primary); } /* Основной зеленый */
 }
 
 /* Анимация морфинга формы */
