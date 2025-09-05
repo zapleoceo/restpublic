@@ -290,7 +290,7 @@ const DynamicMenu = () => {
         </div>
         
         {/* Full Menu Button - внизу row s-menu__content */}
-        <div className="column xl-12" style={{ textAlign: 'center', marginTop: '2rem' }}>
+        <div className="column xl-12" style={{ textAlign: 'center', marginTop: '-3rem', marginBottom: '6rem' }}>
           <a href="/menu" className="btn btn--primary full-menu-btn">
             Full Menu
           </a>
