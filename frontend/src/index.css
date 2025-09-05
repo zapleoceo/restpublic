@@ -250,6 +250,11 @@ button:focus-visible {
   padding-top: calc(var(--content-padding-top) / 2) !important;
 }
 
+/* Menu section spacing */
+.s-menu {
+  padding-top: calc(var(--content-padding-top) / 3) !important;
+}
+
 /* Full Menu Button */
 .full-menu-btn {
   display: inline-block;
