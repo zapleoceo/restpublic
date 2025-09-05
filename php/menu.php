@@ -81,7 +81,7 @@ foreach ($products as $product) {
         
         .category-btn {
             padding: 0.75rem 1.5rem;
-            background: var(--color-neutral-100);
+            background: transparent;
             border: 2px solid transparent;
             border-radius: 25px;
             color: var(--color-text-dark);
@@ -93,9 +93,9 @@ foreach ($products as $product) {
         
         .category-btn:hover,
         .category-btn.active {
-            background: var(--color-bg-primary);
+            background: #1c1e1d;
             color: var(--color-white);
-            border-color: var(--color-bg-primary);
+            border-color: #1c1e1d;
         }
         
         .menu-section {
@@ -220,8 +220,18 @@ foreach ($products as $product) {
     <!-- Page wrap -->
     <div id="page" class="s-pagewrap">
         
-        <!-- Header -->
-        <?php include 'components/header.php'; ?>
+        <!-- Simple Header for Menu Page -->
+        <header class="s-header">
+            <div class="container s-header__content">
+                <div class="s-header__block">
+                    <div class="header-logo">
+                        <a class="logo" href="/">
+                            <img src="images/logo.png" alt="North Republic">
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </header>
 
         <!-- Menu Content -->
         <main class="menu-page">
@@ -229,12 +239,7 @@ foreach ($products as $product) {
                 <!-- Page Title -->
                 <div class="row">
                     <div class="column xl-12">
-                        <div class="section-header">
-                            <h1 class="text-display-title">Наше меню</h1>
-                            <p class="lead" style="text-align: center; margin-top: 1rem; color: #666;">
-                                Откройте для себя изысканные блюда и напитки Республики Север
-                            </p>
-                        </div>
+                        <h1 class="text-display-title" style="text-align: center; margin-bottom: 3rem;">Наше меню</h1>
                     </div>
                 </div>
 
@@ -257,7 +262,6 @@ foreach ($products as $product) {
                 <?php if (!empty($categories)): ?>
                     <?php foreach ($categories as $index => $category): ?>
                         <div class="menu-section <?php echo $index === 0 ? 'active' : ''; ?>" data-category="<?php echo htmlspecialchars($category['category_id']); ?>" style="<?php echo $index === 0 ? '' : 'display: none;'; ?>">
-                            <h2><?php echo htmlspecialchars($category['category_name'] ?? $category['name']); ?></h2>
                             
                             <?php 
                             $category_products = $products_by_category[$category['category_id']] ?? [];
@@ -274,7 +278,7 @@ foreach ($products as $product) {
                                                     <?php endif; ?>
                                                 </div>
                                                 <div class="menu-list__item-price">
-                                                    <span>₽</span><?php echo number_format($product['price_normalized'] ?? $product['price'] ?? 0, 0, ',', ' '); ?>
+                                                    <?php echo number_format($product['price_normalized'] ?? $product['price'] ?? 0, 0, ',', ' '); ?> ₫
                                                 </div>
                                             </li>
                                         <?php endforeach; ?>
@@ -300,7 +304,7 @@ foreach ($products as $product) {
                                         <p>Классический крепкий кофе</p>
                                     </div>
                                     <div class="menu-list__item-price">
-                                        <span>₽</span>150
+                                        15,000 ₫
                                     </div>
                                 </li>
                                 
@@ -310,7 +314,7 @@ foreach ($products as $product) {
                                         <p>Кофе с молоком и пенкой</p>
                                     </div>
                                     <div class="menu-list__item-price">
-                                        <span>₽</span>200
+                                        20,000 ₫
                                     </div>
                                 </li>
                             </ul>
