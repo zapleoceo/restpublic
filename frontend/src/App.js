@@ -235,10 +235,10 @@ function App() {
               <Logo />
             </div>
             <ul className="s-footer__social social-list">
-              <li><a href="#0">FB</a></li>
-              <li><a href="#0">IG</a></li>
-              <li><a href="#0">PI</a></li>
-              <li><a href="#0">X</a></li>
+              <li><a href="https://facebook.com/vngamezone" target="_blank" rel="noopener noreferrer">FB</a></li>
+              <li><a href="https://www.instagram.com/gamezone.vn/" target="_blank" rel="noopener noreferrer">IG</a></li>
+              <li><a href="https://www.tiktok.com/@gamezone.vn" target="_blank" rel="noopener noreferrer">TT</a></li>
+              <li><a href="https://t.me/gamezone_vietnam" target="_blank" rel="noopener noreferrer">TG</a></li>
             </ul>
           </div>
 
@@ -246,8 +246,9 @@ function App() {
             <div className="grid-cols__column footer-block">
               <h6>Location</h6>
               <p>
-                456 Elm Street, Los Angeles <br />
-                CA 90001
+                <a href="https://maps.google.com/?q=12.302584,109.207279" target="_blank" rel="noopener noreferrer">
+                  Trần Khát Chân, Đường Đệ, Nha Trang, Khánh Hòa, Vietnam
+                </a>
               </p>
             </div>
             <div className="grid-cols__column footer-block">
