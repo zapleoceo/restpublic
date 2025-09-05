@@ -167,9 +167,9 @@
             <!-- Full Menu Button -->
             <div class="row s-menu__footer">
                 <div class="column xl-12 text-center">
-                    <a href="/menu.php" class="btn btn--primary">
-                        Открыть полное меню
-                    </a>
+                                            <a href="/menu" class="btn btn--primary">
+                            Открыть полное меню
+                        </a>
                 </div>
             </div> <!-- end s-menu__footer -->
         </section> <!-- end s-menu -->  
