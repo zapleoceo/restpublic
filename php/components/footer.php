@@ -5,7 +5,7 @@
 <!-- # footer 
 ================================================== -->
 <footer id="footer" class="container s-footer">  
-    <div class="row s-footer__top row-x-center">
+    <div>
         <div class="column xl-6 lg-8 md-10 footer-block footer-newsletter">                  
             <h5>
             Подпишитесь на нашу рассылку для получения <br>
@@ -22,7 +22,7 @@
                 </form>
             </div> <!-- end subscribe-form -->
         </div> <!-- end footer-newsletter -->
-    </div> <!-- end s-footer__top -->         
+    </div>         
 
     <div class="row s-footer__main">             
         <div class="column xl-3 lg-12 footer-block s-footer__main-start">     
