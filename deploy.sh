@@ -39,6 +39,7 @@ echo "📁 Копирую PHP файлы..."
 cd ..
 cp php/index.php .
 cp php/menu.php .
+cp -r php/components .
 echo "✅ PHP файлы скопированы"
 
 # Копируем template файлы
