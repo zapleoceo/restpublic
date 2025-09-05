@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import menuService from '../services/menuService';
 
 const DynamicMenu = () => {
@@ -8,12 +8,39 @@ const DynamicMenu = () => {
   const [activeCategory, setActiveCategory] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const menuItemsRef = useRef([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedCategoryProducts, setSelectedCategoryProducts] = useState([]);
 
   useEffect(() => {
     loadMenuData();
   }, []);
+
+  // Функция для анимации элементов меню
+  const animateMenuItems = () => {
+    const menuItems = document.querySelectorAll('.menu-list__item');
+    menuItems.forEach((item, index) => {
+      setTimeout(() => {
+        item.classList.add('animate-in');
+      }, index * 100); // Задержка 100ms между элементами
+    });
+  };
+
+  // Анимация при смене категории
+  useEffect(() => {
+    if (activeCategory && !loading) {
+      // Сначала убираем анимацию со всех элементов
+      const menuItems = document.querySelectorAll('.menu-list__item');
+      menuItems.forEach(item => {
+        item.classList.remove('animate-in');
+      });
+      
+      // Затем запускаем анимацию для активной категории
+      setTimeout(() => {
+        animateMenuItems();
+      }, 50);
+    }
+  }, [activeCategory, loading]);
 
   const loadMenuData = async () => {
     try {
