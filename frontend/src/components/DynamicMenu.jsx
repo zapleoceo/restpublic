@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import menuService from '../services/menuService';
 
 const DynamicMenu = () => {
@@ -291,9 +292,9 @@ const DynamicMenu = () => {
         
         {/* Full Menu Button - внизу row s-menu__content */}
         <div className="column xl-12" style={{ textAlign: 'center', marginTop: '-3rem', marginBottom: '6rem' }}>
-          <a href="/menu" className="btn btn--primary">
+          <Link to="/menu" className="btn btn--primary">
             Full Menu
-          </a>
+          </Link>
         </div>
       </div>
     </section>

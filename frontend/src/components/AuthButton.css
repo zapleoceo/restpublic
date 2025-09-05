@@ -1,0 +1,110 @@
+/* AuthButton.css - Стили кнопки авторизации */
+
+.auth-button {
+  display: flex;
+  align-items: center;
+}
+
+.auth-button__login {
+  background-color: var(--color-primary, #d4af37);
+  color: var(--color-white, #ffffff);
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+}
+
+.auth-button__login:hover {
+  background-color: var(--color-primary-dark, #b8941f);
+  transform: translateY(-1px);
+}
+
+.auth-button__login svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.auth-button__user {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 1rem;
+  background-color: var(--color-bg-light, #f8f9fa);
+  border-radius: 0.375rem;
+  border: 1px solid var(--color-border-light, #e5e5e5);
+}
+
+.auth-button__name {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text-dark, #333333);
+}
+
+.auth-button__logout {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 0.25rem;
+  color: var(--color-text-light, #666666);
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.auth-button__logout:hover {
+  background-color: var(--color-error, #e74c3c);
+  color: var(--color-white, #ffffff);
+}
+
+.auth-button__logout svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* Адаптивность */
+@media screen and (max-width: 768px) {
+  .auth-button__login {
+    padding: 0.75rem 1rem;
+    font-size: 0.8125rem;
+  }
+  
+  .auth-button__login svg {
+    width: 1.125rem;
+    height: 1.125rem;
+  }
+  
+  .auth-button__user {
+    padding: 0.75rem 1rem;
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: center;
+  }
+  
+  .auth-button__name {
+    font-size: 0.8125rem;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .auth-button__login {
+    padding: 0.625rem 0.75rem;
+    font-size: 0.75rem;
+  }
+  
+  .auth-button__login span {
+    display: none;
+  }
+  
+  .auth-button__user {
+    padding: 0.5rem 0.75rem;
+  }
+}
