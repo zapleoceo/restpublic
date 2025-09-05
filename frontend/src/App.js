@@ -237,9 +237,6 @@ function App() {
 
         <div className="row s-footer__main">
           <div className="column xl-3 lg-12 footer-block s-footer__main-start">
-            <div className="s-footer__logo">
-              <Logo />
-            </div>
             <ul className="s-footer__social social-list">
               <li><a href="https://facebook.com/vngamezone" target="_blank" rel="noopener noreferrer">FB</a></li>
               <li><a href="https://www.instagram.com/gamezone.vn/" target="_blank" rel="noopener noreferrer">IG</a></li>
