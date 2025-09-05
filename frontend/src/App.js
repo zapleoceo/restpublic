@@ -117,16 +117,16 @@ function App() {
 
           <div className="column xl-6 lg-6 md-12 s-about__content-end">
             <p>
-              In 2024, we launched Republic of the North at the foot of the stunning Co Tien Mountain, one of the most beautiful natural landmarks north of Nha Trang. Hidden away from the city's hustle, our location offers the perfect setting for outdoor adventure in the tranquil embrace of tropical slopes.
+              In 2024, we opened Republic of the North at the foot of Co Tien Mountain, north of Nha Trang. Tucked away from city noise, our venue offers outdoor adventure amid tranquil tropical slopes.
             </p>
             <p>
-              Nestled among verdant hills, the complex provides breathtaking views of the majestic mountain ridges and the city's rooftops below. We've created several distinct zones: laser tag and archery tag fields woven through lush foliage, cozy barbecue pavilions, immersive quest areas, and an exceptional bar overlooking the grand slopes.
+              Surrounded by verdant hills, the site boasts stunning views of mountain ridges and city rooftops below. We feature laser tag and archery tag fields among lush foliage, cozy barbecue pavilions, quest zones, and a bar overlooking Co Tien's peaks.
             </p>
             <p>
-              Our pride is the chef's signature menu, blending the finest Vietnamese traditions with international flair. Fresh seafood, aromatic herbs from the mountain trails, and charcoal-grilled meats deliver unforgettable flavors. The bar serves craft cocktails inspired by local ingredients, all enjoyed against the backdrop of Co Tien's soaring peaks.
+              Our chef blends Vietnamese traditions with global flair. Fresh seafood, mountain herbs, and charcoal-grilled meats create unforgettable dishes. The bar serves craft cocktails inspired by local ingredients, all enjoyed against the mountain backdrop.
             </p>
             <p>
-              Republic of the North unites the thrill of tactical games, exquisite dining, and the natural beauty of mountain landscapes into one unforgettable escape.
+              Republic of the North combines tactical games, delicious cuisine, and mountain beauty for an unforgettable escape.
             </p>
           </div>
         </div>
