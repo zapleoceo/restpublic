@@ -247,7 +247,8 @@ function App() {
               <h6>Location</h6>
               <p>
                 <a href="https://maps.google.com/?q=12.302584,109.207279" target="_blank" rel="noopener noreferrer">
-                  Trần Khát Chân, Đường Đệ, Nha Trang, Khánh Hòa, Vietnam
+                  Trần Khát Chân, Đường Đệ, <br />
+                  Nha Trang, Khánh Hòa, Vietnam
                 </a>
               </p>
             </div>
