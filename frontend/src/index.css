@@ -265,6 +265,16 @@ button:focus-visible {
   margin-top: calc(var(--content-padding-top) / 3) !important;
 }
 
+/* All sections content spacing - reduce top margins */
+.s-intro__content,
+.s-about__content,
+.s-menu__content,
+.s-gallery__content,
+.s-contact__content,
+.s-testimonials__content {
+  margin-top: calc(var(--content-padding-top) / 3) !important;
+}
+
 /* Full Menu Button */
 .full-menu-btn {
   display: inline-block;
