@@ -216,6 +216,14 @@ button:focus-visible {
 }
 
 /* Full menu link styles */
+.full-menu-item {
+  list-style: none !important;
+}
+
+.full-menu-item::before {
+  display: none !important;
+}
+
 .full-menu-link {
   display: flex;
   align-items: center;
@@ -225,6 +233,7 @@ button:focus-visible {
   color: #333;
   border-top: 1px solid #e0e0e0;
   transition: background-color 0.3s ease;
+  font-weight: bold !important;
 }
 
 .full-menu-link:hover {
@@ -236,4 +245,12 @@ button:focus-visible {
   width: 16px;
   height: 16px;
   fill: currentColor;
+}
+
+/* Fix intro-pic-primary image to crop instead of stretch */
+.intro-pic-primary img {
+  object-fit: cover !important;
+  width: 100% !important;
+  height: 100% !important;
+  aspect-ratio: unset !important;
 }

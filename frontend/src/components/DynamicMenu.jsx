@@ -216,7 +216,7 @@ const DynamicMenu = () => {
                   </a>
                 </li>
               ))}
-              <li>
+              <li className="full-menu-item">
                 <a href="/menu" className="full-menu-link">
                   <span>Full menu</span>
                   <svg clipRule="evenodd" fillRule="evenodd" strokeLinejoin="round" strokeMiterlimit="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
