@@ -127,11 +127,11 @@ foreach ($products as $product) {
                                     ?>
                                         <li class="menu-list__item">
                                             <div class="menu-list__item-desc">                                            
-                                                <h4><?php echo htmlspecialchars($product['name']); ?></h4>
-                                                <p><?php echo htmlspecialchars($product['description'] ?? ''); ?></p>
+                                                <h4><?php echo htmlspecialchars($product['product_name']); ?></h4>
+                                                <p><?php echo htmlspecialchars($product['unit'] ?? ''); ?></p>
                                             </div>
                                             <div class="menu-list__item-price">
-                                                <span>₽</span><?php echo number_format($product['price_normalized'] ?? $product['price'] ?? 0, 0, ',', ' '); ?>
+                                                <span>₽</span><?php echo number_format($product['price_normalized'] ?? 0, 0, ',', ' '); ?>
                                             </div>
                                         </li>
                                     <?php endforeach; ?>
@@ -176,6 +176,19 @@ foreach ($products as $product) {
             <div class="row" style="margin-top: 4rem; text-align: center;">
                 <div class="column xl-12">
                     <a href="index.php" class="btn btn--primary">Вернуться на главную</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Full Menu Button -->
+        <section class="s-menu__cta">
+            <div class="container">
+                <div class="row">
+                    <div class="column xl-12" style="text-align: center; margin-top: 4rem;">
+                        <a href="/menu" class="btn btn--primary" style="display: inline-block; padding: 1.5rem 3rem; font-size: 1.6rem; text-decoration: none;">
+                            Открыть полное меню
+                        </a>
+                    </div>
                 </div>
             </div>
         </section>
