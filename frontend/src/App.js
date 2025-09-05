@@ -255,7 +255,7 @@ function App() {
             <div className="grid-cols__column footer-block">
               <h6>Contacts</h6>
               <ul className="link-list">
-                <li><a href="mailto:#0">contact@northrepublic.com</a></li>
+                <li><a href="mailto:hi@northrepublic.com">hi@northrepublic.com</a></li>
                                         <li><a href="tel:+84349338758">+84349338758</a></li>
               </ul>
             </div>
