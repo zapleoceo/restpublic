@@ -1,6 +1,6 @@
 <?php
 require_once 'vendor/autoload.php';
-require_once 'classes/MenuCache.php';
+require_once 'php/classes/MenuCache.php';
 
 echo "Testing MenuCache...\n";
 
