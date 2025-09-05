@@ -1,108 +1,45 @@
-# Полная документация проекта North Republic
+# Документация проекта North Republic
 
 ## Архитектура проекта
 
 ### Общая структура
 ```
 NRsite/
-├── backend/          # Node.js API сервер
-├── frontend/         # React приложение
-├── template/         # HTML шаблон
-├── index.html        # Гибридный HTML файл
-└── deploy.sh         # Скрипт автоматического деплоя
+├── php/               # PHP Frontend
+│   ├── index.php      # Главная страница
+│   └── menu.php       # Страница меню
+├── backend/           # Node.js API сервер
+├── template/          # HTML шаблон и ресурсы
+└── deploy.sh          # Скрипт автоматического деплоя
 ```
 
 ### Технологический стек
-- **Frontend**: React 18, CSS3, HTML5
-- **Backend**: Node.js, Express.js, Axios
+- **Frontend**: PHP, HTML5, CSS3, JavaScript
+- **Backend**: Node.js, Express.js, MongoDB
 - **API**: Poster POS API v3
-- **Deploy**: PM2, Nginx, SSH
+- **Deploy**: PM2, Nginx, Apache, SSH
 - **Version Control**: Git
 
-## Frontend (React приложение)
+## Frontend (PHP)
 
-### Инициализация React
-**Файл**: `frontend/src/main.jsx`
-
-React приложение инициализируется с задержкой для совместимости с HTML шаблоном:
-
-1. **Ожидание загрузки**: Ждет события `window.load`
-2. **Дополнительная задержка**: 100ms для гарантии выполнения template JS
-3. **Создание root**: Использует `createRoot` API React 18
-4. **Рендеринг**: Рендерит `<App />` в контейнер `#root`
-
-```javascript
-// Ключевая логика инициализации
-if (document.readyState === 'complete') {
-  initReactApp();
-} else {
-  window.addEventListener('load', function() {
-    setTimeout(initReactApp, 100);
-  });
-}
-```
-
-### Структура компонентов
-
-#### App.jsx
-**Файл**: `frontend/src/App.jsx`
-- Основной компонент приложения
-- Использует React Router для навигации
-- Включает компонент `VersionInfo` для отображения версии
-
-#### HomePage.jsx
-**Файл**: `frontend/src/pages/HomePage.jsx`
+### index.php
+**Файл**: `php/index.php`
 - Главная страница сайта
-- Импортирует все секции: Intro, About, DynamicMenu, Services, Events, Testimonials
-- Обрабатывает ошибки рендеринга
+- Интеграция с оригинальным HTML шаблоном
+- Динамическое меню через Node.js API
+- Русская локализация
 
-#### DynamicMenu.jsx
-**Файл**: `frontend/src/components/DynamicMenu.jsx`
+### menu.php
+**Файл**: `php/menu.php`
+- Полная страница меню
+- Отображение всех категорий и продуктов
+- Интеграция с template стилями
 
-**Ключевая логика**:
-1. **Состояние**: Управляет категориями, продуктами, активной категорией, загрузкой
-2. **Загрузка данных**: Использует `menuService` для получения данных
-3. **Кэширование**: Данные кэшируются на 5 минут
-4. **Интеграция с шаблоном**: Создает DOM элементы с ID `tab-${categoryId}` для совместимости с template JS
-5. **Ограничение продуктов**: Показывает только первые 5 популярных продуктов
-6. **Skeleton loader**: Отображает анимированный загрузчик во время загрузки
-
-**Ключевые методы**:
-- `loadMenuData()`: Загружает категории и продукты
-- `handleCategoryClick()`: Обрабатывает клик по категории, интегрируется с template JS
-
-### Сервисы
-
-#### menuService.js
-**Файл**: `frontend/src/services/menuService.js`
-
-**Функциональность**:
-- **Кэширование**: 5-минутный кэш для оптимизации
-- **API вызовы**: Интеграция с backend API
-- **Форматирование цен**: Конвертация цен из копеек в доллары
-- **Обработка изображений**: Генерация URL изображений продуктов
-
-**Основные методы**:
-- `getMenuData()`: Получение полного меню с кэшированием
-- `getCategories()`: Получение категорий
-- `getProductsByCategory()`: Продукты по категории
-- `getPopularProductsByCategory()`: Популярные продукты
-- `formatPrice()`: Форматирование цены
-
-#### apiService.js
-**Файл**: `frontend/src/services/apiService.js`
-- Базовый HTTP клиент на основе Axios
-- Настроен для работы с backend API
-- Обработка ошибок и интерцепторы
-
-### Константы и конфигурация
-
-#### apiEndpoints.js
-**Файл**: `frontend/src/constants/apiEndpoints.js`
-- Определяет все API endpoints
-- Автоматическое определение базового URL (production/development)
-- Production: `https://northrepublic.me`
-- Development: `http://localhost:3002`
+### Интеграция с шаблоном
+- **CSS**: vendor.css, styles.css, custom.css из template/
+- **JavaScript**: main.js, plugins.js из template/
+- **Изображения**: все ресурсы из template/images/
+- **Сохранение**: всех оригинальных стилей и анимаций
 
 ## Backend (Node.js API)
 
@@ -110,10 +47,9 @@ if (document.readyState === 'complete') {
 
 #### server.js
 **Файл**: `backend/server.js`
-- Express.js сервер
+- Express.js сервер на порту 3002
 - Middleware: CORS, Helmet, Morgan
 - Роуты: `/api/menu`, `/api/poster`, `/api/health`
-- Порт: 3002 (production)
 
 #### Роуты
 
@@ -122,7 +58,6 @@ if (document.readyState === 'complete') {
 - `GET /api/menu`: Полное меню (категории + продукты)
 - `GET /api/menu/categories`: Только категории
 - Обработка ошибок и логирование
-- Нормализация цен и изображений
 
 ##### poster.js
 **Файл**: `backend/routes/poster.js`
@@ -146,7 +81,6 @@ if (document.readyState === 'complete') {
 - `getCategories()`: Получение категорий из Poster
 - `getProducts()`: Получение всех продуктов
 - `getProductsByCategory()`: Продукты по категории
-- `getPopularProducts()`: Популярные продукты (по статистике продаж)
 - `normalizePrice()`: Конвертация цены из копеек в доллары
 - `formatPrice()`: Форматирование цены для отображения
 - `getProductImage()`: Генерация URL изображений
@@ -154,36 +88,26 @@ if (document.readyState === 'complete') {
 **Кэширование**:
 - Категории: 5 минут
 - Продукты: 5 минут
-- Популярные продукты: 30 минут
 
-## HTML шаблон и интеграция
+## MongoDB интеграция
 
-### index.html
-**Файл**: `index.html` (гибридный файл)
+### Конфигурация
+- **Версия**: MongoDB 8.0.4
+- **Порт**: 27017
+- **Хост**: 127.0.0.1
+- **База данных**: northrepublic
 
-**Структура**:
-1. **HTML шаблон**: Базовый HTML с мета-тегами и favicon
-2. **CSS**: Подключение template CSS и React CSS
-3. **Preloader**: Анимированный загрузчик сайта
-4. **React контейнер**: `<div id="root"></div>`
-5. **Template JS**: `plugins.js` и `main.js`
-6. **React JS**: Динамически обновляемый JS файл
+### Структура данных
+- **Переводы** (`translations`) - Многоязычные тексты
+- **Настройки сайта** (`site_config`) - Параметры сайта
+- **Секции** (`sections`) - Конфигурация разделов
+- **Версии конфигураций** (`versions`) - История изменений
 
-**Ключевые особенности**:
-- Гибридная структура: HTML шаблон + React приложение
-- Автоматическое обновление ссылок на JS файлы
-- Совместимость с template JavaScript
-- UTF-8 кодировка (автоматически исправляется при деплое)
-
-### Интеграция React с шаблоном
-
-**Проблема**: Template JS и React конфликтуют при одновременной инициализации
-
-**Решение**:
-1. **Отложенная инициализация**: React ждет полной загрузки страницы
-2. **DOM интеграция**: React создает элементы с ID для совместимости
-3. **События**: Обработка кликов интегрируется с template JS
-4. **Стили**: CSS правила для устранения конфликтов
+### PHP-MongoDB интеграция
+- **MongoDB PHP Driver** - Подключение к MongoDB из PHP
+- **Конфигурации** - Хранение настроек сайта в MongoDB
+- **Переводы** - Многоязычные тексты в MongoDB
+- **Версионирование** - История изменений конфигураций
 
 ## Деплой и инфраструктура
 
@@ -194,20 +118,10 @@ if (document.readyState === 'complete') {
 1. **Очистка сервера**: `git clean -fd`
 2. **Обновление кода**: `git pull origin main`
 3. **Установка зависимостей**: `npm install` для backend
-4. **Сборка frontend**: `npm run build`
-5. **Копирование файлов**: Static файлы, CSS, изображения, иконки
-6. **Восстановление index.html**: Из копии в репозитории
-7. **Исправление кодировки**: UTF-16 → UTF-8 (автоматически)
-8. **Обновление JS ссылок**: Автоматическое обновление ссылки на новый JS файл
-9. **Валидация**: Проверка корректности обновления
-10. **Перезапуск сервисов**: PM2 restart
-11. **Синхронизация**: Обновление локальной копии index.html
-
-**Автоматизация**:
-- Полностью автоматический процесс
-- Не требует ручных правок
-- Автоматическое исправление проблем с кодировкой
-- Валидация результатов
+4. **Копирование PHP файлов**: index.php, menu.php
+5. **Копирование template файлов**: CSS, JS, images, иконки
+6. **Перезапуск сервисов**: PM2 restart
+7. **Коммит изменений**: автоматический коммит в репозиторий
 
 ### Серверная инфраструктура
 
@@ -215,10 +129,10 @@ if (document.readyState === 'complete') {
 ```
 /var/www/northrepubli_usr/data/www/northrepublic.me/
 ├── backend/          # Node.js API
-├── frontend/         # React приложение
-├── static/           # Собранные React файлы
+├── php/              # PHP Frontend
 ├── template/         # HTML шаблон
-├── index.html        # Гибридный HTML файл
+├── index.php         # Главная страница
+├── menu.php          # Страница меню
 └── deploy.sh         # Скрипт деплоя
 ```
 
@@ -227,10 +141,10 @@ if (document.readyState === 'complete') {
 - Автоматический перезапуск при сбоях
 - Логирование и мониторинг
 
-**Nginx**:
-- Проксирование запросов на backend
-- Обслуживание статических файлов
-- SSL сертификаты
+**Nginx + Apache**:
+- **Nginx**: Reverse proxy, статические файлы, SSL
+- **Apache**: Обработка PHP файлов (порт 81)
+- **Проксирование**: API запросы на Node.js, PHP на Apache
 
 ## Конфигурация и переменные окружения
 
@@ -244,11 +158,6 @@ if (document.readyState === 'complete') {
 - `POSTER_API_BASE_URL=https://joinposter.com/api`: URL Poster API
 - `CACHE_TTL=300000`: Время жизни кэша (5 минут)
 - `CORS_ORIGIN=https://northrepublic.me`: Разрешенный origin
-
-### frontend/src/constants/apiEndpoints.js
-**Автоматическое определение окружения**:
-- Production: `https://northrepublic.me`
-- Development: `http://localhost:3002`
 
 ## Безопасность
 
@@ -266,15 +175,15 @@ if (document.readyState === 'complete') {
 ## Производительность
 
 ### Кэширование
-- **Frontend**: 5-минутный кэш в menuService
 - **Backend**: Кэширование запросов к Poster API
 - **Статические файлы**: Кэширование через Nginx
+- **MongoDB**: Кэширование конфигураций
 
 ### Оптимизация
-- **React**: Оптимизированная сборка для production
+- **PHP**: Оптимизированная обработка
 - **Изображения**: Оптимизированные размеры для Poster API
 - **CSS**: Минификация и сжатие
-- **JS**: Минификация и tree shaking
+- **JS**: Минификация
 
 ## Мониторинг и логирование
 
@@ -284,8 +193,8 @@ if (document.readyState === 'complete') {
 - **PM2**: Мониторинг процессов
 
 ### Frontend
-- **Console**: Логирование для отладки
-- **Error boundaries**: Обработка ошибок React
+- **PHP логи**: Логирование ошибок PHP
+- **Nginx логи**: Доступ и ошибки
 
 ## Восстановление проекта
 
@@ -293,20 +202,22 @@ if (document.readyState === 'complete') {
 
 1. **Клонировать репозиторий**
 2. **Настроить переменные окружения** в `backend/config.env`
-3. **Установить зависимости**: `npm install` в backend и frontend
-4. **Настроить сервер**: PM2, Nginx, SSL
+3. **Установить зависимости**: `npm install` в backend
+4. **Настроить сервер**: PM2, Nginx, Apache, SSL
 5. **Запустить деплой**: `./deploy.sh`
 
 ### Критически важные файлы:
-- `index.html`: Гибридный HTML файл (НЕ перезаписывать!)
+- `php/index.php`: Главная страница
+- `php/menu.php`: Страница меню
 - `deploy.sh`: Автоматический скрипт деплоя
 - `backend/config.env`: Конфигурация и токены
-- `frontend/src/services/menuService.js`: Логика работы с меню
 - `backend/services/posterService.js`: Интеграция с Poster API
 
 ### Зависимости:
 - Node.js 16+
+- PHP 7.4+
+- MongoDB 8.0+
 - PM2 для управления процессами
-- Nginx для веб-сервера
+- Nginx + Apache для веб-сервера
 - Git для версионного контроля
 - SSH доступ к серверу
