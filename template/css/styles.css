@@ -3020,7 +3020,7 @@ td:last-child {
 }
 
 .section-header .text-display-title {
-    margin-top: 0;
+    margin-top: calc(-1 * var(--vspace-2));
     font-size : clamp(var(--text-display), var(--text-display) - 1rem + 2vw, var(--text-huge));
 }
 
@@ -4083,7 +4083,7 @@ td:last-child {
  *
  * ------------------------------------------------------------------- */
 .s-menu {
-    padding-top: var(--vspace-5);
+    padding-top: var(--vspace-2);
 }
 
 .s-menu__content {

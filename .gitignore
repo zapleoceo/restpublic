@@ -135,7 +135,7 @@ test-results.xml
 # Project Specific
 # ===========================================
 # Template files (copied to root during deployment)
-template/
+# template/
 
 # Poster API cache files
 poster_cache/
