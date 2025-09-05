@@ -354,6 +354,18 @@ button:focus-visible {
 
 /* React-specific styles only */
 
+/* Fix sticky menu behavior - adjust top offset when header is sticky */
+.s-menu__content-start {
+  position: sticky;
+  top: var(--vspace-2_5); /* Уменьшаем отступ с vspace-5 до vspace-2_5 */
+  margin-bottom: var(--vspace-2);
+}
+
+/* Когда header становится sticky, уменьшаем отступ еще больше */
+.s-header.sticky ~ .s-menu .s-menu__content-start {
+  top: var(--vspace-1);
+}
+
 /* Fix for scrollbar issue - restore original template behavior */
 /* Don't override template styles, just ensure proper behavior */
 html {
