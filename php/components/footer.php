@@ -6,22 +6,6 @@
 ================================================== -->
 <footer id="footer" class="container s-footer">  
     <div>
-        <div class="column xl-6 lg-8 md-10 footer-block footer-newsletter">                  
-            <h5>
-            Подпишитесь на нашу рассылку для получения <br>
-            обновлений, новостей и эксклюзивных предложений.
-            </h5>
-
-            <div class="subscribe-form">
-                <form id="mc-form" class="mc-form">
-                    <div class="mc-input-wrap">
-                        <input type="email" name="EMAIL" id="mce-EMAIL" placeholder="Ваш email адрес" required>
-                        <input type="submit" name="subscribe" value="Подписаться" class="btn btn--primary">
-                    </div> 
-                    <div class="mc-status"></div>
-                </form>
-            </div> <!-- end subscribe-form -->
-        </div> <!-- end footer-newsletter -->
     </div>         
 
     <div class="row s-footer__main">             
