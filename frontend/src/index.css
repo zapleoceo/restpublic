@@ -247,10 +247,20 @@ button:focus-visible {
   fill: currentColor;
 }
 
+/* Smooth scrolling for anchor links */
+html {
+  scroll-behavior: smooth !important;
+}
+
 /* Fix intro-pic-primary image to crop instead of stretch */
+.intro-pic-primary {
+  overflow: hidden !important;
+}
+
 .intro-pic-primary img {
   object-fit: cover !important;
   width: 100% !important;
   height: 100% !important;
   aspect-ratio: unset !important;
+  object-position: center !important;
 }
