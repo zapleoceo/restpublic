@@ -1,0 +1,70 @@
+5d040b5 2025-09-05 23:21:04 Merge branch 'main' of github.com:zapleoceo/restpublic
+354db3f 2025-09-05 23:20:45 Fix: Change logo reference from logo.png to logo.svg
+c71212a 2025-09-05 18:30:38 Fix: Aggressive scroll removal - remove all scrollbars from all sections, keep only main page scroll
+524224d 2025-09-05 18:24:11 Merge: Resolve conflict and keep global scroll removal rules
+ac330ef 2025-09-05 18:23:39 Fix: Remove all scrollbars globally - add comprehensive scroll removal rules
+effd5c2 2025-09-05 17:40:08 Fix: Override template styles that cause unwanted scrollbars
+5180440 2025-09-05 17:37:24 Fix: Remove scroll from all elements - only site scroll allowed
+757b20e 2025-09-05 16:07:00 Fix: Center Full Menu button on screen and add rounded corners
+6f63b7e 2025-09-05 16:04:05 Fix: Move Full Menu button to correct position - after s-menu__content-end, before closing row s-menu__content
+821a5e8 2025-09-05 15:59:29 Add: Smooth menu loading animations and center Full Menu button on screen
+6634df3 2025-09-05 15:55:57 Update: Change margins to 20px left, 15px right, and move Full Menu button to end of menu section
+85049e6 2025-09-05 15:47:46 Update: Change menu text color to #BFC1C0 and add 40px left margin
+bdb0f06 2025-09-05 15:44:50 Update: Change menu item styles - white color and 20px font size for title and price
+5425275 2025-09-05 15:41:39 Fix: Import index.css in index.js to include custom styles in build
+60a782d 2025-09-05 15:37:46 Fix: Align menu item title and price - same font size, weight, and vertical alignment
+12b5551 2025-09-05 15:33:20 Fix: Correct price display - extract price from object price['1'] to fix NaN issue
+aada584 2025-09-05 15:24:36 Fix: Simplify price display - remove complex formatting, show simple prices
+88aea33 2025-09-05 14:43:28 Fix: Update index.html with correct CSS file reference (main.530ac776.css)
+9047e3e 2025-09-05 14:43:00 Fix: Update deploy script to automatically update CSS file references
+7dca1b0 2025-09-05 14:41:03 Update: index.html with new JS file reference (main.157b2598.js)
+73f0743 2025-09-05 14:38:14 Update: Logo colors to match site theme (white, green, gray)
+7379f4b 2025-09-05 14:31:37 Update about section images
+100b1ab 2025-09-05 13:16:05 Resolve merge conflicts and apply calc method
+7c3af33 2025-09-05 13:14:48 Try calc method for section padding-top reduction
+0d32ceb 2025-09-05 13:11:03 Fix section spacing by targeting correct CSS property
+e4cfeef 2025-09-05 13:04:42 Force reduce section margins with fixed values
+a37ec3f 2025-09-05 13:03:13 Update Our Story section with refined content
+b1b7e35 2025-09-05 13:01:48 Reduce top margins for all section content
+83fedab 2025-09-05 13:00:21 Update Our Story section with Republic of the North content
+2981af2 2025-09-05 12:59:02 Reduce About content top margin by 3x
+b3cad63 2025-09-05 12:57:09 Reduce Menu content top margin by 3x
+e51995b 2025-09-05 12:54:01 Reduce Menu section top padding by 3x
+5957440 2025-09-05 12:46:14 Add Full Menu button to menu section
+ff5241b 2025-09-05 12:42:54 Reduce Gallery section top padding by half
+c968cf6 2025-09-05 12:40:10 Remove Full Menu button causing scroll issues
+fe01053 2025-09-05 12:38:11 Update Full Menu button styling
+e90d796 2025-09-05 12:34:13 Move Full menu from category list to bottom button
+ff14e70 2025-09-05 12:30:49 Add vertical alignment for menu items
+2ff3da9 2025-09-05 12:29:59 Update contact email in footer
+37420ff 2025-09-05 12:25:52 Fix logo colors and update opening hours
+172a9aa 2025-09-05 12:22:23 Update logo colors and address format
+d965cae 2025-09-05 12:20:05 Update footer: social links and address
+72089b3 2025-09-05 12:18:03 Fix: Restore original logo colors
+ddefb72 2025-09-05 12:14:42 Update footer and logo colors
+6c9ebee 2025-09-05 12:09:56 Optimize: Minimize !important usage and automate custom CSS deployment
+cb66647 2025-09-05 12:02:02 Force CSS update with version comment
+aa8eb6d 2025-09-05 11:57:06 Fix: Force image cropping and smooth scrolling
+43b0464 2025-09-05 11:54:04 Optimize: Reduce unnecessary !important usage
+cb69dc0 2025-09-05 11:51:46 Fix: Smooth scrolling and image display
+a9b21fe 2025-09-05 11:47:58 Fix: Menu and image improvements
+c7561d5 2025-09-05 11:42:16 Fix: Menu improvements
+cc8e026 2025-09-05 11:38:11 Стабильный сайт с меню
+12ab837 2025-09-05 11:13:49 Fix: Add automatic UTF-16 to UTF-8 conversion in deploy script
+618bb11 2025-09-05 11:10:27 Fix: Remove menu scroll and improve deploy script JS update
+338b80e 2025-09-05 11:02:06 Fix: Update index.html with correct JS file reference (main.81fe81b0.js)
+15ac269 2025-09-05 02:03:10 Fix: Correct git directory path in deploy script
+a4148ab 2025-09-05 02:02:14 Version bump to 1.0.31
+f392d8a 2025-09-05 02:01:48 Fix: Auto-update index.html in repository after deploy
+d558ab0 2025-09-05 01:57:28 Docs: Add comprehensive deployment documentation
+86c4a3a 2025-09-05 01:53:20 Feature: Add 'Open full menu' link to each category
+3d3912f 2025-09-05 01:52:12 Fix: Remove scroll from menu items and ensure no dish count text
+681c3c0 2025-09-05 01:49:07 UI: Remove dish count info and add skeleton loader for menu
+3839b7b 2025-09-05 01:41:52 Update: index.html with correct JS file reference (main.77581888.js)
+53224d8 2025-09-05 01:40:03 Fix: Auto-update JS file reference in index.html during deploy
+6392f4c 2025-09-05 01:33:34 Feature: Limit menu display to top 5 popular dishes per category
+b6731c0 2025-09-05 01:31:48 Fix: Auto-restore index.html in deploy script
+102d155 2025-09-05 01:25:24 Исправление интеграции Template JS с React - добавлены элементы с ID tab-* и синхронизация состояний
+28efc54 2025-09-05 01:19:33 Альтернативное решение: задержка инициализации React до полной загрузки template JS
+f4e1f1e 2025-09-05 01:07:18 Оптимальное решение: гибридный index.html с template + React интеграцией
+725fd31 2025-09-05 00:49:47 Исправление рендеринга React приложения - убраны конфликтующие стили, упрощена логика

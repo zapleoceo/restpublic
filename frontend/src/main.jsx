@@ -30,6 +30,13 @@ function initReactApp() {
     );
     console.log('✅ Main App rendered successfully');
     
+    // Инициализируем видимость элементов после рендеринга
+    setTimeout(() => {
+      // Добавляем класс ss-show для показа анимированных элементов
+      document.body.classList.add('ss-show');
+      console.log('✅ Added ss-show class for animations');
+    }, 200);
+    
   } catch (error) {
     console.error('❌ Error rendering React app:', error);
     console.error('Error stack:', error.stack);

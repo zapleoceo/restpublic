@@ -25,13 +25,14 @@ a:hover {
   color: #535bf2;
 }
 
-body {
+/* Remove conflicting body styles that override template styles */
+/* body {
   margin: 0;
   display: flex;
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
-}
+} */
 
 h1 {
   font-size: 3.2em;
@@ -354,3 +355,82 @@ button:focus-visible {
 }
 
 /* React-specific styles only */
+
+/* Fix for scrollbar issue - restore original template behavior */
+/* Don't override template styles, just ensure proper behavior */
+html {
+  overflow-x: hidden; /* Hide horizontal scrollbar only */
+}
+
+/* Ensure body has proper overflow behavior like original template */
+body {
+  -webkit-overflow-scrolling: touch;
+  -webkit-text-size-adjust: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Ensure page wrapper has proper flex behavior */
+.s-pagewrap {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  position: relative;
+}
+
+/* Fix for intro-scroll visibility issue - ONLY for intro-scroll element */
+.intro-scroll {
+  /* Ensure intro-scroll is properly hidden by default */
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(150px);
+  transition: opacity 0.6s var(--ease-smooth-in-out), 
+              visibility 0.6s var(--ease-smooth-in-out), 
+              transform 0.6s var(--ease-smooth-in-out);
+}
+
+/* Show intro-scroll only when page is fully loaded and ready */
+.ss-show .intro-scroll,
+.no-js .intro-scroll {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  transition-delay: 1.8s;
+}
+
+/* Ensure intro-scroll is hidden on mobile devices */
+@media screen and (max-width: 500px) {
+  .intro-scroll {
+    display: none !important;
+  }
+}
+
+/* Fix for smoothscroll links in navigation - ensure they work properly */
+.header-nav .smoothscroll {
+  cursor: pointer;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.header-nav .smoothscroll:hover {
+  color: var(--color-primary, #d4af37);
+}
+
+/* Fix for back to top button - ensure it's properly styled */
+.ss-go-top .smoothscroll {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 4rem;
+  height: 4rem;
+  background-color: var(--color-primary, #d4af37);
+  color: white;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+
+.ss-go-top .smoothscroll:hover {
+  background-color: var(--color-primary-dark, #b8941f);
+  transform: translateY(-2px);
+}
