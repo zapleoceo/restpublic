@@ -1,5 +1,4 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import './MenuFooter.css';
 
 const MenuFooter = () => {
@@ -69,24 +68,24 @@ const MenuFooter = () => {
               <h4 className="menu-footer__title">Навигация</h4>
               <ul className="menu-footer__links">
                 <li>
-                  <Link to="/" className="menu-footer__link">
+                  <a href="/" className="menu-footer__link">
                     Главная
-                  </Link>
+                  </a>
                 </li>
                 <li>
-                  <Link to="/#about" className="menu-footer__link">
+                  <a href="/#about" className="menu-footer__link">
                     О нас
-                  </Link>
+                  </a>
                 </li>
                 <li>
-                  <Link to="/#gallery" className="menu-footer__link">
+                  <a href="/#gallery" className="menu-footer__link">
                     Галерея
-                  </Link>
+                  </a>
                 </li>
                 <li>
-                  <Link to="/menu" className="menu-footer__link">
+                  <a href="/menu" className="menu-footer__link">
                     Меню
-                  </Link>
+                  </a>
                 </li>
               </ul>
             </div>
