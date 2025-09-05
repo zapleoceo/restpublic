@@ -365,9 +365,6 @@ foreach ($categories as $category) {
         
         <!-- Footer -->
         <?php include 'components/footer.php'; ?>
-        
-        <!-- Cart Component -->
-        <?php include 'components/cart.php'; ?>
     </div> <!-- end page-wrap -->
 
     <!-- Java Script
@@ -375,98 +372,41 @@ foreach ($categories as $category) {
     <script src="template/js/plugins.js"></script>
     <script src="template/js/main.js"></script>
     
-    <!-- Mini Menu Dynamic Loading Script -->
+    <!-- Mini Menu Tab Switching Script -->
     <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // API base URL
-        const apiBaseUrl = 'http://localhost:3002/api';
-        
-        // Function to fetch popular products for a category
-        async function fetchPopularProducts(categoryId, limit = 5) {
-            try {
-                const response = await fetch(`${apiBaseUrl}/menu/categories/${categoryId}/popular?limit=${limit}`);
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                const data = await response.json();
-                return data.popular_products || [];
-            } catch (error) {
-                console.error('Error fetching popular products:', error);
-                return [];
-            }
-        }
-        
-        // Function to update menu content for a category
-        function updateMenuContent(categoryId, products) {
-            const menuGroup = document.getElementById(`tab-${categoryId}`);
-            if (!menuGroup) return;
-            
-            const menuList = menuGroup.querySelector('.menu-list');
-            if (!menuList) return;
-            
-            // Clear existing content
-            menuList.innerHTML = '';
-            
-            if (products.length === 0) {
-                menuList.innerHTML = '<li class="menu-list__item"><p>Продукты не найдены</p></li>';
-                return;
-            }
-            
-            // Add products to menu
-            products.forEach(product => {
-                const menuItem = document.createElement('li');
-                menuItem.className = 'menu-list__item';
-                
-                const price = product.price_normalized || product.price || 0;
-                const formattedPrice = new Intl.NumberFormat('ru-RU').format(Math.round(price));
-                
-                menuItem.innerHTML = `
-                    <div class="menu-list__item-desc">                                            
-                        <h4>${product.name || 'Блюдо'}</h4>
-                        <p>${product.description || ''}</p>
-                    </div>
-                    <div class="menu-list__item-price">
-                        <span>₽</span>${formattedPrice}
-                    </div>
-                `;
-                
-                menuList.appendChild(menuItem);
-            });
-        }
-        
-        // Add click handlers to category tabs
+        // Add click handlers to category tabs for tab switching
         const categoryTabs = document.querySelectorAll('.tab-nav__list a');
+        const tabContents = document.querySelectorAll('.tab-content__item');
+        
         categoryTabs.forEach(tab => {
-            tab.addEventListener('click', async function(e) {
+            tab.addEventListener('click', function(e) {
                 e.preventDefault();
                 
                 // Get category ID from href
                 const href = this.getAttribute('href');
                 const categoryId = href.replace('#tab-', '');
                 
-                // Show loading state
-                const menuGroup = document.getElementById(`tab-${categoryId}`);
-                if (menuGroup) {
-                    const menuList = menuGroup.querySelector('.menu-list');
-                    if (menuList) {
-                        menuList.innerHTML = '<li class="menu-list__item"><p>Загрузка...</p></li>';
-                    }
+                // Hide all tab contents
+                tabContents.forEach(content => {
+                    content.classList.remove('active');
+                });
+                
+                // Show selected tab content
+                const targetTab = document.getElementById(`tab-${categoryId}`);
+                if (targetTab) {
+                    targetTab.classList.add('active');
                 }
                 
-                // Fetch and update products
-                const products = await fetchPopularProducts(categoryId, 5);
-                updateMenuContent(categoryId, products);
-                
-                // Update active tab (if needed)
+                // Update active tab
                 categoryTabs.forEach(t => t.classList.remove('active'));
                 this.classList.add('active');
             });
         });
         
-        // Load products for the first active category on page load
-        const firstTab = document.querySelector('.tab-nav__list a');
-        if (firstTab) {
-            firstTab.click();
+        // Activate first tab on page load
+        if (categoryTabs.length > 0) {
+            categoryTabs[0].click();
         }
     });
     </script>

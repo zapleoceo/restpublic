@@ -28,7 +28,7 @@
         <div class="column xl-3 lg-12 footer-block s-footer__main-start">     
             <div class="s-footer__logo">
                 <a class="logo" href="/">
-                    <img src="template/images/logo.svg" alt="North Republic">
+                    <img src="images/logo.png" alt="North Republic">
                 </a>
             </div>  
 
@@ -64,7 +64,9 @@
             <div class="grid-cols__column footer-block">
                 <h6>Адрес</h6>
                 <p>
-                Хошимин, Вьетнам
+                <a href="https://maps.google.com/?q=12.302584,109.207279" target="_blank" rel="noopener noreferrer">
+                    Trần Khát Chân, Đường Đệ, Nha Trang, Khánh Hòa, Vietnam
+                </a>
                 </p>
             </div>
             
