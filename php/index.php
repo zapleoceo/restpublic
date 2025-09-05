@@ -351,7 +351,7 @@
                                             <p>${product.description || ''}</p>
                                         </div>
                                         <div class="menu-list__item-price">
-                                            <span>₽</span>${(product.price_normalized || product.price || 0).toLocaleString('ru-RU')}
+                                            ${(product.price_normalized || product.price || 0).toLocaleString('ru-RU')} ₫
                                         </div>
                                     </li>
                                 `).join('') : `
