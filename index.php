@@ -314,7 +314,7 @@
                 // Group products by category
                 const productsByCategory = {};
                 data.products.forEach(product => {
-                    const categoryId = product.menu_category_id || 'default';
+                    const categoryId = String(product.menu_category_id || 'default');
                     if (!productsByCategory[categoryId]) {
                         productsByCategory[categoryId] = [];
                     }
@@ -335,8 +335,10 @@
                 
                 // Render content
                 const contentHtml = data.categories.map((category, index) => {
-                    const categoryProducts = productsByCategory[category.category_id] || [];
+                    const categoryProducts = productsByCategory[String(category.category_id)] || [];
                     const topProducts = categoryProducts.slice(0, 5); // Top 5 products
+                    
+                    console.log(`Category ${category.category_id} (${category.category_name}): ${categoryProducts.length} products, showing ${topProducts.length}`);
                     
                     return `
                         <div id="tab-${category.category_id}" class="menu-block__group tab-content__item ${index === 0 ? 'active' : ''}">
