@@ -252,7 +252,7 @@ button:focus-visible {
   background-color: var(--color-primary, #d4af37);
   color: var(--color-white, #fff);
   text-decoration: none;
-  border-radius: 4px;
+  border-radius: 0;
   font-weight: 600;
   font-size: 1rem;
   transition: all 0.3s ease;
