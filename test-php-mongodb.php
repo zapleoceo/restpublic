@@ -1,4 +1,6 @@
 <?php
+require_once 'vendor/autoload.php';
+
 echo "Testing PHP MongoDB extension...\n";
 
 if (extension_loaded('mongodb')) {
