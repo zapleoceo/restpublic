@@ -1,22 +1,31 @@
 <?php
-// Load menu from MongoDB cache for fast rendering
-require_once 'classes/MenuCache.php';
-
-$menuCache = new MenuCache();
-$menuData = $menuCache->getMenu();
-$categories = $menuData ? $menuData['categories'] : [];
-$products = $menuData ? $menuData['products'] : [];
-
-// Group products by category for quick access
+// Load menu from MongoDB cache for fast rendering (if available)
+$categories = [];
+$products = [];
 $productsByCategory = [];
-if ($products) {
-    foreach ($products as $product) {
-        $categoryId = String($product['menu_category_id'] ?? $product['category_id'] ?? 'default');
-        if (!isset($productsByCategory[$categoryId])) {
-            $productsByCategory[$categoryId] = [];
+
+try {
+    if (class_exists('MongoDB\Client')) {
+        require_once 'classes/MenuCache.php';
+        $menuCache = new MenuCache();
+        $menuData = $menuCache->getMenu();
+        $categories = $menuData ? $menuData['categories'] : [];
+        $products = $menuData ? $menuData['products'] : [];
+        
+        // Group products by category for quick access
+        if ($products) {
+            foreach ($products as $product) {
+                $categoryId = String($product['menu_category_id'] ?? $product['category_id'] ?? 'default');
+                if (!isset($productsByCategory[$categoryId])) {
+                    $productsByCategory[$categoryId] = [];
+                }
+                $productsByCategory[$categoryId][] = $product;
+            }
         }
-        $productsByCategory[$categoryId][] = $product;
     }
+} catch (Exception $e) {
+    error_log("MongoDB not available, using fallback: " . $e->getMessage());
+    // MongoDB не доступен, используем fallback
 }
 ?>
 <!DOCTYPE html>
