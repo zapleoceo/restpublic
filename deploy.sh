@@ -52,6 +52,15 @@ echo "📄 Восстанавливаю index.html из копии в репоз
 if [ -f "index.html" ]; then
     echo "✅ index.html восстановлен из копии"
     
+    # Исправляем кодировку файла (UTF-16 -> UTF-8)
+    echo "🔄 Исправляю кодировку index.html..."
+    if file index.html | grep -q "UTF-16"; then
+        iconv -f UTF-16LE -t UTF-8 index.html > index_utf8.html && mv index_utf8.html index.html
+        echo "✅ Кодировка исправлена (UTF-16 -> UTF-8)"
+    else
+        echo "✅ Кодировка уже корректна"
+    fi
+    
     # Обновляем ссылку на JS файл в index.html
     echo "🔄 Обновляю ссылку на JS файл в index.html..."
     NEW_JS_FILE=$(ls static/js/main.*.js | head -1 | sed 's/.*\///')
