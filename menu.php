@@ -1,6 +1,6 @@
 <?php
 // API configuration
-$api_base_url = 'http://localhost:3002/api';
+$api_base_url = 'http://127.0.0.1:3002/api';
 
 // Function to fetch data from Node.js backend
 function fetchFromAPI($endpoint) {
@@ -32,7 +32,7 @@ $products = $menu_data['products'] ?? [];
 // Group products by category
 $products_by_category = [];
 foreach ($products as $product) {
-    $category_id = $product['category_id'] ?? $product['menu_category_id'] ?? 'default';
+    $category_id = $product['menu_category_id'] ?? $product['category_id'] ?? 'default';
     if (!isset($products_by_category[$category_id])) {
         $products_by_category[$category_id] = [];
     }
@@ -81,10 +81,10 @@ foreach ($products as $product) {
         
         .category-btn {
             padding: 0.75rem 1.5rem;
-            background: #f8f8f8;
+            background: var(--color-neutral-100);
             border: 2px solid transparent;
             border-radius: 25px;
-            color: #2c2c2c;
+            color: var(--color-text-dark);
             text-decoration: none;
             font-weight: 600;
             transition: all 0.3s ease;
@@ -93,9 +93,9 @@ foreach ($products as $product) {
         
         .category-btn:hover,
         .category-btn.active {
-            background: #d4af37;
-            color: #fff;
-            border-color: #d4af37;
+            background: var(--color-bg-primary);
+            color: var(--color-white);
+            border-color: var(--color-bg-primary);
         }
         
         .menu-section {
@@ -104,113 +104,78 @@ foreach ($products as $product) {
         
         .menu-section h2 {
             font-size: 2.5rem;
-            color: #d4af37;
+            color: var(--color-bg-primary);
             margin-bottom: 2rem;
             text-align: center;
             font-family: var(--font-2);
         }
         
         .products-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
             margin-top: 2rem;
         }
         
-        .product-card {
-            background: #fff;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-            overflow: hidden;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        .menu-list {
+            list-style: none;
+            margin-left: 0;
         }
         
-        .product-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
-        }
-        
-        .product-image {
-            width: 100%;
-            height: 200px;
-            background: #f5f5f5;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 3rem;
-            color: #999;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .product-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        .product-content {
-            padding: 1.5rem;
-        }
-        
-        .product-name {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: #2c2c2c;
-            margin-bottom: 0.5rem;
-            font-family: var(--font-2);
-        }
-        
-        .product-description {
-            color: #666;
-            margin-bottom: 1rem;
-            line-height: 1.5;
-        }
-        
-        .product-footer {
+        .menu-list__item {
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            padding-top: var(--vspace-1);
+            padding-inline: var(--vspace-1);
+            border-radius: var(--border-radius);
+            margin-bottom: 1rem;
         }
         
-        .product-price {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #d4af37;
+        .menu-list__item:nth-child(odd) {
+            background-color: var(--color-bg-neutral-dark);
         }
         
-        .add-to-cart-btn {
-            background: #d4af37;
-            color: #fff;
-            border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: 25px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
+        .menu-list__item h4 {
+            font-family: var(--type-body);
+            margin-top: 0;
+            margin-bottom: var(--vspace-0_25);
+            color: var(--color-text-dark);
         }
         
-        .add-to-cart-btn:hover {
-            background: #b8941f;
-            transform: translateY(-2px);
+        .menu-list__item p {
+            font-weight: 300;
+            font-size: var(--text-sm);
+            line-height: var(--vspace-0_75);
+            margin-bottom: var(--vspace-1);
+            color: var(--color-text-light);
         }
         
-        .add-to-cart-btn:active {
-            transform: translateY(0);
+        .menu-list__item-desc {
+            max-width: min(100%, 90rem);
+            padding-right: calc(var(--gutter) * 2);
+        }
+        
+        .menu-list__item-price {
+            font-family: var(--type-body);
+            font-weight: 500;
+            font-size: var(--text-base);
+            padding-right: 0.2rem;
+            color: var(--color-bg-primary);
+        }
+        
+        .menu-list__item-price span {
+            font-size: 0.8em;
+            position: relative;
+            bottom: 0.2em;
+            left: -1px;
         }
         
         .no-products {
             text-align: center;
             padding: 3rem;
-            color: #666;
+            color: var(--color-text-light);
         }
         
         .no-products h3 {
             margin-bottom: 1rem;
-            color: #2c2c2c;
+            color: var(--color-text-dark);
         }
         
         @media (max-width: 768px) {
@@ -264,7 +229,7 @@ foreach ($products as $product) {
                 <!-- Page Title -->
                 <div class="row">
                     <div class="column xl-12">
-                        <div class="section-header" data-num="02">
+                        <div class="section-header">
                             <h1 class="text-display-title">Наше меню</h1>
                             <p class="lead" style="text-align: center; margin-top: 1rem; color: #666;">
                                 Откройте для себя изысканные блюда и напитки Республики Север
@@ -278,9 +243,8 @@ foreach ($products as $product) {
                 <div class="row">
                     <div class="column xl-12">
                         <div class="menu-categories">
-                            <button class="category-btn active" data-category="all">Все блюда</button>
-                            <?php foreach ($categories as $category): ?>
-                                <button class="category-btn" data-category="<?php echo htmlspecialchars($category['category_id']); ?>">
+                            <?php foreach ($categories as $index => $category): ?>
+                                <button class="category-btn <?php echo $index === 0 ? 'active' : ''; ?>" data-category="<?php echo htmlspecialchars($category['category_id']); ?>">
                                     <?php echo htmlspecialchars($category['category_name'] ?? $category['name']); ?>
                                 </button>
                             <?php endforeach; ?>
@@ -291,8 +255,8 @@ foreach ($products as $product) {
 
                 <!-- Menu Sections -->
                 <?php if (!empty($categories)): ?>
-                    <?php foreach ($categories as $category): ?>
-                        <div class="menu-section" data-category="<?php echo htmlspecialchars($category['category_id']); ?>">
+                    <?php foreach ($categories as $index => $category): ?>
+                        <div class="menu-section <?php echo $index === 0 ? 'active' : ''; ?>" data-category="<?php echo htmlspecialchars($category['category_id']); ?>" style="<?php echo $index === 0 ? '' : 'display: none;'; ?>">
                             <h2><?php echo htmlspecialchars($category['category_name'] ?? $category['name']); ?></h2>
                             
                             <?php 
@@ -300,36 +264,21 @@ foreach ($products as $product) {
                             if (!empty($category_products)): 
                             ?>
                                 <div class="products-grid">
-                                    <?php foreach ($category_products as $product): ?>
-                                        <div class="product-card">
-                                            <div class="product-image">
-                                                <?php if (!empty($product['image_url'])): ?>
-                                                    <img src="<?php echo htmlspecialchars($product['image_url']); ?>" 
-                                                         alt="<?php echo htmlspecialchars($product['name']); ?>">
-                                                <?php else: ?>
-                                                    🍽️
-                                                <?php endif; ?>
-                                            </div>
-                                            <div class="product-content">
-                                                <h3 class="product-name"><?php echo htmlspecialchars($product['name']); ?></h3>
-                                                <?php if (!empty($product['description'])): ?>
-                                                    <p class="product-description"><?php echo htmlspecialchars($product['description']); ?></p>
-                                                <?php endif; ?>
-                                                <div class="product-footer">
-                                                    <div class="product-price">
-                                                        <?php echo number_format($product['price_normalized'] ?? $product['price'] ?? 0, 0, ',', ' '); ?> ₽
-                                                    </div>
-                                                    <button class="add-to-cart-btn" onclick="addToCart(<?php echo htmlspecialchars(json_encode($product)); ?>)">
-                                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                                                            <path d="M7 4V2C7 1.45 7.45 1 8 1H16C16.55 1 17 1.45 17 2V4H20C20.55 4 21 4.45 21 5S20.55 6 20 6H19V19C19 20.1 18.1 21 17 21H7C5.9 21 5 20.1 5 19V6H4C3.45 6 3 5.55 3 5S3.45 4 4 4H7ZM9 3V4H15V3H9ZM7 6V19H17V6H7Z"/>
-                                                            <path d="M9 8V17H11V8H9ZM13 8V17H15V8H13Z"/>
-                                                        </svg>
-                                                        В корзину
-                                                    </button>
+                                    <ul class="menu-list">
+                                        <?php foreach ($category_products as $product): ?>
+                                            <li class="menu-list__item">
+                                                <div class="menu-list__item-desc">
+                                                    <h4><?php echo htmlspecialchars($product['product_name'] ?? $product['name']); ?></h4>
+                                                    <?php if (!empty($product['description'])): ?>
+                                                        <p><?php echo htmlspecialchars($product['description']); ?></p>
+                                                    <?php endif; ?>
                                                 </div>
-                                            </div>
-                                        </div>
-                                    <?php endforeach; ?>
+                                                <div class="menu-list__item-price">
+                                                    <span>₽</span><?php echo number_format($product['price_normalized'] ?? $product['price'] ?? 0, 0, ',', ' '); ?>
+                                                </div>
+                                            </li>
+                                        <?php endforeach; ?>
+                                    </ul>
                                 </div>
                             <?php else: ?>
                                 <div class="no-products">
@@ -344,41 +293,27 @@ foreach ($products as $product) {
                     <div class="menu-section">
                         <h2>Кофе и напитки</h2>
                         <div class="products-grid">
-                            <div class="product-card">
-                                <div class="product-image">☕</div>
-                                <div class="product-content">
-                                    <h3 class="product-name">Эспрессо</h3>
-                                    <p class="product-description">Классический крепкий кофе</p>
-                                    <div class="product-footer">
-                                        <div class="product-price">150 ₽</div>
-                                        <button class="add-to-cart-btn" onclick="addToCart({product_id: 'espresso', name: 'Эспрессо', price_normalized: 150})">
-                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                                                <path d="M7 4V2C7 1.45 7.45 1 8 1H16C16.55 1 17 1.45 17 2V4H20C20.55 4 21 4.45 21 5S20.55 6 20 6H19V19C19 20.1 18.1 21 17 21H7C5.9 21 5 20.1 5 19V6H4C3.45 6 3 5.55 3 5S3.45 4 4 4H7ZM9 3V4H15V3H9ZM7 6V19H17V6H7Z"/>
-                                                <path d="M9 8V17H11V8H9ZM13 8V17H15V8H13Z"/>
-                                            </svg>
-                                            В корзину
-                                        </button>
+                            <ul class="menu-list">
+                                <li class="menu-list__item">
+                                    <div class="menu-list__item-desc">
+                                        <h4>Эспрессо</h4>
+                                        <p>Классический крепкий кофе</p>
                                     </div>
-                                </div>
-                            </div>
-                            
-                            <div class="product-card">
-                                <div class="product-image">🥛</div>
-                                <div class="product-content">
-                                    <h3 class="product-name">Латте</h3>
-                                    <p class="product-description">Кофе с молоком и пенкой</p>
-                                    <div class="product-footer">
-                                        <div class="product-price">200 ₽</div>
-                                        <button class="add-to-cart-btn" onclick="addToCart({product_id: 'latte', name: 'Латте', price_normalized: 200})">
-                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                                                <path d="M7 4V2C7 1.45 7.45 1 8 1H16C16.55 1 17 1.45 17 2V4H20C20.55 4 21 4.45 21 5S20.55 6 20 6H19V19C19 20.1 18.1 21 17 21H7C5.9 21 5 20.1 5 19V6H4C3.45 6 3 5.55 3 5S3.45 4 4 4H7ZM9 3V4H15V3H9ZM7 6V19H17V6H7Z"/>
-                                                <path d="M9 8V17H11V8H9ZM13 8V17H15V8H13Z"/>
-                                            </svg>
-                                            В корзину
-                                        </button>
+                                    <div class="menu-list__item-price">
+                                        <span>₽</span>150
                                     </div>
-                                </div>
-                            </div>
+                                </li>
+                                
+                                <li class="menu-list__item">
+                                    <div class="menu-list__item-desc">
+                                        <h4>Латте</h4>
+                                        <p>Кофе с молоком и пенкой</p>
+                                    </div>
+                                    <div class="menu-list__item-price">
+                                        <span>₽</span>200
+                                    </div>
+                                </li>
+                            </ul>
                         </div>
                     </div>
                 <?php endif; ?>
@@ -419,7 +354,7 @@ foreach ($products as $product) {
                     
                     // Show/hide sections
                     menuSections.forEach(section => {
-                        if (category === 'all' || section.dataset.category === category) {
+                        if (section.dataset.category === category) {
                             section.style.display = 'block';
                         } else {
                             section.style.display = 'none';
