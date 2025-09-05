@@ -287,13 +287,13 @@ const DynamicMenu = () => {
               </div>
             ))}
           </div>
-          
-          {/* Full Menu Button - перенесена в конец секции меню */}
-          <div style={{ textAlign: 'center', marginTop: '2rem' }}>
-            <a href="/menu" className="btn btn--primary full-menu-btn">
-              Full Menu
-            </a>
-          </div>
+        </div>
+        
+        {/* Full Menu Button - после s-menu__content-end, но перед закрытием row s-menu__content */}
+        <div className="column" style={{ textAlign: 'center', marginTop: '2rem' }}>
+          <a href="/menu" className="btn btn--primary full-menu-btn">
+            Full Menu
+          </a>
         </div>
       </div>
     </section>
