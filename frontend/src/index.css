@@ -238,7 +238,7 @@ button:focus-visible {
   font-weight: 500 !important;
   font-family: "Roboto Flex", Sans-Serif !important;
   color: #BFC1C0 !important; /* light gray color */
-  margin-left: 40px !important; /* left margin 40px */
+  margin-left: 20px !important; /* left margin 20px */
 }
 
 .menu-list__item-desc p {
@@ -256,7 +256,8 @@ button:focus-visible {
   line-height: 1.2 !important;
   color: #BFC1C0 !important; /* light gray color */
   margin: 0 !important;
-  margin-left: 40px !important; /* left margin 40px */
+  margin-left: 20px !important; /* left margin 20px */
+  margin-right: 15px !important; /* right margin 15px */
 }
 
 /* Gallery section spacing */
