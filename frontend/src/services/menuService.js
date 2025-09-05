@@ -132,7 +132,14 @@ class MenuService {
   // Форматирование цены для отображения
   formatPrice(price) {
     if (!price) return '0';
-    return (price / 100).toFixed(0);
+    
+    // Если price - это объект, извлекаем значение по ключу '1'
+    let priceValue = price;
+    if (typeof price === 'object' && price['1']) {
+      priceValue = price['1'];
+    }
+    
+    return (priceValue / 100).toFixed(0);
   }
 
   // Получение изображения продукта

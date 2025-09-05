@@ -246,7 +246,7 @@ const DynamicMenu = () => {
                           )}
                         </div>
                         <div className="menu-list__item-price">
-                          {product.price ? (product.price / 100).toFixed(0) : '0'}
+                          {product.price && product.price['1'] ? (product.price['1'] / 100).toFixed(0) : '0'}
                         </div>
                       </li>
                     ))}
