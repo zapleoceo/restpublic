@@ -80,8 +80,8 @@
 /* Анимация смены цветов */
 @keyframes colorShift {
   0%   { background: #366b5b; }
-  33%  { background: #5f6362; }
-  66%  { background: #EFEFEF; }
+  33%  { background: #b1885e; }
+  66%  { background: #8f9291; }
   100% { background: #366b5b; }
 }
 

@@ -262,8 +262,8 @@ function App() {
             <div className="grid-cols__column footer-block">
               <h6>Opening Hours</h6>
               <ul className="opening-hours">
-                <li><span className="opening-hours__days">Weekdays</span><span className="opening-hours__time">10:00am - 9:00pm</span></li>
-                <li><span className="opening-hours__days">Weekends</span><span className="opening-hours__time">9:00am - 10:00pm</span></li>
+                <li><span className="opening-hours__days">Weekdays</span><span className="opening-hours__time">10:00am - 11:00pm</span></li>
+                <li><span className="opening-hours__days">Weekends</span><span className="opening-hours__time">10:00am - 00:00pm</span></li>
               </ul>
             </div>
           </div>
