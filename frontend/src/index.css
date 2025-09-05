@@ -201,6 +201,7 @@ button:focus-visible {
   border-top: 1px solid #e0e0e0;
   transition: background-color 0.3s ease;
   font-weight: bold;
+  
 }
 
 .full-menu-link:hover {
@@ -237,7 +238,7 @@ html, body {
   scroll-behavior: smooth !important;
 }
 
-/* Additional image fixes with higher specificity */
+/* Additional image fixes with higher specificity - v1.0.38 */
 body .intro-pic-primary img {
   object-fit: cover !important;
   width: 100% !important;
