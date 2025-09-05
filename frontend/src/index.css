@@ -170,58 +170,25 @@ button:focus-visible {
   }
 }
 
-/* Menu scroll fixes */
-.menu-block {
-  overflow: visible !important;
-}
-
-.menu-block__group {
-  overflow: visible !important;
-}
-
-.menu-list {
-  overflow: visible !important;
-}
-
-.tab-content__item {
-  overflow: visible !important;
-}
-
-.tab-content {
-  overflow: visible !important;
-}
-
-/* Убираем скролл в правом блоке меню */
-.s-menu__content-end {
-  overflow: visible !important;
-}
-
-.menu-block {
-  overflow: visible !important;
-  max-height: none !important;
-}
-
-.tab-content__item {
-  overflow: visible !important;
-  max-height: none !important;
-}
-
-.menu-list {
-  overflow: visible !important;
-  max-height: none !important;
-}
-
+/* Menu scroll fixes - убираем скролл в меню */
+.menu-block,
+.menu-block__group,
+.menu-list,
+.tab-content__item,
+.tab-content,
+.s-menu__content-end,
 .menu-list__item {
   overflow: visible !important;
+  max-height: none !important;
 }
 
 /* Full menu link styles */
 .full-menu-item {
-  list-style: none !important;
+  list-style: none;
 }
 
 .full-menu-item::before {
-  display: none !important;
+  display: none;
 }
 
 .full-menu-link {
@@ -233,7 +200,7 @@ button:focus-visible {
   color: #333;
   border-top: 1px solid #e0e0e0;
   transition: background-color 0.3s ease;
-  font-weight: bold !important;
+  font-weight: bold;
 }
 
 .full-menu-link:hover {
