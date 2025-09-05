@@ -250,4 +250,27 @@ button:focus-visible {
   padding-top: calc(var(--content-padding-top) / 2) !important;
 }
 
+/* Full Menu Button */
+.full-menu-btn {
+  display: inline-block;
+  padding: 1rem 2rem;
+  background-color: var(--color-primary, #d4af37);
+  color: var(--color-white, #fff);
+  text-decoration: none;
+  border-radius: 0; /* Прямоугольная кнопка без закруглений */
+  font-weight: 600;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  border: 2px solid var(--color-primary, #d4af37);
+  min-width: 150px;
+  text-align: center;
+}
+
+.full-menu-btn:hover {
+  background-color: transparent;
+  color: var(--color-primary, #d4af37);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
 /* React-specific styles only */
