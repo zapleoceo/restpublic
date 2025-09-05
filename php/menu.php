@@ -44,7 +44,7 @@ foreach ($products as $product) {
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Полное меню - North Republic</title>
+    <title>Полное меню - Республика Север</title>
 
     <script>
         document.documentElement.classList.remove('no-js');
@@ -77,7 +77,7 @@ foreach ($products as $product) {
                 <div class="s-header__block">
                     <div class="header-logo">
                         <a class="logo" href="/">
-                            <img src="images/logo.png" alt="North Republic">
+                            <img src="images/logo.png" alt="Республика Север">
                         </a>
                     </div>
                     <a class="header-menu-toggle" href="#0"><span>Menu</span></a>
@@ -186,7 +186,7 @@ foreach ($products as $product) {
                 <div class="column xl-3 lg-12 footer-block s-footer__main-start">     
                     <div class="s-footer__logo">
                         <a class="logo" href="/">
-                            <img src="images/logo.png" alt="North Republic">
+                            <img src="images/logo.png" alt="Республика Север">
                         </a>
                     </div>
 
@@ -222,7 +222,8 @@ foreach ($products as $product) {
                     <div class="grid-cols__column footer-block">
                         <h6>Адрес</h6>
                         <p>
-                        Хошимин, Вьетнам
+                        Нячанг, Вьетнам<br>
+                        У подножия горы Ко Тьен
                         </p>
                     </div>
                     
@@ -247,7 +248,7 @@ foreach ($products as $product) {
             <div class="row s-footer__bottom">       
                 <div class="column xl-6 lg-12">
                     <p class="ss-copyright">
-                        <span>© 2024 North Republic. Все права защищены.</span>
+                        <span>© 2024 Республика Север. Все права защищены.</span>
                     </p>
                 </div>
             </div>

@@ -46,10 +46,10 @@ foreach ($products as $product) {
     ================================================== -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>North Republic</title>
-    <meta name="description" content="North Republic - уникальное место для отдыха и развлечений в Хошимине">
-    <meta name="keywords" content="ресторан, развлечения, лазертаг, квесты, Хошимин, Вьетнам">
-    <meta name="author" content="North Republic">
+    <title>Республика Север</title>
+    <meta name="description" content="Республика Север - уникальное место для отдыха и развлечений у подножия горы Ко Тьен в Нячанге">
+    <meta name="keywords" content="ресторан, развлечения, лазертаг, квесты, Нячанг, Вьетнам, гора Ко Тьен">
+    <meta name="author" content="Республика Север">
 
     <script>
         document.documentElement.classList.remove('no-js');
@@ -93,7 +93,7 @@ foreach ($products as $product) {
                 <div class="s-header__block">
                     <div class="header-logo">
                         <a class="logo" href="/">
-                            <img src="images/logo.png" alt="North Republic">
+                            <img src="images/logo.png" alt="Республика Север">
                         </a>
                     </div>
                     <a class="header-menu-toggle" href="#0"><span>Menu</span></a>
@@ -124,23 +124,23 @@ foreach ($products as $product) {
                 <div class="intro-header">
                     <div class="intro-header__overline">Добро пожаловать в мир приключений</div>
                     <h1 class="intro-header__big-type">
-                        North <br>
-                        Republic
+                        Республика <br>
+                        Север
                     </h1>
-                    <p class="intro-description">Откройте для себя уникальный мир развлечений и отдыха в North Republic.</p>
+                    <p class="intro-description">Откройте для себя уникальный мир развлечений и отдыха в Республике Север.</p>
                 </div> <!-- end intro-header -->
 
                 <figure class="intro-pic-primary">
-                    <img src="template/images/intro-pic-primary.jpg" 
-                         srcset="template/images/intro-pic-primary.jpg 1x, 
-                         template/images/intro-pic-primary@2x.jpg 2x" alt="">  
+                    <img src="images/intro-pic-primary.jpg" 
+                         srcset="images/intro-pic-primary.jpg 1x, 
+                         images/intro-pic-primary.jpg 2x" alt="">  
                 </figure> <!-- end intro-pic-primary -->    
                     
                 <div class="intro-block-content">
                     <figure class="intro-block-content__pic">
-                        <img src="template/images/intro-pic-secondary.jpg" 
-                             srcset="template/images/intro-pic-secondary.jpg 1x, 
-                             template/images/intro-pic-secondary@2x.jpg 2x" alt=""> 
+                        <img src="images/intro-pic-secondary.jpg" 
+                             srcset="images/intro-pic-secondary.jpg 1x, 
+                             images/intro-pic-secondary.jpg 2x" alt=""> 
                     </figure> <!-- end intro-pic-secondary -->   
 
                     <div class="intro-block-content__text-wrap">
@@ -179,23 +179,16 @@ foreach ($products as $product) {
                     </div>  
 
                     <figure class="about-pic-primary">
-                        <img src="template/images/about-pic-primary.jpg" 
-                             srcset="template/images/about-pic-primary.jpg 1x, 
-                             template/images/about-pic-primary@2x.jpg 2x" alt=""> 
+                        <img src="images/about-pic-primary.jpg" 
+                             srcset="images/about-pic-primary.jpg 1x, 
+                             images/about-pic-primary.jpg 2x" alt=""> 
                     </figure>
                 </div> <!-- end s-about__content-start -->
 
                 <div class="column xl-6 lg-6 md-12 s-about__content-end">                   
                     <p>
-                    North Republic - это уникальное место, где каждый найдет что-то для себя. Мы предлагаем широкий спектр развлечений и услуг для всех возрастов.
+                    «Республика Север» расположена у подножия горы Ко Тьен — одной из самых живописных вершин северного Нячанга. В тишине тропических склонов, вдали от городской суеты, среди зеленых холмов открываются великолепные виды на величественные горные хребты и крыши города внизу. Именно здесь — в окружении первозданной природы и чистого горного воздуха — создано пространство «Республики Север», где современные развлечения, изысканная кухня и великолепный бар органично сочетаются с нетронутыми пейзажами Ко Тьен.
                     </p>
-
-                    <ul class="about-features">
-                        <li>Современные развлечения</li>
-                        <li>Профессиональный персонал</li>
-                        <li>Уютная атмосфера</li>
-                        <li>Доступные цены</li>
-                    </ul>
                 </div> <!--end column -->
             </div> <!-- end s-about__content-end -->
         </section> <!-- end s-about -->   
@@ -405,7 +398,7 @@ foreach ($products as $product) {
                 <div class="column xl-3 lg-12 footer-block s-footer__main-start">     
                     <div class="s-footer__logo">
                         <a class="logo" href="/">
-                            <img src="images/logo.png" alt="North Republic">
+                            <img src="images/logo.png" alt="Республика Север">
                         </a>
                     </div>  
 
@@ -441,7 +434,8 @@ foreach ($products as $product) {
                     <div class="grid-cols__column footer-block">
                         <h6>Адрес</h6>
                         <p>
-                        Хошимин, Вьетнам
+                        Нячанг, Вьетнам<br>
+                        У подножия горы Ко Тьен
                         </p>
                     </div>
                     
@@ -466,7 +460,7 @@ foreach ($products as $product) {
             <div class="row s-footer__bottom">       
                 <div class="column xl-6 lg-12">
                     <p class="ss-copyright">
-                        <span>© 2024 North Republic. Все права защищены.</span>
+                        <span>© 2024 Республика Север. Все права защищены.</span>
                     </p>
                 </div>
             </div> <!-- end s-footer__bottom -->          

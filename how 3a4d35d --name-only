@@ -1,0 +1,28 @@
+[33mcommit 5b201eb23a1f9729e686f624d0fbacd8ea39a7c5[m
+Author: TG3 Developer <developer@tg3.com>
+Date:   Sat Sep 6 00:38:02 2025 +0700
+
+    Feat: Create full menu page with complete functionality - Add MenuPage with header, content, and footer - Implement MenuHeader with logo, language switcher, auth, and cart - Add MenuContent with categories, items, and sorting - Create responsive design without !important styles - Add /menu route to App.jsx - Update Full Menu button to use React Router Link
+
+frontend/public/images/logo.png
+frontend/public/images/oldlogo.png
+frontend/src/App.jsx
+frontend/src/components/AuthButton.css
+frontend/src/components/AuthButton.jsx
+frontend/src/components/CartIcon.css
+frontend/src/components/CartIcon.jsx
+frontend/src/components/DynamicMenu.jsx
+frontend/src/components/MenuCategories.css
+frontend/src/components/MenuCategories.jsx
+frontend/src/components/MenuContent.css
+frontend/src/components/MenuContent.jsx
+frontend/src/components/MenuFooter.css
+frontend/src/components/MenuFooter.jsx
+frontend/src/components/MenuHeader.css
+frontend/src/components/MenuHeader.jsx
+frontend/src/components/MenuItems.css
+frontend/src/components/MenuItems.jsx
+frontend/src/components/MenuSorting.css
+frontend/src/components/MenuSorting.jsx
+frontend/src/pages/MenuPage.css
+frontend/src/pages/MenuPage.jsx
