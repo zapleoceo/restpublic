@@ -1,6 +1,6 @@
 <?php
 // API configuration
-$api_base_url = 'http://localhost:3002/api';
+$api_base_url = 'http://127.0.0.1:3002/api';
 
 // Function to fetch data from Node.js backend
 function fetchFromAPI($endpoint) {
@@ -9,7 +9,7 @@ function fetchFromAPI($endpoint) {
     
     $context = stream_context_create([
         'http' => [
-            'timeout' => 10,
+            'timeout' => 5,
             'method' => 'GET',
             'header' => 'Content-Type: application/json'
         ]
@@ -37,6 +37,15 @@ $menu_data = fetchFromAPI('/menu');
 // Debug: Check if API data is loaded
 if (!$menu_data) {
     error_log("API data is null - check if backend is running on port 3002");
+    // Try to test API connection
+    $test_response = @file_get_contents('http://127.0.0.1:3002/api/health');
+    if ($test_response) {
+        error_log("API health check successful: " . $test_response);
+    } else {
+        error_log("API health check failed - backend may be down");
+    }
+} else {
+    error_log("API data loaded successfully");
 }
 
 $categories = $menu_data['categories'] ?? [];
@@ -45,6 +54,14 @@ $products = $menu_data['products'] ?? [];
 // Debug: Log data counts
 error_log("Categories loaded: " . count($categories));
 error_log("Products loaded: " . count($products));
+
+// Debug: Log first category and product for verification
+if (!empty($categories)) {
+    error_log("First category: " . json_encode($categories[0]));
+}
+if (!empty($products)) {
+    error_log("First product: " . json_encode($products[0]));
+}
 
 // Group products by category
 $products_by_category = [];
