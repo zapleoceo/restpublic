@@ -237,7 +237,8 @@ button:focus-visible {
   font-size: 20px !important; /* 20px - same as price */
   font-weight: 500 !important;
   font-family: "Roboto Flex", Sans-Serif !important;
-  color: #ffffff !important; /* white color */
+  color: #BFC1C0 !important; /* light gray color */
+  margin-left: 40px !important; /* left margin 40px */
 }
 
 .menu-list__item-desc p {
@@ -253,8 +254,9 @@ button:focus-visible {
   font-weight: 500 !important;
   font-size: 20px !important; /* 20px - same as h4 */
   line-height: 1.2 !important;
-  color: #ffffff !important; /* white color */
+  color: #BFC1C0 !important; /* light gray color */
   margin: 0 !important;
+  margin-left: 40px !important; /* left margin 40px */
 }
 
 /* Gallery section spacing */
