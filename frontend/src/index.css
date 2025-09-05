@@ -245,4 +245,9 @@ button:focus-visible {
   margin-left: 1rem;
 }
 
+/* Gallery section spacing */
+.s-gallery {
+  padding-top: calc(var(--content-padding-top) / 2) !important;
+}
+
 /* React-specific styles only */
