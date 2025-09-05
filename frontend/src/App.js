@@ -117,10 +117,16 @@ function App() {
 
           <div className="column xl-6 lg-6 md-12 s-about__content-end">
             <p>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Quasi earum, ut consequuntur pariatur fugiat aliquam voluptatem officia blanditiis ipsa laboriosam ad velit voluptate nisi saepe quisquam minima culpa eaque amet.
+              In 2024, we launched Republic of the North at the foot of the stunning Co Tien Mountain, one of the most beautiful natural landmarks north of Nha Trang. Hidden away from the city's hustle, our location offers the perfect setting for outdoor adventure in the tranquil embrace of tropical slopes.
             </p>
             <p>
-              Lorem, ipsum dolor sit amet consectetur adipisicing elit. Dolorem vero sit neque sequi eius illum at porro aperiam. Iusto reiciendis reprehenderit ipsa molestias sit eaque velit, veritatis quod, cum exercitationem doloribus eos cumque, ipsam voluptate! Nam doloribus quibusdam eos ipsum optio animi ea ex. Atque neque nesciunt numquam fugiat inventore!
+              Nestled among verdant hills, the complex provides breathtaking views of the majestic mountain ridges and the city's rooftops below. We've created several distinct zones: laser tag and archery tag fields woven through lush foliage, cozy barbecue pavilions, immersive quest areas, and an exceptional bar overlooking the grand slopes.
+            </p>
+            <p>
+              Our pride is the chef's signature menu, blending the finest Vietnamese traditions with international flair. Fresh seafood, aromatic herbs from the mountain trails, and charcoal-grilled meats deliver unforgettable flavors. The bar serves craft cocktails inspired by local ingredients, all enjoyed against the backdrop of Co Tien's soaring peaks.
+            </p>
+            <p>
+              Republic of the North unites the thrill of tactical games, exquisite dining, and the natural beauty of mountain landscapes into one unforgettable escape.
             </p>
           </div>
         </div>
