@@ -275,17 +275,21 @@ button:focus-visible {
   margin-top: calc(var(--content-padding-top) / 3) !important;
 }
 
-/* Force reduce margins with fixed values for better compatibility */
-.s-menu__content {
-  margin-top: 2rem !important;
+/* Force reduce section padding-top using calc method */
+.s-menu {
+  padding-top: calc(var(--content-padding-top) / 3) !important;
 }
 
-.s-about__content {
-  margin-top: 2rem !important;
+.s-about {
+  padding-top: calc(var(--content-padding-top) / 3) !important;
 }
 
-.s-gallery__content {
-  margin-top: 2rem !important;
+.s-gallery {
+  padding-top: calc(var(--content-padding-top) / 3) !important;
+}
+
+.s-testimonials {
+  padding-top: calc(var(--content-padding-top) / 3) !important;
 }
 
 /* Full Menu Button */
