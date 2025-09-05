@@ -231,3 +231,19 @@ html {
   aspect-ratio: unset !important;
   object-position: center !important;
 }
+
+/* Force smooth scrolling - more specific */
+html, body {
+  scroll-behavior: smooth !important;
+}
+
+/* Additional image fixes with higher specificity */
+body .intro-pic-primary img {
+  object-fit: cover !important;
+  width: 100% !important;
+  height: 100% !important;
+  aspect-ratio: unset !important;
+  object-position: center !important;
+  max-width: none !important;
+  max-height: none !important;
+}
