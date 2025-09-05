@@ -6,7 +6,7 @@ $productsByCategory = [];
 
 try {
     if (class_exists('MongoDB\Client')) {
-        require_once __DIR__ . '/classes/MenuCache.php';
+        require_once 'php/classes/MenuCache.php';
         $menuCache = new MenuCache();
         $menuData = $menuCache->getMenu();
         $categories = $menuData ? $menuData['categories'] : [];
