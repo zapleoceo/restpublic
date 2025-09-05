@@ -61,3 +61,101 @@ html {
   height: 16px;
   fill: currentColor;
 }
+
+/* Button styles for header actions */
+.btn--outline {
+  background: transparent;
+  border: 2px solid #d4af37;
+  color: #d4af37;
+  padding: 0.5rem 1rem;
+  border-radius: 25px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn--outline:hover {
+  background: #d4af37;
+  color: #fff;
+}
+
+.btn--small {
+  padding: 0.25rem 0.75rem;
+  font-size: 0.875rem;
+}
+
+/* Header actions layout */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.header-auth {
+  display: flex;
+  align-items: center;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.user-name {
+  font-weight: 600;
+  color: #2c2c2c;
+}
+
+/* Mobile responsive for header */
+@media (max-width: 768px) {
+  .header-actions {
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
+  }
+  
+  .header-auth,
+  .header-cart {
+    width: 100%;
+  }
+  
+  .header-auth .btn,
+  .header-cart .btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* Mini Menu Full Menu Button Styles */
+.s-menu__footer {
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid #e0e0e0;
+}
+
+.s-menu__footer .btn {
+  font-size: 1.1rem;
+  padding: 1rem 2rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.s-menu__footer .btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+/* Loading state for menu items */
+.menu-list__item p {
+  text-align: center;
+  color: #666;
+  font-style: italic;
+  padding: 1rem;
+}
