@@ -1,14 +1,14 @@
 import { SectionWrapper } from './SectionWrapper';
-import { useTranslation } from '../../hooks/useTranslation';
-import { useSiteContent } from '../../hooks/useSiteContent';
+// import { useTranslation } from '../../hooks/useTranslation'; // Temporarily disabled
+// import { useSiteContent } from '../../hooks/useSiteContent'; // Temporarily disabled
 
 export const IntroSection = () => {
-  const { t } = useTranslation();
-  const { content } = useSiteContent();
+  // const { t } = useTranslation(); // Temporarily disabled
+  // const { content } = useSiteContent(); // Temporarily disabled
   
-  const introContent = content.intro || {
-    title: t('section.intro.title'),
-    subtitle: t('section.intro.subtitle'),
+  const introContent = {
+    title: 'North Republic', // t('section.intro.title'),
+    subtitle: 'Добро пожаловать в мир приключений', // t('section.intro.subtitle'),
     description: 'Откройте для себя уникальный мир развлечений и отдыха в North Republic.',
     image: '/template/images/intro-pic-primary.jpg'
   };
@@ -28,10 +28,10 @@ export const IntroSection = () => {
           </p>
           <div className="flex flex-col sm:flex-row gap-4">
             <button className="bg-primary-600 text-white px-8 py-3 rounded-lg text-lg font-semibold hover:bg-primary-700 transition-colors">
-              {t('button.learn_more')}
+              Узнать больше
             </button>
             <button className="border-2 border-primary-600 text-primary-600 px-8 py-3 rounded-lg text-lg font-semibold hover:bg-primary-600 hover:text-white transition-colors">
-              {t('button.book_now')}
+              Забронировать
             </button>
           </div>
         </div>

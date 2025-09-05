@@ -1,14 +1,14 @@
 import { SectionWrapper } from './SectionWrapper';
 import { SectionHeader } from './SectionHeader';
-import { useTranslation } from '../../hooks/useTranslation';
-import { useSiteContent } from '../../hooks/useSiteContent';
+// import { useTranslation } from '../../hooks/useTranslation'; // Temporarily disabled
+// import { useSiteContent } from '../../hooks/useSiteContent'; // Temporarily disabled
 
 export const TestimonialsSection = () => {
-  const { t } = useTranslation();
-  const { content } = useSiteContent();
+  // const { t } = useTranslation(); // Temporarily disabled
+  // const { content } = useSiteContent(); // Temporarily disabled
   
-  const testimonialsContent = content.testimonials || {
-    title: t('section.testimonials.title'),
+  const testimonialsContent = {
+    title: 'Отзывы клиентов', // t('section.testimonials.title'),
     testimonials: [
       {
         name: 'Александр Петров',

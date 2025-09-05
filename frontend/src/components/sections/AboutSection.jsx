@@ -1,14 +1,14 @@
 import { SectionWrapper } from './SectionWrapper';
 import { SectionHeader } from './SectionHeader';
-import { useTranslation } from '../../hooks/useTranslation';
-import { useSiteContent } from '../../hooks/useSiteContent';
+// import { useTranslation } from '../../hooks/useTranslation'; // Temporarily disabled
+// import { useSiteContent } from '../../hooks/useSiteContent'; // Temporarily disabled
 
 export const AboutSection = () => {
-  const { t } = useTranslation();
-  const { content } = useSiteContent();
+  // const { t } = useTranslation(); // Temporarily disabled
+  // const { content } = useSiteContent(); // Temporarily disabled
   
-  const aboutContent = content.about || {
-    title: t('section.about.title'),
+  const aboutContent = {
+    title: 'О нас', // t('section.about.title'),
     description: 'North Republic - это уникальное место, где каждый найдет что-то для себя. Мы предлагаем широкий спектр развлечений и услуг для всех возрастов.',
     features: [
       'Современные развлечения',
@@ -39,7 +39,7 @@ export const AboutSection = () => {
           </div>
           
           <button className="bg-primary-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-primary-700 transition-colors">
-            {t('button.learn_more')}
+            Узнать больше
           </button>
         </div>
         
