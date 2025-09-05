@@ -28,15 +28,18 @@ function fetchFromAPI($endpoint) {
 $menu_data = fetchFromAPI('/menu');
 $categories = $menu_data['categories'] ?? [];
 $products = $menu_data['products'] ?? [];
+$menu_loaded = !empty($categories) && !empty($products);
 
 // Group products by category
 $products_by_category = [];
-foreach ($products as $product) {
-    $category_id = $product['menu_category_id'] ?? $product['category_id'] ?? 'default';
-    if (!isset($products_by_category[$category_id])) {
-        $products_by_category[$category_id] = [];
+if ($menu_loaded) {
+    foreach ($products as $product) {
+        $category_id = $product['menu_category_id'] ?? $product['category_id'] ?? 'default';
+        if (!isset($products_by_category[$category_id])) {
+            $products_by_category[$category_id] = [];
+        }
+        $products_by_category[$category_id][] = $product;
     }
-    $products_by_category[$category_id][] = $product;
 }
 ?>
 <!DOCTYPE html>
@@ -244,7 +247,7 @@ foreach ($products as $product) {
                 </div>
 
                 <!-- Category Navigation -->
-                <?php if (!empty($categories)): ?>
+                <?php if ($menu_loaded && !empty($categories)): ?>
                 <div class="row">
                     <div class="column xl-12">
                         <div class="menu-categories">
@@ -259,7 +262,7 @@ foreach ($products as $product) {
                 <?php endif; ?>
 
                 <!-- Menu Sections -->
-                <?php if (!empty($categories)): ?>
+                <?php if ($menu_loaded && !empty($categories)): ?>
                     <?php foreach ($categories as $index => $category): ?>
                         <div class="menu-section <?php echo $index === 0 ? 'active' : ''; ?>" data-category="<?php echo htmlspecialchars($category['category_id']); ?>" style="<?php echo $index === 0 ? '' : 'display: none;'; ?>">
                             
@@ -293,32 +296,15 @@ foreach ($products as $product) {
                         </div>
                     <?php endforeach; ?>
                 <?php else: ?>
-                    <!-- Fallback content -->
-                    <div class="menu-section">
-                        <h2>Кофе и напитки</h2>
-                        <div class="products-grid">
-                            <ul class="menu-list">
-                                <li class="menu-list__item">
-                                    <div class="menu-list__item-desc">
-                                        <h4>Эспрессо</h4>
-                                        <p>Классический крепкий кофе</p>
-                                    </div>
-                                    <div class="menu-list__item-price">
-                                        15,000 ₫
-                                    </div>
-                                </li>
-                                
-                                <li class="menu-list__item">
-                                    <div class="menu-list__item-desc">
-                                        <h4>Латте</h4>
-                                        <p>Кофе с молоком и пенкой</p>
-                                    </div>
-                                    <div class="menu-list__item-price">
-                                        20,000 ₫
-                                    </div>
-                                </li>
-                            </ul>
-                        </div>
+                    <!-- Error message when menu data is not loaded -->
+                    <div class="menu-section" style="text-align: center; padding: 4rem 0;">
+                        <h2 style="color: var(--color-text-dark); margin-bottom: 2rem;">Упс, что-то с меню не так</h2>
+                        <p style="color: var(--color-text-light); font-size: 1.2rem; margin-bottom: 2rem;">
+                            К сожалению, меню временно недоступно. Попробуйте обновить страницу или зайти позже.
+                        </p>
+                        <button onclick="window.location.reload()" class="btn btn--primary">
+                            Обновить страницу
+                        </button>
                     </div>
                 <?php endif; ?>
 
