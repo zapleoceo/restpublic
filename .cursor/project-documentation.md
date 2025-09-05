@@ -1,738 +1,312 @@
-# GoodZone - Подробная техническая документация
+# Полная документация проекта North Republic
 
-## Обзор проекта
+## Архитектура проекта
 
-GoodZone - это комплексная система для развлекательного центра "Республика Север" (North Republic), включающая:
-- **Frontend**: React приложение с многоязычной поддержкой
-- **Backend**: Node.js API сервер с интеграцией Poster CRM
-- **Telegram Bot**: Бот для авторизации пользователей
-- **SePay Monitor**: Система мониторинга платежей
-- **Admin Panel**: Панель управления контентом
-
----
-
-## Архитектура системы
-
-### Структура проекта
+### Общая структура
 ```
-GoodZone/
-├── frontend/          # React приложение
-├── backend/           # Node.js API сервер
-├── bot/              # Telegram бот
-├── assets/           # Скомпилированные ресурсы
-├── lang/             # Файлы переводов
-└── .cursor/          # Конфигурация и документация
+NRsite/
+├── backend/          # Node.js API сервер
+├── frontend/         # React приложение
+├── template/         # HTML шаблон
+├── index.html        # Гибридный HTML файл
+└── deploy.sh         # Скрипт автоматического деплоя
 ```
 
 ### Технологический стек
-- **Frontend**: React 18, Vite, Tailwind CSS, React Router
-- **Backend**: Node.js, Express, MongoDB, JWT
-- **Bot**: Telegraf, TypeScript
-- **API**: Poster CRM API, SePay API, Telegram Bot API
-- **Deployment**: PM2, Nginx, SSH
+- **Frontend**: React 18, CSS3, HTML5
+- **Backend**: Node.js, Express.js, Axios
+- **API**: Poster POS API v3
+- **Deploy**: PM2, Nginx, SSH
+- **Version Control**: Git
 
----
+## Frontend (React приложение)
 
-## Backend API (server.js)
+### Инициализация React
+**Файл**: `frontend/src/main.jsx`
 
-### Основные модули
-- **Express сервер** с CORS и middleware
-- **Poster API прокси** для работы с CRM
-- **MongoDB интеграция** для конфигураций и переводов
-- **SePay мониторинг** для отслеживания платежей
-- **JWT авторизация** для админки
+React приложение инициализируется с задержкой для совместимости с HTML шаблоном:
 
-### API Endpoints
+1. **Ожидание загрузки**: Ждет события `window.load`
+2. **Дополнительная задержка**: 100ms для гарантии выполнения template JS
+3. **Создание root**: Использует `createRoot` API React 18
+4. **Рендеринг**: Рендерит `<App />` в контейнер `#root`
 
-#### 1. Health Check
-```http
-GET /api/health
-```
-**Описание**: Проверка состояния сервера
-**Ответ**:
-```json
-{
-  "status": "OK",
-  "timestamp": "2024-01-01T00:00:00.000Z",
-  "version": "2.1.1",
-  "buildDate": "2025-08-19",
-  "features": ["price-normalization", "mongodb-configs"],
-  "mongodb": "connected"
+```javascript
+// Ключевая логика инициализации
+if (document.readyState === 'complete') {
+  initReactApp();
+} else {
+  window.addEventListener('load', function() {
+    setTimeout(initReactApp, 100);
+  });
 }
 ```
 
-#### 2. Poster API Proxy
-```http
-GET/POST /api/poster/*
-```
-**Описание**: Прокси для всех запросов к Poster CRM API
-**Параметры**: Все параметры Poster API + автоматическое добавление токена
-**Заголовки**: 
-- `Content-Type: application/json`
-- `User-Agent: NorthRepublic-Backend/2.0`
+### Структура компонентов
 
-#### 3. Menu API
-```http
-GET /api/menu
-```
-**Описание**: Получение меню с кэшированием (5 минут)
-**Логика**:
-1. Проверка кэша
-2. Запрос категорий: `menu.getCategories`
-3. Запрос продуктов: `menu.getProducts`
-4. Фильтрация видимых товаров
-5. Нормализация цен (деление на 100)
-6. Обновление кэша
+#### App.jsx
+**Файл**: `frontend/src/App.jsx`
+- Основной компонент приложения
+- Использует React Router для навигации
+- Включает компонент `VersionInfo` для отображения версии
 
-**Ответ**:
-```json
-{
-  "categories": [...],
-  "products": [...],
-  "timestamp": "2024-01-01T00:00:00.000Z"
-}
-```
+#### HomePage.jsx
+**Файл**: `frontend/src/pages/HomePage.jsx`
+- Главная страница сайта
+- Импортирует все секции: Intro, About, DynamicMenu, Services, Events, Testimonials
+- Обрабатывает ошибки рендеринга
 
-#### 4. Product Popularity
-```http
-GET /api/products/popularity
-```
-**Описание**: Получение данных о популярности товаров за последние 7 дней
-**Кэширование**: 10 минут
-**API**: `dash.getProductsSales`
-**Ответ**:
-```json
-{
-  "productPopularity": {
-    "product_id": "count"
-  }
-}
-```
+#### DynamicMenu.jsx
+**Файл**: `frontend/src/components/DynamicMenu.jsx`
 
-#### 5. Product Modificators
-```http
-GET /api/products/:productId/modificators
-```
-**Описание**: Получение модификаторов товара
-**API**: `menu.getProductModificators`
+**Ключевая логика**:
+1. **Состояние**: Управляет категориями, продуктами, активной категорией, загрузкой
+2. **Загрузка данных**: Использует `menuService` для получения данных
+3. **Кэширование**: Данные кэшируются на 5 минут
+4. **Интеграция с шаблоном**: Создает DOM элементы с ID `tab-${categoryId}` для совместимости с template JS
+5. **Ограничение продуктов**: Показывает только первые 5 популярных продуктов
+6. **Skeleton loader**: Отображает анимированный загрузчик во время загрузки
 
----
+**Ключевые методы**:
+- `loadMenuData()`: Загружает категории и продукты
+- `handleCategoryClick()`: Обрабатывает клик по категории, интегрируется с template JS
 
-## MongoDB API
+### Сервисы
 
-### Translations API
-```http
-GET /api/translations/:language
-PUT /api/translations/:language
-```
-**Описание**: Управление переводами (ru, en, vi)
-**Fallback**: Файлы в `frontend/public/lang/`
+#### menuService.js
+**Файл**: `frontend/src/services/menuService.js`
 
-### Site Configuration API
-```http
-GET /api/config/site-config
-GET /api/config/sections
-PUT /api/config/sections
-```
-**Описание**: Управление конфигурацией сайта и секций
+**Функциональность**:
+- **Кэширование**: 5-минутный кэш для оптимизации
+- **API вызовы**: Интеграция с backend API
+- **Форматирование цен**: Конвертация цен из копеек в доллары
+- **Обработка изображений**: Генерация URL изображений продуктов
 
----
-
-## SePay Integration
-
-### SePay Monitor (sepay-monitor.js)
-**Класс**: `SePayMonitor`
-**Функции**:
-- Мониторинг транзакций каждые 10 секунд
-- Отправка уведомлений в Telegram
-- Graceful shutdown
-
-**Конфигурация**:
-- `chatIds`: ['7795513546', '169510539'] (Rest_publica_bar, zapleosoft)
-- `checkInterval`: 10000ms
-
-### SePay Service (sepay-service.js)
-**Класс**: `SePayService`
-**API**: `https://my.sepay.vn/userapi`
-**Методы**:
-- `getTransactions()`: Получение всех транзакций
-- `getNewTransactions()`: Получение новых транзакций
-- `formatTransactionMessage()`: Форматирование сообщения
-
-### SePay API Endpoints
-```http
-GET /api/sepay/status
-POST /api/sepay/start
-POST /api/sepay/stop
-POST /api/sepay/test
-```
-
----
-
-## Order Management
-
-### Order Service (orderService.js)
-**Класс**: `OrderService`
 **Основные методы**:
-
-#### 1. Client Management
-```javascript
-checkExistingClient(phone)
-findClientByPhone(phone)
-createClient(clientData)
-```
-
-#### 2. Order Operations
-```javascript
-createOrder(orderData)
-createGuestOrder(orderData)
-getUserOrders(userId)
-getUserPastOrders(userId, limit, offset)
-getOrderDetails(transactionId)
-```
-
-### Order API Endpoints
-
-#### 1. Phone Check
-```http
-POST /api/orders/check-phone
-Body: { "phone": "+84..." }
-```
-
-#### 2. Client Registration
-```http
-POST /api/orders/register
-Body: {
-  "name": "string",
-  "lastName": "string", 
-  "phone": "string",
-  "birthday": "string",
-  "gender": "string"
-}
-```
-
-#### 3. First Order Check
-```http
-POST /api/orders/check-first
-Body: { "clientId": "string" }
-```
-
-#### 4. Create Order
-```http
-POST /api/orders/create
-Body: {
-  "items": [...],
-  "total": "number",
-  "tableId": "string",
-  "comment": "string",
-  "customerData": {...},
-  "withRegistration": "boolean"
-}
-```
-
-#### 5. Guest Order
-```http
-POST /api/orders/create-guest
-Body: {
-  "items": [...],
-  "total": "number", 
-  "tableId": "string",
-  "comment": "string",
-  "customerData": {...}
-}
-```
-
-#### 6. User Orders
-```http
-GET /api/orders/user/:userId
-GET /api/orders/user/:userId/past?limit=10&offset=0
-GET /api/orders/details/:transactionId
-```
-
----
-
-## Authentication System
-
-### JWT Authentication (auth.js)
-**Модуль**: `authModule`
-**Функции**:
-- `authenticateUser(username, password)`
-- `requireAuth` middleware
-- `requireAdmin` middleware
-
-### Auth API Endpoints
-```http
-POST /api/auth/login
-POST /api/auth/logout  
-GET /api/auth/status
-POST /api/auth/register
-POST /api/auth/telegram-callback
-GET /api/auth/session/:token
-```
-
-### Session Management
-```http
-POST /api/session/create
-POST /api/session/update
-```
-
----
-
-## Telegram Bot Integration
-
-### Bot Configuration (bot.ts)
-**Framework**: Telegraf
-**TypeScript**: Да
-**Основные функции**:
-- Авторизация через контакты
-- Интеграция с backend API
-- Сессии для пользователей
-
-### Bot Flow
-1. **Start Command**: `/start auth_<returnUrl>`
-2. **Contact Request**: Пользователь делится контактом
-3. **Backend Call**: Отправка данных на `/api/auth/telegram-callback`
-4. **Return**: Создание сессии и возврат в приложение
-
-### Bot API Calls
-```typescript
-// Отправка данных на backend
-POST /api/auth/telegram-callback
-{
-  "phone": "string",
-  "name": "string", 
-  "lastName": "string",
-  "birthday": "string",
-  "sessionToken": "string"
-}
-```
-
----
-
-## Frontend Services
-
-### API Service (apiService.js)
-**Класс**: `ApiService`
-**Методы**:
-- `request(endpoint, options)`
-- `get(endpoint, params)`
-- `post(endpoint, data)`
-
-### Menu Service (menuService.js)
-**Методы**:
-- `getMenuData()`: Получение полного меню
+- `getMenuData()`: Получение полного меню с кэшированием
 - `getCategories()`: Получение категорий
-- `getProducts(categoryId)`: Получение продуктов
-- `getPopularityData()`: Получение популярности
-- `checkHealth()`: Проверка API
+- `getProductsByCategory()`: Продукты по категории
+- `getPopularProductsByCategory()`: Популярные продукты
+- `formatPrice()`: Форматирование цены
 
-### Poster API Service (posterApi.js)
-**Методы**:
-- `getCategories()`: Категории через прокси
-- `getProducts(categoryId)`: Продукты категории
-- `getProductImage(imageId, size)`: Изображения товаров
+#### apiService.js
+**Файл**: `frontend/src/services/apiService.js`
+- Базовый HTTP клиент на основе Axios
+- Настроен для работы с backend API
+- Обработка ошибок и интерцепторы
 
-### Events Service (eventsService.js)
-**Методы**:
-- `getEvents()`: Получение событий
-- `getEventDetails(id)`: Детали события
+### Константы и конфигурация
 
----
+#### apiEndpoints.js
+**Файл**: `frontend/src/constants/apiEndpoints.js`
+- Определяет все API endpoints
+- Автоматическое определение базового URL (production/development)
+- Production: `https://northrepublic.me`
+- Development: `http://localhost:3002`
 
-## Admin Panel
+## Backend (Node.js API)
 
-### Admin Routes (admin.js)
-**Endpoints**:
-```http
-GET /api/admin/translations
-PUT /api/admin/translations/:language
-GET /api/admin/configs
-PUT /api/admin/configs/:type
-```
+### Структура сервера
 
-### Admin Module (adminModule.js)
-**Функции**:
-- Управление секциями сайта
-- Управление страницами
-- Конфигурация админки
+#### server.js
+**Файл**: `backend/server.js`
+- Express.js сервер
+- Middleware: CORS, Helmet, Morgan
+- Роуты: `/api/menu`, `/api/poster`, `/api/health`
+- Порт: 3002 (production)
 
-### Admin API
-```http
-GET /api/admin/config
-POST /api/admin/section/:key
-POST /api/admin/page/:path
-GET /api/sections
-GET /api/admin/page/:path/status
-```
+#### Роуты
 
----
+##### menu.js
+**Файл**: `backend/routes/menu.js`
+- `GET /api/menu`: Полное меню (категории + продукты)
+- `GET /api/menu/categories`: Только категории
+- Обработка ошибок и логирование
+- Нормализация цен и изображений
 
-## Sections Management
+##### poster.js
+**Файл**: `backend/routes/poster.js`
+- `GET /api/poster/:method`: Прокси для Poster API
+- `POST /api/poster/:method`: POST запросы к Poster API
+- Безопасность: токен не передается клиенту
 
-### Sections Routes (sections.js)
-**Endpoints**:
-```http
-GET /api/sections
-PUT /api/sections/:key
-```
+### Сервисы
 
-### Events Routes (events.js)
-**Endpoints**:
-```http
-GET /api/events
-GET /api/events/:id
-POST /api/events
-PUT /api/events/:id
-DELETE /api/events/:id
-```
+#### posterService.js
+**Файл**: `backend/services/posterService.js`
 
----
+**Ключевая функциональность**:
+1. **Интеграция с Poster API**: Прямые вызовы к `https://joinposter.com/api`
+2. **Аутентификация**: Использует токен из переменных окружения
+3. **Кэширование**: Встроенное кэширование для оптимизации
+4. **Обработка данных**: Нормализация цен, форматирование изображений
 
-## MongoDB Service
-
-### MongoService (mongoService.js)
-**Методы**:
-- `connect()`: Подключение к MongoDB
-- `getTranslations(language)`: Получение переводов
-- `setTranslations(language, data)`: Сохранение переводов
-- `getConfig(type)`: Получение конфигурации
-- `setConfig(type, data)`: Сохранение конфигурации
-- `getAllTranslations()`: Все переводы
-- `getAllConfigs()`: Все конфигурации
-
----
-
-## Frontend Components
-
-### Основные компоненты
-- **App.jsx**: Главный компонент с роутингом
-- **Header.jsx**: Шапка с логотипом и навигацией
-- **LanguageSwitcher.jsx**: Переключатель языков
-- **CartButton.jsx**: Кнопка корзины
-- **LoadingSpinner.jsx**: Индикатор загрузки
-
-### Страницы
-- **HomePage.jsx**: Главная страница
-- **MenuPage.jsx**: Страница меню
-- **EventsPage.jsx**: Страница событий
-- **EventDetailPage.jsx**: Детали события
-
-### Секции
-- **IntroSection.jsx**: Секция "Welcome to"
-- **ServicesSection.jsx**: Секция услуг
-- **MenuPreviewSection.jsx**: Предварительный просмотр меню
-- **EventsSection.jsx**: Секция событий
-
-### Контексты
-- **CartContext.jsx**: Контекст корзины
-- **TableContext.jsx**: Контекст столиков
-
-### Хуки
-- **useTranslation.js**: Интернационализация
-- **useMenuData.js**: Данные меню
-- **useEvents.js**: Данные событий
-- **useSiteConfig.js**: Конфигурация сайта
-- **useSiteContent.js**: Контент сайта
-- **useSiteSections.js**: Секции сайта
-
----
-
-## Internationalization (i18n)
-
-### Конфигурация (i18n.js)
-**Поддерживаемые языки**: ru, en, vi
-**Файлы переводов**: `frontend/public/lang/`
-**Backend интеграция**: MongoDB
-
-### Translation Hook (useTranslation.js)
-**Функции**:
-- `t(key)`: Перевод по ключу
-- `changeLanguage(lang)`: Смена языка
-- `i18n`: Объект i18next
-
----
-
-## Styling System
-
-### CSS Architecture
-- **Tailwind CSS**: Утилитарные классы
-- **Custom CSS Variables**: В `template.css`
-- **Component Styles**: В отдельных файлах
-
-### Design Tokens (designTokens.js)
-**Переменные**:
-- Цвета (`--color-primary`, `--color-bg`, etc.)
-- Размеры (`--logo-width`, `--content-padding`, etc.)
-- Шрифты (`--font-family`, `--font-size`, etc.)
-
----
-
-## Deployment
-
-### Deploy Script (deploy.sh)
-**Функции**:
-- Сборка фронтенда
-- Копирование файлов на сервер
-- Перезапуск PM2 процессов
-- Очистка кэша
-
-### PM2 Configuration (ecosystem.config.js)
-**Приложения**:
-- `frontend`: React приложение
-- `backend`: Node.js API
-- `bot`: Telegram бот
-
-### Environment Variables
-```bash
-# Poster API
-POSTER_API_TOKEN=
-
-# SePay API  
-SEPAY_API_TOKEN=
-
-# Telegram Bot
-TELEGRAM_BOT_TOKEN=
-
-# MongoDB
-MONGODB_URI=
-
-# JWT
-JWT_SECRET=
-
-# BIDV Account
-BIDV_ACCOUNT_NUMBER=
-```
-
----
-
-## API Integration Details
-
-### Poster CRM API
-**Base URL**: `https://joinposter.com/api`
-**Authentication**: Token в параметрах
 **Основные методы**:
-- `menu.getCategories`: Категории меню
-- `menu.getProducts`: Товары меню
-- `menu.getProductModificators`: Модификаторы
-- `clients.getClients`: Клиенты
-- `clients.createClient`: Создание клиента
-- `dash.getProductsSales`: Продажи товаров
-- `transactions.createTransaction`: Создание заказа
+- `makeRequest()`: Базовый метод для API запросов
+- `getCategories()`: Получение категорий из Poster
+- `getProducts()`: Получение всех продуктов
+- `getProductsByCategory()`: Продукты по категории
+- `getPopularProducts()`: Популярные продукты (по статистике продаж)
+- `normalizePrice()`: Конвертация цены из копеек в доллары
+- `formatPrice()`: Форматирование цены для отображения
+- `getProductImage()`: Генерация URL изображений
 
-### SePay API
-**Base URL**: `https://my.sepay.vn/userapi`
-**Authentication**: Bearer token
-**Методы**:
-- `transactions/list`: Список транзакций
+**Кэширование**:
+- Категории: 5 минут
+- Продукты: 5 минут
+- Популярные продукты: 30 минут
 
-### Telegram Bot API
-**Base URL**: `https://api.telegram.org/bot<TOKEN>`
-**Методы**:
-- `sendMessage`: Отправка сообщения
-- `sendPhoto`: Отправка фото
-- `deleteMyCommands`: Удаление команд
+## HTML шаблон и интеграция
 
----
+### index.html
+**Файл**: `index.html` (гибридный файл)
 
-## Error Handling
+**Структура**:
+1. **HTML шаблон**: Базовый HTML с мета-тегами и favicon
+2. **CSS**: Подключение template CSS и React CSS
+3. **Preloader**: Анимированный загрузчик сайта
+4. **React контейнер**: `<div id="root"></div>`
+5. **Template JS**: `plugins.js` и `main.js`
+6. **React JS**: Динамически обновляемый JS файл
 
-### Backend Error Handling
-- **Try-catch блоки** во всех async функциях
-- **HTTP статус коды** для разных типов ошибок
-- **Логирование** всех ошибок в консоль
-- **Graceful fallbacks** для критических ошибок
+**Ключевые особенности**:
+- Гибридная структура: HTML шаблон + React приложение
+- Автоматическое обновление ссылок на JS файлы
+- Совместимость с template JavaScript
+- UTF-8 кодировка (автоматически исправляется при деплое)
 
-### Frontend Error Handling
-- **Error boundaries** для React компонентов
-- **Try-catch** в API вызовах
-- **Fallback UI** для ошибок загрузки
-- **Retry механизмы** для сетевых ошибок
+### Интеграция React с шаблоном
 
----
+**Проблема**: Template JS и React конфликтуют при одновременной инициализации
 
-## Performance Optimizations
+**Решение**:
+1. **Отложенная инициализация**: React ждет полной загрузки страницы
+2. **DOM интеграция**: React создает элементы с ID для совместимости
+3. **События**: Обработка кликов интегрируется с template JS
+4. **Стили**: CSS правила для устранения конфликтов
+
+## Деплой и инфраструктура
+
+### deploy.sh
+**Файл**: `deploy.sh` (автоматический скрипт деплоя)
+
+**Последовательность операций**:
+1. **Очистка сервера**: `git clean -fd`
+2. **Обновление кода**: `git pull origin main`
+3. **Установка зависимостей**: `npm install` для backend
+4. **Сборка frontend**: `npm run build`
+5. **Копирование файлов**: Static файлы, CSS, изображения, иконки
+6. **Восстановление index.html**: Из копии в репозитории
+7. **Исправление кодировки**: UTF-16 → UTF-8 (автоматически)
+8. **Обновление JS ссылок**: Автоматическое обновление ссылки на новый JS файл
+9. **Валидация**: Проверка корректности обновления
+10. **Перезапуск сервисов**: PM2 restart
+11. **Синхронизация**: Обновление локальной копии index.html
+
+**Автоматизация**:
+- Полностью автоматический процесс
+- Не требует ручных правок
+- Автоматическое исправление проблем с кодировкой
+- Валидация результатов
+
+### Серверная инфраструктура
+
+**Структура на сервере**:
+```
+/var/www/northrepubli_usr/data/www/northrepublic.me/
+├── backend/          # Node.js API
+├── frontend/         # React приложение
+├── static/           # Собранные React файлы
+├── template/         # HTML шаблон
+├── index.html        # Гибридный HTML файл
+└── deploy.sh         # Скрипт деплоя
+```
+
+**PM2 сервисы**:
+- `northrepublic-backend`: Backend API на порту 3002
+- Автоматический перезапуск при сбоях
+- Логирование и мониторинг
+
+**Nginx**:
+- Проксирование запросов на backend
+- Обслуживание статических файлов
+- SSL сертификаты
+
+## Конфигурация и переменные окружения
+
+### backend/config.env
+**Файл**: `backend/config.env`
+
+**Переменные**:
+- `PORT=3002`: Порт backend сервера
+- `NODE_ENV=production`: Окружение
+- `POSTER_API_TOKEN`: Токен для Poster API
+- `POSTER_API_BASE_URL=https://joinposter.com/api`: URL Poster API
+- `CACHE_TTL=300000`: Время жизни кэша (5 минут)
+- `CORS_ORIGIN=https://northrepublic.me`: Разрешенный origin
+
+### frontend/src/constants/apiEndpoints.js
+**Автоматическое определение окружения**:
+- Production: `https://northrepublic.me`
+- Development: `http://localhost:3002`
+
+## Безопасность
 
 ### Backend
-- **Кэширование меню** (5 минут)
-- **Кэширование популярности** (10 минут)
-- **Connection pooling** для MongoDB
-- **Compression** для статических файлов
+- **CORS**: Настроен только для домена northrepublic.me
+- **Helmet.js**: Защита HTTP заголовков
+- **Токены**: Poster API токен хранится только на сервере
+- **Прокси**: Все запросы к Poster API проходят через backend
 
 ### Frontend
-- **Code splitting** по роутам
-- **Lazy loading** компонентов
-- **Image optimization** через OptimizedImage
-- **Memoization** для дорогих вычислений
+- **HTTPS**: Принудительное использование HTTPS в production
+- **Валидация**: Проверка данных от API
+- **Обработка ошибок**: Безопасные сообщения об ошибках
 
----
+## Производительность
 
-## Security
+### Кэширование
+- **Frontend**: 5-минутный кэш в menuService
+- **Backend**: Кэширование запросов к Poster API
+- **Статические файлы**: Кэширование через Nginx
 
-### Authentication
-- **JWT токены** для админки
-- **HttpOnly cookies** для безопасности
-- **Session management** для пользователей
-- **Rate limiting** (планируется)
+### Оптимизация
+- **React**: Оптимизированная сборка для production
+- **Изображения**: Оптимизированные размеры для Poster API
+- **CSS**: Минификация и сжатие
+- **JS**: Минификация и tree shaking
 
-### API Security
-- **CORS** настройки для разрешенных доменов
-- **Input validation** для всех запросов
-- **HTTPS** для всех внешних API
-- **Token rotation** (планируется)
+## Мониторинг и логирование
 
----
+### Backend
+- **Morgan**: HTTP логирование
+- **Console**: Детальное логирование операций
+- **PM2**: Мониторинг процессов
 
-## Monitoring & Logging
+### Frontend
+- **Console**: Логирование для отладки
+- **Error boundaries**: Обработка ошибок React
 
-### Application Logs
-- **Console logging** для всех операций
-- **Error tracking** с детальной информацией
-- **Performance metrics** (время ответа API)
-- **User activity** логирование
+## Восстановление проекта
 
-### External Monitoring
-- **SePay transaction monitoring** каждые 10 секунд
-- **Telegram notifications** для платежей
-- **Health check endpoints** для uptime мониторинга
-- **PM2 process monitoring**
+### Для полного восстановления проекта необходимо:
 
----
+1. **Клонировать репозиторий**
+2. **Настроить переменные окружения** в `backend/config.env`
+3. **Установить зависимости**: `npm install` в backend и frontend
+4. **Настроить сервер**: PM2, Nginx, SSL
+5. **Запустить деплой**: `./deploy.sh`
 
-## Development Workflow
+### Критически важные файлы:
+- `index.html`: Гибридный HTML файл (НЕ перезаписывать!)
+- `deploy.sh`: Автоматический скрипт деплоя
+- `backend/config.env`: Конфигурация и токены
+- `frontend/src/services/menuService.js`: Логика работы с меню
+- `backend/services/posterService.js`: Интеграция с Poster API
 
-### Local Development
-1. **Backend**: `npm run dev` в папке backend
-2. **Frontend**: `npm run dev` в папке frontend  
-3. **Bot**: `npm run dev` в папке bot
-4. **MongoDB**: Локальная или облачная база
-
-### Testing
-- **API testing** через Postman/Insomnia
-- **Frontend testing** через браузер
-- **Bot testing** через Telegram
-- **Integration testing** (планируется)
-
-### Deployment Process
-1. **Code review** и merge в main
-2. **Automatic deployment** через GitHub Actions
-3. **Manual deployment** через SSH при необходимости
-4. **Health checks** после деплоя
-
----
-
-## Future Enhancements
-
-### Planned Features
-- **Real-time notifications** через WebSocket
-- **Advanced analytics** для продаж
-- **Multi-language admin panel**
-- **Mobile app** для iOS/Android
-- **Payment gateway integration**
-- **Loyalty program system**
-
-### Technical Improvements
-- **GraphQL API** для оптимизации запросов
-- **Redis caching** для улучшения производительности
-- **Microservices architecture** для масштабирования
-- **Docker containerization** для упрощения деплоя
-- **Automated testing** с Jest и Cypress
-
----
-
-## Troubleshooting
-
-### Common Issues
-
-#### Backend Issues
-- **MongoDB connection**: Проверить MONGODB_URI
-- **Poster API errors**: Проверить POSTER_API_TOKEN
-- **SePay monitoring**: Проверить SEPAY_API_TOKEN
-- **JWT errors**: Проверить JWT_SECRET
-
-#### Frontend Issues
-- **Build errors**: Проверить CSS синтаксис
-- **API errors**: Проверить CORS настройки
-- **Translation issues**: Проверить файлы переводов
-- **Styling issues**: Проверить Tailwind конфигурацию
-
-#### Bot Issues
-- **Telegram API errors**: Проверить TELEGRAM_BOT_TOKEN
-- **Backend connection**: Проверить BACKEND_URL
-- **Session issues**: Проверить логи авторизации
-
-### Debug Commands
-```bash
-# Backend logs
-pm2 logs backend
-
-# Frontend logs  
-pm2 logs frontend
-
-# Bot logs
-pm2 logs bot
-
-# MongoDB connection
-mongo $MONGODB_URI
-
-# API health check
-curl https://northrepublic.me/api/health
-```
-
----
-
-## API Reference Summary
-
-### Public Endpoints
-- `GET /api/health` - Health check
-- `GET /api/menu` - Menu data
-- `GET /api/products/popularity` - Product popularity
-- `GET /api/products/:id/modificators` - Product modificators
-- `GET /api/translations/:lang` - Translations
-- `GET /api/config/site-config` - Site configuration
-- `GET /api/config/sections` - Sections configuration
-- `GET /api/sections` - Available sections
-- `GET /api/events` - Events list
-- `GET /api/events/:id` - Event details
-
-### Protected Endpoints (Admin)
-- `POST /api/auth/login` - Admin login
-- `POST /api/auth/logout` - Admin logout
-- `GET /api/auth/status` - Auth status
-- `GET /api/admin/config` - Admin configuration
-- `POST /api/admin/section/:key` - Update section
-- `POST /api/admin/page/:path` - Update page
-- `GET /api/admin/translations` - All translations
-- `PUT /api/admin/translations/:lang` - Update translations
-- `GET /api/admin/configs` - All configs
-- `PUT /api/admin/configs/:type` - Update config
-
-### Order Management
-- `POST /api/orders/check-phone` - Check existing client
-- `POST /api/orders/register` - Register client
-- `POST /api/orders/check-first` - Check first order
-- `POST /api/orders/create` - Create order
-- `POST /api/orders/create-guest` - Create guest order
-- `GET /api/orders/user/:id` - User orders
-- `GET /api/orders/user/:id/past` - User past orders
-- `GET /api/orders/details/:id` - Order details
-
-### Authentication & Sessions
-- `POST /api/auth/register` - User registration
-- `POST /api/auth/telegram-callback` - Telegram auth
-- `GET /api/auth/session/:token` - Get session
-- `POST /api/session/create` - Create session
-- `POST /api/session/update` - Update session
-
-### SePay Monitoring
-- `GET /api/sepay/status` - Monitor status
-- `POST /api/sepay/start` - Start monitoring
-- `POST /api/sepay/stop` - Stop monitoring
-- `POST /api/sepay/test` - Test connection
-
-### Poster API Proxy
-- `GET/POST /api/poster/*` - All Poster API endpoints
-
----
-
-*Документация обновлена: 2024-01-01*
-*Версия проекта: 3.2.2*
+### Зависимости:
+- Node.js 16+
+- PM2 для управления процессами
+- Nginx для веб-сервера
+- Git для версионного контроля
+- SSH доступ к серверу
