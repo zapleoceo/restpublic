@@ -271,8 +271,7 @@ function App() {
           <div className="column xl-6 lg-12">
             <p className="ss-copyright">
               <span>© North Republic 2025</span>
-              <span>Design by <a href="https://styleshout.com/">StyleShout</a></span>
-              Distributed by <a href="https://themewagon.com" target="_blank" rel="noopener noreferrer">ThemeWagon</a>
+              <span>Developed by <a href="https://zapleo.com" target="_blank" rel="noopener noreferrer">zapleo.com</a></span>
             </p>
           </div>
         </div>
