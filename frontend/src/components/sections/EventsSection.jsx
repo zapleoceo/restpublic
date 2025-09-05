@@ -1,16 +1,16 @@
-import { Link } from 'react-router-dom';
+// import { Link } from 'react-router-dom'; // Removed to avoid Router context issues
 import { SectionWrapper } from './SectionWrapper';
 import { SectionHeader } from './SectionHeader';
-import { useTranslation } from '../../hooks/useTranslation';
-import { useSiteContent } from '../../hooks/useSiteContent';
-import { formatEventDate } from '../../utils/formatters';
+// import { useTranslation } from '../../hooks/useTranslation'; // Temporarily disabled
+// import { useSiteContent } from '../../hooks/useSiteContent'; // Temporarily disabled
+// import { formatEventDate } from '../../utils/formatters'; // Temporarily disabled
 
 export const EventsSection = () => {
-  const { t } = useTranslation();
-  const { content } = useSiteContent();
+  // const { t } = useTranslation(); // Temporarily disabled
+  // const { content } = useSiteContent(); // Temporarily disabled
   
-  const eventsContent = content.events || {
-    title: t('section.events.title'),
+  const eventsContent = {
+    title: 'События', // t('section.events.title'),
     events: [
       {
         title: 'Турнир по лазертагу',
@@ -42,9 +42,9 @@ export const EventsSection = () => {
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {eventsContent.events.map((event, index) => (
-          <Link
+          <a
             key={index}
-            to={event.link}
+            href={event.link}
             className="group block bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden"
           >
             <div className="aspect-video overflow-hidden">
@@ -56,7 +56,7 @@ export const EventsSection = () => {
             </div>
             <div className="p-6">
               <div className="text-sm text-primary-600 font-medium mb-2">
-                {formatEventDate(event.date)}
+                {new Date(event.date).toLocaleDateString('ru-RU')}
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-primary-600 transition-colors">
                 {event.title}
@@ -65,17 +65,17 @@ export const EventsSection = () => {
                 {event.description}
               </p>
             </div>
-          </Link>
+          </a>
         ))}
       </div>
       
       <div className="text-center mt-12">
-        <Link
-          to="/events"
+        <a
+          href="/events"
           className="inline-flex items-center px-6 py-3 bg-primary-600 text-white rounded-lg font-semibold hover:bg-primary-700 transition-colors"
         >
           Все события
-        </Link>
+        </a>
       </div>
     </SectionWrapper>
   );

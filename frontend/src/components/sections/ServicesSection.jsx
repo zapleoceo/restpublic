@@ -1,15 +1,15 @@
-import { Link } from 'react-router-dom';
+// import { Link } from 'react-router-dom'; // Removed to avoid Router context issues
 import { SectionWrapper } from './SectionWrapper';
 import { SectionHeader } from './SectionHeader';
-import { useTranslation } from '../../hooks/useTranslation';
-import { useSiteContent } from '../../hooks/useSiteContent';
+// import { useTranslation } from '../../hooks/useTranslation'; // Temporarily disabled
+// import { useSiteContent } from '../../hooks/useSiteContent'; // Temporarily disabled
 
 export const ServicesSection = () => {
-  const { t } = useTranslation();
-  const { content } = useSiteContent();
+  // const { t } = useTranslation(); // Temporarily disabled
+  // const { content } = useSiteContent(); // Temporarily disabled
   
-  const servicesContent = content.services || {
-    title: t('section.services.title'),
+  const servicesContent = {
+    title: 'Наши услуги', // t('section.services.title'),
     services: [
       {
         title: 'Лазертаг',
@@ -44,9 +44,9 @@ export const ServicesSection = () => {
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
         {servicesContent.services.map((service, index) => (
-          <Link
+          <a
             key={index}
-            to={service.link}
+            href={service.link}
             className="group block p-6 bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300 border border-gray-200 hover:border-primary-300"
           >
             <div className="text-4xl mb-4">{service.icon}</div>
@@ -56,7 +56,7 @@ export const ServicesSection = () => {
             <p className="text-gray-600">
               {service.description}
             </p>
-          </Link>
+          </a>
         ))}
       </div>
     </SectionWrapper>
