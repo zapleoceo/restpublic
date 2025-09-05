@@ -149,10 +149,10 @@ foreach ($products as $product) {
                         </p>
                         
                         <ul class="intro-block-content__social">
-                            <li><a href="https://facebook.com/vngamezone" target="_blank">Facebook</a></li>
-                            <li><a href="https://www.instagram.com/gamezone.vn/" target="_blank">Instagram</a></li>
-                            <li><a href="https://www.tiktok.com/@gamezone.vn" target="_blank">TikTok</a></li>
-                            <li><a href="https://t.me/gamezone_vietnam" target="_blank">Telegram</a></li>
+                            <li><a href="https://facebook.com/vngamezone" target="_blank">FB</a></li>
+                            <li><a href="https://www.instagram.com/gamezone.vn/" target="_blank">IG</a></li>
+                            <li><a href="https://www.tiktok.com/@gamezone.vn" target="_blank">TT</a></li>
+                            <li><a href="https://t.me/gamezone_vietnam" target="_blank">TG</a></li>
                         </ul>
                     </div> <!-- end intro-block-content__social -->   
                 </div> <!-- end intro-block-content -->
@@ -456,7 +456,7 @@ foreach ($products as $product) {
                     <div class="grid-cols__column footer-block">                   
                         <h6>Часы работы</h6>
                         <ul class="opening-hours">
-                            <li><span class="opening-hours__days">Будни</span><span class="opening-hours__time">8:00 - 22:00</span></li>
+                            <li><span class="opening-hours__days">Будни</span><span class="opening-hours__time">10:00 - 22:00</span></li>
                             <li><span class="opening-hours__days">Выходные</span><span class="opening-hours__time">9:00 - 23:00</span></li>
                         </ul> 
                     </div>  
@@ -466,9 +466,7 @@ foreach ($products as $product) {
             <div class="row s-footer__bottom">       
                 <div class="column xl-6 lg-12">
                     <p class="ss-copyright">
-                        <span>© 2024 North Republic. Все права защищены.</span> 
-                        <span>Design by <a href="https://styleshout.com/">StyleShout</a></span>
-                        Distributed by <a href="https://themewagon.com" target="_blank">ThemeWagon</a>
+                        <span>© 2024 North Republic. Все права защищены.</span>
                     </p>
                 </div>
             </div> <!-- end s-footer__bottom -->          

@@ -1,5 +1,0 @@
-North Republic Frontend
-Version: 1.0.20
-Build Time: 2024-12-19
-Container: #react-app
-Status: ACTIVE
