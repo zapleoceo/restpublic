@@ -92,6 +92,48 @@ echo "🎨 Копирую CSS файлы..."
 rm -rf css
 echo "✅ Старые CSS файлы удалены (конфликт с React)"
 
+# Очищаем старые кастомные стили из template CSS
+echo "🧹 Очищаю старые кастомные стили из template CSS..."
+if [ -f "template/css/styles.css" ]; then
+    # Удаляем строки, добавленные вручную (с !important)
+    sed -i '/Force image cropping and smooth scrolling/d' template/css/styles.css
+    sed -i '/\.intro-pic-primary { overflow: hidden !important; }/d' template/css/styles.css
+    sed -i '/\.intro-pic-primary img { object-fit: cover !important; width: 100% !important; height: 100% !important; aspect-ratio: unset !important; object-position: center !important; }/d' template/css/styles.css
+    sed -i '/html, body { scroll-behavior: smooth !important; }/d' template/css/styles.css
+    echo "✅ Старые кастомные стили удалены из template CSS"
+fi
+
+# Обновляем кастомные стили
+echo "🎨 Обновляю кастомные стили..."
+if [ -f "template/css/custom.css" ]; then
+    echo "✅ Кастомные стили обновлены"
+else
+    echo "⚠️  Кастомные стили не найдены, создаю базовые..."
+    mkdir -p template/css
+    cat > template/css/custom.css << 'EOF'
+/* Custom styles for North Republic website */
+
+/* Smooth scrolling for anchor links */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Fix intro-pic-primary image to crop instead of stretch */
+.intro-pic-primary {
+  overflow: hidden;
+}
+
+.intro-pic-primary img {
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+  aspect-ratio: unset;
+  object-position: center;
+}
+EOF
+    echo "✅ Базовые кастомные стили созданы"
+fi
+
 # Копируем изображения
 echo "🖼️  Копирую изображения..."
 cp -r frontend/public/images .
