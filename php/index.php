@@ -79,10 +79,10 @@
                         </p>
                         
                         <ul class="intro-block-content__social">
-                            <li><a href="https://facebook.com/vngamezone" target="_blank">Facebook</a></li>
-                            <li><a href="https://www.instagram.com/gamezone.vn/" target="_blank">Instagram</a></li>
-                            <li><a href="https://www.tiktok.com/@gamezone.vn" target="_blank">TikTok</a></li>
-                            <li><a href="https://t.me/gamezone_vietnam" target="_blank">Telegram</a></li>
+                            <li><a href="https://facebook.com/vngamezone" target="_blank">FB</a></li>
+                            <li><a href="https://www.instagram.com/gamezone.vn/" target="_blank">IG</a></li>
+                            <li><a href="https://www.tiktok.com/@gamezone.vn" target="_blank">TT</a></li>
+                            <li><a href="https://t.me/gamezone_vietnam" target="_blank">TG</a></li>
                         </ul>
                     </div> <!-- end intro-block-content__social -->   
                 </div> <!-- end intro-block-content -->
