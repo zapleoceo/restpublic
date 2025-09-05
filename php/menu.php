@@ -32,7 +32,7 @@ $products = $menu_data['products'] ?? [];
 // Group products by category
 $products_by_category = [];
 foreach ($products as $product) {
-    $category_id = $product['category_id'] ?? 'default';
+    $category_id = $product['menu_category_id'] ?? 'default';
     if (!isset($products_by_category[$category_id])) {
         $products_by_category[$category_id] = [];
     }
