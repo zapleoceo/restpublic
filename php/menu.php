@@ -342,12 +342,60 @@ foreach ($products as $product) {
     <script src="template/js/plugins.js"></script>
     <script src="template/js/main.js"></script>
     
+    <style>
+        /* Анимации появления блюд */
+        .menu-list__item {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s var(--ease-smooth-in-out);
+        }
+        
+        .menu-list__item.animate-in {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .menu-section {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s var(--ease-smooth-in-out);
+        }
+        
+        .menu-section.animate-in {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .category-btn {
+            transition: all 0.3s var(--ease-smooth-in-out);
+        }
+    </style>
+    
     <script>
-        // Category filtering
+        // Category filtering with animations
         document.addEventListener('DOMContentLoaded', function() {
             const categoryBtns = document.querySelectorAll('.category-btn');
             const menuSections = document.querySelectorAll('.menu-section');
             
+            // Set initial active state
+            if (categoryBtns.length > 0) {
+                categoryBtns[0].classList.add('active');
+            }
+            if (menuSections.length > 0) {
+                menuSections.forEach((section, index) => {
+                    if (index === 0) {
+                        section.style.display = 'block';
+                        // Анимация появления первой секции
+                        setTimeout(() => {
+                            section.classList.add('animate-in');
+                            animateMenuItems(section);
+                        }, 100);
+                    } else {
+                        section.style.display = 'none';
+                    }
+                });
+            }
+
             categoryBtns.forEach(btn => {
                 btn.addEventListener('click', function() {
                     const category = this.dataset.category;
@@ -356,16 +404,37 @@ foreach ($products as $product) {
                     categoryBtns.forEach(b => b.classList.remove('active'));
                     this.classList.add('active');
                     
-                    // Show/hide sections
+                    // Show/hide sections with animation
                     menuSections.forEach(section => {
                         if (section.dataset.category === category) {
                             section.style.display = 'block';
+                            section.classList.remove('animate-in');
+                            
+                            // Анимация появления секции
+                            setTimeout(() => {
+                                section.classList.add('animate-in');
+                                animateMenuItems(section);
+                            }, 50);
                         } else {
-                            section.style.display = 'none';
+                            section.classList.remove('animate-in');
+                            setTimeout(() => {
+                                section.style.display = 'none';
+                            }, 300);
                         }
                     });
                 });
             });
+            
+            // Функция анимации элементов меню
+            function animateMenuItems(section) {
+                const menuItems = section.querySelectorAll('.menu-list__item');
+                menuItems.forEach((item, index) => {
+                    item.classList.remove('animate-in');
+                    setTimeout(() => {
+                        item.classList.add('animate-in');
+                    }, index * 100); // Задержка между элементами
+                });
+            }
         });
     </script>
 </body>
