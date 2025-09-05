@@ -320,7 +320,10 @@
     
         // Set up tab links
         tabLinks.forEach(function(link, i) {
-            let anchor = link.getAttribute('href').split('#')[1];
+            if (!link) return; // Skip if link is null
+            let href = link.getAttribute('href');
+            if (!href) return; // Skip if no href attribute
+            let anchor = href.split('#')[1];
             let attributes = {
                 'id': 'tab-link-' + i,
                 'role': 'tab',
