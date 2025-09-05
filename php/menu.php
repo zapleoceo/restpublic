@@ -44,7 +44,7 @@ foreach ($products as $product) {
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Полное меню - Республика Север</title>
+    <title>Полное меню - North Republic</title>
 
     <script>
         document.documentElement.classList.remove('no-js');
@@ -77,7 +77,7 @@ foreach ($products as $product) {
                 <div class="s-header__block">
                     <div class="header-logo">
                         <a class="logo" href="/">
-                            <img src="images/logo.png" alt="Республика Север">
+                            <img src="images/logo.png" alt="North Republic">
                         </a>
                     </div>
                     <a class="header-menu-toggle" href="#0"><span>Menu</span></a>
@@ -106,50 +106,72 @@ foreach ($products as $product) {
             <div class="row">
                 <div class="column xl-12">
                     <div class="section-header" data-num="02">
-                        <h2 class="text-display-title">Наше меню</h2>
+                        <h2 class="text-display-title">Полное меню</h2>
                     </div>
                 </div>
             </div>
 
-            <div class="row" style="margin-top: 4rem;">
-                <!-- Categories Sidebar -->
-                <div class="column xl-4 lg-5 md-12">
-                    <div class="menu-categories">
-                        <h3 style="font-size: 2rem; margin-bottom: 2rem; color: #d4af37;">Категории</h3>
-                        <ul class="category-list">
-                            <?php if (!empty($categories)): ?>
-                                <?php foreach ($categories as $index => $category): ?>
-                                    <li class="category-item <?php echo $index === 0 ? 'active' : ''; ?>" 
-                                        data-category-id="<?php echo htmlspecialchars($category['category_id']); ?>">
-                                        <a href="#" class="category-link">
-                                            <?php echo htmlspecialchars($category['category_name']); ?>
-                                        </a>
-                                    </li>
-                                <?php endforeach; ?>
-                            <?php else: ?>
-                                <li class="category-item active" data-category-id="default">
-                                    <a href="#" class="category-link">Кофе</a>
-                                </li>
-                                <li class="category-item" data-category-id="default2">
-                                    <a href="#" class="category-link">Десерты</a>
-                                </li>
-                            <?php endif; ?>
-                        </ul>
-                    </div>
-                </div>
-
-                <!-- Popular Products -->
-                <div class="column xl-8 lg-7 md-12">
-                    <div class="popular-products">
-                        <h3 style="font-size: 2rem; margin-bottom: 2rem; color: #d4af37;">Популярные блюда</h3>
-                        <div id="popular-products-content">
-                            <div class="loading" style="text-align: center; padding: 2rem;">
-                                <p>Загрузка популярных блюд...</p>
+            <?php if (!empty($categories)): ?>
+                <?php foreach ($categories as $category): ?>
+                    <div class="row" style="margin-top: 4rem;">
+                        <div class="column xl-12">
+                            <h3 class="menu-category-title" style="font-size: 2.4rem; margin-bottom: 2rem; color: #d4af37;">
+                                <?php echo htmlspecialchars($category['category_name']); ?>
+                            </h3>
+                            
+                            <div class="menu-block">
+                                <ul class="menu-list">
+                                    <?php 
+                                    $category_products = $products_by_category[$category['category_id']] ?? [];
+                                    foreach ($category_products as $product): 
+                                    ?>
+                                        <li class="menu-list__item">
+                                            <div class="menu-list__item-desc">                                            
+                                                <h4><?php echo htmlspecialchars($product['name']); ?></h4>
+                                                <p><?php echo htmlspecialchars($product['description'] ?? ''); ?></p>
+                                            </div>
+                                            <div class="menu-list__item-price">
+                                                <span>₽</span><?php echo number_format($product['price_normalized'] ?? $product['price'] ?? 0, 0, ',', ' '); ?>
+                                            </div>
+                                        </li>
+                                    <?php endforeach; ?>
+                                </ul>
                             </div>
                         </div>
                     </div>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <!-- Fallback content -->
+                <div class="row" style="margin-top: 4rem;">
+                    <div class="column xl-12">
+                        <h3 class="menu-category-title" style="font-size: 2.4rem; margin-bottom: 2rem; color: #d4af37;">
+                            Кофе
+                        </h3>
+                        <div class="menu-block">
+                            <ul class="menu-list">
+                                <li class="menu-list__item">
+                                    <div class="menu-list__item-desc">                                            
+                                        <h4>Эспрессо</h4>
+                                        <p>Классический крепкий кофе</p>
+                                    </div>
+                                    <div class="menu-list__item-price">
+                                        <span>₽</span>150
+                                    </div>
+                                </li>
+                                <li class="menu-list__item">
+                                    <div class="menu-list__item-desc">                                            
+                                        <h4>Латте</h4>
+                                        <p>Кофе с молоком и пенкой</p>
+                                    </div>
+                                    <div class="menu-list__item-price">
+                                        <span>₽</span>200
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
-            </div>
+            <?php endif; ?>
 
             <div class="row" style="margin-top: 4rem; text-align: center;">
                 <div class="column xl-12">
@@ -164,7 +186,7 @@ foreach ($products as $product) {
                 <div class="column xl-3 lg-12 footer-block s-footer__main-start">     
                     <div class="s-footer__logo">
                         <a class="logo" href="/">
-                            <img src="images/logo.png" alt="Республика Север">
+                            <img src="images/logo.png" alt="North Republic">
                         </a>
                     </div>
 
@@ -200,8 +222,7 @@ foreach ($products as $product) {
                     <div class="grid-cols__column footer-block">
                         <h6>Адрес</h6>
                         <p>
-                        Нячанг, Вьетнам<br>
-                        У подножия горы Ко Тьен
+                        Хошимин, Вьетнам
                         </p>
                     </div>
                     
@@ -226,7 +247,7 @@ foreach ($products as $product) {
             <div class="row s-footer__bottom">       
                 <div class="column xl-6 lg-12">
                     <p class="ss-copyright">
-                        <span>© 2024 Республика Север. Все права защищены.</span>
+                        <span>© 2024 North Republic. Все права защищены.</span>
                     </p>
                 </div>
             </div>
@@ -242,220 +263,5 @@ foreach ($products as $product) {
 
     <script src="template/js/plugins.js"></script>
     <script src="template/js/main.js"></script>
-    
-    <style>
-        .category-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-        
-        .category-item {
-            margin-bottom: 1rem;
-        }
-        
-        .category-link {
-            display: block;
-            padding: 1rem 1.5rem;
-            background: #f8f8f8;
-            color: #333;
-            text-decoration: none;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-            border-left: 4px solid transparent;
-        }
-        
-        .category-item.active .category-link {
-            background: #d4af37;
-            color: white;
-            border-left-color: #b8941f;
-        }
-        
-        .category-link:hover {
-            background: #e8e8e8;
-            transform: translateX(5px);
-        }
-        
-        .category-item.active .category-link:hover {
-            background: #b8941f;
-        }
-        
-        .popular-products {
-            padding-left: 2rem;
-        }
-        
-        .product-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1.5rem 0;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .product-item:last-child {
-            border-bottom: none;
-        }
-        
-        .product-info h4 {
-            margin: 0 0 0.5rem 0;
-            color: #333;
-            font-size: 1.2rem;
-        }
-        
-        .product-info p {
-            margin: 0;
-            color: #666;
-            font-size: 0.9rem;
-        }
-        
-        .product-price {
-            font-size: 1.3rem;
-            font-weight: bold;
-            color: #d4af37;
-        }
-        
-        .loading {
-            color: #666;
-            font-style: italic;
-        }
-        
-        .error {
-            color: #e74c3c;
-            text-align: center;
-            padding: 2rem;
-        }
-        
-        @media (max-width: 768px) {
-            .popular-products {
-                padding-left: 0;
-                margin-top: 2rem;
-            }
-        }
-    </style>
-    
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const categoryItems = document.querySelectorAll('.category-item');
-            const popularContent = document.getElementById('popular-products-content');
-            let currentCategoryId = null;
-            
-            // Get first active category
-            const activeCategory = document.querySelector('.category-item.active');
-            if (activeCategory) {
-                currentCategoryId = activeCategory.dataset.categoryId;
-                loadPopularProducts(currentCategoryId);
-            }
-            
-            // Add click handlers to categories
-            categoryItems.forEach(item => {
-                item.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    
-                    // Remove active class from all items
-                    categoryItems.forEach(cat => cat.classList.remove('active'));
-                    
-                    // Add active class to clicked item
-                    this.classList.add('active');
-                    
-                    // Load popular products for this category
-                    const categoryId = this.dataset.categoryId;
-                    currentCategoryId = categoryId;
-                    loadPopularProducts(categoryId);
-                });
-            });
-            
-            function loadPopularProducts(categoryId) {
-                // Show loading state
-                popularContent.innerHTML = '<div class="loading"><p>Загрузка популярных блюд...</p></div>';
-                
-                // Make API request
-                fetch(`/api/menu/categories/${categoryId}/popular?limit=5`)
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Network response was not ok');
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        if (data.popular_products && data.popular_products.length > 0) {
-                            displayPopularProducts(data.popular_products);
-                        } else {
-                            // Fallback to regular products if no popular data
-                            loadRegularProducts(categoryId);
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error loading popular products:', error);
-                        // Fallback to regular products
-                        loadRegularProducts(categoryId);
-                    });
-            }
-            
-            function loadRegularProducts(categoryId) {
-                fetch(`/api/menu/categories/${categoryId}/products`)
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Network response was not ok');
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        if (data.products && data.products.length > 0) {
-                            // Take first 5 products
-                            const topProducts = data.products.slice(0, 5);
-                            displayPopularProducts(topProducts);
-                        } else {
-                            displayNoProducts();
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error loading products:', error);
-                        displayError();
-                    });
-            }
-            
-            function displayPopularProducts(products) {
-                if (!products || products.length === 0) {
-                    displayNoProducts();
-                    return;
-                }
-                
-                let html = '';
-                products.forEach(product => {
-                    const price = product.price_normalized || product.price || 0;
-                    const formattedPrice = Math.round(price).toLocaleString('ru-RU');
-                    
-                    html += `
-                        <div class="product-item">
-                            <div class="product-info">
-                                <h4>${escapeHtml(product.product_name || product.name || 'Блюдо')}</h4>
-                                <p>${escapeHtml(product.product_description || product.description || '')}</p>
-                            </div>
-                            <div class="product-price">
-                                ${formattedPrice} ₽
-                            </div>
-                        </div>
-                    `;
-                });
-                
-                popularContent.innerHTML = html;
-            }
-            
-            function displayNoProducts() {
-                popularContent.innerHTML = '<div class="error"><p>В этой категории пока нет блюд</p></div>';
-            }
-            
-            function displayError() {
-                popularContent.innerHTML = '<div class="error"><p>Ошибка загрузки меню. Попробуйте позже.</p></div>';
-            }
-            
-            function escapeHtml(text) {
-                if (!text) return '';
-                const div = document.createElement('div');
-                div.textContent = text;
-                return div.innerHTML;
-            }
-        });
-    </script>
 </body>
 </html>
