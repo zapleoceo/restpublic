@@ -131,8 +131,8 @@ class MenuService {
 
   // Форматирование цены для отображения
   formatPrice(price) {
-    const normalizedPrice = this.normalizePrice(price);
-    return normalizedPrice.toFixed(2);
+    if (!price) return '0';
+    return (price / 100).toFixed(0);
   }
 
   // Получение изображения продукта

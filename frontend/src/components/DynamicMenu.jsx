@@ -246,7 +246,7 @@ const DynamicMenu = () => {
                           )}
                         </div>
                         <div className="menu-list__item-price">
-                          {Math.floor((product.price_formatted || menuService.formatPrice(product.price)) * 100) / 100}
+                          {product.price ? (product.price / 100).toFixed(0) : '0'}
                         </div>
                       </li>
                     ))}
