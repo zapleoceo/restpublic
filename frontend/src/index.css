@@ -234,10 +234,10 @@ button:focus-visible {
 .menu-list__item-desc h4 {
   margin: 0;
   line-height: 1.2;
-  font-size: 1.125rem !important; /* 18px - same as price */
+  font-size: 20px !important; /* 20px - same as price */
   font-weight: 500 !important;
   font-family: "Roboto Flex", Sans-Serif !important;
-  color: #262827 !important;
+  color: #ffffff !important; /* white color */
 }
 
 .menu-list__item-desc p {
@@ -251,9 +251,9 @@ button:focus-visible {
   margin-left: 1rem;
   font-family: "Roboto Flex", Sans-Serif !important;
   font-weight: 500 !important;
-  font-size: 1.125rem !important; /* 18px - same as h4 */
+  font-size: 20px !important; /* 20px - same as h4 */
   line-height: 1.2 !important;
-  color: #262827 !important;
+  color: #ffffff !important; /* white color */
   margin: 0 !important;
 }
 
