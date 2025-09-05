@@ -260,6 +260,11 @@ button:focus-visible {
   margin-top: calc(var(--content-padding-top) / 3) !important;
 }
 
+/* About content spacing */
+.s-about__content {
+  margin-top: calc(var(--content-padding-top) / 3) !important;
+}
+
 /* Full Menu Button */
 .full-menu-btn {
   display: inline-block;
