@@ -9,7 +9,7 @@ function fetchFromAPI($endpoint) {
     
     $context = stream_context_create([
         'http' => [
-            'timeout' => 5,
+            'timeout' => 10,
             'method' => 'GET',
             'header' => 'Content-Type: application/json'
         ]
@@ -18,16 +18,33 @@ function fetchFromAPI($endpoint) {
     $response = @file_get_contents($url, false, $context);
     
     if ($response === false) {
+        error_log("Failed to fetch from API: " . $url);
         return null;
     }
     
-    return json_decode($response, true);
+    $data = json_decode($response, true);
+    if (json_last_error() !== JSON_ERROR_NONE) {
+        error_log("JSON decode error: " . json_last_error_msg());
+        return null;
+    }
+    
+    return $data;
 }
 
 // Fetch menu data
 $menu_data = fetchFromAPI('/menu');
+
+// Debug: Check if API data is loaded
+if (!$menu_data) {
+    error_log("API data is null - check if backend is running on port 3002");
+}
+
 $categories = $menu_data['categories'] ?? [];
 $products = $menu_data['products'] ?? [];
+
+// Debug: Log data counts
+error_log("Categories loaded: " . count($categories));
+error_log("Products loaded: " . count($products));
 
 // Group products by category
 $products_by_category = [];
@@ -196,18 +213,11 @@ foreach ($categories as $category) {
                                     </li>
                                 <?php endforeach; ?>
                             <?php else: ?>
-                                <!-- Fallback menu items -->
+                                <!-- No categories loaded from API -->
                                 <li>
-                                    <a href="#tab-coffee">
-                                        <span>Кофе</span>
-                                        <svg clip-rule="evenodd" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="m14.523 18.787s4.501-4.505 6.255-6.26c.146-.146.219-.338.219-.53s-.073-.383-.219-.53c-1.753-1.754-6.255-6.258-6.255-6.258-.144-.145-.334-.217-.524-.217-.193 0-.385.074-.532.221-.293.292-.295.766-.004 1.056l4.978 4.978h-14.692c-.414 0-.75.336-.75.75s.336.75.75.75h14.692l-4.979 4.979c-.289.289-.286.762.006 1.054.148.148.341.222.533.222.19 0 .378-.072.522-.215z" fill-rule="nonzero"/></svg>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#tab-desserts">
-                                        <span>Десерты</span>
-                                        <svg clip-rule="evenodd" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="m14.523 18.787s4.501-4.505 6.255-6.26c.146-.146.219-.338.219-.53s-.073-.383-.219-.53c-1.753-1.754-6.255-6.258-6.255-6.258-.144-.145-.334-.217-.524-.217-.193 0-.385.074-.532.221-.293.292-.295.766-.004 1.056l4.978 4.978h-14.692c-.414 0-.75.336-.75.75s.336.75.75.75h14.692l-4.979 4.979c-.289.289-.286.762.006 1.054.148.148.341.222.533.222.19 0 .378-.072.522-.215z" fill-rule="nonzero"/></svg>
-                                    </a>
+                                    <span style="color: #999; font-style: italic;">
+                                        Загрузка меню...
+                                    </span>
                                 </li>
                             <?php endif; ?>
                         </ul>
@@ -242,26 +252,14 @@ foreach ($categories as $category) {
                                 </div> <!-- end tab-content__item -->
                             <?php endforeach; ?>
                         <?php else: ?>
-                            <!-- Fallback menu content -->
-                            <div id="tab-coffee" class="menu-block__group tab-content__item">
-                                <h6 class="menu-block__cat-name">Кофе</h6>
+                            <!-- No menu data loaded from API -->
+                            <div class="menu-block__group tab-content__item">
+                                <h6 class="menu-block__cat-name">Меню</h6>
                                 <ul class="menu-list">
                                     <li class="menu-list__item">
                                         <div class="menu-list__item-desc">                                            
-                                            <h4>Эспрессо</h4>
-                                            <p>Классический крепкий кофе</p>
-                                        </div>
-                                        <div class="menu-list__item-price">
-                                            <span>₽</span>150
-                                        </div>
-                                    </li>
-                                    <li class="menu-list__item">
-                                        <div class="menu-list__item-desc">                                            
-                                            <h4>Латте</h4>
-                                            <p>Кофе с молоком и пенкой</p>
-                                        </div>
-                                        <div class="menu-list__item-price">
-                                            <span>₽</span>200
+                                            <h4>Загрузка меню...</h4>
+                                            <p>Пожалуйста, подождите, загружаем данные из системы</p>
                                         </div>
                                     </li>
                                 </ul>
