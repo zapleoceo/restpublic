@@ -25,8 +25,22 @@ echo "✅ Сервер очищен"
 
 # Обновляем код с Git
 echo "📥 Обновляю код с Git..."
-git pull origin main
-echo "✅ Код обновлен с Git"
+# Определяем текущую ветку
+CURRENT_BRANCH=$(git branch --show-current)
+echo "📍 Текущая ветка: $CURRENT_BRANCH"
+
+# Пытаемся обновить с main, если не получается - с master
+if git pull origin main 2>/dev/null; then
+    echo "✅ Код обновлен с main"
+else
+    echo "⚠️ Не удалось обновить с main, пробую master..."
+    if git pull origin master 2>/dev/null; then
+        echo "✅ Код обновлен с master"
+    else
+        echo "❌ Ошибка обновления кода"
+        exit 1
+    fi
+fi
 
 # Устанавливаем зависимости backend
 echo "📦 Устанавливаю зависимости backend..."
@@ -34,28 +48,55 @@ cd backend
 npm install
 echo "✅ Backend зависимости установлены"
 
-# Копируем PHP файлы
-echo "📁 Копирую PHP файлы..."
+# Копируем только необходимые файлы в корень (если их нет)
+echo "📁 Проверяю структуру файлов..."
 cd ..
-cp php/index.php .
-cp php/menu.php .
-cp -r php/components .
-echo "✅ PHP файлы скопированы"
 
-# Копируем template файлы
-echo "📁 Копирую template файлы..."
-cp -r template/css .
-cp -r template/js .
-cp -r template/images .
-echo "✅ Template файлы скопированы"
+# Копируем PHP файлы в корень (для совместимости)
+if [ ! -f "index.php" ]; then
+    cp php/index.php .
+    echo "✅ index.php скопирован в корень"
+fi
 
-# Копируем иконки и favicon
-echo "🔗 Копирую иконки и favicon..."
-cp template/apple-touch-icon.png .
-cp template/favicon-16x16.png .
-cp template/favicon-32x32.png .
-cp template/favicon.ico .
-echo "✅ Иконки скопированы"
+if [ ! -f "menu.php" ]; then
+    cp php/menu.php .
+    echo "✅ menu.php скопирован в корень"
+fi
+
+# Копируем компоненты (если их нет)
+if [ ! -d "components" ]; then
+    cp -r php/components .
+    echo "✅ components скопированы"
+fi
+
+# Копируем template файлы (если их нет)
+if [ ! -d "css" ]; then
+    cp -r template/css .
+    echo "✅ CSS скопированы"
+fi
+
+if [ ! -d "js" ]; then
+    cp -r template/js .
+    echo "✅ JS скопированы"
+fi
+
+if [ ! -d "images" ]; then
+    cp -r template/images .
+    echo "✅ Images скопированы"
+fi
+
+# Копируем иконки (если их нет)
+if [ ! -f "apple-touch-icon.png" ]; then
+    cp template/apple-touch-icon.png .
+    echo "✅ apple-touch-icon.png скопирован"
+fi
+
+if [ ! -f "favicon.ico" ]; then
+    cp template/favicon.ico .
+    echo "✅ favicon.ico скопирован"
+fi
+
+echo "✅ Структура файлов проверена"
 
 # Перезапускаем сервисы
 echo "🔄 Перезапускаю сервисы..."
@@ -66,14 +107,20 @@ echo "✅ Сервисы перезапущены"
 echo "📊 Статус PM2:"
 pm2 list
 
-# Коммитим изменения
-echo "🔄 Коммичу изменения..."
-git add .
-git commit -m "Deploy: PHP frontend with template styles" || echo "⚠️ Нет изменений для коммита"
-git push origin main
-echo "✅ Изменения отправлены в репозиторий"
+# Проверяем статус Git (без коммита, согласно правилам)
+echo "📊 Статус Git:"
+git status --porcelain || echo "✅ Рабочая директория чистая"
+
+# Проверяем доступность API
+echo "🔍 Проверяю API..."
+if curl -s http://127.0.0.1:3002/api/health > /dev/null; then
+    echo "✅ Backend API доступен"
+else
+    echo "⚠️ Backend API недоступен"
+fi
 
 echo ""
 echo "🎉 Полный деплой на сервер завершен!"
 echo "🌐 Сайт: https://northrepublic.me"
+echo "📝 Не забудьте перезагрузить Nginx: sudo systemctl reload nginx"
 echo "🧪 Тестируйте сайт через 30 секунд"
