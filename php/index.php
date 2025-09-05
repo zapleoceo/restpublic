@@ -268,7 +268,7 @@
     <!-- Async Menu Loading Script -->
     <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const API_BASE_URL = 'http://127.0.0.1:3002/api';
+        const API_BASE_URL = 'https://northrepublic.me/api';
         const categoriesContainer = document.getElementById('menu-categories');
         const contentContainer = document.getElementById('menu-content');
         
