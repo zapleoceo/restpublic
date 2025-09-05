@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
 import Logo from './Logo';
 import LanguageSwitcher from './LanguageSwitcher';
 import CartIcon from './CartIcon';
@@ -15,9 +14,9 @@ const MenuHeader = () => {
         <div className="menu-header__content">
           {/* Логотип */}
           <div className="menu-header__logo">
-            <Link to="/" className="logo-link">
+            <a href="/" className="logo-link">
               <Logo />
-            </Link>
+            </a>
           </div>
 
           {/* Мобильное меню кнопка */}

@@ -6,7 +6,7 @@ import '../components/LanguageSwitcher.css';
 import '../components/Logo.css';
 import '../components/DynamicMenu.css';
 
-export const HomePage = () => {
+const HomePage = () => {
   console.log('HomePage component rendering...');
   
   return (
@@ -188,3 +188,5 @@ export const HomePage = () => {
     </div>
   );
 };
+
+export default HomePage;

@@ -103,8 +103,8 @@
 /* Анимация смены цветов */
 @keyframes colorShift {
   0%   { background: var(--logo-primary); } /* Основной зеленый */
-  33%  { background: var(--logo-secondary); } /* Белый */
-  66%  { background: var(--logo-accent); } /* Серый */
+  33%  { background: var(--logo-accent); } /* Серый */
+  66%  { background: var(--logo-dark); } /* Темно-серый */
   100% { background: var(--logo-primary); } /* Основной зеленый */
 }
 
