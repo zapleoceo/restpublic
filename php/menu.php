@@ -268,7 +268,7 @@ foreach ($products as $product) {
                                         <?php foreach ($category_products as $product): ?>
                                             <li class="menu-list__item">
                                                 <div class="menu-list__item-desc">
-                                                    <h4><?php echo htmlspecialchars($product['product_name'] ?? $product['name']); ?></h4>
+                                                    <h4><?php echo htmlspecialchars($product['product_name'] ?? 'Без названия'); ?></h4>
                                                     <?php if (!empty($product['description'])): ?>
                                                         <p><?php echo htmlspecialchars($product['description']); ?></p>
                                                     <?php endif; ?>

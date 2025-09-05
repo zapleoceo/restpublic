@@ -3,9 +3,6 @@ RewriteEngine On
 # Обработка /menu без .php
 RewriteRule ^menu$ menu.php [L]
 
-# Обработка других PHP файлов без расширения (опционально)
-RewriteRule ^([^/]+)$ $1.php [L]
-
 # Безопасность - запрет доступа к .htaccess
 <Files ".htaccess">
     Order allow,deny
