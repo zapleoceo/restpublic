@@ -7,6 +7,7 @@ require('dotenv').config({ path: '/var/www/northrepubli_usr/data/www/northrepubl
 
 const posterRoutes = require('./routes/poster');
 const menuRoutes = require('./routes/menu');
+const cacheRoutes = require('./routes/cache');
 
 const app = express();
 const PORT = process.env.PORT || 3002;
@@ -39,6 +40,7 @@ app.get('/api/health', (req, res) => {
 // API Routes
 app.use('/api/poster', posterRoutes);
 app.use('/api/menu', menuRoutes);
+app.use('/api/cache', cacheRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

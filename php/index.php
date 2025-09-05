@@ -1,5 +1,23 @@
 <?php
-// No server-side menu loading - will be loaded asynchronously via JavaScript
+// Load menu from MongoDB cache for fast rendering
+require_once 'classes/MenuCache.php';
+
+$menuCache = new MenuCache();
+$menuData = $menuCache->getMenu();
+$categories = $menuData ? $menuData['categories'] : [];
+$products = $menuData ? $menuData['products'] : [];
+
+// Group products by category for quick access
+$productsByCategory = [];
+if ($products) {
+    foreach ($products as $product) {
+        $categoryId = String($product['menu_category_id'] ?? $product['category_id'] ?? 'default');
+        if (!isset($productsByCategory[$categoryId])) {
+            $productsByCategory[$categoryId] = [];
+        }
+        $productsByCategory[$categoryId][] = $product;
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="en" class="no-js">
@@ -138,28 +156,74 @@
 
                     <nav class="tab-nav">
                         <ul class="tab-nav__list" id="menu-categories">
-                            <li>
-                                <span style="color: #999; font-style: italic;">
-                                    Загрузка категорий...
-                                </span>
-                            </li>
+                            <?php if (!empty($categories)): ?>
+                                <?php foreach ($categories as $index => $category): ?>
+                                    <li>
+                                        <a href="#tab-<?php echo htmlspecialchars($category['category_id']); ?>" class="<?php echo $index === 0 ? 'active' : ''; ?>">
+                                            <span><?php echo htmlspecialchars($category['category_name'] ?? $category['name'] ?? 'Без названия'); ?></span>
+                                            <svg clip-rule="evenodd" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="m14.523 18.787s4.501-4.505 6.255-6.26c.146-.146.219-.338.219-.53s-.073-.383-.219-.53c-1.753-1.754-6.255-6.258-6.255-6.258-.144-.145-.334-.217-.524-.217-.193 0-.385.074-.532.221-.293.292-.295.766-.004 1.056l4.978 4.978h-14.692c-.414 0-.75.336-.75.75s.336.75.75.75h14.692l-4.979 4.979c-.289.289-.286.762.006 1.054.148.148.341.222.533.222.19 0 .378-.072.522-.215z" fill-rule="nonzero"/></svg>
+                                        </a>
+                                    </li>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <li>
+                                    <span style="color: #e74c3c; font-style: italic;">
+                                        Упс, что-то с меню не так
+                                    </span>
+                                </li>
+                            <?php endif; ?>
                         </ul>
                     </nav> <!-- end tab-nav -->
                 </div> <!-- end s-menu__content-start -->
 
                 <div class="column xl-6 lg-6 md-12 s-menu__content-end">
                     <div class="tab-content menu-block" id="menu-content">
-                        <div class="menu-block__group tab-content__item">
-                            <h6 class="menu-block__cat-name">Меню</h6>
-                            <ul class="menu-list">
-                                <li class="menu-list__item">
-                                    <div class="menu-list__item-desc">                                            
-                                        <h4>Загрузка меню...</h4>
-                                        <p>Пожалуйста, подождите, загружаем данные из системы</p>
-                                    </div>
-                                </li>
-                            </ul>
-                        </div>
+                        <?php if (!empty($categories)): ?>
+                            <?php foreach ($categories as $index => $category): ?>
+                                <?php 
+                                $categoryId = String($category['category_id']);
+                                $categoryProducts = $productsByCategory[$categoryId] ?? [];
+                                $topProducts = array_slice($categoryProducts, 0, 5); // Top 5 products
+                                ?>
+                                <div id="tab-<?php echo htmlspecialchars($category['category_id']); ?>" class="menu-block__group tab-content__item <?php echo $index === 0 ? 'active' : ''; ?>">
+                                    <h6 class="menu-block__cat-name"><?php echo htmlspecialchars($category['category_name'] ?? $category['name'] ?? 'Без названия'); ?></h6>
+                                    <ul class="menu-list">
+                                        <?php if (!empty($topProducts)): ?>
+                                            <?php foreach ($topProducts as $product): ?>
+                                                <li class="menu-list__item">
+                                                    <div class="menu-list__item-desc">                                            
+                                                        <h4><?php echo htmlspecialchars($product['product_name'] ?? $product['name'] ?? 'Без названия'); ?></h4>
+                                                        <p><?php echo htmlspecialchars($product['description'] ?? ''); ?></p>
+                                                    </div>
+                                                    <div class="menu-list__item-price">
+                                                        <?php echo number_format($product['price_normalized'] ?? $product['price'] ?? 0, 0, ',', ' '); ?> ₫
+                                                    </div>
+                                                </li>
+                                            <?php endforeach; ?>
+                                        <?php else: ?>
+                                            <li class="menu-list__item">
+                                                <div class="menu-list__item-desc">                                            
+                                                    <h4>Нет товаров</h4>
+                                                    <p>В этой категории пока нет товаров</p>
+                                                </div>
+                                            </li>
+                                        <?php endif; ?>
+                                    </ul>
+                                </div>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <div class="menu-block__group tab-content__item active">
+                                <h6 class="menu-block__cat-name">Ошибка загрузки</h6>
+                                <ul class="menu-list">
+                                    <li class="menu-list__item">
+                                        <div class="menu-list__item-desc">                                            
+                                            <h4>Упс, что-то с меню не так</h4>
+                                            <p>Попробуйте обновить страницу или зайти позже</p>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        <?php endif; ?>
                     </div> <!-- menu-block -->
                 </div> <!-- end s-menu__content-end -->
             </div> <!-- end s-menu__content -->
@@ -265,142 +329,34 @@
     <script src="template/js/plugins.js"></script>
     <script src="template/js/main.js"></script>
     
-    <!-- Async Menu Loading Script -->
+    <!-- Menu Tab Switching Script -->
     <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const API_BASE_URL = 'https://northrepublic.me/api';
-        const categoriesContainer = document.getElementById('menu-categories');
-        const contentContainer = document.getElementById('menu-content');
+        // Add click handlers for tab switching
+        const categoryTabs = document.querySelectorAll('.tab-nav__list a');
+        const tabContents = document.querySelectorAll('.tab-content__item');
         
-        // Function to show error message
-        function showError(message) {
-            categoriesContainer.innerHTML = `
-                <li>
-                    <span style="color: #e74c3c; font-style: italic;">
-                        ${message}
-                    </span>
-                </li>
-            `;
-            contentContainer.innerHTML = `
-                <div class="menu-block__group tab-content__item">
-                    <h6 class="menu-block__cat-name">Ошибка загрузки</h6>
-                    <ul class="menu-list">
-                        <li class="menu-list__item">
-                            <div class="menu-list__item-desc">                                            
-                                <h4>Упс, что-то с меню не так</h4>
-                                <p>Попробуйте обновить страницу или зайти позже</p>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
-            `;
-        }
-        
-        // Function to load menu data
-        async function loadMenu() {
-            try {
-                const response = await fetch(`${API_BASE_URL}/menu`);
+        categoryTabs.forEach(tab => {
+            tab.addEventListener('click', function(e) {
+                e.preventDefault();
+                const href = this.getAttribute('href');
+                const categoryId = href.replace('#tab-', '');
                 
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                
-                const data = await response.json();
-                
-                if (!data.categories || !data.products) {
-                    throw new Error('Invalid data format');
-                }
-                
-                // Group products by category
-                const productsByCategory = {};
-                data.products.forEach(product => {
-                    const categoryId = String(product.menu_category_id || 'default');
-                    if (!productsByCategory[categoryId]) {
-                        productsByCategory[categoryId] = [];
-                    }
-                    productsByCategory[categoryId].push(product);
+                // Remove active class from all tabs and contents
+                tabContents.forEach(content => {
+                    content.classList.remove('active');
                 });
                 
-                // Render categories
-                const categoriesHtml = data.categories.map((category, index) => `
-                    <li>
-                        <a href="#tab-${category.category_id}" class="${index === 0 ? 'active' : ''}">
-                            <span>${category.category_name || category.name || 'Без названия'}</span>
-                            <svg clip-rule="evenodd" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="m14.523 18.787s4.501-4.505 6.255-6.26c.146-.146.219-.338.219-.53s-.073-.383-.219-.53c-1.753-1.754-6.255-6.258-6.255-6.258-.144-.145-.334-.217-.524-.217-.193 0-.385.074-.532.221-.293.292-.295.766-.004 1.056l4.978 4.978h-14.692c-.414 0-.75.336-.75.75s.336.75.75.75h14.692l-4.979 4.979c-.289.289-.286.762.006 1.054.148.148.341.222.533.222.19 0 .378-.072.522-.215z" fill-rule="nonzero"/></svg>
-                        </a>
-                    </li>
-                `).join('');
+                categoryTabs.forEach(t => t.classList.remove('active'));
                 
-                categoriesContainer.innerHTML = categoriesHtml;
-                
-                // Render content
-                const contentHtml = data.categories.map((category, index) => {
-                    const categoryProducts = productsByCategory[String(category.category_id)] || [];
-                    const topProducts = categoryProducts.slice(0, 5); // Top 5 products
-                    
-                    console.log(`Category ${category.category_id} (${category.category_name}): ${categoryProducts.length} products, showing ${topProducts.length}`);
-                    
-                    return `
-                        <div id="tab-${category.category_id}" class="menu-block__group tab-content__item ${index === 0 ? 'active' : ''}">
-                            <h6 class="menu-block__cat-name">${category.category_name || category.name || 'Без названия'}</h6>
-                            <ul class="menu-list">
-                                ${topProducts.length > 0 ? topProducts.map(product => `
-                                    <li class="menu-list__item">
-                                        <div class="menu-list__item-desc">                                            
-                                            <h4>${product.product_name || product.name || 'Без названия'}</h4>
-                                            <p>${product.description || ''}</p>
-                                        </div>
-                                        <div class="menu-list__item-price">
-                                            ${(product.price_normalized || product.price || 0).toLocaleString('ru-RU')} ₫
-                                        </div>
-                                    </li>
-                                `).join('') : `
-                                    <li class="menu-list__item">
-                                        <div class="menu-list__item-desc">                                            
-                                            <h4>Нет товаров</h4>
-                                            <p>В этой категории пока нет товаров</p>
-                                        </div>
-                                    </li>
-                                `}
-                            </ul>
-                        </div>
-                    `;
-                }).join('');
-                
-                contentContainer.innerHTML = contentHtml;
-                
-                // Add click handlers for tab switching
-                const categoryTabs = document.querySelectorAll('.tab-nav__list a');
-                const tabContents = document.querySelectorAll('.tab-content__item');
-                
-                categoryTabs.forEach(tab => {
-                    tab.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        const href = this.getAttribute('href');
-                        const categoryId = href.replace('#tab-', '');
-                        
-                        tabContents.forEach(content => {
-                            content.classList.remove('active');
-                        });
-                        
-                        const targetTab = document.getElementById(`tab-${categoryId}`);
-                        if (targetTab) {
-                            targetTab.classList.add('active');
-                        }
-                        
-                        categoryTabs.forEach(t => t.classList.remove('active'));
-                        this.classList.add('active');
-                    });
-                });
-                
-            } catch (error) {
-                console.error('Error loading menu:', error);
-                showError('Ошибка загрузки меню');
-            }
-        }
-        
-        // Load menu asynchronously
-        loadMenu();
+                // Add active class to clicked tab and corresponding content
+                this.classList.add('active');
+                const targetTab = document.getElementById(`tab-${categoryId}`);
+                if (targetTab) {
+                    targetTab.classList.add('active');
+                }
+            });
+        });
     });
     </script>
 
