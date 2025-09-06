@@ -14,6 +14,32 @@
         margin-top: 4rem;
     }
 }
+
+/* Горизонтальное выравнивание логотипа и социальных сетей */
+.s-footer__main-start {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.s-footer__logo {
+    margin-bottom: 1.5rem;
+}
+
+.s-footer__social {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+}
+
+@media (max-width: 768px) {
+    .s-footer__main-start {
+        align-items: center;
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+}
 </style>
 <footer id="footer" class="container s-footer">  
     <div>
