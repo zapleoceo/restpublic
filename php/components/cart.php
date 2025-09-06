@@ -322,6 +322,10 @@
 class Cart {
     constructor() {
         this.items = JSON.parse(localStorage.getItem('cart') || '[]');
+        // Ensure items is always an array
+        if (!Array.isArray(this.items)) {
+            this.items = [];
+        }
         this.init();
     }
 

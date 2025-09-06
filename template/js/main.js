@@ -151,10 +151,13 @@
                 * sectionId variable we are getting while looping through sections as 
                 * an selector
                 */
-                if (scrollY > sectionTop && scrollY <= sectionTop + sectionHeight) {
-                    document.querySelector('.header-nav a[href*=' + sectionId + ']').parentNode.classList.add('current');
-                } else {
-                    document.querySelector('.header-nav a[href*=' + sectionId + ']').parentNode.classList.remove('current');
+                const navLink = document.querySelector('.header-nav a[href*=' + sectionId + ']');
+                if (navLink && navLink.parentNode) {
+                    if (scrollY > sectionTop && scrollY <= sectionTop + sectionHeight) {
+                        navLink.parentNode.classList.add('current');
+                    } else {
+                        navLink.parentNode.classList.remove('current');
+                    }
                 }
             });
         }
@@ -320,10 +323,7 @@
     
         // Set up tab links
         tabLinks.forEach(function(link, i) {
-            if (!link) return; // Skip if link is null
-            let href = link.getAttribute('href');
-            if (!href) return; // Skip if no href attribute
-            let anchor = href.split('#')[1];
+            let anchor = link.getAttribute('href').split('#')[1];
             let attributes = {
                 'id': 'tab-link-' + i,
                 'role': 'tab',
