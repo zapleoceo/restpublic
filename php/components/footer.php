@@ -6,7 +6,13 @@
 ================================================== -->
 <style>
 .s-footer {
-    margin-top: 4rem;
+    margin-top: 20rem;
+}
+
+@media (max-width: 768px) {
+    .s-footer {
+        margin-top: 4rem;
+    }
 }
 </style>
 <footer id="footer" class="container s-footer">  
