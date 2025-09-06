@@ -278,49 +278,6 @@ try {
             </div> <!-- end gallery-items -->
         </section> <!-- end s-gallery -->
 
-        <!-- # contact
-        ================================================== -->
-        <section id="contact" class="container s-contact target-section">
-            <div class="row s-contact__header">
-                <div class="column xl-12 section-header-wrap">
-                    <div class="section-header" data-num="04">
-                        <h2 class="text-display-title">Контакты</h2>
-                    </div>               
-                </div> <!-- end section-header-wrap -->   
-            </div> <!-- end s-contact__header -->   
-
-            <div class="row s-contact__content">
-                <div class="column xl-6 lg-6 md-12 s-contact__content-start">
-                    <div class="s-contact__content-start-block">
-                        <h3>Наш адрес</h3>
-                        <p>
-                            <strong>North Republic</strong><br>
-                            Trần Khát Chân, Đường Đệ<br>
-                            Nha Trang, Khánh Hòa, Vietnam
-                        </p>
-                        <p>
-                            <a href="https://maps.google.com/?q=12.302584,109.207279" target="_blank" class="btn btn--primary">
-                                Открыть в Google Maps
-                            </a>
-                        </p>
-                    </div>
-                </div> <!-- end s-contact__content-start -->
-
-                <div class="column xl-6 lg-6 md-12 s-contact__content-end">
-                    <div class="s-contact__content-end-block">
-                        <h3>Режим работы</h3>
-                        <p>
-                            <strong>Понедельник - Воскресенье:</strong><br>
-                            10:00 - 22:00
-                        </p>
-                        <p>
-                            <strong>Телефон:</strong><br>
-                            <a href="tel:+84123456789">+84 123 456 789</a>
-                        </p>
-                    </div>
-                </div> <!-- end s-contact__content-end -->
-            </div> <!-- end s-contact__content -->
-        </section> <!-- end s-contact -->
 
         <!-- Footer -->
         <?php include 'php/components/footer.php'; ?>
