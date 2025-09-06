@@ -71,7 +71,7 @@ if ($menu_loaded) {
     <style>
         /* Menu page specific styles */
         .menu-page {
-            padding-top: 8rem;
+            padding-top: 2rem;
         }
         
         .menu-categories {
@@ -183,7 +183,7 @@ if ($menu_loaded) {
         
         @media (max-width: 768px) {
             .menu-page {
-                padding-top: 6rem;
+                padding-top: 1rem;
             }
             
             .menu-categories {
