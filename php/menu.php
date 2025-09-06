@@ -257,6 +257,35 @@ if ($menu_loaded) {
                                 </button>
                             <?php endforeach; ?>
                         </div>
+                        
+                        <!-- Sort Controls -->
+                        <div class="sort-controls">
+                            <span class="sort-label">Сортировка:</span>
+                            <button class="sort-btn active" data-sort="default">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M3 18h6v-2H3v2zM3 6v2h18V6H3zm0 7h12v-2H3v2z"/>
+                                </svg>
+                                По умолчанию
+                            </button>
+                            <button class="sort-btn" data-sort="alphabet">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M14,17H7v-2h7V17z M17,13H7v-2h10V13z M17,9H7V7h10V9z M3,5V3h18v2H3z"/>
+                                </svg>
+                                По алфавиту
+                            </button>
+                            <button class="sort-btn" data-sort="price">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M7,15H9C9,16.08 10.37,17 12,17C13.63,17 15,16.08 15,15C15,13.9 13.96,13.5 11.76,12.97C9.64,12.44 7,11.78 7,9C7,7.21 8.47,5.69 10.5,5.18V3H13.5V5.18C15.53,5.69 17,7.21 17,9H15C15,7.92 13.63,7 12,7C10.37,7 9,7.92 9,9C9,10.1 10.04,10.5 12.24,11.03C14.36,11.56 17,12.22 17,15C17,16.79 15.53,18.31 13.5,18.82V21H10.5V18.82C8.47,18.31 7,16.79 7,15Z"/>
+                                </svg>
+                                По цене
+                            </button>
+                            <button class="sort-btn" data-sort="popularity">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12,21.35L10.55,20.03C5.4,15.36 2,12.27 2,8.5C2,5.41 4.42,3 7.5,3C9.24,3 10.91,3.81 12,5.08C13.09,3.81 14.76,3 16.5,3C19.58,3 22,5.41 22,8.5C22,12.27 18.6,15.36 13.45,20.03L12,21.35Z"/>
+                                </svg>
+                                По популярности
+                            </button>
+                        </div>
                     </div>
                 </div>
                 <?php endif; ?>
@@ -355,6 +384,58 @@ if ($menu_loaded) {
         .category-btn {
             transition: all 0.3s var(--ease-smooth-in-out);
         }
+        
+        /* Sort Controls */
+        .sort-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 2rem;
+            padding: 1rem;
+            background: var(--color-bg-neutral-dark);
+            border-radius: var(--border-radius);
+            flex-wrap: wrap;
+        }
+        
+        .sort-label {
+            font-weight: 600;
+            color: var(--color-text-dark);
+            margin-right: 0.5rem;
+        }
+        
+        .sort-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: transparent;
+            border: 1px solid var(--color-border);
+            border-radius: 20px;
+            color: var(--color-text-light);
+            font-size: var(--text-sm);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .sort-btn:hover {
+            background: var(--color-bg-primary);
+            color: var(--color-white);
+            border-color: var(--color-bg-primary);
+        }
+        
+        .sort-btn.active {
+            background: var(--color-bg-primary);
+            color: var(--color-white);
+            border-color: var(--color-bg-primary);
+        }
+        
+        .sort-btn svg {
+            width: 16px;
+            height: 16px;
+            fill: currentColor;
+        }
     </style>
     
     <script>
@@ -420,6 +501,60 @@ if ($menu_loaded) {
                         item.classList.add('animate-in');
                     }, index * 100); // Задержка между элементами
                 });
+            }
+            
+            // Sort functionality
+            const sortBtns = document.querySelectorAll('.sort-btn');
+            sortBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const sortType = this.dataset.sort;
+                    
+                    // Update active sort button
+                    sortBtns.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Sort current visible section
+                    const activeSection = document.querySelector('.menu-section.active');
+                    if (activeSection) {
+                        sortMenuItems(activeSection, sortType);
+                    }
+                });
+            });
+            
+            // Function to sort menu items
+            function sortMenuItems(section, sortType) {
+                const menuList = section.querySelector('.menu-list');
+                if (!menuList) return;
+                
+                const items = Array.from(menuList.querySelectorAll('.menu-list__item'));
+                
+                items.sort((a, b) => {
+                    const nameA = a.querySelector('h4').textContent.trim();
+                    const nameB = b.querySelector('h4').textContent.trim();
+                    const priceA = parseFloat(a.querySelector('.menu-list__item-price').textContent.replace(/[^\d]/g, ''));
+                    const priceB = parseFloat(b.querySelector('.menu-list__item-price').textContent.replace(/[^\d]/g, ''));
+                    
+                    switch(sortType) {
+                        case 'alphabet':
+                            return nameA.localeCompare(nameB, 'ru');
+                        case 'price':
+                            return priceA - priceB;
+                        case 'popularity':
+                            // For now, sort by name as we don't have popularity data
+                            return nameA.localeCompare(nameB, 'ru');
+                        default:
+                            return 0; // Keep original order
+                    }
+                });
+                
+                // Clear and re-append sorted items
+                menuList.innerHTML = '';
+                items.forEach(item => {
+                    menuList.appendChild(item);
+                });
+                
+                // Re-animate items
+                animateMenuItems(section);
             }
         });
     </script>

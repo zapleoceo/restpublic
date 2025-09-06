@@ -3019,7 +3019,8 @@ td:last-child {
     margin-bottom: var(--vspace-2);
 }
 
-.section-header .text-display-title {
+.section-header .text-display-title,
+.text-display-title {
     margin-top: calc(-1 * var(--vspace-2));
     font-size : clamp(var(--text-display), var(--text-display) - 1rem + 2vw, var(--text-huge));
 }
