@@ -40,6 +40,19 @@
         margin-bottom: 2rem;
     }
 }
+
+/* Увеличение ширины copyright блока до 70% */
+.footer-copyright {
+    width: 70% !important;
+    max-width: 70%;
+}
+
+@media (max-width: 768px) {
+    .footer-copyright {
+        width: 100% !important;
+        max-width: 100%;
+    }
+}
 </style>
 <footer id="footer" class="container s-footer">  
     <div>
@@ -110,7 +123,7 @@
     </div> <!-- end  s-footer__main-content -->                 
     
     <div class="row s-footer__bottom">       
-        <div class="column xl-6 lg-12">
+        <div class="column xl-6 lg-12 footer-copyright">
                             <p class="ss-copyright">
                     <span>© <?php echo date('Y'); ?> North Republic. Все права защищены.</span> 
                     <span>Developed by <a href="https://zapleo.com" target="_blank">zapleo.com</a></span>
