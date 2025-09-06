@@ -16,7 +16,7 @@ try {
         // Group products by category for quick access
         if ($products) {
             foreach ($products as $product) {
-                $categoryId = String($product['menu_category_id'] ?? $product['category_id'] ?? 'default');
+                $categoryId = (string)($product['menu_category_id'] ?? $product['category_id'] ?? 'default');
                 if (!isset($productsByCategory[$categoryId])) {
                     $productsByCategory[$categoryId] = [];
                 }
@@ -192,7 +192,7 @@ try {
                         <?php if (!empty($categories)): ?>
                             <?php foreach ($categories as $index => $category): ?>
                                 <?php 
-                                $categoryId = String($category['category_id']);
+                                $categoryId = (string)($category['category_id']);
                                 $categoryProducts = $productsByCategory[$categoryId] ?? [];
                                 $topProducts = array_slice($categoryProducts, 0, 5); // Top 5 products
                                 ?>
