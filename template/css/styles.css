@@ -3023,6 +3023,7 @@ td:last-child {
 .text-display-title {
     margin-top: calc(-1 * var(--vspace-2));
     font-size : clamp(var(--text-display), var(--text-display) - 1rem + 2vw, var(--text-huge));
+    white-space: nowrap;
 }
 
 .section-header::before {
