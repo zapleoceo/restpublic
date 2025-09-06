@@ -29,7 +29,7 @@ try {
     }
     
     // Сохраняем в кэш
-    $result = $menuCache->saveMenu($data);
+    $result = $menuCache->updateCache($data);
     
     if ($result) {
         echo "✅ Кэш успешно обновлен!\n";
