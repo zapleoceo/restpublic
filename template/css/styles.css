@@ -3026,18 +3026,6 @@ td:last-child {
     white-space: nowrap;
 }
 
-/* Fix horizontal scrolling issues */
-html, body { 
-    overflow-x: hidden; 
-}
-
-.s-menu__content { 
-    max-width: 100%; 
-}
-
-.tab-nav__list { 
-    flex-wrap: wrap; 
-}
 
 .section-header::before {
     display       : block;
