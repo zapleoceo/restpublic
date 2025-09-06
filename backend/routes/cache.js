@@ -4,7 +4,7 @@ const axios = require('axios');
 const { MongoClient } = require('mongodb');
 
 // Подключение к MongoDB
-const mongoUrl = 'mongodb://localhost:27018';
+const mongoUrl = 'mongodb://localhost:27017';
 const dbName = 'northrepublic';
 const collectionName = 'menu';
 

@@ -58,15 +58,15 @@ if ($menu_loaded) {
     </script>
 
     <!-- CSS -->
-    <link rel="stylesheet" href="template/css/vendor.css">
-    <link rel="stylesheet" href="template/css/styles.css">
-    <link rel="stylesheet" href="template/css/custom.css">
+    <link rel="stylesheet" href="../template/css/vendor.css">
+    <link rel="stylesheet" href="../template/css/styles.css">
+    <link rel="stylesheet" href="../template/css/custom.css">
 
     <!-- Favicons -->
-    <link rel="apple-touch-icon" sizes="180x180" href="template/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="template/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="template/favicon-16x16.png">
-    <link rel="manifest" href="template/site.webmanifest">
+    <link rel="apple-touch-icon" sizes="180x180" href="../template/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../template/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../template/favicon-16x16.png">
+    <link rel="manifest" href="../template/site.webmanifest">
 
     <style>
         /* Menu page specific styles */
@@ -229,7 +229,7 @@ if ($menu_loaded) {
                 <div class="s-header__block">
                     <div class="header-logo">
                         <a class="logo" href="/">
-                            <img src="images/logo.png" alt="North Republic">
+                            <img src="../images/logo.png" alt="North Republic">
                         </a>
                     </div>
                 </div>
@@ -354,8 +354,8 @@ if ($menu_loaded) {
     </div>
 
     <!-- JavaScript -->
-    <script src="template/js/plugins.js"></script>
-    <script src="template/js/main.js"></script>
+    <script src="../template/js/plugins.js"></script>
+    <script src="../template/js/main.js"></script>
     
     <style>
         /* Анимации появления блюд */

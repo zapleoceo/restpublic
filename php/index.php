@@ -15,7 +15,7 @@ try {
         // Group products by category for quick access
         if ($products) {
             foreach ($products as $product) {
-                $categoryId = String($product['menu_category_id'] ?? $product['category_id'] ?? 'default');
+                $categoryId = (string)($product['menu_category_id'] ?? $product['category_id'] ?? 'default');
                 if (!isset($productsByCategory[$categoryId])) {
                     $productsByCategory[$categoryId] = [];
                 }
@@ -44,15 +44,15 @@ try {
 
     <!-- CSS
     ================================================== -->
-    <link rel="stylesheet" href="template/css/vendor.css">
-    <link rel="stylesheet" href="template/css/styles.css">
+    <link rel="stylesheet" href="../template/css/vendor.css">
+    <link rel="stylesheet" href="../template/css/styles.css">
 
     <!-- favicons
     ================================================== -->
-    <link rel="apple-touch-icon" sizes="180x180" href="template/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="template/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="template/favicon-16x16.png">
-    <link rel="manifest" href="template/site.webmanifest">
+    <link rel="apple-touch-icon" sizes="180x180" href="../template/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../template/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../template/favicon-16x16.png">
+    <link rel="manifest" href="../template/site.webmanifest">
 
 </head>
 
@@ -88,16 +88,16 @@ try {
                 </div> <!-- end intro-header -->
 
                 <figure class="intro-pic-primary">
-                    <img src="template/images/intro-pic-primary.jpg" 
-                         srcset="template/images/intro-pic-primary.jpg 1x, 
-                         template/images/intro-pic-primary@2x.jpg 2x" alt="">  
+                    <img src="../template/images/intro-pic-primary.jpg" 
+                         srcset="../template/images/intro-pic-primary.jpg 1x, 
+                         ../template/images/intro-pic-primary@2x.jpg 2x" alt="">  
                 </figure> <!-- end intro-pic-primary -->    
                     
                 <div class="intro-block-content">
                     <figure class="intro-block-content__pic">
-                        <img src="template/images/intro-pic-secondary.jpg" 
-                             srcset="template/images/intro-pic-secondary.jpg 1x, 
-                             template/images/intro-pic-secondary@2x.jpg 2x" alt=""> 
+                        <img src="../template/images/intro-pic-secondary.jpg" 
+                             srcset="../template/images/intro-pic-secondary.jpg 1x, 
+                             ../template/images/intro-pic-secondary@2x.jpg 2x" alt=""> 
                     </figure> <!-- end intro-pic-secondary -->   
 
                     <div class="intro-block-content__text-wrap">
@@ -136,9 +136,9 @@ try {
                     </div>  
 
                     <figure class="about-pic-primary">
-                        <img src="template/images/about-pic-primary.jpg" 
-                             srcset="template/images/about-pic-primary.jpg 1x, 
-                             template/images/about-pic-primary@2x.jpg 2x" alt=""> 
+                        <img src="../template/images/about-pic-primary.jpg" 
+                             srcset="../template/images/about-pic-primary.jpg 1x, 
+                             ../template/images/about-pic-primary@2x.jpg 2x" alt=""> 
                     </figure>
                 </div> <!-- end s-about__content-start -->
 
@@ -261,10 +261,10 @@ try {
             <div class="gallery-items grid-cols grid-cols--wrap">
                 <?php for ($i = 1; $i <= 8; $i++): ?>
                     <div class="gallery-items__item grid-cols__column">
-                        <a href="template/images/gallery/large/l-gallery-<?php echo sprintf('%02d', $i); ?>.jpg" class="gallery-items__item-thumb glightbox">
-                            <img src="template/images/gallery/gallery-<?php echo sprintf('%02d', $i); ?>.jpg" 
-                                srcset="template/images/gallery/gallery-<?php echo sprintf('%02d', $i); ?>.jpg 1x, 
-                                        template/images/gallery/gallery-<?php echo sprintf('%02d', $i); ?>@2x.jpg 2x" alt="">                                
+                        <a href="../template/images/gallery/large/l-gallery-<?php echo sprintf('%02d', $i); ?>.jpg" class="gallery-items__item-thumb glightbox">
+                            <img src="../template/images/gallery/gallery-<?php echo sprintf('%02d', $i); ?>.jpg" 
+                                srcset="../template/images/gallery/gallery-<?php echo sprintf('%02d', $i); ?>.jpg 1x, 
+                                        ../template/images/gallery/gallery-<?php echo sprintf('%02d', $i); ?>@2x.jpg 2x" alt="">                                
                         </a>
                     </div> <!-- end gallery-items__item-->
                 <?php endfor; ?>
@@ -282,7 +282,7 @@ try {
                         <div class="swiper-wrapper">
                             <div class="testimonials-slider__slide swiper-slide">
                                 <div class="testimonials-slider__author">
-                                    <img src="template/images/avatars/user-02.jpg" alt="Author image" class="testimonials-slider__avatar">
+                                    <img src="../template/images/avatars/user-02.jpg" alt="Author image" class="testimonials-slider__avatar">
                                     <cite class="testimonials-slider__cite">
                                         Анна Петрова
                                         <span>Москва</span>
@@ -296,7 +296,7 @@ try {
             
                             <div class="testimonials-slider__slide swiper-slide">
                                 <div class="testimonials-slider__author">
-                                    <img src="template/images/avatars/user-03.jpg" alt="Author image" class="testimonials-slider__avatar">
+                                    <img src="../template/images/avatars/user-03.jpg" alt="Author image" class="testimonials-slider__avatar">
                                     <cite class="testimonials-slider__cite">
                                         Дмитрий Иванов
                                         <span>Санкт-Петербург</span>
@@ -310,7 +310,7 @@ try {
             
                             <div class="testimonials-slider__slide swiper-slide">
                                 <div class="testimonials-slider__author">
-                                    <img src="template/images/avatars/user-01.jpg" alt="Author image" class="testimonials-slider__avatar">
+                                    <img src="../template/images/avatars/user-01.jpg" alt="Author image" class="testimonials-slider__avatar">
                                     <cite class="testimonials-slider__cite">
                                         Елена Смирнова
                                         <span>Екатеринбург</span>
@@ -335,8 +335,8 @@ try {
 
     <!-- Java Script
     ================================================== -->
-    <script src="template/js/plugins.js"></script>
-    <script src="template/js/main.js"></script>
+    <script src="../template/js/plugins.js"></script>
+    <script src="../template/js/main.js"></script>
     
     <!-- Menu Tab Switching Script -->
     <script>
