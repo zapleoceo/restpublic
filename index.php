@@ -278,7 +278,6 @@ try {
             </div> <!-- end gallery-items -->
         </section> <!-- end s-gallery -->
 
-
         <!-- Footer -->
         <?php include 'php/components/footer.php'; ?>
         

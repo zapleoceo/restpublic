@@ -4,6 +4,11 @@
 ?>
 <!-- # footer 
 ================================================== -->
+<style>
+.s-footer {
+    margin-top: 4rem;
+}
+</style>
 <footer id="footer" class="container s-footer">  
     <div>
     </div>         
@@ -75,9 +80,8 @@
     <div class="row s-footer__bottom">       
         <div class="column xl-6 lg-12">
                             <p class="ss-copyright">
-                    <span>© 2024 North Republic. Все права защищены.</span> 
-                    <span>Design by <a href="https://styleshout.com/">StyleShout</a></span>
-                    Distributed by <a href="https://themewagon.com" target="_blank">ThemeWagon</a>
+                    <span>© <?php echo date('Y'); ?> North Republic. Все права защищены.</span> 
+                    <span>Developed by <a href="https://zapleo.com" target="_blank">zapleo.com</a></span>
                 </p>
         </div>
     </div> <!-- end s-footer__bottom -->          
