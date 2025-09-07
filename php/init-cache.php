@@ -4,7 +4,7 @@
  * Запускается один раз для заполнения MongoDB кэша
  */
 
-require_once __DIR__ . '/vendor/autoload.php';
+require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/classes/MenuCache.php';
 
 echo "🔄 Инициализация кэша меню...\n";
