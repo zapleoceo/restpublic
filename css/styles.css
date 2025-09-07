@@ -3227,7 +3227,7 @@ td:last-child {
  * ------------------------------------------------------------------- */
 .s-header {
     --header-height : 7.2rem;
-    --logo-width    : 10.8rem;
+    --logo-width    : 7.56rem;
 
     z-index         : 100;
     background-color: transparent;
@@ -3572,7 +3572,7 @@ td:last-child {
 
 @media screen and (max-width: 400px) {
     .s-header {
-        --logo-width: 9.8rem;
+        --logo-width: 6.86rem;
     }
 }
 
@@ -4642,7 +4642,7 @@ td:last-child {
  * ------------------------------------------------------------------- */
 .s-footer {
     --bottom-padding   : var(--vspace-2_5);
-    --footer-logo-width: 16rem;
+    --footer-logo-width: 11.2rem;
     
     padding-bottom     : var(--bottom-padding);
 }
@@ -4982,7 +4982,7 @@ td:last-child {
 
 @media screen and (max-width: 600px) {
     .s-footer {
-        --footer-logo-width: 13rem;
+        --footer-logo-width: 9.1rem;
     }
 
     .ss-go-top {
