@@ -13,6 +13,16 @@ try {
         $categories = $menuData ? $menuData['categories'] : [];
         $products = $menuData ? $menuData['products'] : [];
         
+        // API configuration for popular products
+        $api_base_url = 'https://northrepublic.me:3002/api';
+        $context = stream_context_create([
+            'http' => [
+                'timeout' => 10,
+                'method' => 'GET',
+                'header' => 'Content-Type: application/json'
+            ]
+        ]);
+        
         // Get popular products by category using real sales data
         if ($categories) {
             foreach ($categories as $category) {
