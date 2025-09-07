@@ -237,7 +237,7 @@ try {
                 </div> <!-- end s-menu__content-start -->
 
                 <div class="column xl-6 lg-6 md-12 s-menu__content-end">
-                    <div class="section-header" data-num="03">
+                    <div class="section-header" data-num="Top 5 позиций">
                         <h2 class="text-display-title">Top 5 позиций</h2>
                     </div>
                     
@@ -307,7 +307,7 @@ try {
         <section id="gallery" class="container s-gallery target-section">
             <div class="row s-gallery__header">
                 <div class="column xl-12 section-header-wrap">
-                    <div class="section-header" data-num="03">
+                    <div class="section-header" data-num="04">
                         <h2 class="text-display-title">Галерея</h2>
                     </div>               
                 </div> <!-- end section-header-wrap -->   
