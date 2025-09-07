@@ -57,11 +57,11 @@ try {
                         return $bSort <=> $aSort; // higher sort_order first (more popular)
                     }
                     
-                    // Third: by price (higher price first for premium items)
-                    $aPrice = (int)($a['price_normalized'] ?? 0);
-                    $bPrice = (int)($b['price_normalized'] ?? 0);
+                    // Third: by name (alphabetical order as final tiebreaker)
+                    $aName = $a['product_name'] ?? $a['name'] ?? '';
+                    $bName = $b['product_name'] ?? $b['name'] ?? '';
                     
-                    return $bPrice <=> $aPrice; // higher price first
+                    return $aName <=> $bName; // alphabetical order
                 });
                 
                 // Take only top 5 most popular products
@@ -146,11 +146,11 @@ try {
                         return $bSort <=> $aSort; // higher sort_order first (more popular)
                     }
                     
-                    // Third: by price (higher price first for premium items)
-                    $aPrice = (int)($a['price_normalized'] ?? 0);
-                    $bPrice = (int)($b['price_normalized'] ?? 0);
+                    // Third: by name (alphabetical order as final tiebreaker)
+                    $aName = $a['product_name'] ?? $a['name'] ?? '';
+                    $bName = $b['product_name'] ?? $b['name'] ?? '';
                     
-                    return $bPrice <=> $aPrice; // higher price first
+                    return $aName <=> $bName; // alphabetical order
                 });
                 
                 // Take only top 5 most popular products
