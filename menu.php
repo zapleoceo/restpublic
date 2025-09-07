@@ -232,8 +232,8 @@ if ($menu_loaded) {
             border-color: #1c1e1d;
         }
         
-        /* Mobile category navigation - like header-nav */
-        .mobile-category-toggle {
+        /* Mobile category navigation - using header-nav styles */
+        .header-menu-toggle {
             --toggle-block-width: 44px;
             --toggle-line-width : 28px;
             --toggle-line-height: 1px;
@@ -253,11 +253,11 @@ if ($menu_loaded) {
             transition: all 0.3s ease;
         }
         
-        .mobile-category-toggle:hover {
+        .header-menu-toggle:hover {
             transform: scale(1.1);
         }
         
-        .mobile-category-toggle span {
+        .header-menu-toggle span {
             display: block;
             background-color: var(--color-white);
             width: var(--toggle-line-width);
@@ -274,8 +274,8 @@ if ($menu_loaded) {
             left: auto;
         }
         
-        .mobile-category-toggle span::before,
-        .mobile-category-toggle span::after {
+        .header-menu-toggle span::before,
+        .header-menu-toggle span::after {
             content: "";
             width: 100%;
             height: 100%;
@@ -285,127 +285,104 @@ if ($menu_loaded) {
             left: 0;
         }
         
-        .mobile-category-toggle span::before {
+        .header-menu-toggle span::before {
             top: -8px;
         }
         
-        .mobile-category-toggle span::after {
+        .header-menu-toggle span::after {
             bottom: -8px;
         }
         
         /* is clicked */
-        .mobile-category-toggle.is-clicked span {
+        .header-menu-toggle.is-clicked span {
             background-color: rgba(255, 255, 255, 0);
             transition: all 0.1s;
         }
         
-        .mobile-category-toggle.is-clicked span::before,
-        .mobile-category-toggle.is-clicked span::after {
+        .header-menu-toggle.is-clicked span::before,
+        .header-menu-toggle.is-clicked span::after {
             background-color: var(--color-white);
         }
         
-        .mobile-category-toggle.is-clicked span::before {
+        .header-menu-toggle.is-clicked span::before {
             top: 0;
             transform: rotate(135deg);
         }
         
-        .mobile-category-toggle.is-clicked span::after {
+        .header-menu-toggle.is-clicked span::after {
             bottom: 0;
             transform: rotate(225deg);
         }
         
-        .mobile-category-nav {
+        /* Mobile header-nav styles */
+        .header-nav {
             display: block;
             width: 100%;
             transform: scaleY(0);
             transform-origin: center top;
-            background-color: var(--color-bg-neutral-dark);
+            background-color: var(--color-bg);
+            box-shadow: var(--shadow-medium);
+            border-bottom: 1px solid var(--color-bg-neutral-dark);
+            padding-top: 80px;
+            padding-right: calc(var(--gutter) * 2 + 0.2rem);
+            padding-left: calc(var(--gutter) * 2 + 0.2rem);
+            padding-bottom: var(--vspace-1_5);
+            margin: 0;
             position: fixed;
             top: 0;
             left: 0;
             z-index: 999;
-            padding: 80px 20px 20px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            transition: transform 0.3s var(--ease-quick-out);
-            transition-delay: 0.1s;
         }
         
         .mobile-sort-section {
-            padding: 20px;
+            padding: 20px 0;
             border-bottom: 1px solid var(--color-border);
             margin-bottom: 20px;
         }
         
-        .mobile-category-nav__links {
+        .header-nav__links {
             display: block;
             padding-left: 0;
-            margin: 0;
+            margin: 0 0 var(--vspace-1_5) 0;
             transform: translateY(-2rem);
             opacity: 0;
             visibility: hidden;
-            transition: all 0.6s var(--ease-quick-out);
-            transition-delay: 0s;
-            text-align: center;
         }
         
-        .mobile-category-nav__links .category-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            height: 100%;
-            color: var(--color-text);
-            padding-top: var(--vspace-0_75);
-            padding-bottom: var(--vspace-0_75);
-            padding-left: var(--vspace-0_75);
-            padding-right: var(--vspace-0_75);
-            background: transparent;
-            border: none;
-            font-size: var(--text-base);
+        .header-nav__links a {
+            display: block;
+            font-family: var(--type-body);
             font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
+            color: var(--color-text-light);
+            padding: var(--vspace-0_25) 0;
+            font-size: var(--text-base);
+            transition-property: color, background-color;
+            transition-duration: 0.3s;
+            text-decoration: none;
         }
         
-        .mobile-category-nav__links .category-btn:hover,
-        .mobile-category-nav__links .category-btn:focus {
-            background-color: var(--color-neutral-900);
+        .header-nav__links a:focus,
+        .header-nav__links a:hover {
             color: var(--color-text);
         }
         
-        .mobile-category-nav__links li[data-tab-active] .category-btn {
-            background-color: var(--color-bg-accent);
+        .header-nav__links .current a {
             color: var(--color-white);
         }
         
-        .mobile-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 998;
-        }
-        
-        .mobile-overlay.open {
-            display: block;
-        }
-        
         /* Menu open animations (like header-nav) */
-        .menu-is-open .mobile-category-nav {
+        .menu-is-open .header-nav {
             transform: scaleY(1);
             transition: transform 0.3s var(--ease-quick-out);
             transition-delay: 0s;
         }
         
-        .menu-is-open .mobile-category-nav__links {
+        .menu-is-open .header-nav__links {
             transform: translateY(0);
             opacity: 1;
             visibility: visible;
             transition: all 0.6s var(--ease-quick-out);
-            transition-delay: 0.1s;
+            transition-delay: 0.3s;
         }
         
         .menu-section {
@@ -497,7 +474,7 @@ if ($menu_loaded) {
                 display: none; /* Hide desktop categories on mobile */
             }
             
-            .mobile-category-toggle {
+            .header-menu-toggle {
                 display: block; /* Show mobile toggle */
             }
             
@@ -567,12 +544,12 @@ if ($menu_loaded) {
                 </div>
 
                 <!-- Mobile Category Toggle -->
-                <button class="mobile-category-toggle" id="mobileCategoryToggle">
+                <button class="header-menu-toggle" id="mobileCategoryToggle">
                     <span>Menu</span>
                 </button>
 
                 <!-- Mobile Category Navigation -->
-                <nav class="mobile-category-nav" id="mobileCategoryNav">
+                <nav class="header-nav" id="mobileCategoryNav">
                     <!-- Sort Dropdown in Sidebar -->
                     <div class="mobile-sort-section">
                         <div class="sort-dropdown">
@@ -606,21 +583,18 @@ if ($menu_loaded) {
                     </div>
                     
                     <!-- Categories List -->
-                    <ul class="tab-nav__list mobile-category-nav__links">
+                    <ul class="header-nav__links">
                         <?php if ($menu_loaded && !empty($categories)): ?>
                             <?php foreach ($categories as $index => $category): ?>
-                                <li <?php echo $index === 0 ? 'data-tab-active' : ''; ?>>
-                                    <button class="category-btn" data-category="<?php echo htmlspecialchars($category['category_id']); ?>">
+                                <li <?php echo $index === 0 ? 'class="current"' : ''; ?>>
+                                    <a href="#" data-category="<?php echo htmlspecialchars($category['category_id']); ?>">
                                         <?php echo htmlspecialchars($category['category_name'] ?? $category['name']); ?>
-                                    </button>
+                                    </a>
                                 </li>
                             <?php endforeach; ?>
                         <?php endif; ?>
                     </ul>
                 </nav>
-
-                <!-- Mobile Overlay -->
-                <div class="mobile-overlay" id="mobileOverlay"></div>
 
                 <!-- Category Navigation -->
                 <?php if ($menu_loaded && !empty($categories)): ?>
@@ -936,22 +910,15 @@ if ($menu_loaded) {
     <script>
         // Category filtering with animations
         document.addEventListener('DOMContentLoaded', function() {
-            const categoryBtns = document.querySelectorAll('.category-btn');
+            const categoryBtns = document.querySelectorAll('.category-btn, .header-nav__links a');
             const menuSections = document.querySelectorAll('.menu-section');
             const mobileToggle = document.getElementById('mobileCategoryToggle');
-            const mobileSidebar = document.getElementById('mobileCategorySidebar');
-            const mobileOverlay = document.getElementById('mobileOverlay');
             
             // Mobile category navigation functionality (like header-nav)
             mobileToggle.addEventListener('click', function(e) {
                 e.preventDefault();
                 mobileToggle.classList.toggle('is-clicked');
                 document.body.classList.toggle('menu-is-open');
-            });
-            
-            mobileOverlay.addEventListener('click', function() {
-                mobileToggle.classList.remove('is-clicked');
-                document.body.classList.remove('menu-is-open');
             });
             
             // Set initial active state
@@ -975,17 +942,18 @@ if ($menu_loaded) {
             }
 
             categoryBtns.forEach(btn => {
-                btn.addEventListener('click', function() {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
                     const category = this.dataset.category;
                     const li = this.closest('li');
                     
                     // Update active button
                     categoryBtns.forEach(b => {
                         b.classList.remove('active');
-                        b.closest('li').removeAttribute('data-tab-active');
+                        b.closest('li').classList.remove('current');
                     });
                     this.classList.add('active');
-                    li.setAttribute('data-tab-active', '');
+                    li.classList.add('current');
                     
                     // Close mobile category navigation
                     mobileToggle.classList.remove('is-clicked');
