@@ -1,5 +1,5 @@
 <?php
-require_once 'vendor/autoload.php';
+require_once __DIR__ . '/../../vendor/autoload.php';
 
 class MenuCache {
     private $client;
@@ -8,7 +8,7 @@ class MenuCache {
     
     public function __construct() {
         try {
-            $this->client = new MongoDB\Client("mongodb://localhost:27017");
+            $this->client = new MongoDB\Client("mongodb://localhost:27018");
             $this->db = $this->client->northrepublic;
             $this->menuCollection = $this->db->menu;
         } catch (Exception $e) {
@@ -34,9 +34,21 @@ class MenuCache {
                 }
             }
             
+            // Convert MongoDB BSONArray to PHP arrays
+            $categories = $menu['categories'] ?? [];
+            $products = $menu['products'] ?? [];
+            
+            // Convert BSONArray to PHP array if needed
+            if (is_object($categories) && method_exists($categories, 'toArray')) {
+                $categories = $categories->toArray();
+            }
+            if (is_object($products) && method_exists($products, 'toArray')) {
+                $products = $products->toArray();
+            }
+            
             return [
-                'categories' => $menu['categories'] ?? [],
-                'products' => $menu['products'] ?? [],
+                'categories' => $categories,
+                'products' => $products,
                 'updated_at' => $menu['updated_at'] ?? null
             ];
             
