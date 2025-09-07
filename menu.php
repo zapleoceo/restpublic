@@ -232,7 +232,14 @@ if ($menu_loaded) {
             border-color: #1c1e1d;
         }
         
-        /* Mobile menu toggle - exact styles from main page */
+        .s-header__block {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+        }
+        
+        /* Mobile menu toggle - positioned in s-header__block */
         .header-menu-toggle {
             --toggle-block-width: 44px;
             --toggle-line-width : 28px;
@@ -242,8 +249,13 @@ if ($menu_loaded) {
             width               : var(--toggle-block-width);
             height              : var(--toggle-block-width);
             position            : absolute;
-            top                 : calc((var(--header-height) - var(--toggle-block-width)) / 2);
-            right               : calc(var(--gutter) * 2 - var(--vspace-0_125));
+            top                 : 50%;
+            right               : 0;
+            transform           : translateY(-50%);
+            background          : transparent;
+            border              : none;
+            cursor              : pointer;
+            z-index             : 1000;
         }
 
         .header-menu-toggle span {
@@ -515,6 +527,11 @@ if ($menu_loaded) {
                             <img src="images/logo.png" alt="North Republic">
                         </a>
                     </div>
+                    
+                    <!-- Mobile Category Toggle -->
+                    <button class="header-menu-toggle" id="mobileCategoryToggle">
+                        <span>Menu</span>
+                    </button>
                 </div>
             </div>
         </header>
@@ -528,11 +545,6 @@ if ($menu_loaded) {
                         <h1 class="text-display-title" style="text-align: center; margin-bottom: 3rem;">Наше меню</h1>
                     </div>
                 </div>
-
-                <!-- Mobile Category Toggle -->
-                <button class="header-menu-toggle" id="mobileCategoryToggle">
-                    <span>Menu</span>
-                </button>
 
                 <!-- Mobile Category Navigation -->
                 <nav class="header-nav" id="mobileCategoryNav">
@@ -904,10 +916,15 @@ if ($menu_loaded) {
                     // Update active button
                     categoryBtns.forEach(b => {
                         b.classList.remove('active');
-                        b.closest('li').classList.remove('current');
+                        const parentLi = b.closest('li');
+                        if (parentLi) {
+                            parentLi.classList.remove('current');
+                        }
                     });
                     this.classList.add('active');
-                    li.classList.add('current');
+                    if (li) {
+                        li.classList.add('current');
+                    }
                     
                     // Close mobile category navigation
                     mobileToggle.classList.remove('is-clicked');
