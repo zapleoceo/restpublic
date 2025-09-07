@@ -1,6 +1,6 @@
 <?php
-require_once 'vendor/autoload.php';
-require_once 'php/classes/MenuCache.php';
+require_once __DIR__ . '/vendor/autoload.php';
+require_once __DIR__ . '/php/classes/MenuCache.php';
 
 $cache = new MenuCache();
 $data = $cache->getMenu();
