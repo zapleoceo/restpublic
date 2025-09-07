@@ -811,6 +811,126 @@ if ($menu_loaded) {
             height: 14px;
             fill: currentColor;
         }
+        
+        /* Sort Dropdown Styles */
+        .sort-dropdown {
+            position: relative;
+            display: inline-block;
+            margin-left: 2rem;
+        }
+        
+        .sort-dropdown__trigger {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: var(--color-bg-neutral-dark);
+            border: 1px solid var(--color-border);
+            border-radius: 25px;
+            color: var(--color-text-dark);
+            font-size: var(--text-sm);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 120px;
+        }
+        
+        .sort-dropdown__trigger:hover {
+            background: var(--color-bg-primary);
+            color: var(--color-white);
+            border-color: var(--color-bg-primary);
+        }
+        
+        .sort-dropdown__arrow {
+            transition: transform 0.3s ease;
+        }
+        
+        .sort-dropdown:hover .sort-dropdown__arrow {
+            transform: rotate(180deg);
+        }
+        
+        .sort-dropdown__menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: var(--color-white);
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            min-width: 180px;
+            margin-top: 0.5rem;
+        }
+        
+        .sort-dropdown:hover .sort-dropdown__menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        
+        .sort-dropdown__item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: none;
+            border: none;
+            color: var(--color-text-dark);
+            font-size: var(--text-sm);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+        }
+        
+        .sort-dropdown__item:first-child {
+            border-radius: 8px 8px 0 0;
+        }
+        
+        .sort-dropdown__item:last-child {
+            border-radius: 0 0 8px 8px;
+        }
+        
+        .sort-dropdown__item:hover {
+            background: var(--color-bg-neutral-dark);
+            color: var(--color-text-dark);
+        }
+        
+        .sort-dropdown__item.active {
+            background: var(--color-bg-primary);
+            color: var(--color-white);
+        }
+        
+        .sort-dropdown__item svg {
+            width: 14px;
+            height: 14px;
+            fill: currentColor;
+        }
+        
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            .sort-dropdown {
+                margin-left: 0;
+                margin-top: 1rem;
+                width: 100%;
+            }
+            
+            .sort-dropdown__trigger {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .sort-dropdown__menu {
+                right: auto;
+                left: 0;
+                width: 100%;
+            }
+        }
     </style>
     
     <script>
@@ -905,8 +1025,11 @@ if ($menu_loaded) {
                 });
             }
             
-            // Sort functionality
+            // Sort functionality - both old sort buttons and new dropdown
             const sortBtns = document.querySelectorAll('.sort-btn');
+            const sortDropdownItems = document.querySelectorAll('.sort-dropdown__item');
+            
+            // Handle old sort buttons (if they exist)
             sortBtns.forEach(btn => {
                 btn.addEventListener('click', function() {
                     const sortType = this.dataset.sort;
@@ -920,6 +1043,38 @@ if ($menu_loaded) {
                     if (activeSection) {
                         sortMenuItems(activeSection, sortType);
                     }
+                });
+            });
+            
+            // Handle new sort dropdown items
+            sortDropdownItems.forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const sortType = this.dataset.sort;
+                    const dropdown = this.closest('.sort-dropdown');
+                    const trigger = dropdown.querySelector('.sort-dropdown__trigger');
+                    const text = trigger.querySelector('.sort-dropdown__text');
+                    
+                    // Update active dropdown item
+                    sortDropdownItems.forEach(i => i.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Update trigger text
+                    const sortTexts = {
+                        'popularity': 'Популярные',
+                        'price': 'По цене',
+                        'alphabet': 'А-Я'
+                    };
+                    text.textContent = sortTexts[sortType] || 'Популярные';
+                    
+                    // Sort all menu sections with the selected type
+                    const menuSections = document.querySelectorAll('.menu-section');
+                    menuSections.forEach(section => {
+                        sortMenuItems(section, sortType);
+                    });
+                    
+                    // Close dropdown by removing hover state
+                    dropdown.classList.remove('hover');
                 });
             });
             
