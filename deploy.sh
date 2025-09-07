@@ -135,77 +135,46 @@ wait $PHP_PID
 
 success "Все зависимости установлены"
 
-# Инициализируем кэш меню (только если нужно)
+# Проверяем кэш меню (MongoDB кэш обновляется автоматически)
 log "🔄 Проверяю кэш меню..."
-CACHE_NEEDS_UPDATE=false
+log "📦 MongoDB кэш обновляется автоматически через API"
+success "Кэш меню актуален"
 
-# Проверяем, нужно ли обновлять кэш
-if [ -f "php/init-cache.php" ]; then
-    # Проверяем возраст кэша или его существование
-    if [ ! -f "cache/menu.cache" ] || [ "php/init-cache.php" -nt "cache/menu.cache" ] || [ "php/classes/MenuCache.php" -nt "cache/menu.cache" ]; then
-        CACHE_NEEDS_UPDATE=true
-    fi
-elif [ -f "force-update-cache.php" ]; then
-    if [ ! -f "cache/menu.cache" ] || [ "force-update-cache.php" -nt "cache/menu.cache" ]; then
-        CACHE_NEEDS_UPDATE=true
-    fi
+# Проверяем структуру файлов (файлы уже в корне после очистки)
+log "📁 Проверяю структуру файлов..."
+
+# Проверяем наличие основных файлов
+if [ ! -f "index.php" ]; then
+    error "index.php не найден в корне"
+    exit 1
 fi
 
-if [ "$CACHE_NEEDS_UPDATE" = true ]; then
-    log "🔄 Обновляю кэш меню..."
-    if [ -f "php/init-cache.php" ]; then
-        php php/init-cache.php
-        success "Кэш меню обновлен"
-    elif [ -f "force-update-cache.php" ]; then
-        php force-update-cache.php
-        success "Кэш меню обновлен"
-    fi
-else
-    log "📦 Кэш меню актуален, пропускаю обновление"
+if [ ! -f "menu.php" ]; then
+    error "menu.php не найден в корне"
+    exit 1
 fi
 
-# Оптимизированное копирование файлов
-log "📁 Синхронизирую файлы..."
+if [ ! -d "components" ]; then
+    error "Папка components не найдена в корне"
+    exit 1
+fi
 
-# Создаем временную директорию для rsync
-TEMP_DIR="/tmp/northrepublic_sync_$$"
+if [ ! -d "classes" ]; then
+    error "Папка classes не найдена в корне"
+    exit 1
+fi
 
-# Функция для быстрого копирования файлов
-sync_files() {
-    local source="$1"
-    local dest="$2"
-    local description="$3"
-    
-    if [ -d "$source" ] || [ -f "$source" ]; then
-        if [ ! -d "$dest" ] && [ ! -f "$dest" ]; then
-            # Если файл/папка не существует, копируем
-            cp -r "$source" "$dest"
-            success "$description скопированы"
-        elif [ "$source" -nt "$dest" ]; then
-            # Если источник новее, обновляем
-            cp -r "$source" "$dest"
-            success "$description обновлены"
-        fi
-    fi
-}
+if [ ! -d "css" ]; then
+    error "Папка css не найдена в корне"
+    exit 1
+fi
 
-# Копируем PHP файлы в корень (только если нужно)
-sync_files "php/index.php" "index.php" "index.php"
-sync_files "php/menu.php" "menu.php" "menu.php"
+if [ ! -d "js" ]; then
+    error "Папка js не найдена в корне"
+    exit 1
+fi
 
-# Копируем компоненты (только если нужно)
-sync_files "php/components" "components" "components"
-
-# Копируем template файлы (только если нужно)
-sync_files "template/css" "css" "CSS"
-sync_files "template/js" "js" "JS"
-sync_files "template/images" "images" "Images"
-
-# Копируем иконки (только если нужно)
-sync_files "template/apple-touch-icon.png" "apple-touch-icon.png" "apple-touch-icon.png"
-sync_files "template/favicon.ico" "favicon.ico" "favicon.ico"
-
-success "Структура файлов синхронизирована"
+success "Структура файлов корректна (файлы уже в корне)"
 
 # Перезапускаем сервисы
 log "🔄 Перезапускаю сервисы..."

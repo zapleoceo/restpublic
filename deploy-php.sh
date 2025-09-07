@@ -20,7 +20,7 @@ NC='\033[0m' # No Color
 echo -e "${YELLOW}📋 Deployment Steps:${NC}"
 echo "1. Pull latest code from Git"
 echo "2. Install backend dependencies"
-echo "3. Copy PHP files to web root"
+echo "3. Check file structure (files already in root)"
 echo "4. Set proper permissions"
 echo "5. Restart services"
 
@@ -30,9 +30,9 @@ ssh $SERVER "cd $SERVER_PATH && git pull origin main"
 echo -e "\n${YELLOW}📦 Step 2: Installing backend dependencies...${NC}"
 ssh $SERVER "cd $SERVER_PATH/backend && npm install"
 
-echo -e "\n${YELLOW}📁 Step 3: Copying PHP files...${NC}"
-# Copy PHP files to web root
-ssh $SERVER "cd $SERVER_PATH && cp -r php/* ."
+echo -e "\n${YELLOW}📁 Step 3: Checking file structure...${NC}"
+# Check that files are already in root (after cleanup)
+ssh $SERVER "cd $SERVER_PATH && if [ ! -f 'index.php' ] || [ ! -f 'menu.php' ] || [ ! -d 'components' ] || [ ! -d 'classes' ]; then echo 'Error: Files not found in root'; exit 1; fi"
 
 echo -e "\n${YELLOW}🔧 Step 4: Setting permissions...${NC}"
 ssh $SERVER "cd $SERVER_PATH && chmod -R 755 . && chmod 644 *.php"

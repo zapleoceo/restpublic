@@ -42,24 +42,16 @@ if [ -f "composer.json" ]; then
     fi
 fi
 
-# Копируем только измененные файлы
-echo "📁 Синхронизирую файлы..."
+# Проверяем структуру файлов (файлы уже в корне после очистки)
+echo "📁 Проверяю структуру файлов..."
 
-# PHP файлы
-[ -f "php/index.php" ] && [ ! -f "index.php" -o "php/index.php" -nt "index.php" ] && cp php/index.php .
-[ -f "php/menu.php" ] && [ ! -f "menu.php" -o "php/menu.php" -nt "menu.php" ] && cp php/menu.php .
+# Проверяем наличие основных файлов
+if [ ! -f "index.php" ] || [ ! -f "menu.php" ] || [ ! -d "components" ] || [ ! -d "classes" ] || [ ! -d "css" ] || [ ! -d "js" ]; then
+    echo "❌ Ошибка: файлы не найдены в корне проекта"
+    exit 1
+fi
 
-# Компоненты
-[ -d "php/components" ] && [ ! -d "components" -o "php/components" -nt "components" ] && cp -r php/components .
-
-# Template файлы
-[ -d "template/css" ] && [ ! -d "css" -o "template/css" -nt "css" ] && cp -r template/css .
-[ -d "template/js" ] && [ ! -d "js" -o "template/js" -nt "js" ] && cp -r template/js .
-[ -d "template/images" ] && [ ! -d "images" -o "template/images" -nt "images" ] && cp -r template/images .
-
-# Иконки
-[ -f "template/apple-touch-icon.png" ] && [ ! -f "apple-touch-icon.png" -o "template/apple-touch-icon.png" -nt "apple-touch-icon.png" ] && cp template/apple-touch-icon.png .
-[ -f "template/favicon.ico" ] && [ ! -f "favicon.ico" -o "template/favicon.ico" -nt "favicon.ico" ] && cp template/favicon.ico .
+echo "✅ Структура файлов корректна (файлы уже в корне)"
 
 # Перезапускаем сервисы
 echo "🔄 Перезапускаю сервисы..."
