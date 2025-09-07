@@ -238,7 +238,6 @@ try {
 
                 <div class="column xl-6 lg-6 md-12 s-menu__content-end">
                     <div class="section-header" data-num="Top 5 позиций">
-                        <h2 class="text-display-title">Top 5 позиций</h2>
                     </div>
                     
                     <div class="tab-content menu-block" id="menu-content">
