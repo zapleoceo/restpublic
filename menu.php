@@ -248,6 +248,9 @@ if ($menu_loaded) {
             cursor: pointer;
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
             transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
         .mobile-category-toggle:hover {
@@ -255,6 +258,12 @@ if ($menu_loaded) {
         }
         
         .mobile-category-toggle .hamburger {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
             transition: all 0.3s ease;
         }
         
@@ -262,13 +271,13 @@ if ($menu_loaded) {
             width: 20px;
             height: 2px;
             background: currentColor;
-            margin: 4px 0;
+            margin: 2px 0;
             transition: all 0.3s ease;
             transform-origin: center;
         }
         
         .mobile-category-toggle.open .hamburger .line:nth-child(1) {
-            transform: rotate(45deg) translate(5px, 5px);
+            transform: rotate(45deg) translate(0, 6px);
         }
         
         .mobile-category-toggle.open .hamburger .line:nth-child(2) {
@@ -276,7 +285,7 @@ if ($menu_loaded) {
         }
         
         .mobile-category-toggle.open .hamburger .line:nth-child(3) {
-            transform: rotate(-45deg) translate(7px, -6px);
+            transform: rotate(-45deg) translate(0, -6px);
         }
         
         .mobile-category-sidebar {
