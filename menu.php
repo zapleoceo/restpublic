@@ -237,7 +237,7 @@ if ($menu_loaded) {
             display: none;
             position: fixed;
             top: 20px;
-            left: 20px;
+            right: 20px;
             z-index: 1000;
             background: var(--color-bg-primary);
             color: var(--color-white);
@@ -254,22 +254,47 @@ if ($menu_loaded) {
             transform: scale(1.1);
         }
         
+        .mobile-category-toggle .hamburger {
+            transition: all 0.3s ease;
+        }
+        
+        .mobile-category-toggle .hamburger .line {
+            width: 20px;
+            height: 2px;
+            background: currentColor;
+            margin: 4px 0;
+            transition: all 0.3s ease;
+            transform-origin: center;
+        }
+        
+        .mobile-category-toggle.open .hamburger .line:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+        
+        .mobile-category-toggle.open .hamburger .line:nth-child(2) {
+            opacity: 0;
+        }
+        
+        .mobile-category-toggle.open .hamburger .line:nth-child(3) {
+            transform: rotate(-45deg) translate(7px, -6px);
+        }
+        
         .mobile-category-sidebar {
             position: fixed;
             top: 0;
-            left: -300px;
+            right: -300px;
             width: 300px;
             height: 100vh;
             background: var(--color-white);
-            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            box-shadow: -2px 0 10px rgba(0,0,0,0.1);
             z-index: 999;
-            transition: left 0.3s ease;
+            transition: right 0.3s ease;
             padding: 80px 20px 20px;
             overflow-y: auto;
         }
         
         .mobile-category-sidebar.open {
-            left: 0;
+            right: 0;
         }
         
         .mobile-category-sidebar .category-btn {
@@ -456,9 +481,11 @@ if ($menu_loaded) {
 
                 <!-- Mobile Category Toggle -->
                 <button class="mobile-category-toggle" id="mobileCategoryToggle">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M3,6H21V8H3V6M3,11H21V13H3V11M3,16H21V18H3V16Z"/>
-                    </svg>
+                    <div class="hamburger">
+                        <div class="line"></div>
+                        <div class="line"></div>
+                        <div class="line"></div>
+                    </div>
                 </button>
 
                 <!-- Mobile Category Sidebar -->
@@ -492,23 +519,23 @@ if ($menu_loaded) {
                         
                         <!-- Sort Controls - Minimal -->
                         <div class="sort-controls">
-                            <button class="sort-btn active" data-sort="popularity">
+                            <button class="sort-btn active" data-sort="popularity" title="По популярности">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
                                     <path d="M12,21.35L10.55,20.03C5.4,15.36 2,12.27 2,8.5C2,5.41 4.42,3 7.5,3C9.24,3 10.91,3.81 12,5.08C13.09,3.81 14.76,3 16.5,3C19.58,3 22,5.41 22,8.5C22,12.27 18.6,15.36 13.45,20.03L12,21.35Z"/>
                                 </svg>
-                                Популярные
+                                ♥
                             </button>
-                            <button class="sort-btn" data-sort="price">
+                            <button class="sort-btn" data-sort="price" title="По цене">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
                                     <path d="M7,15H9C9,16.08 10.37,17 12,17C13.63,17 15,16.08 15,15C15,13.9 13.96,13.5 11.76,12.97C9.64,12.44 7,11.78 7,9C7,7.21 8.47,5.69 10.5,5.18V3H13.5V5.18C15.53,5.69 17,7.21 17,9H15C15,7.92 13.63,7 12,7C10.37,7 9,7.92 9,9C9,10.1 10.04,10.5 12.24,11.03C14.36,11.56 17,12.22 17,15C17,16.79 15.53,18.31 13.5,18.82V21H10.5V18.82C8.47,18.31 7,16.79 7,15Z"/>
                                 </svg>
-                                Цена
+                                ₫
                             </button>
-                            <button class="sort-btn" data-sort="alphabet">
+                            <button class="sort-btn" data-sort="alphabet" title="По алфавиту">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
                                     <path d="M14,17H7v-2h7V17z M17,13H7v-2h10V13z M17,9H7V7h10V9z M3,5V3h18v2H3z"/>
                                 </svg>
-                                А-Я
+                                A-Z
                             </button>
                         </div>
                     </div>
@@ -531,7 +558,8 @@ if ($menu_loaded) {
                                                 data-product-name="<?php echo htmlspecialchars($product['product_name'] ?? 'Без названия'); ?>"
                                                 data-price="<?php echo $product['price_normalized'] ?? $product['price'] ?? 0; ?>"
                                                 data-sort-order="<?php echo $product['sort_order'] ?? 0; ?>"
-                                                data-popularity="<?php echo $product['sort_order'] ?? 0; ?>">
+                                                data-popularity="<?php echo $product['sort_order'] ?? 0; ?>"
+                                                data-product-id="<?php echo $product['product_id'] ?? 0; ?>">
                                                 <div class="menu-list__item-desc">
                                                     <h4><?php echo htmlspecialchars($product['product_name'] ?? 'Без названия'); ?></h4>
                                                     <?php if (!empty($product['description'])): ?>
@@ -671,13 +699,23 @@ if ($menu_loaded) {
             
             // Mobile sidebar functionality
             mobileToggle.addEventListener('click', function() {
-                mobileSidebar.classList.toggle('open');
-                mobileOverlay.classList.toggle('open');
+                const isOpen = mobileSidebar.classList.contains('open');
+                
+                if (isOpen) {
+                    mobileSidebar.classList.remove('open');
+                    mobileOverlay.classList.remove('open');
+                    mobileToggle.classList.remove('open');
+                } else {
+                    mobileSidebar.classList.add('open');
+                    mobileOverlay.classList.add('open');
+                    mobileToggle.classList.add('open');
+                }
             });
             
             mobileOverlay.addEventListener('click', function() {
                 mobileSidebar.classList.remove('open');
                 mobileOverlay.classList.remove('open');
+                mobileToggle.classList.remove('open');
             });
             
             // Set initial active state
@@ -711,6 +749,7 @@ if ($menu_loaded) {
                     // Close mobile sidebar
                     mobileSidebar.classList.remove('open');
                     mobileOverlay.classList.remove('open');
+                    mobileToggle.classList.remove('open');
                     
                     // Show/hide sections with animation
                     menuSections.forEach(section => {
