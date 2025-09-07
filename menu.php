@@ -256,23 +256,27 @@ if ($menu_loaded) {
             border              : none;
             cursor              : pointer;
             z-index             : 1000;
+            padding             : 0;
+            margin              : 0;
         }
 
         .header-menu-toggle span {
             display         : block;
-            background-color: var(--color-white);
+            background-color: var(--color-white, #ffffff);
             width           : var(--toggle-line-width);
             height          : var(--toggle-line-height);
             margin-top      : -1px;
             font            : 0/0 a;
             text-shadow     : none;
             color           : transparent;
-            transition      : all 0.5s;
+            transition      : all 0.3s ease;
             position        : absolute;
             right           : calc((var(--toggle-block-width) - var(--toggle-line-width)) / 2);
             top             : 50%;
             bottom          : auto;
             left            : auto;
+            border          : none;
+            outline         : none;
         }
 
         .header-menu-toggle span::before,
@@ -280,10 +284,12 @@ if ($menu_loaded) {
             content         : "";
             width           : 100%;
             height          : 100%;
-            background-color: inherit;
-            transition      : all 0.5s;
+            background-color: var(--color-white, #ffffff);
+            transition      : all 0.3s ease;
             position        : absolute;
             left            : 0;
+            border          : none;
+            outline         : none;
         }
 
         .header-menu-toggle span::before {
@@ -296,23 +302,34 @@ if ($menu_loaded) {
 
         /* is clicked */
         .header-menu-toggle.is-clicked span {
-            background-color: rgba(255, 255, 255, 0);
-            transition      : all 0.1s;
+            background-color: transparent;
+            transition      : all 0.3s ease;
         }
 
         .header-menu-toggle.is-clicked span::before,
         .header-menu-toggle.is-clicked span::after {
-            background-color: var(--color-white);
+            background-color: var(--color-white, #ffffff);
+            transition      : all 0.3s ease;
         }
 
         .header-menu-toggle.is-clicked span::before {
             top      : 0;
-            transform: rotate(135deg);
+            transform: rotate(45deg);
         }
 
         .header-menu-toggle.is-clicked span::after {
             bottom   : 0;
-            transform: rotate(225deg);
+            transform: rotate(-45deg);
+        }
+        
+        /* Remove any focus/hover backgrounds */
+        .header-menu-toggle:focus,
+        .header-menu-toggle:hover,
+        .header-menu-toggle:active {
+            background: transparent !important;
+            border: none !important;
+            outline: none !important;
+            box-shadow: none !important;
         }
         
         /* Mobile header-nav styles */
