@@ -249,19 +249,19 @@ if ($menu_loaded) {
             --toggle-line-width : 28px;
             --toggle-line-height: 1px;
 
-            display             : none;
-            width               : var(--toggle-block-width);
-            height              : var(--toggle-block-width);
-            position            : absolute;
-            top                 : 50%;
-            right               : calc(var(--gutter, 1rem) * 2);
-            transform           : translateY(-50%);
-            background          : transparent;
-            border              : none;
-            cursor              : pointer;
-            z-index             : 1001;
-            padding             : 0;
-            margin              : 0;
+            display             : none !important;
+            width               : var(--toggle-block-width) !important;
+            height              : var(--toggle-block-width) !important;
+            position            : absolute !important;
+            top                 : 50% !important;
+            right               : calc(var(--gutter, 1rem) * 2) !important;
+            transform           : translateY(-50%) !important;
+            background          : transparent !important;
+            border              : none !important;
+            cursor              : pointer !important;
+            z-index             : 1001 !important;
+            padding             : 0 !important;
+            margin              : 0 !important;
         }
 
         .header-menu-toggle span {
