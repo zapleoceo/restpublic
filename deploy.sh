@@ -90,7 +90,7 @@ install_backend_deps() {
         cd backend
         if [ -f "package.json" ]; then
             # Проверяем, нужно ли обновлять зависимости
-            if [ ! -d "node_modules" ] || [ "package.json" -nt "node_modules" ] || [ "package-lock.json" -nt "node_modules" ]; then
+            if [ ! -d "node_modules" ] || [ ! -f "node_modules/.package-lock.json" ] || [ "package.json" -nt "node_modules" ] || [ "package-lock.json" -nt "node_modules" ]; then
                 log "📦 Обновляю backend зависимости..."
                 npm ci --only=production --prefer-offline --silent
                 success "Backend зависимости установлены"
@@ -110,7 +110,7 @@ install_backend_deps() {
 install_php_deps() {
     if [ -f "composer.json" ]; then
         # Проверяем, нужно ли обновлять зависимости
-        if [ ! -d "vendor" ] || [ "composer.json" -nt "vendor" ] || [ "composer.lock" -nt "vendor" ]; then
+        if [ ! -d "vendor" ] || [ ! -f "vendor/autoload.php" ] || [ "composer.json" -nt "vendor" ] || [ "composer.lock" -nt "vendor" ]; then
             log "📦 Обновляю PHP зависимости..."
             composer install --no-dev --optimize-autoloader --no-scripts --quiet
             success "PHP зависимости установлены"
