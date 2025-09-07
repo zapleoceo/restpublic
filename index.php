@@ -191,6 +191,16 @@ try {
     ================================================== -->
     <link rel="stylesheet" href="css/vendor.css">
     <link rel="stylesheet" href="css/styles.css">
+    
+    <style>
+        :root {
+            --intro-text-opacity: 0.01; /* 1% прозрачности по умолчанию */
+        }
+        
+        .intro-header__big-type {
+            opacity: var(--intro-text-opacity);
+        }
+    </style>
 
     <!-- favicons
     ================================================== -->
