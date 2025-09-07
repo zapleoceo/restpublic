@@ -647,7 +647,7 @@ if ($menu_loaded) {
                                                 data-product-name="<?php echo htmlspecialchars($product['product_name'] ?? 'Без названия'); ?>"
                                                 data-price="<?php echo $product['price_normalized'] ?? $product['price'] ?? 0; ?>"
                                                 data-sort-order="<?php echo $product['sort_order'] ?? 0; ?>"
-                                                data-popularity="<?php echo $product['sales_count'] ?? $product['sort_order'] ?? 0; ?>"
+                                                data-popularity="<?php echo $product['sales_count'] ?? 0; ?>"
                                                 data-product-id="<?php echo $product['product_id'] ?? 0; ?>">
                                                 <div class="menu-list__item-desc">
                                                     <h4><?php echo htmlspecialchars($product['product_name'] ?? 'Без названия'); ?></h4>
