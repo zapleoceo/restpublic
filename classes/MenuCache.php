@@ -8,8 +8,11 @@ class MenuCache {
     
     public function __construct() {
         try {
-            $this->client = new MongoDB\Client("mongodb://localhost:27017");
-            $this->db = $this->client->northrepublic;
+            $mongodbUrl = $_ENV['MONGODB_URL'] ?? 'mongodb://localhost:27017';
+            $dbName = $_ENV['MONGODB_DB_NAME'] ?? 'northrepublic';
+            
+            $this->client = new MongoDB\Client($mongodbUrl);
+            $this->db = $this->client->$dbName;
             $this->menuCollection = $this->db->menu;
         } catch (Exception $e) {
             error_log("Ошибка подключения к MongoDB: " . $e->getMessage());
@@ -202,7 +205,9 @@ class MenuCache {
         try {
             // Асинхронный запрос к нашему API для обновления кэша
             $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, 'https://northrepublic.me:3002/api/cache/update-menu');
+            $apiUrl = $_ENV['CORS_ORIGIN'] ?? 'https://northrepublic.me';
+            $port = $_ENV['PORT'] ?? '3002';
+            curl_setopt($ch, CURLOPT_URL, $apiUrl . ':' . $port . '/api/cache/update-menu');
             curl_setopt($ch, CURLOPT_POST, true);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($ch, CURLOPT_TIMEOUT, 10); // Увеличиваем таймаут

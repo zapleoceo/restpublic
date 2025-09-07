@@ -1,4 +1,11 @@
 <?php
+// Load environment variables
+require_once __DIR__ . '/vendor/autoload.php';
+if (file_exists(__DIR__ . '/.env')) {
+    $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
+    $dotenv->load();
+}
+
 // Load menu from MongoDB cache for fast rendering
 $categories = [];
 $products = [];
@@ -6,7 +13,6 @@ $products_by_category = [];
 $menu_loaded = false;
 
 try {
-    require_once __DIR__ . '/vendor/autoload.php';
     if (class_exists('MongoDB\Client')) {
         require_once __DIR__ . '/classes/MenuCache.php';
         $menuCache = new MenuCache();
