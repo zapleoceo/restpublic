@@ -485,9 +485,9 @@ if ($menu_loaded) {
             color: var(--color-text-dark);
         }
         
-        @media (max-width: 768px) {
+        @media (max-width: 900px) {
             .header-menu-toggle {
-                display: block;
+                display: block !important;
             }
         }
 
