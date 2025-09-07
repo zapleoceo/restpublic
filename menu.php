@@ -232,92 +232,74 @@ if ($menu_loaded) {
             border-color: #1c1e1d;
         }
         
-        /* Mobile category navigation - using header-nav styles */
+        /* Mobile menu toggle - exact styles from main page */
         .header-menu-toggle {
             --toggle-block-width: 44px;
             --toggle-line-width : 28px;
             --toggle-line-height: 1px;
 
-            display: none;
-            width: var(--toggle-block-width);
-            height: var(--toggle-block-width);
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 1000;
-            background: var(--color-bg-primary);
-            border: none;
-            border-radius: 50%;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            transition: all 0.3s ease;
+            display             : none;
+            width               : var(--toggle-block-width);
+            height              : var(--toggle-block-width);
+            position            : absolute;
+            top                 : calc((var(--header-height) - var(--toggle-block-width)) / 2);
+            right               : calc(var(--gutter) * 2 - var(--vspace-0_125));
         }
-        
-        /* Show toggle button on mobile */
-        @media (max-width: 768px) {
-            .header-menu-toggle {
-                display: block;
-            }
-        }
-        
-        .header-menu-toggle:hover {
-            transform: scale(1.1);
-        }
-        
+
         .header-menu-toggle span {
-            display: block;
+            display         : block;
             background-color: var(--color-white);
-            width: var(--toggle-line-width);
-            height: var(--toggle-line-height);
-            margin-top: -1px;
-            font: 0/0 a;
-            text-shadow: none;
-            color: transparent;
-            transition: all 0.5s;
-            position: absolute;
-            right: calc((var(--toggle-block-width) - var(--toggle-line-width)) / 2);
-            top: 50%;
-            bottom: auto;
-            left: auto;
+            width           : var(--toggle-line-width);
+            height          : var(--toggle-line-height);
+            margin-top      : -1px;
+            font            : 0/0 a;
+            text-shadow     : none;
+            color           : transparent;
+            transition      : all 0.5s;
+            position        : absolute;
+            right           : calc((var(--toggle-block-width) - var(--toggle-line-width)) / 2);
+            top             : 50%;
+            bottom          : auto;
+            left            : auto;
         }
-        
+
         .header-menu-toggle span::before,
         .header-menu-toggle span::after {
-            content: "";
-            width: 100%;
-            height: 100%;
+            content         : "";
+            width           : 100%;
+            height          : 100%;
             background-color: inherit;
-            transition: all 0.5s;
-            position: absolute;
-            left: 0;
+            transition      : all 0.5s;
+            position        : absolute;
+            left            : 0;
         }
-        
+
         .header-menu-toggle span::before {
             top: -8px;
         }
-        
+
         .header-menu-toggle span::after {
             bottom: -8px;
         }
-        
+
         /* is clicked */
         .header-menu-toggle.is-clicked span {
             background-color: rgba(255, 255, 255, 0);
-            transition: all 0.1s;
+            transition      : all 0.1s;
         }
-        
+
         .header-menu-toggle.is-clicked span::before,
         .header-menu-toggle.is-clicked span::after {
             background-color: var(--color-white);
         }
-        
+
         .header-menu-toggle.is-clicked span::before {
-            top: 0;
+            top      : 0;
             transform: rotate(135deg);
         }
-        
+
         .header-menu-toggle.is-clicked span::after {
-            bottom: 0;
+            bottom   : 0;
             transform: rotate(225deg);
         }
         
@@ -341,11 +323,6 @@ if ($menu_loaded) {
             z-index: 999;
         }
         
-        .mobile-sort-section {
-            padding: 20px 0;
-            border-bottom: 1px solid var(--color-border);
-            margin-bottom: 20px;
-        }
         
         .header-nav__links {
             display: block;
@@ -472,6 +449,12 @@ if ($menu_loaded) {
             color: var(--color-text-dark);
         }
         
+        @media (max-width: 900px) {
+            .header-menu-toggle {
+                display: block;
+            }
+        }
+
         @media (max-width: 768px) {
             .menu-page {
                 padding-top: 1rem;
@@ -553,38 +536,6 @@ if ($menu_loaded) {
 
                 <!-- Mobile Category Navigation -->
                 <nav class="header-nav" id="mobileCategoryNav">
-                    <!-- Sort Dropdown in Sidebar -->
-                    <div class="mobile-sort-section">
-                        <div class="sort-dropdown">
-                            <div class="sort-dropdown__trigger">
-                                <span class="sort-dropdown__text">Популярные</span>
-                                <svg class="sort-dropdown__arrow" width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M7,10L12,15L17,10H7Z"/>
-                                </svg>
-                            </div>
-                            <div class="sort-dropdown__menu">
-                                <button class="sort-dropdown__item active" data-sort="popularity">
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                                        <path d="M12,21.35L10.55,20.03C5.4,15.36 2,12.27 2,8.5C2,5.41 4.42,3 7.5,3C9.24,3 10.91,3.81 12,5.08C13.09,3.81 14.76,3 16.5,3C19.58,3 22,5.41 22,8.5C22,12.27 18.6,15.36 13.45,20.03L12,21.35Z"/>
-                                    </svg>
-                                    Популярные
-                                </button>
-                                <button class="sort-dropdown__item" data-sort="price">
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                                        <path d="M7,15H9C9,16.08 10.37,17 12,17C13.63,17 15,16.08 15,15C15,13.9 13.96,13.5 11.76,12.97C9.64,12.44 7,11.78 7,9C7,7.21 8.47,5.69 10.5,5.18V3H13.5V5.18C15.53,5.69 17,7.21 17,9H15C15,7.92 13.63,7 12,7C10.37,7 9,7.92 9,9C9,10.1 10.04,10.5 12.24,11.03C14.36,11.56 17,12.22 17,15C17,16.79 15.53,18.31 13.5,18.82V21H10.5V18.82C8.47,18.31 7,16.79 7,15Z"/>
-                                    </svg>
-                                    По цене
-                                </button>
-                                <button class="sort-dropdown__item" data-sort="alphabet">
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                                        <path d="M14,17H7v-2h7V17z M17,13H7v-2h10V13z M17,9H7V7h10V9z M3,5V3h18v2H3z"/>
-                                    </svg>
-                                    А-Я
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    
                     <!-- Categories List -->
                     <ul class="header-nav__links">
                         <?php if ($menu_loaded && !empty($categories)): ?>
