@@ -57,11 +57,11 @@ try {
                         return $bSort <=> $aSort; // higher sort_order first (more popular)
                     }
                     
-                    // Third: by price (lower price is more popular for basic items)
+                    // Third: by price (higher price first for premium items)
                     $aPrice = (int)($a['price_normalized'] ?? 0);
                     $bPrice = (int)($b['price_normalized'] ?? 0);
                     
-                    return $aPrice <=> $bPrice;
+                    return $bPrice <=> $aPrice; // higher price first
                 });
                 
                 // Take only top 5 most popular products
@@ -71,7 +71,93 @@ try {
     }
 } catch (Exception $e) {
     error_log("MongoDB not available, using fallback: " . $e->getMessage());
-    // MongoDB не доступен, используем fallback
+    
+    // Fallback to API if MongoDB fails
+    $api_base_url = 'https://northrepublic.me:3002/api';
+    
+    function fetchFromAPI($endpoint) {
+        global $api_base_url;
+        $url = $api_base_url . $endpoint;
+        
+        $context = stream_context_create([
+            'http' => [
+                'timeout' => 10,
+                'method' => 'GET',
+                'header' => 'Content-Type: application/json'
+            ]
+        ]);
+        
+        $response = @file_get_contents($url, false, $context);
+        
+        if ($response === false) {
+            return null;
+        }
+        
+        return json_decode($response, true);
+    }
+
+    // Try to fetch from API as fallback
+    $menu_data = fetchFromAPI('/menu');
+    if ($menu_data) {
+        $categories = $menu_data['categories'] ?? [];
+        $products = $menu_data['products'] ?? [];
+        
+        // Group products by category and sort by popularity
+        if (!empty($products)) {
+            foreach ($products as $product) {
+                $categoryId = (string)($product['menu_category_id'] ?? $product['category_id'] ?? 'default');
+                if (!isset($productsByCategory[$categoryId])) {
+                    $productsByCategory[$categoryId] = [];
+                }
+                
+                // Check if product is visible
+                $isVisible = true;
+                if (isset($product['spots']) && is_array($product['spots'])) {
+                    foreach ($product['spots'] as $spot) {
+                        if (isset($spot['visible']) && $spot['visible'] == '0') {
+                            $isVisible = false;
+                            break;
+                        }
+                    }
+                }
+                
+                // Only add visible products
+                if ($isVisible) {
+                    $productsByCategory[$categoryId][] = $product;
+                }
+            }
+            
+            // Sort products by popularity (visible first, then by sort_order, then by price)
+            foreach ($productsByCategory as $categoryId => $categoryProducts) {
+                usort($categoryProducts, function($a, $b) {
+                    // First: visible products
+                    $aVisible = isset($a['spots']) ? $a['spots'][0]['visible'] ?? '1' : '1';
+                    $bVisible = isset($b['spots']) ? $b['spots'][0]['visible'] ?? '1' : '1';
+                    
+                    if ($aVisible != $bVisible) {
+                        return $bVisible <=> $aVisible; // visible first
+                    }
+                    
+                    // Second: sort_order (higher is more popular - reverse order)
+                    $aSort = (int)($a['sort_order'] ?? 0);
+                    $bSort = (int)($b['sort_order'] ?? 0);
+                    
+                    if ($aSort != $bSort) {
+                        return $bSort <=> $aSort; // higher sort_order first (more popular)
+                    }
+                    
+                    // Third: by price (higher price first for premium items)
+                    $aPrice = (int)($a['price_normalized'] ?? 0);
+                    $bPrice = (int)($b['price_normalized'] ?? 0);
+                    
+                    return $bPrice <=> $aPrice; // higher price first
+                });
+                
+                // Take only top 5 most popular products
+                $productsByCategory[$categoryId] = array_slice($categoryProducts, 0, 5);
+            }
+        }
+    }
 }
 ?>
 <!DOCTYPE html>
@@ -236,7 +322,7 @@ try {
                         <?php if (!empty($categories)): ?>
                             <?php foreach ($categories as $index => $category): ?>
                                 <?php 
-                                $categoryId = String($category['category_id']);
+                                $categoryId = (string)$category['category_id'];
                                 $categoryProducts = $productsByCategory[$categoryId] ?? [];
                                 $topProducts = array_slice($categoryProducts, 0, 5); // Top 5 products
                                 ?>
