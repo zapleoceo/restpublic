@@ -1,11 +1,18 @@
 #!/bin/bash
 
 # Современный скрипт деплоя North Republic
-# Использование: bash deploy.sh (на сервере)
+# Использование: bash deploy.sh [--fast] (на сервере)
 # Автор: AI Assistant
-# Версия: 2.0
+# Версия: 2.1 (Оптимизированная)
 
 set -e  # Остановка при ошибке
+
+# Парсим аргументы
+FAST_MODE=false
+if [ "$1" = "--fast" ]; then
+    FAST_MODE=true
+    echo "🚀 Быстрый режим деплоя активирован"
+fi
 
 # Цвета для вывода
 RED='\033[0;31m'
@@ -31,6 +38,8 @@ error() {
     echo -e "${RED}❌ $1${NC}"
 }
 
+# Засекаем время начала
+START_TIME=$(date +%s)
 log "🚀 Начинаю деплой North Republic..."
 
 # Проверяем, что мы на сервере
@@ -72,90 +81,131 @@ if [ ! -f "index.php" ]; then
     exit 1
 fi
 
-# Устанавливаем зависимости backend
-log "📦 Устанавливаю зависимости backend..."
-if [ -d "backend" ]; then
-    cd backend
-    if [ -f "package.json" ]; then
-        npm install --production
-        success "Backend зависимости установлены"
+# Устанавливаем зависимости параллельно
+log "📦 Устанавливаю зависимости..."
+
+# Функция для установки backend зависимостей
+install_backend_deps() {
+    if [ -d "backend" ]; then
+        cd backend
+        if [ -f "package.json" ]; then
+            # Проверяем, нужно ли обновлять зависимости
+            if [ ! -d "node_modules" ] || [ "package.json" -nt "node_modules" ] || [ "package-lock.json" -nt "node_modules" ]; then
+                log "📦 Обновляю backend зависимости..."
+                npm ci --only=production --prefer-offline --silent
+                success "Backend зависимости установлены"
+            else
+                log "📦 Backend зависимости актуальны, пропускаю установку"
+            fi
+        else
+            warning "package.json не найден в backend/"
+        fi
+        cd ..
     else
-        warning "package.json не найден в backend/"
+        warning "Папка backend не найдена"
     fi
-    cd ..
-else
-    warning "Папка backend не найдена"
-fi
+}
 
-# Устанавливаем зависимости PHP
-log "📦 Устанавливаю зависимости PHP..."
-if [ -f "composer.json" ]; then
-    composer install --no-dev --optimize-autoloader --quiet
-    success "PHP зависимости установлены"
-else
-    warning "composer.json не найден"
-fi
+# Функция для установки PHP зависимостей
+install_php_deps() {
+    if [ -f "composer.json" ]; then
+        # Проверяем, нужно ли обновлять зависимости
+        if [ ! -d "vendor" ] || [ "composer.json" -nt "vendor" ] || [ "composer.lock" -nt "vendor" ]; then
+            log "📦 Обновляю PHP зависимости..."
+            composer install --no-dev --optimize-autoloader --no-scripts --quiet
+            success "PHP зависимости установлены"
+        else
+            log "📦 PHP зависимости актуальны, пропускаю установку"
+        fi
+    else
+        warning "composer.json не найден"
+    fi
+}
 
-# Инициализируем кэш меню
-log "🔄 Инициализирую кэш меню..."
+# Запускаем установку зависимостей параллельно
+install_backend_deps &
+BACKEND_PID=$!
+
+install_php_deps &
+PHP_PID=$!
+
+# Ждем завершения обеих операций
+wait $BACKEND_PID
+wait $PHP_PID
+
+success "Все зависимости установлены"
+
+# Инициализируем кэш меню (только если нужно)
+log "🔄 Проверяю кэш меню..."
+CACHE_NEEDS_UPDATE=false
+
+# Проверяем, нужно ли обновлять кэш
 if [ -f "php/init-cache.php" ]; then
-    php php/init-cache.php
-    success "Кэш меню инициализирован"
+    # Проверяем возраст кэша или его существование
+    if [ ! -f "cache/menu.cache" ] || [ "php/init-cache.php" -nt "cache/menu.cache" ] || [ "php/classes/MenuCache.php" -nt "cache/menu.cache" ]; then
+        CACHE_NEEDS_UPDATE=true
+    fi
 elif [ -f "force-update-cache.php" ]; then
-    php force-update-cache.php
-    success "Кэш меню инициализирован"
+    if [ ! -f "cache/menu.cache" ] || [ "force-update-cache.php" -nt "cache/menu.cache" ]; then
+        CACHE_NEEDS_UPDATE=true
+    fi
+fi
+
+if [ "$CACHE_NEEDS_UPDATE" = true ]; then
+    log "🔄 Обновляю кэш меню..."
+    if [ -f "php/init-cache.php" ]; then
+        php php/init-cache.php
+        success "Кэш меню обновлен"
+    elif [ -f "force-update-cache.php" ]; then
+        php force-update-cache.php
+        success "Кэш меню обновлен"
+    fi
 else
-    warning "Скрипты инициализации кэша не найдены"
+    log "📦 Кэш меню актуален, пропускаю обновление"
 fi
 
-# Проверяем структуру файлов
-log "📁 Проверяю структуру файлов..."
+# Оптимизированное копирование файлов
+log "📁 Синхронизирую файлы..."
 
-# Копируем PHP файлы в корень (если их нет)
-if [ ! -f "index.php" ] && [ -f "php/index.php" ]; then
-    cp php/index.php .
-    success "index.php скопирован в корень"
-fi
+# Создаем временную директорию для rsync
+TEMP_DIR="/tmp/northrepublic_sync_$$"
 
-if [ ! -f "menu.php" ] && [ -f "php/menu.php" ]; then
-    cp php/menu.php .
-    success "menu.php скопирован в корень"
-fi
+# Функция для быстрого копирования файлов
+sync_files() {
+    local source="$1"
+    local dest="$2"
+    local description="$3"
+    
+    if [ -d "$source" ] || [ -f "$source" ]; then
+        if [ ! -d "$dest" ] && [ ! -f "$dest" ]; then
+            # Если файл/папка не существует, копируем
+            cp -r "$source" "$dest"
+            success "$description скопированы"
+        elif [ "$source" -nt "$dest" ]; then
+            # Если источник новее, обновляем
+            cp -r "$source" "$dest"
+            success "$description обновлены"
+        fi
+    fi
+}
 
-# Копируем компоненты (если их нет)
-if [ ! -d "components" ] && [ -d "php/components" ]; then
-    cp -r php/components .
-    success "components скопированы"
-fi
+# Копируем PHP файлы в корень (только если нужно)
+sync_files "php/index.php" "index.php" "index.php"
+sync_files "php/menu.php" "menu.php" "menu.php"
 
-# Копируем template файлы (если их нет)
-if [ ! -d "css" ] && [ -d "template/css" ]; then
-    cp -r template/css .
-    success "CSS скопированы"
-fi
+# Копируем компоненты (только если нужно)
+sync_files "php/components" "components" "components"
 
-if [ ! -d "js" ] && [ -d "template/js" ]; then
-    cp -r template/js .
-    success "JS скопированы"
-fi
+# Копируем template файлы (только если нужно)
+sync_files "template/css" "css" "CSS"
+sync_files "template/js" "js" "JS"
+sync_files "template/images" "images" "Images"
 
-if [ ! -d "images" ] && [ -d "template/images" ]; then
-    cp -r template/images .
-    success "Images скопированы"
-fi
+# Копируем иконки (только если нужно)
+sync_files "template/apple-touch-icon.png" "apple-touch-icon.png" "apple-touch-icon.png"
+sync_files "template/favicon.ico" "favicon.ico" "favicon.ico"
 
-# Копируем иконки (если их нет)
-if [ ! -f "apple-touch-icon.png" ] && [ -f "template/apple-touch-icon.png" ]; then
-    cp template/apple-touch-icon.png .
-    success "apple-touch-icon.png скопирован"
-fi
-
-if [ ! -f "favicon.ico" ] && [ -f "template/favicon.ico" ]; then
-    cp template/favicon.ico .
-    success "favicon.ico скопирован"
-fi
-
-success "Структура файлов проверена"
+success "Структура файлов синхронизирована"
 
 # Перезапускаем сервисы
 log "🔄 Перезапускаю сервисы..."
@@ -174,40 +224,50 @@ fi
 log "📊 Статус Git:"
 git status --porcelain || success "Рабочая директория чистая"
 
-# Проверяем доступность API
-log "🔍 Проверяю API..."
-if curl -s http://127.0.0.1:3002/api/health > /dev/null 2>&1; then
-    success "Backend API доступен"
+# Проверки сервисов (пропускаем в быстром режиме)
+if [ "$FAST_MODE" = false ]; then
+    log "🔍 Проверяю сервисы..."
+    
+    # Проверяем доступность API
+    if curl -s http://127.0.0.1:3002/api/health > /dev/null 2>&1; then
+        success "Backend API доступен"
+    else
+        warning "Backend API недоступен"
+    fi
+
+    # Проверяем доступность сайта
+    if curl -s https://northrepublic.me/ > /dev/null 2>&1; then
+        success "Сайт доступен"
+    else
+        warning "Сайт недоступен"
+    fi
+
+    # Проверяем MongoDB
+    if pgrep mongod > /dev/null 2>&1; then
+        success "MongoDB запущен"
+    else
+        warning "MongoDB не запущен"
+    fi
+
+    # Проверяем Nginx
+    if systemctl is-active nginx > /dev/null 2>&1; then
+        success "Nginx активен"
+    else
+        warning "Nginx не активен"
+    fi
 else
-    warning "Backend API недоступен"
+    log "⚡ Быстрый режим: пропускаю проверки сервисов"
 fi
 
-# Проверяем доступность сайта
-log "🔍 Проверяю доступность сайта..."
-if curl -s https://northrepublic.me/ > /dev/null 2>&1; then
-    success "Сайт доступен"
-else
-    warning "Сайт недоступен"
-fi
-
-# Проверяем MongoDB
-log "🔍 Проверяю MongoDB..."
-if pgrep mongod > /dev/null 2>&1; then
-    success "MongoDB запущен"
-else
-    warning "MongoDB не запущен"
-fi
-
-# Проверяем Nginx
-log "🔍 Проверяю Nginx..."
-if systemctl is-active nginx > /dev/null 2>&1; then
-    success "Nginx активен"
-else
-    warning "Nginx не активен"
-fi
+# Вычисляем время выполнения
+END_TIME=$(date +%s)
+DURATION=$((END_TIME - START_TIME))
+MINUTES=$((DURATION / 60))
+SECONDS=$((DURATION % 60))
 
 echo ""
 success "🎉 Деплой завершен успешно!"
+log "⏱️  Время выполнения: ${MINUTES}m ${SECONDS}s"
 log "🌐 Сайт: https://northrepublic.me"
 log "📝 Если нужно перезагрузить Nginx: sudo systemctl reload nginx"
 log "🧪 Тестируйте сайт через 30 секунд"
@@ -217,4 +277,8 @@ log "📝 Последние коммиты:"
 git log --oneline -5
 
 echo ""
-log "✨ Деплой North Republic завершен!"
+if [ "$FAST_MODE" = true ]; then
+    log "⚡ Быстрый деплой North Republic завершен!"
+else
+    log "✨ Деплой North Republic завершен!"
+fi
