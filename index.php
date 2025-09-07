@@ -13,14 +13,58 @@ try {
         $categories = $menuData ? $menuData['categories'] : [];
         $products = $menuData ? $menuData['products'] : [];
         
-        // Group products by category for quick access
+        // Group products by category for quick access and sort by popularity
         if ($products) {
             foreach ($products as $product) {
                 $categoryId = (string)($product['menu_category_id'] ?? $product['category_id'] ?? 'default');
                 if (!isset($productsByCategory[$categoryId])) {
                     $productsByCategory[$categoryId] = [];
                 }
-                $productsByCategory[$categoryId][] = $product;
+                
+                // Check if product is visible
+                $isVisible = true;
+                if (isset($product['spots']) && is_array($product['spots'])) {
+                    foreach ($product['spots'] as $spot) {
+                        if (isset($spot['visible']) && $spot['visible'] == '0') {
+                            $isVisible = false;
+                            break;
+                        }
+                    }
+                }
+                
+                // Only add visible products
+                if ($isVisible) {
+                    $productsByCategory[$categoryId][] = $product;
+                }
+            }
+            
+            // Sort products by popularity (visible first, then by sort_order, then by price)
+            foreach ($productsByCategory as $categoryId => $categoryProducts) {
+                usort($categoryProducts, function($a, $b) {
+                    // First: visible products
+                    $aVisible = isset($a['spots']) ? $a['spots'][0]['visible'] ?? '1' : '1';
+                    $bVisible = isset($b['spots']) ? $b['spots'][0]['visible'] ?? '1' : '1';
+                    
+                    if ($aVisible != $bVisible) {
+                        return $bVisible <=> $aVisible; // visible first
+                    }
+                    
+                    // Second: sort_order (lower is more popular)
+                    $aSort = (int)($a['sort_order'] ?? 999);
+                    $bSort = (int)($b['sort_order'] ?? 999);
+                    
+                    if ($aSort != $bSort) {
+                        return $aSort <=> $bSort;
+                    }
+                    
+                    // Third: by price (lower price is more popular for basic items)
+                    $aPrice = (int)($a['price_normalized'] ?? 0);
+                    $bPrice = (int)($b['price_normalized'] ?? 0);
+                    
+                    return $aPrice <=> $bPrice;
+                });
+                
+                $productsByCategory[$categoryId] = $categoryProducts;
             }
         }
     }
