@@ -23,7 +23,7 @@ try {
         
         // Запускаем обновление через API
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, 'https://northrepublic.me:3002/api/cache/update-menu');
+        curl_setopt($ch, CURLOPT_URL, 'http://127.0.0.1:3002/api/cache/update-menu');
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_TIMEOUT, 30);
@@ -53,7 +53,7 @@ try {
         
         // Запускаем обновление через API
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, 'https://northrepublic.me:3002/api/cache/update-menu');
+        curl_setopt($ch, CURLOPT_URL, 'http://127.0.0.1:3002/api/cache/update-menu');
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_TIMEOUT, 30);
