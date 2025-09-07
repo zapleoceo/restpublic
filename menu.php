@@ -253,6 +253,13 @@ if ($menu_loaded) {
             transition: all 0.3s ease;
         }
         
+        /* Show toggle button on mobile */
+        @media (max-width: 768px) {
+            .header-menu-toggle {
+                display: block;
+            }
+        }
+        
         .header-menu-toggle:hover {
             transform: scale(1.1);
         }
@@ -474,10 +481,6 @@ if ($menu_loaded) {
                 display: none; /* Hide desktop categories on mobile */
             }
             
-            .header-menu-toggle {
-                display: block; /* Show mobile toggle */
-            }
-            
             .products-grid {
                 grid-template-columns: 1fr;
                 gap: 1.5rem;
@@ -657,7 +660,7 @@ if ($menu_loaded) {
                                                 data-product-name="<?php echo htmlspecialchars($product['product_name'] ?? 'Без названия'); ?>"
                                                 data-price="<?php echo $product['price_normalized'] ?? $product['price'] ?? 0; ?>"
                                                 data-sort-order="<?php echo $product['sort_order'] ?? 0; ?>"
-                                                data-popularity="<?php echo $product['sort_order'] ?? 0; ?>"
+                                                data-popularity="<?php echo $product['sales_count'] ?? $product['sort_order'] ?? 0; ?>"
                                                 data-product-id="<?php echo $product['product_id'] ?? 0; ?>">
                                                 <div class="menu-list__item-desc">
                                                     <h4><?php echo htmlspecialchars($product['product_name'] ?? 'Без названия'); ?></h4>
@@ -1069,9 +1072,11 @@ if ($menu_loaded) {
                             // Сортировка по цене - самые дорогие вверху
                             return priceB - priceA;
                         case 'popularity':
-                            // Сортировка по популярности - самые популярные вверху (больший sort_order = более популярный)
-                            if (popularityA !== popularityB) {
-                                return popularityB - popularityA;
+                            // Сортировка по популярности - используем data-popularity или data-sort-order
+                            const popA = parseInt(a.dataset.popularity || a.dataset.sortOrder || 0);
+                            const popB = parseInt(b.dataset.popularity || b.dataset.sortOrder || 0);
+                            if (popA !== popB) {
+                                return popB - popA; // Большее значение = более популярный
                             }
                             // Если популярность одинаковая, сортируем по цене (дорогие вверху)
                             return priceB - priceA;
