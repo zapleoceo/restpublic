@@ -54,6 +54,15 @@ cd ..
 if [ -f "composer.json" ]; then
     composer install --no-dev --optimize-autoloader
     echo "✅ PHP зависимости установлены"
+    
+    # Инициализируем кэш меню
+    echo "🔄 Инициализирую кэш меню..."
+    if [ -f "php/init-cache.php" ]; then
+        php php/init-cache.php
+        echo "✅ Кэш меню инициализирован"
+    else
+        echo "⚠️ init-cache.php не найден"
+    fi
 else
     echo "⚠️ composer.json не найден, пропускаю установку PHP зависимостей"
 fi

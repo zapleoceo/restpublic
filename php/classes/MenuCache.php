@@ -8,7 +8,7 @@ class MenuCache {
     
     public function __construct() {
         try {
-            $this->client = new MongoDB\Client("mongodb://localhost:27018");
+            $this->client = new MongoDB\Client("mongodb://localhost:27017");
             $this->db = $this->client->northrepublic;
             $this->menuCollection = $this->db->menu;
         } catch (Exception $e) {
@@ -134,20 +134,25 @@ class MenuCache {
         try {
             // Асинхронный запрос к нашему API для обновления кэша
             $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, 'https://northrepublic.me/api/cache/update-menu');
+            curl_setopt($ch, CURLOPT_URL, 'https://northrepublic.me:3002/api/cache/update-menu');
             curl_setopt($ch, CURLOPT_POST, true);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_TIMEOUT, 5); // Короткий таймаут для фонового запроса
+            curl_setopt($ch, CURLOPT_TIMEOUT, 10); // Увеличиваем таймаут
             curl_setopt($ch, CURLOPT_NOSIGNAL, 1); // Не ждать ответа
             curl_setopt($ch, CURLOPT_HTTPHEADER, [
                 'Content-Type: application/json'
             ]);
             
             // Выполняем запрос в фоне
-            curl_exec($ch);
+            $result = curl_exec($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
             curl_close($ch);
             
-            error_log("Фоновое обновление меню запущено");
+            if ($httpCode === 200) {
+                error_log("Фоновое обновление меню успешно завершено");
+            } else {
+                error_log("Фоновое обновление меню завершилось с кодом: " . $httpCode);
+            }
             
         } catch (Exception $e) {
             error_log("Ошибка фонового обновления меню: " . $e->getMessage());

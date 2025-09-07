@@ -62,7 +62,7 @@
         <div class="column xl-3 lg-12 footer-block s-footer__main-start">     
             <div class="s-footer__logo">
                 <a class="logo" href="/">
-                    <img src="../images/logo.png" alt="North Republic">
+                    <img src="images/logo.png" alt="North Republic">
                 </a>
             </div>  
 

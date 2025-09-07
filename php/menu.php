@@ -1,44 +1,78 @@
 <?php
-// API configuration
-$api_base_url = 'https://northrepublic.me/api';
+// Load menu from MongoDB cache for fast rendering
+$categories = [];
+$products = [];
+$products_by_category = [];
+$menu_loaded = false;
 
-// Function to fetch data from Node.js backend
-function fetchFromAPI($endpoint) {
-    global $api_base_url;
-    $url = $api_base_url . $endpoint;
+try {
+    require_once __DIR__ . '/vendor/autoload.php';
+    if (class_exists('MongoDB\Client')) {
+        require_once __DIR__ . '/classes/MenuCache.php';
+        $menuCache = new MenuCache();
+        $menuData = $menuCache->getMenu();
+        
+        if ($menuData) {
+            $categories = $menuData['categories'] ?? [];
+            $products = $menuData['products'] ?? [];
+            $menu_loaded = !empty($categories) && !empty($products);
+            
+            // Group products by category for quick access
+            if ($products) {
+                foreach ($products as $product) {
+                    $category_id = (string)($product['menu_category_id'] ?? $product['category_id'] ?? 'default');
+                    if (!isset($products_by_category[$category_id])) {
+                        $products_by_category[$category_id] = [];
+                    }
+                    $products_by_category[$category_id][] = $product;
+                }
+            }
+        }
+    }
+} catch (Exception $e) {
+    error_log("MongoDB not available, trying API fallback: " . $e->getMessage());
     
-    $context = stream_context_create([
-        'http' => [
-            'timeout' => 5,
-            'method' => 'GET',
-            'header' => 'Content-Type: application/json'
-        ]
-    ]);
+    // Fallback to API if MongoDB fails
+    $api_base_url = 'https://northrepublic.me:3002/api';
     
-    $response = @file_get_contents($url, false, $context);
-    
-    if ($response === false) {
-        return null;
+    function fetchFromAPI($endpoint) {
+        global $api_base_url;
+        $url = $api_base_url . $endpoint;
+        
+        $context = stream_context_create([
+            'http' => [
+                'timeout' => 10,
+                'method' => 'GET',
+                'header' => 'Content-Type: application/json'
+            ]
+        ]);
+        
+        $response = @file_get_contents($url, false, $context);
+        
+        if ($response === false) {
+            return null;
+        }
+        
+        return json_decode($response, true);
     }
     
-    return json_decode($response, true);
-}
-
-// Fetch menu data
-$menu_data = fetchFromAPI('/menu');
-$categories = $menu_data['categories'] ?? [];
-$products = $menu_data['products'] ?? [];
-$menu_loaded = !empty($categories) && !empty($products);
-
-// Group products by category
-$products_by_category = [];
-if ($menu_loaded) {
-    foreach ($products as $product) {
-        $category_id = $product['menu_category_id'] ?? $product['category_id'] ?? 'default';
-        if (!isset($products_by_category[$category_id])) {
-            $products_by_category[$category_id] = [];
+    // Try to fetch from API as fallback
+    $menu_data = fetchFromAPI('/menu');
+    if ($menu_data) {
+        $categories = $menu_data['categories'] ?? [];
+        $products = $menu_data['products'] ?? [];
+        $menu_loaded = !empty($categories) && !empty($products);
+        
+        // Group products by category
+        if ($menu_loaded) {
+            foreach ($products as $product) {
+                $category_id = $product['menu_category_id'] ?? $product['category_id'] ?? 'default';
+                if (!isset($products_by_category[$category_id])) {
+                    $products_by_category[$category_id] = [];
+                }
+                $products_by_category[$category_id][] = $product;
+            }
         }
-        $products_by_category[$category_id][] = $product;
     }
 }
 ?>
@@ -58,15 +92,15 @@ if ($menu_loaded) {
     </script>
 
     <!-- CSS -->
-    <link rel="stylesheet" href="../template/css/vendor.css">
-    <link rel="stylesheet" href="../template/css/styles.css">
-    <link rel="stylesheet" href="../template/css/custom.css">
+    <link rel="stylesheet" href="template/css/vendor.css">
+    <link rel="stylesheet" href="template/css/styles.css">
+    <link rel="stylesheet" href="template/css/custom.css">
 
     <!-- Favicons -->
-    <link rel="apple-touch-icon" sizes="180x180" href="../template/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="../template/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="../template/favicon-16x16.png">
-    <link rel="manifest" href="../template/site.webmanifest">
+    <link rel="apple-touch-icon" sizes="180x180" href="template/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="template/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="template/favicon-16x16.png">
+    <link rel="manifest" href="template/site.webmanifest">
 
     <style>
         /* Menu page specific styles */
@@ -229,7 +263,7 @@ if ($menu_loaded) {
                 <div class="s-header__block">
                     <div class="header-logo">
                         <a class="logo" href="/">
-                            <img src="../images/logo.png" alt="North Republic">
+                            <img src="images/logo.png" alt="North Republic">
                         </a>
                     </div>
                 </div>
@@ -354,8 +388,8 @@ if ($menu_loaded) {
     </div>
 
     <!-- JavaScript -->
-    <script src="../template/js/plugins.js"></script>
-    <script src="../template/js/main.js"></script>
+    <script src="template/js/plugins.js"></script>
+    <script src="template/js/main.js"></script>
     
     <style>
         /* Анимации появления блюд */

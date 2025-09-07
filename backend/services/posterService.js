@@ -2,7 +2,7 @@ const axios = require('axios');
 
 class PosterService {
   constructor() {
-    this.baseURL = process.env.POSTER_API_URL || 'https://joinposter.com/api';
+    this.baseURL = process.env.POSTER_API_BASE_URL || 'https://joinposter.com/api';
     this.token = process.env.POSTER_API_TOKEN;
     
     console.log('🔧 PosterService constructor - Environment variables:');
