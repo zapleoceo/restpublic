@@ -6,9 +6,9 @@ $products_by_category = [];
 $menu_loaded = false;
 
 try {
-    require_once __DIR__ . '/vendor/autoload.php';
+    require_once __DIR__ . '/../vendor/autoload.php';
     if (class_exists('MongoDB\Client')) {
-        require_once __DIR__ . '/classes/MenuCache.php';
+        require_once __DIR__ . '/../php/classes/MenuCache.php';
         $menuCache = new MenuCache();
         $menuData = $menuCache->getMenu();
         
@@ -17,14 +17,58 @@ try {
             $products = $menuData['products'] ?? [];
             $menu_loaded = !empty($categories) && !empty($products);
             
-            // Group products by category for quick access
+            // Group products by category for quick access and sort by popularity
             if ($products) {
                 foreach ($products as $product) {
                     $category_id = (string)($product['menu_category_id'] ?? $product['category_id'] ?? 'default');
                     if (!isset($products_by_category[$category_id])) {
                         $products_by_category[$category_id] = [];
                     }
-                    $products_by_category[$category_id][] = $product;
+                    
+                    // Check if product is visible
+                    $isVisible = true;
+                    if (isset($product['spots']) && is_array($product['spots'])) {
+                        foreach ($product['spots'] as $spot) {
+                            if (isset($spot['visible']) && $spot['visible'] == '0') {
+                                $isVisible = false;
+                                break;
+                            }
+                        }
+                    }
+                    
+                    // Only add visible products
+                    if ($isVisible) {
+                        $products_by_category[$category_id][] = $product;
+                    }
+                }
+                
+                // Sort products by popularity (visible first, then by sort_order, then by price)
+                foreach ($products_by_category as $category_id => $category_products) {
+                    usort($category_products, function($a, $b) {
+                        // First: visible products
+                        $aVisible = isset($a['spots']) ? $a['spots'][0]['visible'] ?? '1' : '1';
+                        $bVisible = isset($b['spots']) ? $b['spots'][0]['visible'] ?? '1' : '1';
+                        
+                        if ($aVisible != $bVisible) {
+                            return $bVisible <=> $aVisible; // visible first
+                        }
+                        
+                        // Second: sort_order (lower is more popular)
+                        $aSort = (int)($a['sort_order'] ?? 999);
+                        $bSort = (int)($b['sort_order'] ?? 999);
+                        
+                        if ($aSort != $bSort) {
+                            return $aSort <=> $bSort;
+                        }
+                        
+                        // Third: by price (lower price is more popular for basic items)
+                        $aPrice = (int)($a['price_normalized'] ?? 0);
+                        $bPrice = (int)($b['price_normalized'] ?? 0);
+                        
+                        return $aPrice <=> $bPrice;
+                    });
+                    
+                    $products_by_category[$category_id] = $category_products;
                 }
             }
         }
@@ -63,14 +107,58 @@ try {
         $products = $menu_data['products'] ?? [];
         $menu_loaded = !empty($categories) && !empty($products);
         
-        // Group products by category
+        // Group products by category and sort by popularity
         if ($menu_loaded) {
             foreach ($products as $product) {
-                $category_id = $product['menu_category_id'] ?? $product['category_id'] ?? 'default';
+                $category_id = (string)($product['menu_category_id'] ?? $product['category_id'] ?? 'default');
                 if (!isset($products_by_category[$category_id])) {
                     $products_by_category[$category_id] = [];
                 }
-                $products_by_category[$category_id][] = $product;
+                
+                // Check if product is visible
+                $isVisible = true;
+                if (isset($product['spots']) && is_array($product['spots'])) {
+                    foreach ($product['spots'] as $spot) {
+                        if (isset($spot['visible']) && $spot['visible'] == '0') {
+                            $isVisible = false;
+                            break;
+                        }
+                    }
+                }
+                
+                // Only add visible products
+                if ($isVisible) {
+                    $products_by_category[$category_id][] = $product;
+                }
+            }
+            
+            // Sort products by popularity (visible first, then by sort_order, then by price)
+            foreach ($products_by_category as $category_id => $category_products) {
+                usort($category_products, function($a, $b) {
+                    // First: visible products
+                    $aVisible = isset($a['spots']) ? $a['spots'][0]['visible'] ?? '1' : '1';
+                    $bVisible = isset($b['spots']) ? $b['spots'][0]['visible'] ?? '1' : '1';
+                    
+                    if ($aVisible != $bVisible) {
+                        return $bVisible <=> $aVisible; // visible first
+                    }
+                    
+                    // Second: sort_order (lower is more popular)
+                    $aSort = (int)($a['sort_order'] ?? 999);
+                    $bSort = (int)($b['sort_order'] ?? 999);
+                    
+                    if ($aSort != $bSort) {
+                        return $aSort <=> $bSort;
+                    }
+                    
+                    // Third: by price (lower price is more popular for basic items)
+                    $aPrice = (int)($a['price_normalized'] ?? 0);
+                    $bPrice = (int)($b['price_normalized'] ?? 0);
+                    
+                    return $aPrice <=> $bPrice;
+                });
+                
+                $products_by_category[$category_id] = $category_products;
             }
         }
     }
@@ -92,15 +180,15 @@ try {
     </script>
 
     <!-- CSS -->
-    <link rel="stylesheet" href="template/css/vendor.css">
-    <link rel="stylesheet" href="template/css/styles.css">
-    <link rel="stylesheet" href="template/css/custom.css">
+    <link rel="stylesheet" href="../template/css/vendor.css">
+    <link rel="stylesheet" href="../template/css/styles.css">
+    <link rel="stylesheet" href="../template/css/custom.css">
 
     <!-- Favicons -->
-    <link rel="apple-touch-icon" sizes="180x180" href="template/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="template/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="template/favicon-16x16.png">
-    <link rel="manifest" href="template/site.webmanifest">
+    <link rel="apple-touch-icon" sizes="180x180" href="../template/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../template/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../template/favicon-16x16.png">
+    <link rel="manifest" href="../template/site.webmanifest">
 
     <style>
         /* Menu page specific styles */
@@ -263,7 +351,7 @@ try {
                 <div class="s-header__block">
                     <div class="header-logo">
                         <a class="logo" href="/">
-                            <img src="images/logo.png" alt="North Republic">
+                            <img src="../images/logo.png" alt="North Republic">
                         </a>
                     </div>
                 </div>
@@ -388,8 +476,8 @@ try {
     </div>
 
     <!-- JavaScript -->
-    <script src="template/js/plugins.js"></script>
-    <script src="template/js/main.js"></script>
+    <script src="../template/js/plugins.js"></script>
+    <script src="../template/js/main.js"></script>
     
     <style>
         /* Анимации появления блюд */
