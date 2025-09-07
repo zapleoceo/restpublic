@@ -223,6 +223,70 @@ if ($menu_loaded) {
             border-color: #1c1e1d;
         }
         
+        /* Mobile sidebar for categories */
+        .mobile-category-toggle {
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            background: var(--color-bg-primary);
+            color: var(--color-white);
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transition: all 0.3s ease;
+        }
+        
+        .mobile-category-toggle:hover {
+            transform: scale(1.1);
+        }
+        
+        .mobile-category-sidebar {
+            position: fixed;
+            top: 0;
+            left: -300px;
+            width: 300px;
+            height: 100vh;
+            background: var(--color-white);
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            z-index: 999;
+            transition: left 0.3s ease;
+            padding: 80px 20px 20px;
+            overflow-y: auto;
+        }
+        
+        .mobile-category-sidebar.open {
+            left: 0;
+        }
+        
+        .mobile-category-sidebar .category-btn {
+            display: block;
+            width: 100%;
+            margin-bottom: 10px;
+            text-align: left;
+            padding: 1rem;
+            border-radius: 10px;
+        }
+        
+        .mobile-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 998;
+        }
+        
+        .mobile-overlay.open {
+            display: block;
+        }
+        
         .menu-section {
             margin-bottom: 4rem;
         }
@@ -309,14 +373,11 @@ if ($menu_loaded) {
             }
             
             .menu-categories {
-                flex-direction: column;
-                align-items: center;
+                display: none; /* Hide desktop categories on mobile */
             }
             
-            .category-btn {
-                width: 100%;
-                max-width: 300px;
-                text-align: center;
+            .mobile-category-toggle {
+                display: block; /* Show mobile toggle */
             }
             
             .products-grid {
@@ -326,6 +387,22 @@ if ($menu_loaded) {
             
             .menu-section h2 {
                 font-size: 2rem;
+            }
+            
+            .sort-controls {
+                margin-top: 1rem;
+                padding: 0.3rem;
+                gap: 0.3rem;
+            }
+            
+            .sort-btn {
+                padding: 0.3rem 0.6rem;
+                font-size: 0.8rem;
+            }
+            
+            .sort-btn svg {
+                width: 12px;
+                height: 12px;
             }
         }
     </style>
@@ -368,6 +445,30 @@ if ($menu_loaded) {
                     </div>
                 </div>
 
+                <!-- Mobile Category Toggle -->
+                <button class="mobile-category-toggle" id="mobileCategoryToggle">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M3,6H21V8H3V6M3,11H21V13H3V11M3,16H21V18H3V16Z"/>
+                    </svg>
+                </button>
+
+                <!-- Mobile Category Sidebar -->
+                <div class="mobile-category-sidebar" id="mobileCategorySidebar">
+                    <div style="padding: 20px 0; border-bottom: 1px solid #eee; margin-bottom: 20px;">
+                        <h3 style="margin: 0; color: var(--color-text-dark);">Категории</h3>
+                    </div>
+                    <?php if ($menu_loaded && !empty($categories)): ?>
+                        <?php foreach ($categories as $index => $category): ?>
+                            <button class="category-btn <?php echo $index === 0 ? 'active' : ''; ?>" data-category="<?php echo htmlspecialchars($category['category_id']); ?>">
+                                <?php echo htmlspecialchars($category['category_name'] ?? $category['name']); ?>
+                            </button>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </div>
+
+                <!-- Mobile Overlay -->
+                <div class="mobile-overlay" id="mobileOverlay"></div>
+
                 <!-- Category Navigation -->
                 <?php if ($menu_loaded && !empty($categories)): ?>
                 <div class="row">
@@ -380,26 +481,25 @@ if ($menu_loaded) {
                             <?php endforeach; ?>
                         </div>
                         
-                        <!-- Sort Controls -->
+                        <!-- Sort Controls - Minimal -->
                         <div class="sort-controls">
-                            <span class="sort-label">Сортировка:</span>
                             <button class="sort-btn active" data-sort="popularity">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
                                     <path d="M12,21.35L10.55,20.03C5.4,15.36 2,12.27 2,8.5C2,5.41 4.42,3 7.5,3C9.24,3 10.91,3.81 12,5.08C13.09,3.81 14.76,3 16.5,3C19.58,3 22,5.41 22,8.5C22,12.27 18.6,15.36 13.45,20.03L12,21.35Z"/>
                                 </svg>
-                                По популярности
+                                Популярные
                             </button>
                             <button class="sort-btn" data-sort="price">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
                                     <path d="M7,15H9C9,16.08 10.37,17 12,17C13.63,17 15,16.08 15,15C15,13.9 13.96,13.5 11.76,12.97C9.64,12.44 7,11.78 7,9C7,7.21 8.47,5.69 10.5,5.18V3H13.5V5.18C15.53,5.69 17,7.21 17,9H15C15,7.92 13.63,7 12,7C10.37,7 9,7.92 9,9C9,10.1 10.04,10.5 12.24,11.03C14.36,11.56 17,12.22 17,15C17,16.79 15.53,18.31 13.5,18.82V21H10.5V18.82C8.47,18.31 7,16.79 7,15Z"/>
                                 </svg>
-                                По цене
+                                Цена
                             </button>
                             <button class="sort-btn" data-sort="alphabet">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
                                     <path d="M14,17H7v-2h7V17z M17,13H7v-2h10V13z M17,9H7V7h10V9z M3,5V3h18v2H3z"/>
                                 </svg>
-                                По алфавиту
+                                А-Я
                             </button>
                         </div>
                     </div>
@@ -505,55 +605,48 @@ if ($menu_loaded) {
             transition: all 0.3s var(--ease-smooth-in-out);
         }
         
-        /* Sort Controls */
+        /* Sort Controls - Minimal Design */
         .sort-controls {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 1rem;
+            gap: 0.5rem;
             margin-top: 2rem;
-            padding: 1rem;
+            padding: 0.5rem;
             background: var(--color-bg-neutral-dark);
-            border-radius: var(--border-radius);
+            border-radius: 25px;
             flex-wrap: wrap;
-        }
-        
-        .sort-label {
-            font-weight: 600;
-            color: var(--color-text-dark);
-            margin-right: 0.5rem;
         }
         
         .sort-btn {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem 1rem;
+            gap: 0.3rem;
+            padding: 0.4rem 0.8rem;
             background: transparent;
-            border: 1px solid var(--color-border);
+            border: none;
             border-radius: 20px;
             color: var(--color-text-light);
             font-size: var(--text-sm);
             font-weight: 500;
             cursor: pointer;
             transition: all 0.3s ease;
+            min-width: auto;
         }
         
         .sort-btn:hover {
             background: var(--color-bg-primary);
             color: var(--color-white);
-            border-color: var(--color-bg-primary);
         }
         
         .sort-btn.active {
             background: var(--color-bg-primary);
             color: var(--color-white);
-            border-color: var(--color-bg-primary);
         }
         
         .sort-btn svg {
-            width: 16px;
-            height: 16px;
+            width: 14px;
+            height: 14px;
             fill: currentColor;
         }
     </style>
@@ -563,6 +656,20 @@ if ($menu_loaded) {
         document.addEventListener('DOMContentLoaded', function() {
             const categoryBtns = document.querySelectorAll('.category-btn');
             const menuSections = document.querySelectorAll('.menu-section');
+            const mobileToggle = document.getElementById('mobileCategoryToggle');
+            const mobileSidebar = document.getElementById('mobileCategorySidebar');
+            const mobileOverlay = document.getElementById('mobileOverlay');
+            
+            // Mobile sidebar functionality
+            mobileToggle.addEventListener('click', function() {
+                mobileSidebar.classList.toggle('open');
+                mobileOverlay.classList.toggle('open');
+            });
+            
+            mobileOverlay.addEventListener('click', function() {
+                mobileSidebar.classList.remove('open');
+                mobileOverlay.classList.remove('open');
+            });
             
             // Set initial active state
             if (categoryBtns.length > 0) {
@@ -572,6 +679,7 @@ if ($menu_loaded) {
                 menuSections.forEach((section, index) => {
                     if (index === 0) {
                         section.style.display = 'block';
+                        section.classList.add('active');
                         // Анимация появления первой секции
                         setTimeout(() => {
                             section.classList.add('animate-in');
@@ -591,10 +699,15 @@ if ($menu_loaded) {
                     categoryBtns.forEach(b => b.classList.remove('active'));
                     this.classList.add('active');
                     
+                    // Close mobile sidebar
+                    mobileSidebar.classList.remove('open');
+                    mobileOverlay.classList.remove('open');
+                    
                     // Show/hide sections with animation
                     menuSections.forEach(section => {
                         if (section.dataset.category === category) {
                             section.style.display = 'block';
+                            section.classList.add('active');
                             section.classList.remove('animate-in');
                             
                             // Анимация появления секции
@@ -603,6 +716,7 @@ if ($menu_loaded) {
                                 animateMenuItems(section);
                             }, 50);
                         } else {
+                            section.classList.remove('active');
                             section.classList.remove('animate-in');
                             setTimeout(() => {
                                 section.style.display = 'none';
