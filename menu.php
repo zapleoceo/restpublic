@@ -853,7 +853,7 @@ if ($menu_loaded) {
             position: absolute;
             top: 100%;
             right: 0;
-            background: var(--color-white);
+            background: var(--color-bg-neutral-dark);
             border: 1px solid var(--color-border);
             border-radius: 8px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
@@ -880,7 +880,7 @@ if ($menu_loaded) {
             padding: 0.75rem 1rem;
             background: none;
             border: none;
-            color: var(--color-text-dark);
+            color: var(--color-text);
             font-size: var(--text-sm);
             font-weight: 500;
             cursor: pointer;
@@ -897,8 +897,8 @@ if ($menu_loaded) {
         }
         
         .sort-dropdown__item:hover {
-            background: var(--color-bg-neutral-dark);
-            color: var(--color-text-dark);
+            background: var(--color-bg-primary);
+            color: var(--color-white);
         }
         
         .sort-dropdown__item.active {
