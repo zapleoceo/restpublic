@@ -46,20 +46,20 @@ fi
 echo "📁 Синхронизирую файлы..."
 
 # PHP файлы
-[ -f "php/index.php" ] && [ (! -f "index.php" || "php/index.php" -nt "index.php") ] && cp php/index.php .
-[ -f "php/menu.php" ] && [ (! -f "menu.php" || "php/menu.php" -nt "menu.php") ] && cp php/menu.php .
+[ -f "php/index.php" ] && [ ! -f "index.php" -o "php/index.php" -nt "index.php" ] && cp php/index.php .
+[ -f "php/menu.php" ] && [ ! -f "menu.php" -o "php/menu.php" -nt "menu.php" ] && cp php/menu.php .
 
 # Компоненты
-[ -d "php/components" ] && [ (! -d "components" || "php/components" -nt "components") ] && cp -r php/components .
+[ -d "php/components" ] && [ ! -d "components" -o "php/components" -nt "components" ] && cp -r php/components .
 
 # Template файлы
-[ -d "template/css" ] && [ (! -d "css" || "template/css" -nt "css") ] && cp -r template/css .
-[ -d "template/js" ] && [ (! -d "js" || "template/js" -nt "js") ] && cp -r template/js .
-[ -d "template/images" ] && [ (! -d "images" || "template/images" -nt "images") ] && cp -r template/images .
+[ -d "template/css" ] && [ ! -d "css" -o "template/css" -nt "css" ] && cp -r template/css .
+[ -d "template/js" ] && [ ! -d "js" -o "template/js" -nt "js" ] && cp -r template/js .
+[ -d "template/images" ] && [ ! -d "images" -o "template/images" -nt "images" ] && cp -r template/images .
 
 # Иконки
-[ -f "template/apple-touch-icon.png" ] && [ (! -f "apple-touch-icon.png" || "template/apple-touch-icon.png" -nt "apple-touch-icon.png") ] && cp template/apple-touch-icon.png .
-[ -f "template/favicon.ico" ] && [ (! -f "favicon.ico" || "template/favicon.ico" -nt "favicon.ico") ] && cp template/favicon.ico .
+[ -f "template/apple-touch-icon.png" ] && [ ! -f "apple-touch-icon.png" -o "template/apple-touch-icon.png" -nt "apple-touch-icon.png" ] && cp template/apple-touch-icon.png .
+[ -f "template/favicon.ico" ] && [ ! -f "favicon.ico" -o "template/favicon.ico" -nt "favicon.ico" ] && cp template/favicon.ico .
 
 # Перезапускаем сервисы
 echo "🔄 Перезапускаю сервисы..."
