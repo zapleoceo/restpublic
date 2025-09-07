@@ -234,58 +234,84 @@ if ($menu_loaded) {
         
         /* Mobile category navigation - like header-nav */
         .mobile-category-toggle {
+            --toggle-block-width: 44px;
+            --toggle-line-width : 28px;
+            --toggle-line-height: 1px;
+
             display: none;
+            width: var(--toggle-block-width);
+            height: var(--toggle-block-width);
             position: fixed;
             top: 20px;
             right: 20px;
             z-index: 1000;
             background: var(--color-bg-primary);
-            color: var(--color-white);
             border: none;
             border-radius: 50%;
-            width: 50px;
-            height: 50px;
             cursor: pointer;
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
             transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
         
         .mobile-category-toggle:hover {
             transform: scale(1.1);
         }
         
-        .mobile-category-toggle .hamburger {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            width: 20px;
-            height: 20px;
-            transition: all 0.3s ease;
+        .mobile-category-toggle span {
+            display: block;
+            background-color: var(--color-white);
+            width: var(--toggle-line-width);
+            height: var(--toggle-line-height);
+            margin-top: -1px;
+            font: 0/0 a;
+            text-shadow: none;
+            color: transparent;
+            transition: all 0.5s;
+            position: absolute;
+            right: calc((var(--toggle-block-width) - var(--toggle-line-width)) / 2);
+            top: 50%;
+            bottom: auto;
+            left: auto;
         }
         
-        .mobile-category-toggle .hamburger .line {
-            width: 20px;
-            height: 2px;
-            background: currentColor;
-            margin: 2px 0;
-            transition: all 0.3s ease;
-            transform-origin: center;
+        .mobile-category-toggle span::before,
+        .mobile-category-toggle span::after {
+            content: "";
+            width: 100%;
+            height: 100%;
+            background-color: inherit;
+            transition: all 0.5s;
+            position: absolute;
+            left: 0;
         }
         
-        .mobile-category-toggle.is-clicked .hamburger .line:nth-child(1) {
-            transform: rotate(45deg) translate(0, 6px);
+        .mobile-category-toggle span::before {
+            top: -8px;
         }
         
-        .mobile-category-toggle.is-clicked .hamburger .line:nth-child(2) {
-            opacity: 0;
+        .mobile-category-toggle span::after {
+            bottom: -8px;
         }
         
-        .mobile-category-toggle.is-clicked .hamburger .line:nth-child(3) {
-            transform: rotate(-45deg) translate(0, -6px);
+        /* is clicked */
+        .mobile-category-toggle.is-clicked span {
+            background-color: rgba(255, 255, 255, 0);
+            transition: all 0.1s;
+        }
+        
+        .mobile-category-toggle.is-clicked span::before,
+        .mobile-category-toggle.is-clicked span::after {
+            background-color: var(--color-white);
+        }
+        
+        .mobile-category-toggle.is-clicked span::before {
+            top: 0;
+            transform: rotate(135deg);
+        }
+        
+        .mobile-category-toggle.is-clicked span::after {
+            bottom: 0;
+            transform: rotate(225deg);
         }
         
         .mobile-category-nav {
@@ -304,26 +330,37 @@ if ($menu_loaded) {
             transition-delay: 0.1s;
         }
         
+        .mobile-sort-section {
+            padding: 20px;
+            border-bottom: 1px solid var(--color-border);
+            margin-bottom: 20px;
+        }
+        
         .mobile-category-nav__links {
             display: block;
             padding-left: 0;
-            margin: 0 0 var(--vspace-1_5) 0;
+            margin: 0;
             transform: translateY(-2rem);
             opacity: 0;
             visibility: hidden;
             transition: all 0.6s var(--ease-quick-out);
             transition-delay: 0s;
+            text-align: center;
         }
         
         .mobile-category-nav__links .category-btn {
-            display: block;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             width: 100%;
-            margin-bottom: 10px;
-            text-align: left;
-            padding: var(--vspace-0_5) 0;
+            height: 100%;
+            color: var(--color-text);
+            padding-top: var(--vspace-0_75);
+            padding-bottom: var(--vspace-0_75);
+            padding-left: var(--vspace-0_75);
+            padding-right: var(--vspace-0_75);
             background: transparent;
             border: none;
-            color: var(--color-text-dark);
             font-size: var(--text-base);
             font-weight: 500;
             cursor: pointer;
@@ -331,12 +368,14 @@ if ($menu_loaded) {
         }
         
         .mobile-category-nav__links .category-btn:hover,
-        .mobile-category-nav__links .category-btn.active {
-            color: #366b5b;
+        .mobile-category-nav__links .category-btn:focus {
+            background-color: var(--color-neutral-900);
+            color: var(--color-text);
         }
         
-        .mobile-category-nav__links .category-btn.active {
-            font-weight: 600;
+        .mobile-category-nav__links li[data-tab-active] .category-btn {
+            background-color: var(--color-bg-accent);
+            color: var(--color-white);
         }
         
         .mobile-overlay {
@@ -529,20 +568,49 @@ if ($menu_loaded) {
 
                 <!-- Mobile Category Toggle -->
                 <button class="mobile-category-toggle" id="mobileCategoryToggle">
-                    <div class="hamburger">
-                        <div class="line"></div>
-                        <div class="line"></div>
-                        <div class="line"></div>
-                    </div>
+                    <span>Menu</span>
                 </button>
 
                 <!-- Mobile Category Navigation -->
-                <nav class="mobile-category-nav" id="mobileCategoryNav">    
-                    <ul class="mobile-category-nav__links">
+                <nav class="mobile-category-nav" id="mobileCategoryNav">
+                    <!-- Sort Dropdown in Sidebar -->
+                    <div class="mobile-sort-section">
+                        <div class="sort-dropdown">
+                            <div class="sort-dropdown__trigger">
+                                <span class="sort-dropdown__text">Популярные</span>
+                                <svg class="sort-dropdown__arrow" width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M7,10L12,15L17,10H7Z"/>
+                                </svg>
+                            </div>
+                            <div class="sort-dropdown__menu">
+                                <button class="sort-dropdown__item active" data-sort="popularity">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M12,21.35L10.55,20.03C5.4,15.36 2,12.27 2,8.5C2,5.41 4.42,3 7.5,3C9.24,3 10.91,3.81 12,5.08C13.09,3.81 14.76,3 16.5,3C19.58,3 22,5.41 22,8.5C22,12.27 18.6,15.36 13.45,20.03L12,21.35Z"/>
+                                    </svg>
+                                    Популярные
+                                </button>
+                                <button class="sort-dropdown__item" data-sort="price">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M7,15H9C9,16.08 10.37,17 12,17C13.63,17 15,16.08 15,15C15,13.9 13.96,13.5 11.76,12.97C9.64,12.44 7,11.78 7,9C7,7.21 8.47,5.69 10.5,5.18V3H13.5V5.18C15.53,5.69 17,7.21 17,9H15C15,7.92 13.63,7 12,7C10.37,7 9,7.92 9,9C9,10.1 10.04,10.5 12.24,11.03C14.36,11.56 17,12.22 17,15C17,16.79 15.53,18.31 13.5,18.82V21H10.5V18.82C8.47,18.31 7,16.79 7,15Z"/>
+                                    </svg>
+                                    По цене
+                                </button>
+                                <button class="sort-dropdown__item" data-sort="alphabet">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M14,17H7v-2h7V17z M17,13H7v-2h10V13z M17,9H7V7h10V9z M3,5V3h18v2H3z"/>
+                                    </svg>
+                                    А-Я
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Categories List -->
+                    <ul class="tab-nav__list mobile-category-nav__links">
                         <?php if ($menu_loaded && !empty($categories)): ?>
                             <?php foreach ($categories as $index => $category): ?>
-                                <li>
-                                    <button class="category-btn <?php echo $index === 0 ? 'active' : ''; ?>" data-category="<?php echo htmlspecialchars($category['category_id']); ?>">
+                                <li <?php echo $index === 0 ? 'data-tab-active' : ''; ?>>
+                                    <button class="category-btn" data-category="<?php echo htmlspecialchars($category['category_id']); ?>">
                                         <?php echo htmlspecialchars($category['category_name'] ?? $category['name']); ?>
                                     </button>
                                 </li>
@@ -566,26 +634,34 @@ if ($menu_loaded) {
                             <?php endforeach; ?>
                         </div>
                         
-                        <!-- Sort Controls - Minimal -->
-                        <div class="sort-controls">
-                            <button class="sort-btn active" data-sort="popularity" title="По популярности">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M12,21.35L10.55,20.03C5.4,15.36 2,12.27 2,8.5C2,5.41 4.42,3 7.5,3C9.24,3 10.91,3.81 12,5.08C13.09,3.81 14.76,3 16.5,3C19.58,3 22,5.41 22,8.5C22,12.27 18.6,15.36 13.45,20.03L12,21.35Z"/>
+                        <!-- Sort Dropdown -->
+                        <div class="sort-dropdown">
+                            <div class="sort-dropdown__trigger">
+                                <span class="sort-dropdown__text">Популярные</span>
+                                <svg class="sort-dropdown__arrow" width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M7,10L12,15L17,10H7Z"/>
                                 </svg>
-                                ♥
-                            </button>
-                            <button class="sort-btn" data-sort="price" title="По цене">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M7,15H9C9,16.08 10.37,17 12,17C13.63,17 15,16.08 15,15C15,13.9 13.96,13.5 11.76,12.97C9.64,12.44 7,11.78 7,9C7,7.21 8.47,5.69 10.5,5.18V3H13.5V5.18C15.53,5.69 17,7.21 17,9H15C15,7.92 13.63,7 12,7C10.37,7 9,7.92 9,9C9,10.1 10.04,10.5 12.24,11.03C14.36,11.56 17,12.22 17,15C17,16.79 15.53,18.31 13.5,18.82V21H10.5V18.82C8.47,18.31 7,16.79 7,15Z"/>
-                                </svg>
-                                ₫
-                            </button>
-                            <button class="sort-btn" data-sort="alphabet" title="По алфавиту">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M14,17H7v-2h7V17z M17,13H7v-2h10V13z M17,9H7V7h10V9z M3,5V3h18v2H3z"/>
-                                </svg>
-                                A-Z
-                            </button>
+                            </div>
+                            <div class="sort-dropdown__menu">
+                                <button class="sort-dropdown__item active" data-sort="popularity">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M12,21.35L10.55,20.03C5.4,15.36 2,12.27 2,8.5C2,5.41 4.42,3 7.5,3C9.24,3 10.91,3.81 12,5.08C13.09,3.81 14.76,3 16.5,3C19.58,3 22,5.41 22,8.5C22,12.27 18.6,15.36 13.45,20.03L12,21.35Z"/>
+                                    </svg>
+                                    Популярные
+                                </button>
+                                <button class="sort-dropdown__item" data-sort="price">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M7,15H9C9,16.08 10.37,17 12,17C13.63,17 15,16.08 15,15C15,13.9 13.96,13.5 11.76,12.97C9.64,12.44 7,11.78 7,9C7,7.21 8.47,5.69 10.5,5.18V3H13.5V5.18C15.53,5.69 17,7.21 17,9H15C15,7.92 13.63,7 12,7C10.37,7 9,7.92 9,9C9,10.1 10.04,10.5 12.24,11.03C14.36,11.56 17,12.22 17,15C17,16.79 15.53,18.31 13.5,18.82V21H10.5V18.82C8.47,18.31 7,16.79 7,15Z"/>
+                                    </svg>
+                                    По цене
+                                </button>
+                                <button class="sort-dropdown__item" data-sort="alphabet">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M14,17H7v-2h7V17z M17,13H7v-2h10V13z M17,9H7V7h10V9z M3,5V3h18v2H3z"/>
+                                    </svg>
+                                    А-Я
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -781,10 +857,15 @@ if ($menu_loaded) {
             categoryBtns.forEach(btn => {
                 btn.addEventListener('click', function() {
                     const category = this.dataset.category;
+                    const li = this.closest('li');
                     
                     // Update active button
-                    categoryBtns.forEach(b => b.classList.remove('active'));
+                    categoryBtns.forEach(b => {
+                        b.classList.remove('active');
+                        b.closest('li').removeAttribute('data-tab-active');
+                    });
                     this.classList.add('active');
+                    li.setAttribute('data-tab-active', '');
                     
                     // Close mobile category navigation
                     mobileToggle.classList.remove('is-clicked');
