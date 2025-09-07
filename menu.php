@@ -17,58 +17,67 @@ try {
             $products = $menuData['products'] ?? [];
             $menu_loaded = !empty($categories) && !empty($products);
             
-            // Group products by category for quick access and sort by popularity
-            if ($products) {
-                foreach ($products as $product) {
-                    $category_id = (string)($product['menu_category_id'] ?? $product['category_id'] ?? 'default');
-                    if (!isset($products_by_category[$category_id])) {
-                        $products_by_category[$category_id] = [];
+            // API configuration for popular products
+            $api_base_url = 'http://localhost:3002/api';
+            $context = stream_context_create([
+                'http' => [
+                    'timeout' => 10,
+                    'method' => 'GET',
+                    'header' => 'Content-Type: application/json'
+                ]
+            ]);
+            
+            // Get popular products by category using real sales data
+            if ($categories) {
+                foreach ($categories as $category) {
+                    $categoryId = (string)($category['category_id']);
+                    $products_by_category[$categoryId] = [];
+                    
+                    // Try to get popular products from API
+                    try {
+                        $popularUrl = $api_base_url . '/menu/categories/' . $categoryId . '/popular?limit=50';
+                        $popularResponse = @file_get_contents($popularUrl, false, $context);
+                        
+                        if ($popularResponse !== false) {
+                            $popularData = json_decode($popularResponse, true);
+                            if ($popularData && isset($popularData['popular_products'])) {
+                                $products_by_category[$categoryId] = $popularData['popular_products'];
+                                continue;
+                            }
+                        }
+                    } catch (Exception $e) {
+                        error_log("Failed to get popular products for category $categoryId: " . $e->getMessage());
                     }
                     
-                    // Check if product is visible
-                    $isVisible = true;
-                    if (isset($product['spots']) && is_array($product['spots'])) {
-                        foreach ($product['spots'] as $spot) {
-                            if (isset($spot['visible']) && $spot['visible'] == '0') {
-                                $isVisible = false;
-                                break;
+                    // Fallback: get all products from category and sort by sort_order
+                    $categoryProducts = [];
+                    foreach ($products as $product) {
+                        if (($product['menu_category_id'] ?? $product['category_id']) == $categoryId) {
+                            // Check if product is visible
+                            $isVisible = true;
+                            if (isset($product['spots']) && is_array($product['spots'])) {
+                                foreach ($product['spots'] as $spot) {
+                                    if (isset($spot['visible']) && $spot['visible'] == '0') {
+                                        $isVisible = false;
+                                        break;
+                                    }
+                                }
+                            }
+                            
+                            if ($isVisible) {
+                                $categoryProducts[] = $product;
                             }
                         }
                     }
                     
-                    // Only add visible products
-                    if ($isVisible) {
-                        $products_by_category[$category_id][] = $product;
-                    }
-                }
-                
-                // Sort products by popularity (visible first, then by sort_order, then by price)
-                foreach ($products_by_category as $category_id => $category_products) {
-                    usort($category_products, function($a, $b) {
-                        // First: visible products
-                        $aVisible = isset($a['spots']) ? $a['spots'][0]['visible'] ?? '1' : '1';
-                        $bVisible = isset($b['spots']) ? $b['spots'][0]['visible'] ?? '1' : '1';
-                        
-                        if ($aVisible != $bVisible) {
-                            return $bVisible <=> $aVisible; // visible first
-                        }
-                        
-                        // Second: sort_order (higher is more popular - reverse order)
+                    // Sort by sort_order as fallback
+                    usort($categoryProducts, function($a, $b) {
                         $aSort = (int)($a['sort_order'] ?? 0);
                         $bSort = (int)($b['sort_order'] ?? 0);
-                        
-                        if ($aSort != $bSort) {
-                            return $bSort <=> $aSort; // higher sort_order first (more popular)
-                        }
-                        
-                        // Third: by price (higher price first for premium items)
-                        $aPrice = (int)($a['price_normalized'] ?? 0);
-                        $bPrice = (int)($b['price_normalized'] ?? 0);
-                        
-                        return $bPrice <=> $aPrice; // higher price first
+                        return $bSort <=> $aSort;
                     });
                     
-                    $products_by_category[$category_id] = $category_products;
+                    $products_by_category[$categoryId] = $categoryProducts;
                 }
             }
         }
