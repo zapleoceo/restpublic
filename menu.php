@@ -255,7 +255,7 @@ if ($menu_loaded) {
             background          : transparent;
             border              : none;
             cursor              : pointer;
-            z-index             : 1000;
+            z-index             : 1001;
             padding             : 0;
             margin              : 0;
         }
