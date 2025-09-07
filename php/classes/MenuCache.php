@@ -39,11 +39,21 @@ class MenuCache {
             $products = $menu['products'] ?? [];
             
             // Convert BSONArray to PHP array if needed
-            if (is_object($categories) && method_exists($categories, 'toArray')) {
-                $categories = $categories->toArray();
+            if (is_object($categories)) {
+                if (method_exists($categories, 'toArray')) {
+                    $categories = $categories->toArray();
+                } else {
+                    // Fallback: convert to array manually
+                    $categories = iterator_to_array($categories);
+                }
             }
-            if (is_object($products) && method_exists($products, 'toArray')) {
-                $products = $products->toArray();
+            if (is_object($products)) {
+                if (method_exists($products, 'toArray')) {
+                    $products = $products->toArray();
+                } else {
+                    // Fallback: convert to array manually
+                    $products = iterator_to_array($products);
+                }
             }
             
             return [
