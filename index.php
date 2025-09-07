@@ -38,8 +38,13 @@ try {
                         $popularData = json_decode($popularResponse, true);
                         if ($popularData && isset($popularData['popular_products'])) {
                             $productsByCategory[$categoryId] = $popularData['popular_products'];
+                            error_log("SUCCESS: Got popular products for category $categoryId from API");
                             continue;
+                        } else {
+                            error_log("ERROR: Invalid API response for category $categoryId: " . substr($popularResponse, 0, 200));
                         }
+                    } else {
+                        error_log("ERROR: API call failed for category $categoryId, URL: $popularUrl");
                     }
                 } catch (Exception $e) {
                     error_log("Failed to get popular products for category $categoryId: " . $e->getMessage());
