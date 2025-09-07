@@ -153,9 +153,17 @@ class PosterService {
           }
           return true;
         })
+        .map(product => {
+          // Add sales_count to each product
+          const salesCount = productSales[product.product_id] || 0;
+          return {
+            ...product,
+            sales_count: salesCount
+          };
+        })
         .sort((a, b) => {
-          const salesA = productSales[a.product_id] || 0;
-          const salesB = productSales[b.product_id] || 0;
+          const salesA = a.sales_count || 0;
+          const salesB = b.sales_count || 0;
           return salesB - salesA;
         })
         .slice(0, limit);
@@ -175,6 +183,10 @@ class PosterService {
           }
           return true;
         })
+        .map(product => ({
+          ...product,
+          sales_count: 0 // No sales data available
+        }))
         .slice(0, limit);
       
       console.log(`📋 Fallback: Retrieved ${fallbackProducts.length} products for category ${categoryId}`);

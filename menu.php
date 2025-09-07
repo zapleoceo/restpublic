@@ -317,10 +317,8 @@ if ($menu_loaded) {
         
         /* Mobile header-nav styles */
         .header-nav {
-            display: block;
+            display: none;
             width: 100%;
-            transform: scaleY(0);
-            transform-origin: center top;
             background-color: var(--color-bg, #1a1a1a);
             box-shadow: var(--shadow-medium, 0 4px 6px rgba(0,0,0,0.1));
             border-bottom: 1px solid var(--color-bg-neutral-dark, #333);
@@ -894,7 +892,17 @@ if ($menu_loaded) {
                     e.preventDefault();
                     console.log('Mobile toggle clicked!');
                     mobileToggle.classList.toggle('is-clicked');
-                    document.body.classList.toggle('menu-is-open');
+                    
+                    // Toggle menu visibility directly
+                    if (mobileNav.style.display === 'block') {
+                        mobileNav.style.display = 'none';
+                        document.body.classList.remove('menu-is-open');
+                    } else {
+                        mobileNav.style.display = 'block';
+                        document.body.classList.add('menu-is-open');
+                    }
+                    
+                    console.log('Menu display:', mobileNav.style.display);
                     console.log('Body classes:', document.body.className);
                 });
             } else {
@@ -942,6 +950,7 @@ if ($menu_loaded) {
                     
                     // Close mobile category navigation
                     mobileToggle.classList.remove('is-clicked');
+                    mobileNav.style.display = 'none';
                     document.body.classList.remove('menu-is-open');
                     
                     // Show/hide sections with animation
