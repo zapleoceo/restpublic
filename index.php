@@ -64,7 +64,8 @@ try {
                     return $aPrice <=> $bPrice;
                 });
                 
-                $productsByCategory[$categoryId] = $categoryProducts;
+                // Take only top 5 most popular products
+                $productsByCategory[$categoryId] = array_slice($categoryProducts, 0, 5);
             }
         }
     }
