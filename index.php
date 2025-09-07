@@ -14,7 +14,7 @@ try {
         $products = $menuData ? $menuData['products'] : [];
         
         // API configuration for popular products
-        $api_base_url = 'https://northrepublic.me:3002/api';
+        $api_base_url = 'http://localhost:3002/api';
         $context = stream_context_create([
             'http' => [
                 'timeout' => 10,
