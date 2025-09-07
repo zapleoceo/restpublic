@@ -232,6 +232,10 @@ if ($menu_loaded) {
             border-color: #1c1e1d;
         }
         
+        .s-header__content {
+            position: relative;
+        }
+        
         .s-header__block {
             display: flex;
             align-items: center;
@@ -239,7 +243,7 @@ if ($menu_loaded) {
             position: relative;
         }
         
-        /* Mobile menu toggle - positioned in s-header__block */
+        /* Mobile menu toggle - positioned outside s-header__block */
         .header-menu-toggle {
             --toggle-block-width: 44px;
             --toggle-line-width : 28px;
@@ -250,7 +254,7 @@ if ($menu_loaded) {
             height              : var(--toggle-block-width);
             position            : absolute;
             top                 : 50%;
-            right               : 0;
+            right               : calc(var(--gutter, 1rem) * 2);
             transform           : translateY(-50%);
             background          : transparent;
             border              : none;
@@ -547,12 +551,12 @@ if ($menu_loaded) {
                             <img src="images/logo.png" alt="North Republic">
                         </a>
                     </div>
-                    
-                    <!-- Mobile Category Toggle -->
-                    <button class="header-menu-toggle" id="mobileCategoryToggle">
-                        <span>Menu</span>
-                    </button>
                 </div>
+                
+                <!-- Mobile Category Toggle -->
+                <button class="header-menu-toggle" id="mobileCategoryToggle">
+                    <span>Menu</span>
+                </button>
             </div>
         </header>
 
