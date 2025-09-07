@@ -17,16 +17,7 @@ jobs:
       with:
         node-version: '20'
         cache: 'npm'
-        
-    - name: Install Frontend Dependencies
-      run: |
-        cd frontend
-        npm ci --legacy-peer-deps
-        
-    - name: Build Frontend
-      run: |
-        cd frontend
-        npm run build
+        cache-dependency-path: 'backend/package-lock.json'
         
     - name: Install Backend Dependencies
       run: |
@@ -58,27 +49,33 @@ jobs:
           cd backend
           npm install
           
+          # Install PHP dependencies
+          echo "📦 Installing PHP dependencies..."
+          cd ..
+          composer install --no-dev --optimize-autoloader
+          
+          # Copy PHP files to root
+          echo "📁 Copying PHP files to root..."
+          cp php/index.php .
+          cp php/menu.php .
+          cp -r php/components .
+          
+          # Copy template files
+          echo "📁 Copying template files..."
+          cp -r template/css .
+          cp -r template/js .
+          cp -r template/images .
+          cp template/*.png .
+          cp template/*.ico .
+          
           # Restart backend with PM2
           echo "🔄 Restarting backend service..."
-          pm2 stop northrepublic-backend || true
-          pm2 delete northrepublic-backend || true
-          pm2 start server.js --name northrepublic-backend
+          pm2 restart northrepublic-backend || pm2 start backend/server.js --name northrepublic-backend
           pm2 save
           
-          # Install frontend dependencies
-          echo "📦 Installing frontend dependencies..."
-          cd ../frontend
-          npm ci --legacy-peer-deps || npm install --legacy-peer-deps
-          
-          # Build frontend
-          echo "🔨 Building frontend..."
-          npm run build
-          
-          # Copy built files and images to public directory
-          echo "📁 Copying built files and images..."
-          cd ..
-          cp -r frontend/build/* .
-          cp -r frontend/public/images .
+          # Initialize menu cache
+          echo "🔄 Initializing menu cache..."
+          php php/init-cache.php || echo "⚠️ Cache initialization failed"
           
           # Check services status
           echo "📊 Checking services status..."
