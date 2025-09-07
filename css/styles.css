@@ -487,7 +487,7 @@
     --type-size-body               : var(--text-base);
     --type-size-body-sm            : var(--text-sm);
     --type-size-all-caps           : var(--text-sm);
-    --type-size-h1                 : clamp(var(--text-display), calc((var(--text-display) - 1rem) + 2vw), var(--text-2display));
+    --type-size-h1                 : clamp(calc(var(--text-display) * 0.85), calc((var(--text-display) * 0.85 - 1rem) + 2vw), calc(var(--text-2display) * 0.85));
     --type-size-h2                 : clamp(var(--text-2xl), calc((var(--text-2xl) - .75rem) + 1.5vw), var(--text-3xl));
     --type-size-h3                 : clamp(var(--text-xl), calc((var(--text-xl) - .5rem) + 1vw), var(--text-2xl));
     --type-size-h4                 : var(--text-lg);

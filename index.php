@@ -233,9 +233,9 @@ try {
                 </div> <!-- end intro-header -->
 
                 <figure class="intro-pic-primary">
-                    <img src="template/images/intro-pic-primary.jpg" 
-                         srcset="template/images/intro-pic-primary.jpg 1x, 
-                         template/images/intro-pic-primary@2x.jpg 2x" alt="">  
+                    <img src="images/shawa.png" 
+                         srcset="images/shawa.png 1x, 
+                         images/shawa.png 2x" alt="">  
                 </figure> <!-- end intro-pic-primary -->    
                     
                 <div class="intro-block-content">
