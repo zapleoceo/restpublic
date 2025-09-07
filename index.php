@@ -49,12 +49,12 @@ try {
                         return $bVisible <=> $aVisible; // visible first
                     }
                     
-                    // Second: sort_order (lower is more popular)
-                    $aSort = (int)($a['sort_order'] ?? 999);
-                    $bSort = (int)($b['sort_order'] ?? 999);
+                    // Second: sort_order (higher is more popular - reverse order)
+                    $aSort = (int)($a['sort_order'] ?? 0);
+                    $bSort = (int)($b['sort_order'] ?? 0);
                     
                     if ($aSort != $bSort) {
-                        return $aSort <=> $bSort;
+                        return $bSort <=> $aSort; // higher sort_order first (more popular)
                     }
                     
                     // Third: by price (lower price is more popular for basic items)
@@ -69,8 +69,49 @@ try {
         }
     }
 } catch (Exception $e) {
-    error_log("MongoDB not available, using fallback: " . $e->getMessage());
-    // MongoDB не доступен, используем fallback
+    error_log("MongoDB not available, trying API fallback: " . $e->getMessage());
+    
+    // Fallback to API if MongoDB fails
+    $api_base_url = 'https://northrepublic.me:3002/api';
+    
+    function fetchFromAPI($endpoint) {
+        global $api_base_url;
+        $url = $api_base_url . $endpoint;
+        
+        $context = stream_context_create([
+            'http' => [
+                'timeout' => 10,
+                'method' => 'GET',
+                'header' => 'Content-Type: application/json'
+            ]
+        ]);
+        
+        $response = @file_get_contents($url, false, $context);
+        
+        if ($response === false) {
+            return null;
+        }
+        
+        return json_decode($response, true);
+    }
+    
+    // Try to fetch from API as fallback
+    $menu_data = fetchFromAPI('/menu');
+    if ($menu_data) {
+        $categories = $menu_data['categories'] ?? [];
+        $products = $menu_data['products'] ?? [];
+        
+        // Group products by category for quick access
+        if ($products) {
+            foreach ($products as $product) {
+                $categoryId = (string)($product['menu_category_id'] ?? $product['category_id'] ?? 'default');
+                if (!isset($productsByCategory[$categoryId])) {
+                    $productsByCategory[$categoryId] = [];
+                }
+                $productsByCategory[$categoryId][] = $product;
+            }
+        }
+    }
 }
 ?>
 <!DOCTYPE html>

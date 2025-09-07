@@ -53,12 +53,12 @@ try {
                             return $bVisible <=> $aVisible; // visible first
                         }
                         
-                        // Second: sort_order (lower is more popular)
-                        $aSort = (int)($a['sort_order'] ?? 999);
-                        $bSort = (int)($b['sort_order'] ?? 999);
+                        // Second: sort_order (higher is more popular - reverse order)
+                        $aSort = (int)($a['sort_order'] ?? 0);
+                        $bSort = (int)($b['sort_order'] ?? 0);
                         
                         if ($aSort != $bSort) {
-                            return $aSort <=> $bSort;
+                            return $bSort <=> $aSort; // higher sort_order first (more popular)
                         }
                         
                         // Third: by price (lower price is more popular for basic items)
@@ -79,41 +79,41 @@ try {
     // Fallback to API if MongoDB fails
     $api_base_url = 'https://northrepublic.me:3002/api';
     
-    function fetchFromAPI($endpoint) {
-        global $api_base_url;
-        $url = $api_base_url . $endpoint;
-        
-        $context = stream_context_create([
-            'http' => [
+function fetchFromAPI($endpoint) {
+    global $api_base_url;
+    $url = $api_base_url . $endpoint;
+    
+    $context = stream_context_create([
+        'http' => [
                 'timeout' => 10,
-                'method' => 'GET',
-                'header' => 'Content-Type: application/json'
-            ]
-        ]);
-        
-        $response = @file_get_contents($url, false, $context);
-        
-        if ($response === false) {
-            return null;
-        }
-        
-        return json_decode($response, true);
+            'method' => 'GET',
+            'header' => 'Content-Type: application/json'
+        ]
+    ]);
+    
+    $response = @file_get_contents($url, false, $context);
+    
+    if ($response === false) {
+        return null;
     }
     
+    return json_decode($response, true);
+}
+
     // Try to fetch from API as fallback
-    $menu_data = fetchFromAPI('/menu');
+$menu_data = fetchFromAPI('/menu');
     if ($menu_data) {
-        $categories = $menu_data['categories'] ?? [];
-        $products = $menu_data['products'] ?? [];
-        $menu_loaded = !empty($categories) && !empty($products);
-        
+$categories = $menu_data['categories'] ?? [];
+$products = $menu_data['products'] ?? [];
+$menu_loaded = !empty($categories) && !empty($products);
+
         // Group products by category and sort by popularity
-        if ($menu_loaded) {
-            foreach ($products as $product) {
+if ($menu_loaded) {
+    foreach ($products as $product) {
                 $category_id = (string)($product['menu_category_id'] ?? $product['category_id'] ?? 'default');
-                if (!isset($products_by_category[$category_id])) {
-                    $products_by_category[$category_id] = [];
-                }
+        if (!isset($products_by_category[$category_id])) {
+            $products_by_category[$category_id] = [];
+        }
                 
                 // Check if product is visible
                 $isVisible = true;
@@ -128,7 +128,7 @@ try {
                 
                 // Only add visible products
                 if ($isVisible) {
-                    $products_by_category[$category_id][] = $product;
+        $products_by_category[$category_id][] = $product;
                 }
             }
             
@@ -143,12 +143,12 @@ try {
                         return $bVisible <=> $aVisible; // visible first
                     }
                     
-                    // Second: sort_order (lower is more popular)
-                    $aSort = (int)($a['sort_order'] ?? 999);
-                    $bSort = (int)($b['sort_order'] ?? 999);
+                    // Second: sort_order (higher is more popular - reverse order)
+                    $aSort = (int)($a['sort_order'] ?? 0);
+                    $bSort = (int)($b['sort_order'] ?? 0);
                     
                     if ($aSort != $bSort) {
-                        return $aSort <=> $bSort;
+                        return $bSort <=> $aSort; // higher sort_order first (more popular)
                     }
                     
                     // Third: by price (lower price is more popular for basic items)
