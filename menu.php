@@ -285,7 +285,7 @@ if ($menu_loaded) {
             right: -300px;
             width: 300px;
             height: 100vh;
-            background: var(--color-white);
+            background: var(--color-bg-neutral-dark);
             box-shadow: -2px 0 10px rgba(0,0,0,0.1);
             z-index: 999;
             transition: right 0.3s ease;
@@ -304,6 +304,16 @@ if ($menu_loaded) {
             text-align: left;
             padding: 1rem;
             border-radius: 10px;
+            background: transparent;
+            border: 2px solid transparent;
+            color: var(--color-text-dark);
+        }
+        
+        .mobile-category-sidebar .category-btn:hover,
+        .mobile-category-sidebar .category-btn.active {
+            background: #366b5b;
+            color: var(--color-white);
+            border-color: #366b5b;
         }
         
         .mobile-overlay {
@@ -490,8 +500,8 @@ if ($menu_loaded) {
 
                 <!-- Mobile Category Sidebar -->
                 <div class="mobile-category-sidebar" id="mobileCategorySidebar">
-                    <div style="padding: 20px 0; border-bottom: 1px solid #eee; margin-bottom: 20px;">
-                        <h3 style="margin: 0; color: var(--color-text-dark);">Категории</h3>
+                    <div style="padding: 20px 0; border-bottom: 1px solid var(--color-border); margin-bottom: 20px;">
+                        <h3 style="margin: 0; color: var(--color-text-dark); font-family: var(--font-2);">Категории</h3>
                     </div>
                     <?php if ($menu_loaded && !empty($categories)): ?>
                         <?php foreach ($categories as $index => $category): ?>
