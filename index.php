@@ -70,15 +70,7 @@ try {
                     $aSort = (int)($a['sort_order'] ?? 0);
                     $bSort = (int)($b['sort_order'] ?? 0);
                     
-                    if ($aSort != $bSort) {
-                        return $bSort <=> $aSort; // higher sort_order first (more popular)
-                    }
-                    
-                    // Third: by price (lower price is more popular for basic items)
-                    $aPrice = (int)($a['price_normalized'] ?? $a['price'] ?? 0);
-                    $bPrice = (int)($b['price_normalized'] ?? $b['price'] ?? 0);
-                    
-                    return $aPrice <=> $bPrice;
+                    return $bSort <=> $aSort; // higher sort_order first (more popular)
                 });
                 
                 // Take only top 5 most popular products
@@ -176,15 +168,7 @@ try {
                     $aSort = (int)($a['sort_order'] ?? 0);
                     $bSort = (int)($b['sort_order'] ?? 0);
                     
-                    if ($aSort != $bSort) {
-                        return $bSort <=> $aSort; // higher sort_order first (more popular)
-                    }
-                    
-                    // Third: by price (lower price is more popular for basic items)
-                    $aPrice = (int)($a['price_normalized'] ?? $a['price'] ?? 0);
-                    $bPrice = (int)($b['price_normalized'] ?? $b['price'] ?? 0);
-                    
-                    return $aPrice <=> $bPrice;
+                    return $bSort <=> $aSort; // higher sort_order first (more popular)
                 });
                 
                 // Take only top 5 most popular products
