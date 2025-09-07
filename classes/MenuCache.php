@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../../vendor/autoload.php';
+require_once __DIR__ . '/../vendor/autoload.php';
 
 class MenuCache {
     private $client;
@@ -8,7 +8,7 @@ class MenuCache {
     
     public function __construct() {
         try {
-            $this->client = new MongoDB\Client("mongodb://localhost:27018");
+            $this->client = new MongoDB\Client("mongodb://localhost:27017");
             $this->db = $this->client->northrepublic;
             $this->menuCollection = $this->db->menu;
         } catch (Exception $e) {

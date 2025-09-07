@@ -7,7 +7,7 @@ $productsByCategory = [];
 try {
     require_once __DIR__ . '/vendor/autoload.php';
     if (class_exists('MongoDB\Client')) {
-        require_once __DIR__ . '/php/classes/MenuCache.php';
+        require_once __DIR__ . '/classes/MenuCache.php';
         $menuCache = new MenuCache();
         $menuData = $menuCache->getMenu();
         $categories = $menuData ? $menuData['categories'] : [];
@@ -131,8 +131,8 @@ try {
 
     <!-- CSS
     ================================================== -->
-    <link rel="stylesheet" href="template/css/vendor.css">
-    <link rel="stylesheet" href="template/css/styles.css">
+    <link rel="stylesheet" href="css/vendor.css">
+    <link rel="stylesheet" href="css/styles.css">
 
     <!-- favicons
     ================================================== -->
@@ -160,7 +160,7 @@ try {
     <div id="page" class="s-pagewrap ss-home">
 
         <!-- Header -->
-        <?php include 'php/components/header.php'; ?>
+        <?php include 'components/header.php'; ?>
 
         <!-- # intro
         ================================================== -->
@@ -368,16 +368,16 @@ try {
         </section> <!-- end s-gallery -->
 
         <!-- Footer -->
-        <?php include 'php/components/footer.php'; ?>
+        <?php include 'components/footer.php'; ?>
         
         <!-- Cart Component -->
-        <?php include 'php/components/cart.php'; ?>
+        <?php include 'components/cart.php'; ?>
     </div>
 
     <!-- JavaScript
     ================================================== -->
-    <script src="template/js/plugins.js"></script>
-    <script src="template/js/main.js"></script>
+    <script src="js/plugins.js"></script>
+    <script src="js/main.js"></script>
     
     <script>
         // Tab switching for menu categories
