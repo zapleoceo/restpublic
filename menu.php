@@ -331,6 +331,10 @@ if ($menu_loaded) {
             top: 0;
             left: 0;
             z-index: 999;
+            transform: scaleY(0);
+            transform-origin: center top;
+            opacity: 0;
+            transition: all 0.3s ease-in-out;
         }
         
         
@@ -341,6 +345,7 @@ if ($menu_loaded) {
             transform: translateY(-2rem);
             opacity: 0;
             visibility: hidden;
+            transition: all 0.3s ease-in-out;
         }
         
         .header-nav__links a {
@@ -891,19 +896,54 @@ if ($menu_loaded) {
                 mobileToggle.addEventListener('click', function(e) {
                     e.preventDefault();
                     console.log('Mobile toggle clicked!');
-                    mobileToggle.classList.toggle('is-clicked');
                     
-                    // Toggle menu visibility directly
-                    if (mobileNav.style.display === 'block') {
-                        mobileNav.style.display = 'none';
+                    // Toggle button state
+                    const isOpen = mobileNav.style.display === 'block';
+                    
+                    if (isOpen) {
+                        // Close menu with animation
+                        const links = mobileNav.querySelector('.header-nav__links');
+                        if (links) {
+                            links.style.transform = 'translateY(-2rem)';
+                            links.style.opacity = '0';
+                            links.style.visibility = 'hidden';
+                        }
+                        
+                        mobileNav.style.transform = 'scaleY(0)';
+                        mobileNav.style.opacity = '0';
+                        mobileToggle.classList.remove('is-clicked');
                         document.body.classList.remove('menu-is-open');
+                        
+                        setTimeout(() => {
+                            mobileNav.style.display = 'none';
+                        }, 300);
                     } else {
+                        // Open menu with animation
                         mobileNav.style.display = 'block';
+                        mobileNav.style.transform = 'scaleY(0)';
+                        mobileNav.style.opacity = '0';
+                        mobileToggle.classList.add('is-clicked');
                         document.body.classList.add('menu-is-open');
+                        
+                        // Trigger animation
+                        setTimeout(() => {
+                            mobileNav.style.transform = 'scaleY(1)';
+                            mobileNav.style.opacity = '1';
+                            
+                            // Animate links
+                            const links = mobileNav.querySelector('.header-nav__links');
+                            if (links) {
+                                setTimeout(() => {
+                                    links.style.transform = 'translateY(0)';
+                                    links.style.opacity = '1';
+                                    links.style.visibility = 'visible';
+                                }, 150);
+                            }
+                        }, 10);
                     }
                     
+                    console.log('Button is-clicked:', mobileToggle.classList.contains('is-clicked'));
                     console.log('Menu display:', mobileNav.style.display);
-                    console.log('Body classes:', document.body.className);
                 });
             } else {
                 console.error('Mobile toggle button not found!');
@@ -948,10 +988,22 @@ if ($menu_loaded) {
                         li.classList.add('current');
                     }
                     
-                    // Close mobile category navigation
+                    // Close mobile category navigation with animation
+                    const links = mobileNav.querySelector('.header-nav__links');
+                    if (links) {
+                        links.style.transform = 'translateY(-2rem)';
+                        links.style.opacity = '0';
+                        links.style.visibility = 'hidden';
+                    }
+                    
+                    mobileNav.style.transform = 'scaleY(0)';
+                    mobileNav.style.opacity = '0';
                     mobileToggle.classList.remove('is-clicked');
-                    mobileNav.style.display = 'none';
                     document.body.classList.remove('menu-is-open');
+                    
+                    setTimeout(() => {
+                        mobileNav.style.display = 'none';
+                    }, 300);
                     
                     // Show/hide sections with animation
                     menuSections.forEach(section => {
