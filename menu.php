@@ -321,13 +321,13 @@ if ($menu_loaded) {
             width: 100%;
             transform: scaleY(0);
             transform-origin: center top;
-            background-color: var(--color-bg);
-            box-shadow: var(--shadow-medium);
-            border-bottom: 1px solid var(--color-bg-neutral-dark);
+            background-color: var(--color-bg, #1a1a1a);
+            box-shadow: var(--shadow-medium, 0 4px 6px rgba(0,0,0,0.1));
+            border-bottom: 1px solid var(--color-bg-neutral-dark, #333);
             padding-top: 80px;
-            padding-right: calc(var(--gutter) * 2 + 0.2rem);
-            padding-left: calc(var(--gutter) * 2 + 0.2rem);
-            padding-bottom: var(--vspace-1_5);
+            padding-right: calc(var(--gutter, 1rem) * 2 + 0.2rem);
+            padding-left: calc(var(--gutter, 1rem) * 2 + 0.2rem);
+            padding-bottom: var(--vspace-1_5, 2rem);
             margin: 0;
             position: fixed;
             top: 0;
@@ -339,7 +339,7 @@ if ($menu_loaded) {
         .header-nav__links {
             display: block;
             padding-left: 0;
-            margin: 0 0 var(--vspace-1_5) 0;
+            margin: 0 0 var(--vspace-1_5, 2rem) 0;
             transform: translateY(-2rem);
             opacity: 0;
             visibility: hidden;
@@ -461,7 +461,7 @@ if ($menu_loaded) {
             color: var(--color-text-dark);
         }
         
-        @media (max-width: 900px) {
+        @media (max-width: 768px) {
             .header-menu-toggle {
                 display: block;
             }
@@ -879,13 +879,27 @@ if ($menu_loaded) {
             const categoryBtns = document.querySelectorAll('.category-btn, .header-nav__links a');
             const menuSections = document.querySelectorAll('.menu-section');
             const mobileToggle = document.getElementById('mobileCategoryToggle');
+            const mobileNav = document.getElementById('mobileCategoryNav');
+            
+            console.log('Elements found:');
+            console.log('- mobileToggle:', mobileToggle);
+            console.log('- mobileNav:', mobileNav);
+            console.log('- categoryBtns:', categoryBtns.length);
+            console.log('- menuSections:', menuSections.length);
             
             // Mobile category navigation functionality (like header-nav)
-            mobileToggle.addEventListener('click', function(e) {
-                e.preventDefault();
-                mobileToggle.classList.toggle('is-clicked');
-                document.body.classList.toggle('menu-is-open');
-            });
+            if (mobileToggle) {
+                console.log('Mobile toggle button found:', mobileToggle);
+                mobileToggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    console.log('Mobile toggle clicked!');
+                    mobileToggle.classList.toggle('is-clicked');
+                    document.body.classList.toggle('menu-is-open');
+                    console.log('Body classes:', document.body.className);
+                });
+            } else {
+                console.error('Mobile toggle button not found!');
+            }
             
             // Set initial active state
             if (categoryBtns.length > 0) {
