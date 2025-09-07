@@ -5,7 +5,7 @@ $products = [];
 $productsByCategory = [];
 
 try {
-    require_once __DIR__ . '/../vendor/autoload.php';
+    require_once __DIR__ . '/vendor/autoload.php';
     if (class_exists('MongoDB\Client')) {
         require_once __DIR__ . '/classes/MenuCache.php';
         $menuCache = new MenuCache();
