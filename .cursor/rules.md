@@ -1,52 +1,62 @@
 # Правила проекта North Republic
-НЕ создавай ненужные компоненты и файлы в проекте. Делай оптимально .
 
+## Основные принципы
+- **НЕ создавай** ненужные компоненты и файлы
+- **Делай оптимально** - минимальный код, максимальная функциональность
+- **Следуй структуре** - не нарушай архитектуру проекта
+- **Тестируй локально** - все изменения проверяй перед деплоем
 
 ## Git Workflow
 - Все изменения в `main` ветке
-- Деплой: `git push origin main` → `ssh nr "git pull origin main"`
-- править создават и удалять тестовые файлы можно копируй их с локалки по SSH минуя гит, обязательно удалив их после тестов и запустив деплой. тестовые файлы не должны быть в гите.
+- **Деплой**: `git push origin main` → `ssh nr "git pull origin main"`
+- **Тестовые файлы**: копируй по SSH, удаляй после тестов, НЕ коммить в git
 
-## Структура проекта
+## Структура проекта (АКТУАЛЬНАЯ)
 ```
 NRsite/
-├── php/               # PHP Frontend
-│   ├── index.php      # Главная страница
-│   ├── menu.php       # Страница меню
-│   └── classes/       # PHP классы (MenuCache)
 ├── backend/           # Node.js API (Express + Poster API)
-├── template/          # HTML шаблон и ресурсы
-└── deploy.sh          # Скрипт деплоя
+├── classes/           # PHP классы (MenuCache)
+├── components/        # PHP компоненты (header, footer, cart)
+├── css/              # Стили (vendor, styles, custom)
+├── fonts/            # Локальные шрифты (Serati)
+├── images/           # Основные изображения
+├── js/               # JavaScript (main, plugins)
+├── template/         # Шаблоны и ресурсы
+├── index.php         # Главная страница
+├── menu.php          # Страница меню
+└── deploy.sh         # Скрипт деплоя
 ```
 
 ## Технологии
-- **Frontend**: PHP, HTML, CSS, JavaScript
-- **Backend**: Node.js, Express, MongoDB, Poster POS API v3
+- **Frontend**: PHP 8.x, HTML5, CSS3, JavaScript (Vanilla)
+- **Backend**: Node.js, Express.js, MongoDB, Poster POS API v3
+- **Шрифты**: Roboto Flex (Google Fonts), Serati (локальный)
 - **Deploy**: PM2, Nginx, Apache, SSH
 
 ## Важные файлы
-- `index.php` - главная страница (копируется из php/)
-- `menu.php` - страница меню (копируется из php/)
-- `deploy.sh` - автоматический деплой
+- `index.php` - главная страница с мини-меню
+- `menu.php` - полная страница меню с сортировкой
 - `backend/services/posterService.js` - API Poster
-- `php/classes/MenuCache.php` - MongoDB кэш
+- `classes/MenuCache.php` - MongoDB кэш
+- `css/styles.css` - основные стили
+- `fonts/` - локальные шрифты Serati
 
 ## Правила разработки
-1. PHP файлы в папке `php/`
-2. API endpoints в `backend/routes/`
-3. Конфигурация в `backend/config.env`
-4. MongoDB для кэширования меню
-5. Деплой через `deploy.sh` (копирует файлы в корень)
+1. **PHP файлы** в корне проекта
+2. **API endpoints** в `backend/routes/`
+3. **Конфигурация** в `backend/config.env`
+4. **MongoDB** для кэширования меню (порт 27017)
+5. **Деплой** через `deploy.sh`
 
 ## Деплой
 - **SSH алиас**: `ssh nr`
-- **Полный деплой**: `ssh nr "cd /var/www/northrepubli_usr/data/www/northrepublic.me && ./deploy.sh"`
 - **Быстрый деплой**: `git push origin main` → `ssh nr "git pull origin main"`
+- **Полный деплой**: `ssh nr "cd /var/www/northrepubli_usr/data/www/northrepublic.me && ./deploy.sh"`
 
 ## Архитектура
 - **PHP Frontend** + **Node.js Backend** + **MongoDB**
 - **Nginx** (reverse proxy) + **Apache** (PHP) + **PM2** (Node.js)
-- **Порты**: Nginx (80/443), Apache (81), Node.js (3002), MongoDB (27018)
+- **Порты**: Nginx (80/443), Apache (81), Node.js (3002), MongoDB (27017)
 
 ## Логи
 - **PM2**: `ssh nr "pm2 logs"`

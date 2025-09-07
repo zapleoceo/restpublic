@@ -1,6 +1,6 @@
-# RestPublic - Restaurant Menu Application v2.0
+# North Republic - Restaurant Website v2.0
 
-Современное веб-приложение и Telegram-бот для отображения меню ресторана с интеграцией Poster POS API v3.
+Современный веб-сайт ресторана North Republic с интеграцией Poster POS API v3, адаптивным дизайном и системой кэширования меню.
 
 ## 🌍 Окружения
 
@@ -50,73 +50,79 @@ MongoDB используется для хранения конфигураци�
 
 ## 🚀 Особенности
 
-- **Современный React Frontend** с роутингом и адаптивным дизайном
-- **Node.js Backend** с кэшированием и проксированием API
-- **Telegram-бот** на TypeScript с автоматическим переводом
-- **Интеграция с Poster API v3** для получения данных меню
-- **MongoDB** для хранения конфигураций и переводов
+- **PHP Frontend** с адаптивным дизайном и мобильным меню
+- **Node.js Backend** с кэшированием и проксированием Poster API
+- **Интеграция с Poster API v3** для получения данных меню и статистики продаж
+- **MongoDB** для кэширования данных меню
+- **Локальные шрифты** Serati для уникального дизайна
 - **Автоматический деплой** с обновлением кода и перезапуском сервисов
-- **Кэширование данных** для улучшения производительности
+- **Система сортировки** по популярности, цене и алфавиту
+- **Hover эффекты** и анимации для улучшения UX
 
 ## 📁 Структура проекта
 
 ```
-restpublic/
-├── frontend/          # React веб-приложение
-│   ├── src/
-│   │   ├── components/
-│   │   │   ├── Header.jsx
-│   │   │   ├── HomePage.jsx
-│   │   │   ├── MenuPage.jsx
-│   │   │   ├── AdminPanel.jsx
-│   │   │   ├── LoadingSpinner.jsx
-│   │   │   └── ErrorBoundary.jsx
-│   │   ├── App.jsx
-│   │   ├── main.jsx
-│   │   └── index.css
-│   ├── package.json
-│   └── vite.config.js
-├── backend/           # Node.js сервер
+NRsite/
+├── backend/           # Node.js API сервер
 │   ├── server.js
 │   ├── routes/
-│   │   └── admin.js
+│   │   ├── poster.js
+│   │   ├── menu.js
+│   │   └── cache.js
 │   ├── services/
-│   │   └── mongoService.js
-│   ├── scripts/
-│   │   └── migrate-to-mongodb.js
+│   │   └── posterService.js
 │   └── package.json
-├── bot/               # Telegram-бот
-│   ├── src/
-│   ├── package.json
-│   └── tsconfig.json
-├── deploy.sh          # Скрипт автоматического деплоя
-├── .cursor/env.txt    # Конфигурация копия (не в репозитории)
-├── .cursor/.env    # Конфигурация (не в репозитории)
+├── classes/           # PHP классы
+│   └── MenuCache.php
+├── components/        # PHP компоненты
+│   ├── header.php
+│   ├── footer.php
+│   └── cart.php
+├── css/              # Стили
+│   ├── styles.css
+│   ├── vendor.css
+│   └── custom.css
+├── fonts/            # Локальные шрифты
+│   ├── Serati.ttf
+│   ├── SeratiItalic.ttf
+│   └── License.txt
+├── images/           # Основные изображения
+│   ├── logo.png
+│   ├── shawa.png
+│   └── ...
+├── js/               # JavaScript
+│   ├── main.js
+│   └── plugins.js
+├── template/         # Шаблоны и ресурсы
+│   └── images/
+├── index.php         # Главная страница
+├── menu.php          # Страница меню
+├── deploy.sh         # Скрипт деплоя
 └── README.md
 ```
 
 ## 🛠️ Технологии
 
 ### Frontend
-- **React 18** - Основной фреймворк
-- **React Router** - Клиентская маршрутизация
-- **Vite** - Сборщик и dev-сервер
-- **Tailwind CSS** - Стилизация
-- **Lucide React** - Иконки
-- **Axios** - HTTP-клиент
+- **PHP 8.x** - Основной язык серверной части
+- **HTML5/CSS3** - Разметка и стили
+- **JavaScript (Vanilla)** - Клиентская логика
+- **MongoDB PHP Driver** - Работа с базой данных
+- **Composer** - Управление зависимостями
 
 ### Backend
 - **Node.js** - Серверная среда
 - **Express.js** - Веб-фреймворк
-- **MongoDB** - База данных для конфигураций
+- **MongoDB** - База данных для кэширования
 - **Axios** - HTTP-клиент для API
 - **CORS** - Обработка CORS
-- **Кэширование** - Встроенное кэширование данных
+- **PM2** - Менеджер процессов
 
-### Telegram Bot
-- **Telegraf** - Telegram Bot API
-- **TypeScript** - Типизация
-- **Axios** - HTTP-клиент
+### Шрифты и дизайн
+- **Roboto Flex** - Основной шрифт (Google Fonts)
+- **Serati** - Декоративный шрифт (локальный)
+- **CSS Grid/Flexbox** - Современная верстка
+- **Адаптивный дизайн** - Mobile-first подход
 
 ## 🚀 Быстрый старт
 
@@ -255,6 +261,8 @@ MIT License
 
 Для вопросов и предложений создавайте Issues в репозитории.#   T e s t   d e p l o y m e n t 
  
- #   T e s t   c o m m i t   f o r   a u t o - d e p l o y  
- #   T e s t   d e p l o y m e n t   0 9 / 0 7 / 2 0 2 5   1 2 : 4 7 : 3 6  
+ #   T e s t   c o m m i t   f o r   a u t o - d e p l o y 
+ 
+ #   T e s t   d e p l o y m e n t   0 9 / 0 7 / 2 0 2 5   1 2 : 4 7 : 3 6 
+ 
  
