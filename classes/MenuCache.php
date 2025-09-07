@@ -77,7 +77,7 @@ class MenuCache {
     }
     
     /**
-     * Получить продукты по категории
+     * Получить продукты по категории с сортировкой по популярности
      */
     public function getProductsByCategory($categoryId, $limit = 5) {
         $menu = $this->getMenu();
@@ -89,16 +89,70 @@ class MenuCache {
         $products = $menu['products'] ?? [];
         $categoryProducts = [];
         
+        // Собираем все продукты категории
         foreach ($products as $product) {
             if (($product['menu_category_id'] ?? $product['category_id']) == $categoryId) {
-                $categoryProducts[] = $product;
-                if (count($categoryProducts) >= $limit) {
-                    break;
+                // Проверяем видимость продукта
+                $isVisible = true;
+                if (isset($product['spots']) && is_array($product['spots'])) {
+                    foreach ($product['spots'] as $spot) {
+                        if (isset($spot['visible']) && $spot['visible'] == '0') {
+                            $isVisible = false;
+                            break;
+                        }
+                    }
+                }
+                
+                if ($isVisible) {
+                    $categoryProducts[] = $product;
                 }
             }
         }
         
-        return $categoryProducts;
+        // Сортируем по популярности (та же логика, что и в index.php)
+        usort($categoryProducts, function($a, $b) {
+            // First: visible products (already filtered above, but double-check)
+            $aVisible = true;
+            if (isset($a['spots']) && is_array($a['spots'])) {
+                foreach ($a['spots'] as $spot) {
+                    if (isset($spot['visible']) && $spot['visible'] == '0') {
+                        $aVisible = false;
+                        break;
+                    }
+                }
+            }
+            
+            $bVisible = true;
+            if (isset($b['spots']) && is_array($b['spots'])) {
+                foreach ($b['spots'] as $spot) {
+                    if (isset($spot['visible']) && $spot['visible'] == '0') {
+                        $bVisible = false;
+                        break;
+                    }
+                }
+            }
+            
+            if ($aVisible != $bVisible) {
+                return $bVisible <=> $aVisible; // visible first
+            }
+            
+            // Second: sort_order (higher is more popular - reverse order)
+            $aSort = (int)($a['sort_order'] ?? 0);
+            $bSort = (int)($b['sort_order'] ?? 0);
+            
+            if ($aSort != $bSort) {
+                return $bSort <=> $aSort; // higher sort_order first (more popular)
+            }
+            
+            // Third: by price (lower price is more popular for basic items)
+            $aPrice = (int)($a['price_normalized'] ?? $a['price'] ?? 0);
+            $bPrice = (int)($b['price_normalized'] ?? $b['price'] ?? 0);
+            
+            return $aPrice <=> $bPrice;
+        });
+        
+        // Возвращаем только топ N продуктов
+        return array_slice($categoryProducts, 0, $limit);
     }
     
     /**
