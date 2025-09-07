@@ -200,6 +200,10 @@ try {
         .intro-header__big-type {
             opacity: var(--intro-text-opacity);
         }
+        
+        .intro-header__overline {
+            font-family: "Roboto Flex", sans-serif;
+        }
     </style>
 
     <!-- favicons
