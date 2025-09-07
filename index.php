@@ -237,6 +237,10 @@ try {
                 </div> <!-- end s-menu__content-start -->
 
                 <div class="column xl-6 lg-6 md-12 s-menu__content-end">
+                    <div class="section-header" data-num="03">
+                        <h2 class="text-display-title">Top 5 позиций</h2>
+                    </div>
+                    
                     <div class="tab-content menu-block" id="menu-content">
                         <?php if (!empty($categories)): ?>
                             <?php foreach ($categories as $index => $category): ?>
