@@ -370,24 +370,32 @@ if ($menu_loaded) {
         }
         
         .header-nav__links a {
-            display: block;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             font-family: var(--type-body);
             font-weight: 500;
             color: var(--color-text-light);
-            padding: var(--vspace-0_25) 0;
+            padding: var(--vspace-1) var(--vspace-1);
+            margin-bottom: 0.5rem;
+            border-radius: var(--border-radius);
+            background-color: var(--color-bg-neutral-dark);
             font-size: var(--text-base);
             transition-property: color, background-color;
             transition-duration: 0.3s;
             text-decoration: none;
+            width: 100%;
         }
         
         .header-nav__links a:focus,
         .header-nav__links a:hover {
-            color: var(--color-text);
+            color: var(--color-white);
+            background-color: var(--color-bg-primary);
         }
         
         .header-nav__links .current a {
             color: var(--color-white);
+            background-color: #366b5b;
         }
         
         /* Menu open animations (like header-nav) */
