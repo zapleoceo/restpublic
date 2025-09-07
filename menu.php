@@ -232,7 +232,7 @@ if ($menu_loaded) {
             border-color: #1c1e1d;
         }
         
-        /* Mobile sidebar for categories */
+        /* Mobile category navigation - like header-nav */
         .mobile-category-toggle {
             display: none;
             position: fixed;
@@ -276,53 +276,67 @@ if ($menu_loaded) {
             transform-origin: center;
         }
         
-        .mobile-category-toggle.open .hamburger .line:nth-child(1) {
+        .mobile-category-toggle.is-clicked .hamburger .line:nth-child(1) {
             transform: rotate(45deg) translate(0, 6px);
         }
         
-        .mobile-category-toggle.open .hamburger .line:nth-child(2) {
+        .mobile-category-toggle.is-clicked .hamburger .line:nth-child(2) {
             opacity: 0;
         }
         
-        .mobile-category-toggle.open .hamburger .line:nth-child(3) {
+        .mobile-category-toggle.is-clicked .hamburger .line:nth-child(3) {
             transform: rotate(-45deg) translate(0, -6px);
         }
         
-        .mobile-category-sidebar {
+        .mobile-category-nav {
+            display: block;
+            width: 100%;
+            transform: scaleY(0);
+            transform-origin: center top;
+            background-color: var(--color-bg-neutral-dark);
             position: fixed;
             top: 0;
-            right: -300px;
-            width: 300px;
-            height: 100vh;
-            background: var(--color-bg-neutral-dark);
-            box-shadow: -2px 0 10px rgba(0,0,0,0.1);
+            left: 0;
             z-index: 999;
-            transition: right 0.3s ease;
             padding: 80px 20px 20px;
-            overflow-y: auto;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transition: transform 0.3s var(--ease-quick-out);
+            transition-delay: 0.1s;
         }
         
-        .mobile-category-sidebar.open {
-            right: 0;
+        .mobile-category-nav__links {
+            display: block;
+            padding-left: 0;
+            margin: 0 0 var(--vspace-1_5) 0;
+            transform: translateY(-2rem);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.6s var(--ease-quick-out);
+            transition-delay: 0s;
         }
         
-        .mobile-category-sidebar .category-btn {
+        .mobile-category-nav__links .category-btn {
             display: block;
             width: 100%;
             margin-bottom: 10px;
             text-align: left;
-            padding: 1rem;
-            border-radius: 10px;
+            padding: var(--vspace-0_5) 0;
             background: transparent;
-            border: 2px solid transparent;
+            border: none;
             color: var(--color-text-dark);
+            font-size: var(--text-base);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
         }
         
-        .mobile-category-sidebar .category-btn:hover,
-        .mobile-category-sidebar .category-btn.active {
-            background: #366b5b;
-            color: var(--color-white);
-            border-color: #366b5b;
+        .mobile-category-nav__links .category-btn:hover,
+        .mobile-category-nav__links .category-btn.active {
+            color: #366b5b;
+        }
+        
+        .mobile-category-nav__links .category-btn.active {
+            font-weight: 600;
         }
         
         .mobile-overlay {
@@ -338,6 +352,21 @@ if ($menu_loaded) {
         
         .mobile-overlay.open {
             display: block;
+        }
+        
+        /* Menu open animations (like header-nav) */
+        .menu-is-open .mobile-category-nav {
+            transform: scaleY(1);
+            transition: transform 0.3s var(--ease-quick-out);
+            transition-delay: 0s;
+        }
+        
+        .menu-is-open .mobile-category-nav__links {
+            transform: translateY(0);
+            opacity: 1;
+            visibility: visible;
+            transition: all 0.6s var(--ease-quick-out);
+            transition-delay: 0.1s;
         }
         
         .menu-section {
@@ -507,19 +536,20 @@ if ($menu_loaded) {
                     </div>
                 </button>
 
-                <!-- Mobile Category Sidebar -->
-                <div class="mobile-category-sidebar" id="mobileCategorySidebar">
-                    <div style="padding: 20px 0; border-bottom: 1px solid var(--color-border); margin-bottom: 20px;">
-                        <h3 style="margin: 0; color: var(--color-text-dark); font-family: var(--font-2);">Категории</h3>
-                    </div>
-                    <?php if ($menu_loaded && !empty($categories)): ?>
-                        <?php foreach ($categories as $index => $category): ?>
-                            <button class="category-btn <?php echo $index === 0 ? 'active' : ''; ?>" data-category="<?php echo htmlspecialchars($category['category_id']); ?>">
-                                <?php echo htmlspecialchars($category['category_name'] ?? $category['name']); ?>
-                            </button>
-                        <?php endforeach; ?>
-                    <?php endif; ?>
-                </div>
+                <!-- Mobile Category Navigation -->
+                <nav class="mobile-category-nav" id="mobileCategoryNav">    
+                    <ul class="mobile-category-nav__links">
+                        <?php if ($menu_loaded && !empty($categories)): ?>
+                            <?php foreach ($categories as $index => $category): ?>
+                                <li>
+                                    <button class="category-btn <?php echo $index === 0 ? 'active' : ''; ?>" data-category="<?php echo htmlspecialchars($category['category_id']); ?>">
+                                        <?php echo htmlspecialchars($category['category_name'] ?? $category['name']); ?>
+                                    </button>
+                                </li>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </ul>
+                </nav>
 
                 <!-- Mobile Overlay -->
                 <div class="mobile-overlay" id="mobileOverlay"></div>
@@ -716,25 +746,16 @@ if ($menu_loaded) {
             const mobileSidebar = document.getElementById('mobileCategorySidebar');
             const mobileOverlay = document.getElementById('mobileOverlay');
             
-            // Mobile sidebar functionality
-            mobileToggle.addEventListener('click', function() {
-                const isOpen = mobileSidebar.classList.contains('open');
-                
-                if (isOpen) {
-                    mobileSidebar.classList.remove('open');
-                    mobileOverlay.classList.remove('open');
-                    mobileToggle.classList.remove('open');
-                } else {
-                    mobileSidebar.classList.add('open');
-                    mobileOverlay.classList.add('open');
-                    mobileToggle.classList.add('open');
-                }
+            // Mobile category navigation functionality (like header-nav)
+            mobileToggle.addEventListener('click', function(e) {
+                e.preventDefault();
+                mobileToggle.classList.toggle('is-clicked');
+                document.body.classList.toggle('menu-is-open');
             });
             
             mobileOverlay.addEventListener('click', function() {
-                mobileSidebar.classList.remove('open');
-                mobileOverlay.classList.remove('open');
-                mobileToggle.classList.remove('open');
+                mobileToggle.classList.remove('is-clicked');
+                document.body.classList.remove('menu-is-open');
             });
             
             // Set initial active state
@@ -765,10 +786,9 @@ if ($menu_loaded) {
                     categoryBtns.forEach(b => b.classList.remove('active'));
                     this.classList.add('active');
                     
-                    // Close mobile sidebar
-                    mobileSidebar.classList.remove('open');
-                    mobileOverlay.classList.remove('open');
-                    mobileToggle.classList.remove('open');
+                    // Close mobile category navigation
+                    mobileToggle.classList.remove('is-clicked');
+                    document.body.classList.remove('menu-is-open');
                     
                     // Show/hide sections with animation
                     menuSections.forEach(section => {
