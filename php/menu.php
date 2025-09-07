@@ -6,9 +6,9 @@ $products_by_category = [];
 $menu_loaded = false;
 
 try {
-    require_once __DIR__ . '/../vendor/autoload.php';
+    require_once __DIR__ . '/vendor/autoload.php';
     if (class_exists('MongoDB\Client')) {
-        require_once __DIR__ . '/../php/classes/MenuCache.php';
+        require_once __DIR__ . '/php/classes/MenuCache.php';
         $menuCache = new MenuCache();
         $menuData = $menuCache->getMenu();
         
