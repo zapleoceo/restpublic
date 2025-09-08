@@ -38,6 +38,7 @@ out/
 .fusebox/
 .dynamodb/
 assets/
+!admin/assets/
 frontend/dist/
 
 # ===========================================
