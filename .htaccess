@@ -5,6 +5,7 @@ RewriteRule ^menu$ menu.php [L]
 
 # Обработка /admin без .php
 RewriteRule ^admin/?$ admin/index.php [L]
+RewriteRule ^admin/$ admin/index.php [L]
 
 # Обработка разделов админки без index.php
 RewriteRule ^admin/texts/?$ admin/texts/index.php [L]
