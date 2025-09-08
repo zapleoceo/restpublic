@@ -6,6 +6,10 @@ if (file_exists(__DIR__ . '/.env')) {
     $dotenv->load();
 }
 
+// Initialize translation service
+require_once __DIR__ . '/classes/TranslationService.php';
+$translationService = new TranslationService();
+
 // Load menu from MongoDB cache for fast rendering (if available)
 $categories = [];
 $products = [];
@@ -245,7 +249,7 @@ try {
         <section id="intro" class="container s-intro target-section">
             <div class="grid-block s-intro__content">
                 <div class="intro-header">
-                    <div class="intro-header__overline">Добро пожаловать в</div>
+                    <div class="intro-header__overline"><?php echo $translationService->get('intro.welcome', 'Добро пожаловать в'); ?></div>
                     <h1 class="intro-header__big-type">
                         North <br>
                         Republic
@@ -266,8 +270,7 @@ try {
                     </figure>
                     <div class="intro-block-content__text">
                         <p class="lead">
-                            Добро пожаловать в <strong>North Republic</strong> — место, где встречаются 
-                            изысканная кухня, уютная атмосфера и незабываемые моменты.
+                            <?php echo $translationService->get('intro.description', 'Добро пожаловать в <strong>North Republic</strong> — место, где встречаются изысканная кухня, уютная атмосфера и незабываемые моменты.'); ?>
                         </p>
                     </div>
                 </div> <!-- end intro-block-content -->
@@ -291,7 +294,7 @@ try {
             <div class="row s-about__content">
                 <div class="column xl-4 lg-5 md-12 s-about__content-start">
                     <div class="section-header" data-num="01">
-                        <h2 class="text-display-title">О нас</h2>
+                        <h2 class="text-display-title"><?php echo $translationService->get('about.title', 'О нас'); ?></h2>
                     </div>  
 
                     <figure class="about-pic-primary">

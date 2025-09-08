@@ -159,3 +159,13 @@ html {
   font-style: italic;
   padding: 1rem;
 }
+
+/* Уменьшение размера H1 на 33% */
+h1,
+.h1 {
+  font-size: calc(var(--type-size-h1) * 0.67) !important;
+}
+
+.intro-header__big-type {
+  font-size: clamp(calc(var(--text-display) * 0.67), calc((var(--text-3xl) + 10vw) * 0.67), calc(18.4rem * 0.67)) !important;
+}

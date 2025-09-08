@@ -24,6 +24,9 @@
             </ul> <!-- end header-nav__links -->  
             
             <div class="header-actions">
+                <!-- Language Switcher -->
+                <?php include 'components/language-switcher.php'; ?>
+                
                 <!-- Авторизация через Telegram (пока заглушка) -->
                 <div class="header-auth">
                     <button class="btn btn--outline" id="telegram-auth" style="display: none;">
@@ -37,7 +40,6 @@
                         <button class="btn btn--outline btn--small" id="logout">Выйти</button>
                     </div>
                 </div>
-
 
                 <!-- Контактный телефон -->
                 <div class="header-contact">
