@@ -14,6 +14,9 @@ RewriteRule ^admin/sepay/?$ admin/sepay/index.php [L]
 RewriteRule ^admin/logs/?$ admin/logs/index.php [L]
 RewriteRule ^admin/settings/?$ admin/settings/index.php [L]
 
+# Отключение автоматического добавления слэша к директориям
+DirectorySlash Off
+
 # Безопасность - запрет доступа к .htaccess
 <Files ".htaccess">
     Order allow,deny
