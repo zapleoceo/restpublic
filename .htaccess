@@ -1,6 +1,7 @@
 RewriteEngine On
 
-# Индексные файлы для директорий
+# Разрешить показ индексных файлов
+Options +Indexes
 DirectoryIndex index.php index.html
 
 # Обработка /menu без .php
