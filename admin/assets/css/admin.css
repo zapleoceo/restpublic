@@ -72,6 +72,7 @@ body {
     display: flex;
     margin-top: 80px;
     min-height: calc(100vh - 80px);
+    position: relative;
 }
 
 /* Sidebar */
@@ -81,8 +82,11 @@ body {
     border-right: 1px solid #e1e5e9;
     padding: 2rem 0;
     position: fixed;
+    top: 80px;
+    left: 0;
     height: calc(100vh - 80px);
     overflow-y: auto;
+    z-index: 999;
 }
 
 .sidebar-menu {
