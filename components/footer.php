@@ -98,7 +98,7 @@
             <div class="grid-cols__column footer-block">
                 <h6>Адрес</h6>
                 <p>
-                <a href="https://maps.google.com/?q=12.302584,109.207279" target="_blank" rel="noopener noreferrer">
+                <a href="https://maps.app.goo.gl/2KScvZCqUtkqtWN39" target="_blank" rel="noopener noreferrer">
                     Trần Khát Chân, Đường Đệ, Nha Trang, Khánh Hòa, Vietnam
                 </a>
                 </p>

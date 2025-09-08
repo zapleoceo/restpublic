@@ -1,9 +1,0 @@
-RewriteEngine On
-
-# Обработка директорий админки без index.php
-RewriteRule ^texts/?$ texts/index.php [L]
-RewriteRule ^images/?$ images/index.php [L]
-RewriteRule ^database/?$ database/index.php [L]
-RewriteRule ^sepay/?$ sepay/index.php [L]
-RewriteRule ^logs/?$ logs/index.php [L]
-RewriteRule ^settings/?$ settings/index.php [L]

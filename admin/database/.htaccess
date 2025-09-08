@@ -1,5 +1,0 @@
-RewriteEngine On
-DirectoryIndex index.php
-
-# Обработка /admin/database/ без index.php
-RewriteRule ^$ index.php [L]
