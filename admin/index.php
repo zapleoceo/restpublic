@@ -45,7 +45,7 @@ $stats = [
         <?php include 'includes/sidebar.php'; ?>
         
         <main class="admin-main">
-            <div class="admin-header">
+            <div class="page-header">
                 <h1>Панель управления</h1>
                 <p>Добро пожаловать, <?php echo htmlspecialchars($stats['admin_user']); ?>!</p>
             </div>

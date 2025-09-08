@@ -254,7 +254,7 @@ logAdminAction('init_translations', 'Инициализация переводо
         <?php include '../includes/sidebar.php'; ?>
         
         <main class="admin-main">
-            <div class="admin-header">
+            <div class="page-header">
                 <h1>Инициализация переводов</h1>
                 <p>Создание базовых переводов для сайта</p>
             </div>

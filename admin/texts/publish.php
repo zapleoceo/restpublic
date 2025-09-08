@@ -189,7 +189,7 @@ try {
         <?php include '../includes/sidebar.php'; ?>
         
         <main class="admin-main">
-            <div class="admin-header">
+            <div class="page-header">
                 <h1>Публикация изменений</h1>
                 <p>Применение изменений текстов на сайте</p>
             </div>

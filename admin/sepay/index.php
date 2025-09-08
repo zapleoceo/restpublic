@@ -208,7 +208,7 @@ logAdminAction('view_sepay_logs', 'Просмотр логов платежей 
         <?php include '../includes/sidebar.php'; ?>
         
         <main class="admin-main">
-            <div class="admin-header">
+            <div class="page-header">
                 <h1>Логи платежей Sepay</h1>
                 <p>Мониторинг транзакций BIDV</p>
             </div>

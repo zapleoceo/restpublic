@@ -167,7 +167,7 @@ try {
         <?php include '../includes/sidebar.php'; ?>
         
         <main class="admin-main">
-            <div class="admin-header">
+            <div class="page-header">
                 <h1>Добавить текст</h1>
                 <p>Создание нового текста для сайта</p>
             </div>

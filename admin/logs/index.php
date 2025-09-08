@@ -285,7 +285,7 @@ logAdminAction('view_logs', 'Просмотр логов админов', [
         <?php include '../includes/sidebar.php'; ?>
         
         <main class="admin-main">
-            <div class="admin-header">
+            <div class="page-header">
                 <h1>Логи админов</h1>
                 <p>Просмотр всех действий администраторов</p>
             </div>

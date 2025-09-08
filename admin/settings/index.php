@@ -275,7 +275,7 @@ logAdminAction('view_settings', 'Просмотр настроек систем�
         <?php include '../includes/sidebar.php'; ?>
         
         <main class="admin-main">
-            <div class="admin-header">
+            <div class="page-header">
                 <h1>Настройки системы</h1>
                 <p>Конфигурация админ-панели и интеграций</p>
             </div>

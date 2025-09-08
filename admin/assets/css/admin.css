@@ -16,13 +16,15 @@ body {
 .admin-header {
     background: white;
     border-bottom: 1px solid #e1e5e9;
-    padding: 1rem 2rem;
+    padding: 0.5rem 1.5rem;
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     z-index: 1000;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    min-height: 60px;
+    max-height: 60px;
 }
 
 .header-content {
@@ -70,8 +72,8 @@ body {
 /* Container */
 .admin-container {
     display: flex;
-    margin-top: 80px;
-    min-height: calc(100vh - 80px);
+    margin-top: 60px;
+    min-height: calc(100vh - 60px);
     position: relative;
 }
 
@@ -82,9 +84,9 @@ body {
     border-right: 1px solid #e1e5e9;
     padding: 2rem 0;
     position: fixed;
-    top: 80px;
+    top: 60px;
     left: 0;
-    height: calc(100vh - 80px);
+    height: calc(100vh - 60px);
     overflow-y: auto;
     z-index: 999;
 }
@@ -129,15 +131,22 @@ body {
     max-width: calc(100% - 250px);
 }
 
-.admin-header h1 {
+/* Page Header (inside admin-main) */
+.page-header {
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #e1e5e9;
+}
+
+.page-header h1 {
     font-size: 2rem;
     margin-bottom: 0.5rem;
     color: #333;
 }
 
-.admin-header p {
+.page-header p {
     color: #666;
-    margin-bottom: 2rem;
+    margin-bottom: 0;
 }
 
 /* Stats Grid */
@@ -406,7 +415,20 @@ body {
 
 /* Responsive */
 @media (max-width: 768px) {
+    .admin-header {
+        padding: 0.5rem 1rem;
+        min-height: 50px;
+        max-height: 50px;
+    }
+    
+    .admin-container {
+        margin-top: 50px;
+        min-height: calc(100vh - 50px);
+    }
+    
     .admin-sidebar {
+        top: 50px;
+        height: calc(100vh - 50px);
         transform: translateX(-100%);
         transition: transform 0.3s;
     }
@@ -418,6 +440,7 @@ body {
     .admin-main {
         margin-left: 0;
         max-width: 100%;
+        padding: 1rem;
     }
     
     .stats-grid {
@@ -432,8 +455,8 @@ body {
         padding: 0 1rem;
     }
     
-    .admin-main {
-        padding: 1rem;
+    .page-header h1 {
+        font-size: 1.5rem;
     }
 }
 

@@ -284,7 +284,7 @@ logAdminAction('view_texts', 'Просмотр управления текста
         <?php include '../includes/sidebar.php'; ?>
         
         <main class="admin-main">
-            <div class="admin-header">
+            <div class="page-header">
                 <h1>Управление текстами</h1>
                 <p>Редактирование контента на 3 языках (RU, EN, VI)</p>
             </div>

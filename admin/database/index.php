@@ -307,7 +307,7 @@ logAdminAction('view_database', 'Просмотр базы данных', [
         <?php include '../includes/sidebar.php'; ?>
         
         <main class="admin-main">
-            <div class="admin-header">
+            <div class="page-header">
                 <h1>База данных</h1>
                 <p>Просмотр и управление MongoDB коллекциями</p>
             </div>

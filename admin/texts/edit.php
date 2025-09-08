@@ -204,7 +204,7 @@ try {
         <?php include '../includes/sidebar.php'; ?>
         
         <main class="admin-main">
-            <div class="admin-header">
+            <div class="page-header">
                 <h1>Редактировать текст</h1>
                 <p>Изменение существующего текста</p>
             </div>
