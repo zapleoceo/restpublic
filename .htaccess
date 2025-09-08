@@ -7,12 +7,12 @@ RewriteRule ^menu$ menu.php [L]
 RewriteRule ^admin/?$ admin/index.php [L]
 
 # Обработка разделов админки без index.php
-RewriteRule ^admin/texts/?$ admin/texts/index.php [L]
-RewriteRule ^admin/images/?$ admin/images/index.php [L]
-RewriteRule ^admin/database/?$ admin/database/index.php [L]
-RewriteRule ^admin/sepay/?$ admin/sepay/index.php [L]
-RewriteRule ^admin/logs/?$ admin/logs/index.php [L]
-RewriteRule ^admin/settings/?$ admin/settings/index.php [L]
+RewriteRule ^admin/texts/?$ admin/texts.php [L]
+RewriteRule ^admin/images/?$ admin/images.php [L]
+RewriteRule ^admin/database/?$ admin/database.php [L]
+RewriteRule ^admin/sepay/?$ admin/sepay.php [L]
+RewriteRule ^admin/logs/?$ admin/logs.php [L]
+RewriteRule ^admin/settings/?$ admin/settings.php [L]
 
 # Отключение автоматического добавления слэша к директориям
 DirectorySlash Off
