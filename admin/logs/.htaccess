@@ -1,0 +1,5 @@
+RewriteEngine On
+DirectoryIndex index.php
+
+# Обработка /admin/logs/ без index.php
+RewriteRule ^$ index.php [L]
