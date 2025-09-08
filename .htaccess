@@ -1,18 +1,28 @@
 RewriteEngine On
 
+# Индексные файлы для директорий
+DirectoryIndex index.php index.html
+
 # Обработка /menu без .php
 RewriteRule ^menu$ menu.php [L]
 
 # Обработка /admin без .php
 RewriteRule ^admin$ admin/index.php [L]
+RewriteRule ^admin/$ admin/index.php [L]
 
 # Обработка разделов админки без index.php
 RewriteRule ^admin/texts$ admin/texts/index.php [L]
+RewriteRule ^admin/texts/$ admin/texts/index.php [L]
 RewriteRule ^admin/images$ admin/images/index.php [L]
+RewriteRule ^admin/images/$ admin/images/index.php [L]
 RewriteRule ^admin/database$ admin/database/index.php [L]
+RewriteRule ^admin/database/$ admin/database/index.php [L]
 RewriteRule ^admin/sepay$ admin/sepay/index.php [L]
+RewriteRule ^admin/sepay/$ admin/sepay/index.php [L]
 RewriteRule ^admin/logs$ admin/logs/index.php [L]
+RewriteRule ^admin/logs/$ admin/logs/index.php [L]
 RewriteRule ^admin/settings$ admin/settings/index.php [L]
+RewriteRule ^admin/settings/$ admin/settings/index.php [L]
 
 # Безопасность - запрет доступа к .htaccess
 <Files ".htaccess">
