@@ -1,6 +1,12 @@
 <?php
 // Header component for North Republic website
 // Usage: include 'components/header.php';
+
+// Initialize translation service if not already initialized
+if (!isset($translationService)) {
+    require_once __DIR__ . '/../classes/TranslationService.php';
+    $translationService = new TranslationService();
+}
 ?>
 <!-- # site header 
 ================================================== -->
@@ -17,10 +23,10 @@
     
         <nav class="header-nav">    
             <ul class="header-nav__links">
-                <li class="current"><a class="smoothscroll" href="#intro">Главная</a></li>
-                <li><a class="smoothscroll" href="#about">О нас</a></li>
-                <li><a href="/menu.php">Меню</a></li>
-                <li><a class="smoothscroll" href="#gallery">Галерея</a></li>
+                <li class="current"><a class="smoothscroll" href="#intro"><?php echo $translationService->get('nav.home', 'Главная'); ?></a></li>
+                <li><a class="smoothscroll" href="#about"><?php echo $translationService->get('nav.about', 'О нас'); ?></a></li>
+                <li><a href="/menu.php"><?php echo $translationService->get('nav.menu', 'Меню'); ?></a></li>
+                <li><a class="smoothscroll" href="#gallery"><?php echo $translationService->get('nav.gallery', 'Галерея'); ?></a></li>
             </ul> <!-- end header-nav__links -->  
             
             <div class="header-actions">
