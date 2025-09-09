@@ -24,6 +24,8 @@ RewriteRule ^admin/logs$ admin/logs/index.php [L]
 RewriteRule ^admin/logs/$ admin/logs/index.php [L]
 RewriteRule ^admin/settings$ admin/settings/index.php [L]
 RewriteRule ^admin/settings/$ admin/settings/index.php [L]
+RewriteRule ^admin/users$ admin/users/index.php [L]
+RewriteRule ^admin/users/$ admin/users/index.php [L]
 
 # Безопасность - запрет доступа к .htaccess
 <Files ".htaccess">

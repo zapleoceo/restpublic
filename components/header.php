@@ -32,20 +32,6 @@ if (!isset($translationService)) {
             <div class="header-actions">
                 <!-- Language Switcher -->
                 <?php include 'components/language-switcher.php'; ?>
-                
-                <!-- Авторизация через Telegram (пока заглушка) -->
-                <div class="header-auth">
-                    <button class="btn btn--outline" id="telegram-auth" style="display: none;">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.568 8.16l-1.61 7.59c-.12.54-.44.68-.89.42l-2.46-1.81-1.19 1.15c-.13.13-.24.24-.49.24l.18-2.55 4.57-4.13c.2-.18-.04-.28-.31-.1l-5.64 3.55-2.43-.76c-.53-.16-.54-.53.11-.79l9.57-3.69c.44-.16.83.1.69.79z"/>
-                        </svg>
-                        Войти
-                    </button>
-                    <div class="user-info" id="user-info" style="display: none;">
-                        <span class="user-name"></span>
-                        <button class="btn btn--outline btn--small" id="logout">Выйти</button>
-                    </div>
-                </div>
 
                 <!-- Контактный телефон -->
                 <div class="header-contact">
