@@ -156,14 +156,32 @@ $availableLanguages = $translationService->getAvailableLanguages();
 }
 
 /* Header integration */
-.header-actions .language-switcher {
-    margin-left: 0.5rem;
+.header-language {
+    transform: translate(0, calc(-50% + 0.2rem));
+    position: absolute;
+    right: calc(var(--gutter) * 2 + 200px); /* Слева от телефона */
+    top: 50%;
 }
 
-@media (max-width: 768px) {
-    .header-actions .language-switcher {
-        margin-left: 0;
-        margin-top: 0.5rem;
+.header-language .language-switcher {
+    margin: 0;
+}
+
+@media (max-width: 900px) {
+    .header-language {
+        position: static;
+        transform: translateY(-2rem);
+        opacity: 0;
+        visibility: hidden;
+        margin: 0 0 var(--vspace-1) 0;
+    }
+    
+    .menu-is-open .header-language {
+        transform: translateY(0);
+        opacity: 1;
+        visibility: visible;
+        transition: all 0.6s var(--ease-quick-out);
+        transition-delay: 0.3s;
     }
 }
 </style>
