@@ -16,6 +16,10 @@ if (file_exists(__DIR__ . '/.env')) {
 require_once __DIR__ . '/classes/PageContentService.php';
 $pageContentService = new PageContentService();
 
+// Initialize translation service for components
+require_once __DIR__ . '/classes/TranslationService.php';
+$translationService = new TranslationService();
+
 // Get current language
 $currentLanguage = $pageContentService->getLanguage();
 
