@@ -136,7 +136,7 @@ $availableLanguages = $translationService->getAvailableLanguages();
 @media (max-width: 768px) {
     .language-switcher__current {
         padding: 0.4rem 0.6rem;
-        font-size: 0.8rem;
+        font-size: var(--text-sm);
         min-width: 45px;
     }
     
@@ -151,7 +151,7 @@ $availableLanguages = $translationService->getAvailableLanguages();
     }
     
     .language-option .language-code {
-        font-size: 0.8rem;
+        font-size: var(--text-sm);
     }
 }
 
