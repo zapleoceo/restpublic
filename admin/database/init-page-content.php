@@ -174,7 +174,7 @@ try {
     $viContent = [
         'page' => 'index',
         'language' => 'vi',
-        'content' => 'Chào mừng đến với <strong>North Republic</strong> — nơi ẩm thực tinh tế, bầu không khí ấm cúng và những khoảnh khắc khó quên gặp gỡ.',
+        'content' => 'Chào mừng đến với North Republic - nơi hội tụ của ẩm thực tinh tế, không gian ấm cúng và những khoảnh khắc khó quên.',
                     'meta' => [
             'title' => 'North Republic - Nhà hàng tại Nha Trang',
             'description' => 'North Republic - nhà hàng tinh tế tại Nha Trang với ẩm thực tuyệt vời và bầu không khí ấm cúng. Đặt bàn trực tuyến.',
@@ -182,7 +182,15 @@ try {
             'intro_welcome' => 'Chào mừng đến với',
             'intro_title' => 'North <br>Republic',
             'about_title' => 'Về chúng tôi',
-            'about_content' => '<p class="lead">Chào mừng đến với <strong>«Cộng hòa Bắc»</strong> — ốc đảo của những cuộc phiêu lưu và khám phá ẩm thực giữa những cảnh quan hùng vĩ của miền bắc Nha Trang. Ở đây, trong vòng tay của thiên nhiên nguyên sơ, dưới chân ngọn núi Co Tien huyền thoại, hiện đại gặp gỡ vẻ đẹp hoang dã của vùng nhiệt đới, tạo ra không gian của những khả năng vô hạn.</p><p>Nhìn lên — trước mặt bạn trải dài những sườn núi của Núi Tiên, chính Co Tien đó, vẻ đẹp huyền thoại đã truyền cảm hứng cho các nhà thơ và du khách trong nhiều thế kỷ. Tầm nhìn toàn cảnh của những ngọn đồi ngọc lục bảo và vịnh lấp lánh biến mỗi khoảnh khắc ở đây thành một khung hình từ câu chuyện cổ tích thần kỳ. Đây là nơi thời gian chậm lại và tâm hồn tìm thấy sự bình yên mong đợi.</p><p><strong>«Cộng hòa Bắc»</strong> là một caleidoscope của những trải nghiệm dưới bầu trời mở. Những trận chiến adrenaline trong laser tag và những cuộc đấu súng gay cấn với cung tên trong bắn cung cùng tồn tại với những gian hàng ấm cúng cho những buổi dã ngoại gia đình. Những cuộc tìm kiếm trí tuệ đan xen với hương thơm của thịt nướng, và các sự kiện buổi tối lấp đầy không khí với âm nhạc và tiếng cười cho đến tận đêm khuya.</p><p>Nhà hàng và quán cà phê của chúng tôi là một hành trình ẩm thực nơi những món ăn đặc trưng được sinh ra từ sự kết hợp của truyền thống Nga và sự kỳ lạ của Việt Nam. Ở đây mỗi món ăn là một tác phẩm nghệ thuật, và mỗi ngụm cà phê là một cây cầu giữa các nền văn hóa. Những hội chợ sáng tạo, những buổi tối âm nhạc và những lễ hội theo chủ đề biến mỗi ngày thành một lễ kỷ niệm nhỏ.</p><p>Tại <strong>«Cộng hòa Bắc»</strong> mọi người sẽ tìm thấy cách lý tưởng để dành thời gian: từ những cuộc phiêu lưu doanh nghiệp đến những bữa tối lãng mạn dưới bầu trời đầy sao, từ những bữa tiệc trẻ em đến những cuộc trò chuyện triết học bên lò sưởi. Đây là nơi những tình bạn mới được sinh ra, những mối liên kết gia đình được củng cố và những kỷ niệm được tạo ra cho cuộc sống.</p>',
+            'about_content' => '<p class="lead">North Republic là một ốc đảo của những cuộc phiêu lưu và khám phá ẩm thực giữa khung cảnh hùng vĩ của phía bắc Nha Trang. Nơi đây, trong vòng tay của thiên nhiên nguyên sơ, dưới chân núi Cô Tiên huyền thoại, sự hiện đại giao hòa với vẻ đẹp hoang sơ của xứ nhiệt đới, tạo nên một không gian với những khả năng vô tận.</p>
+
+<p>Hãy ngước nhìn lên — trước mắt bạn là sườn núi Tiên, chính là ngọn Cô Tiên mà vẻ đẹp thần thoại của nó đã truyền cảm hứng cho các nhà thơ và du khách qua nhiều thế kỷ. Tầm nhìn toàn cảnh ra những ngọn đồi xanh ngọc và vịnh biển lấp lánh biến mỗi khoảnh khắc tại đây thành một khung hình trong câu chuyện cổ tích diệu kỳ. Đây là nơi thời gian trôi chậm lại và tâm hồn tìm thấy sự bình yên mong đợi.</p>
+
+<p>North Republic là một bức tranh đa sắc của những trải nghiệm ngoài trời. Những trận chiến đấu súng laser đầy kịch tính và những cuộc đấu cung hấp dẫn trong trò bắn cung đối kháng xen kẽ với những chiếc lều thư giãn ấm cúng cho các buổi dã ngoại gia đình. Những trò chơi giải đố trí tuệ đan xen với hương thơm của tiệc nướng BBQ, và các sự kiện buổi tối tràn ngập không khí âm nhạc và tiếng cười cho đến tận đêm khuya.</p>
+
+<p>Nhà hàng và quán cà phê của chúng tôi là một cuộc hành trình ẩm thực, nơi các món ăn đặc trưng được sáng tạo từ sự kết hợp giữa truyền thống Nga và sự độc đáo của Việt Nam. Tại đây, mỗi món ăn là một tác phẩm nghệ thuật, và mỗi ngụm cà phê là cầu nối giữa các nền văn hóa. Các hội chợ sáng tạo, đêm nhạc và lễ hội theo chủ đề biến mỗi ngày thành một ngày hội nhỏ.</p>
+
+<p>Tại North Republic, mỗi người sẽ tìm thấy cách tận hưởng thời gian lý tưởng của riêng mình: từ các cuộc phiêu lưu cho đội nhóm công ty đến những bữa tối lãng mạn dưới bầu trời đầy sao, từ các bữa tiệc cho trẻ em đến những cuộc trò chuyện triết lý bên lò sưởi. Đây là nơi những tình bạn mới được nảy nở, tình cảm gia đình thêm bền chặt và những kỷ niệm đáng nhớ được tạo nên cho cả cuộc đời.</p>',
             'menu_title' => 'Thực đơn của chúng tôi',
             'menu_error' => 'Ôi, có gì đó không ổn với thực đơn',
             'menu_no_items' => 'Chưa có món ăn nào trong danh mục này',
