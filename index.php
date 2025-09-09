@@ -1,4 +1,10 @@
 <?php
+/**
+ * Главная страница с новой системой полного HTML контента
+ * Использует PageContentService для получения контента из БД
+ * Сохраняет правильную структуру и дизайн из index.php
+ */
+
 // Load environment variables
 require_once __DIR__ . '/vendor/autoload.php';
 if (file_exists(__DIR__ . '/.env')) {
@@ -6,9 +12,18 @@ if (file_exists(__DIR__ . '/.env')) {
     $dotenv->load();
 }
 
-// Initialize translation service
-require_once __DIR__ . '/classes/TranslationService.php';
-$translationService = new TranslationService();
+// Initialize page content service
+require_once __DIR__ . '/classes/PageContentService.php';
+$pageContentService = new PageContentService();
+
+// Get current language
+$currentLanguage = $pageContentService->getLanguage();
+
+// Get full page content from database
+$pageContent = $pageContentService->getPageContent('index', $currentLanguage);
+$pageMeta = $pageContent['meta'] ?? [];
+
+// No fallback - only database content
 
 // Load menu from MongoDB cache for fast rendering (if available)
 $categories = [];
@@ -48,149 +63,35 @@ try {
                         $popularData = json_decode($popularResponse, true);
                         if ($popularData && isset($popularData['popular_products'])) {
                             $productsByCategory[$categoryId] = $popularData['popular_products'];
-                            error_log("SUCCESS: Got popular products for category $categoryId from API");
-                            continue;
-                        } else {
-                            error_log("ERROR: Invalid API response for category $categoryId: " . substr($popularResponse, 0, 200));
                         }
-                    } else {
-                        error_log("ERROR: API call failed for category $categoryId, URL: $popularUrl");
                     }
                 } catch (Exception $e) {
-                    error_log("Failed to get popular products for category $categoryId: " . $e->getMessage());
+                    // Fallback to empty array if API fails
+                    $productsByCategory[$categoryId] = [];
                 }
-                
-                // Fallback: get all products from category and sort by sort_order
-                $categoryProducts = [];
-                foreach ($products as $product) {
-                    if (($product['menu_category_id'] ?? $product['category_id']) == $categoryId) {
-                        // Check if product is visible
-                        $isVisible = true;
-                        if (isset($product['spots']) && is_array($product['spots'])) {
-                            foreach ($product['spots'] as $spot) {
-                                if (isset($spot['visible']) && $spot['visible'] == '0') {
-                                    $isVisible = false;
-                                    break;
-                                }
-                            }
-                        }
-                        
-                        if ($isVisible) {
-                            $categoryProducts[] = $product;
-                        }
-                    }
-                }
-                
-                // Sort by sort_order as fallback
-                usort($categoryProducts, function($a, $b) {
-                    $aSort = (int)($a['sort_order'] ?? 0);
-                    $bSort = (int)($b['sort_order'] ?? 0);
-                    return $bSort <=> $aSort;
-                });
-                
-                // Take top 5
-                $productsByCategory[$categoryId] = array_slice($categoryProducts, 0, 5);
             }
         }
     }
 } catch (Exception $e) {
-    error_log("MongoDB not available, trying API fallback: " . $e->getMessage());
-    
-    // Fallback to API if MongoDB fails
-    $api_base_url = 'https://northrepublic.me:3002/api';
-    
-    function fetchFromAPI($endpoint) {
-        global $api_base_url;
-        $url = $api_base_url . $endpoint;
-        
-        $context = stream_context_create([
-            'http' => [
-                'timeout' => 10,
-                'method' => 'GET',
-                'header' => 'Content-Type: application/json'
-            ]
-        ]);
-        
-        $response = @file_get_contents($url, false, $context);
-        
-        if ($response === false) {
-            return null;
-        }
-        
-        return json_decode($response, true);
-    }
-    
-    // Try to fetch from API as fallback
-    $menu_data = fetchFromAPI('/menu');
-    if ($menu_data) {
-        $categories = $menu_data['categories'] ?? [];
-        $products = $menu_data['products'] ?? [];
-        
-        // Get popular products by category using real sales data (API fallback)
-        if ($categories) {
-            foreach ($categories as $category) {
-                $categoryId = (string)($category['category_id']);
-                $productsByCategory[$categoryId] = [];
-                
-                // Try to get popular products from API
-                try {
-                    $popularUrl = $api_base_url . '/menu/categories/' . $categoryId . '/popular?limit=5';
-                    $popularResponse = @file_get_contents($popularUrl, false, $context);
-                    
-                    if ($popularResponse !== false) {
-                        $popularData = json_decode($popularResponse, true);
-                        if ($popularData && isset($popularData['popular_products'])) {
-                            $productsByCategory[$categoryId] = $popularData['popular_products'];
-                            continue;
-                        }
-                    }
-                } catch (Exception $e) {
-                    error_log("Failed to get popular products for category $categoryId: " . $e->getMessage());
-                }
-                
-                // Fallback: get all products from category and sort by sort_order
-                $categoryProducts = [];
-                foreach ($products as $product) {
-                    if (($product['menu_category_id'] ?? $product['category_id']) == $categoryId) {
-                        // Check if product is visible
-                        $isVisible = true;
-                        if (isset($product['spots']) && is_array($product['spots'])) {
-                            foreach ($product['spots'] as $spot) {
-                                if (isset($spot['visible']) && $spot['visible'] == '0') {
-                                    $isVisible = false;
-                                    break;
-                                }
-                            }
-                        }
-                        
-                        if ($isVisible) {
-                            $categoryProducts[] = $product;
-                        }
-                    }
-                }
-                
-                // Sort by sort_order as fallback
-                usort($categoryProducts, function($a, $b) {
-                    $aSort = (int)($a['sort_order'] ?? 0);
-                    $bSort = (int)($b['sort_order'] ?? 0);
-                    return $bSort <=> $aSort;
-                });
-                
-                // Take top 5
-                $productsByCategory[$categoryId] = array_slice($categoryProducts, 0, 5);
-            }
-        }
-    }
+    error_log("Menu loading error: " . $e->getMessage());
 }
+
+// Set page title and meta tags from database only
+$pageTitle = $pageMeta['title'] ?? '';
+$pageDescription = $pageMeta['description'] ?? '';
+$pageKeywords = $pageMeta['keywords'] ?? '';
 ?>
+
 <!DOCTYPE html>
-<html lang="en" class="no-js">
+<html lang="<?php echo $currentLanguage; ?>" class="no-js">
 <head>
     <!--- basic page needs
     ================================================== -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>North Republic</title>
+    <title><?php echo htmlspecialchars($pageTitle); ?></title>
+    <meta name="description" content="<?php echo htmlspecialchars($pageDescription); ?>">
+    <meta name="keywords" content="<?php echo htmlspecialchars($pageKeywords); ?>">
 
     <script>
         document.documentElement.classList.remove('no-js');
@@ -223,6 +124,19 @@ try {
     <link rel="icon" type="image/png" sizes="16x16" href="template/favicon-16x16.png">
     <link rel="manifest" href="template/site.webmanifest">
 
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://northrepublic.me/">
+    <meta property="og:title" content="<?php echo htmlspecialchars($pageTitle); ?>">
+    <meta property="og:description" content="<?php echo htmlspecialchars($pageDescription); ?>">
+    <meta property="og:image" content="https://northrepublic.me/images/logo.png">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://northrepublic.me/">
+    <meta property="twitter:title" content="<?php echo htmlspecialchars($pageTitle); ?>">
+    <meta property="twitter:description" content="<?php echo htmlspecialchars($pageDescription); ?>">
+    <meta property="twitter:image" content="https://northrepublic.me/images/logo.png">
 </head>
 
 <body id="top">
@@ -249,28 +163,27 @@ try {
         <section id="intro" class="container s-intro target-section">
             <div class="grid-block s-intro__content">
                 <div class="intro-header">
-                    <div class="intro-header__overline"><?php echo $translationService->get('intro.welcome', 'Добро пожаловать в'); ?></div>
+                    <div class="intro-header__overline"><?php echo $pageMeta['intro_welcome'] ?? ''; ?></div>
                     <h1 class="intro-header__big-type">
-                        North <br>
-                        Republic
+                        <?php echo $pageMeta['intro_title'] ?? 'North <br>Republic'; ?>
                     </h1>
                 </div> <!-- end intro-header -->
 
                 <figure class="intro-pic-primary">
-                    <img src="template/images/shawa.png" 
-                         srcset="template/images/shawa.png 1x, 
-                         template/images/shawa.png 2x" alt="">  
+                    <img src="<?php echo $pageMeta['intro_image_primary'] ?? 'template/images/shawa.png'; ?>" 
+                         srcset="<?php echo $pageMeta['intro_image_primary'] ?? 'template/images/shawa.png'; ?> 1x, 
+                         <?php echo $pageMeta['intro_image_primary'] ?? 'template/images/shawa.png'; ?> 2x" alt="">  
                 </figure> <!-- end intro-pic-primary -->    
                     
                 <div class="intro-block-content">
                     <figure class="intro-block-content__pic">
-                        <img src="template/images/intro-pic-secondary.jpg" 
-                             srcset="template/images/intro-pic-secondary.jpg 1x, 
-                             template/images/intro-pic-secondary@2x.jpg 2x" alt=""> 
+                        <img src="<?php echo $pageMeta['intro_image_secondary'] ?? 'template/images/intro-pic-secondary.jpg'; ?>" 
+                             srcset="<?php echo $pageMeta['intro_image_secondary'] ?? 'template/images/intro-pic-secondary.jpg'; ?> 1x, 
+                             <?php echo $pageMeta['intro_image_secondary_2x'] ?? 'template/images/intro-pic-secondary@2x.jpg'; ?> 2x" alt=""> 
                     </figure>
                     <div class="intro-block-content__text">
                         <p class="lead">
-                            <?php echo $translationService->get('intro.description', 'Добро пожаловать в <strong>North Republic</strong> — место, где встречаются изысканная кухня, уютная атмосфера и незабываемые моменты.'); ?>
+                            <?php echo $pageContent['content'] ?? ''; ?>
                         </p>
                     </div>
                 </div> <!-- end intro-block-content -->
@@ -294,39 +207,21 @@ try {
             <div class="row s-about__content">
                 <div class="column xl-4 lg-5 md-12 s-about__content-start">
                     <div class="section-header" data-num="01">
-                        <h2 class="text-display-title"><?php echo $translationService->get('about.title', 'О нас'); ?></h2>
+                        <h2 class="text-display-title"><?php echo $pageMeta['about_title'] ?? ''; ?></h2>
                     </div>  
 
                     <figure class="about-pic-primary">
-                        <img src="template/images/about-pic-primary.jpg" 
-                             srcset="template/images/about-pic-primary.jpg 1x, 
-                             template/images/about-pic-primary@2x.jpg 2x" alt=""> 
+                        <img src="<?php echo $pageMeta['about_image_primary'] ?? 'template/images/about-pic-primary.jpg'; ?>" 
+                             srcset="<?php echo $pageMeta['about_image_primary'] ?? 'template/images/about-pic-primary.jpg'; ?> 1x, 
+                             <?php echo $pageMeta['about_image_primary_2x'] ?? 'template/images/about-pic-primary@2x.jpg'; ?> 2x" alt=""> 
                     </figure>
                 </div> <!-- end s-about__content-start -->
 
                 <div class="column xl-6 lg-6 md-12 s-about__content-end">                   
-                    <p class="lead">
-                        <?php echo $translationService->get('about.paragraph1', 'Добро пожаловать в <strong>«Республику Север»</strong> — оазис приключений и гастономических открытий среди величественных пейзажей северного Нячанга. Здесь, в объятиях первозданной природы, у подножия легендарной горы Ко Тьен, современность встречается с дикой красотой тропического края, создавая пространство безграничных возможностей.'); ?>
-                    </p>
-
-                    <p>
-                        <?php echo $translationService->get('about.paragraph2', 'Взгляните вверх — перед вами раскинулись склоны Горы Феи, той самой Ко Тьен, чья мифическая красота веками вдохновляла поэтов и путешественников. Панорамные виды на изумрудные холмы и сверкающий залив превращают каждый момент здесь в кадр из волшебной сказки. Это место, где время замедляет свой бег, а душа находит долгожданный покой.'); ?>
-                    </p>
-
-                    <p>
-                        <?php echo $translationService->get('about.paragraph3', '<strong>«Республика Север»</strong> — это калейдоскоп впечатлений под открытым небом. Адреналиновые баталии в лазертаге и захватывающие дуэли с луками в арчеритаге соседствуют с уютными беседками для семейных пикников. Интеллектуальные квесты переплетаются с ароматами барбекю, а вечерние мероприятия наполняют воздух музыкой и смехом до поздней ночи.'); ?>
-                    </p>
-
-                    <p>
-                        <?php echo $translationService->get('about.paragraph4', 'Наш ресторан и кофейня — это кулинарное путешествие, где авторские блюда рождаются из слияния русских традиций и вьетнамской экзотики. Здесь каждое блюдо — произведение искусства, а каждый глоток кофе — мост между культурами. Творческие ярмарки, музыкальные вечера и тематические фестивали превращают каждый день в маленький праздник.'); ?>
-                    </p>
-
-                    <p>
-                        <?php echo $translationService->get('about.paragraph5', 'В <strong>«Республике Север»</strong> каждый найдет свой идеальный способ провести время: от корпоративных приключений до романтических ужинов под звездным небом, от детских праздников до философских бесед у камина. Это место, где рождаются новые дружбы, крепнут семейные узы и создаются воспоминания на всю жизнь.'); ?>
-                    </p>
+                    <?php echo $pageMeta['about_content'] ?? ''; ?>
                 </div> <!-- end s-about__content-end -->
             </div> <!-- end s-about__content -->
-        </section> <!-- end s-about -->   
+        </section> <!-- end s-about -->
 
         <!-- # menu
         ================================================== -->
@@ -334,7 +229,7 @@ try {
             <div class="row s-menu__content">
                 <div class="column xl-4 lg-5 md-12 s-menu__content-start">
                     <div class="section-header" data-num="02">
-                        <h2 class="text-display-title"><?php echo $translationService->get('menu.title', 'Наше меню'); ?></h2>
+                        <h2 class="text-display-title"><?php echo $pageMeta['menu_title'] ?? ''; ?></h2>
                     </div>  
 
                     <nav class="tab-nav">
@@ -351,7 +246,7 @@ try {
                             <?php else: ?>
                                 <li>
                                     <span style="color: #e74c3c; font-style: italic;">
-                                        <?php echo $translationService->get('menu.error', 'Упс, что-то с меню не так'); ?>
+                                        <?php echo $pageMeta['menu_error'] ?? ''; ?>
                                     </span>
                                 </li>
                             <?php endif; ?>
@@ -389,8 +284,8 @@ try {
                                         <?php else: ?>
                                             <li class="menu-list__item">
                                                 <div class="menu-list__item-desc">
-                                                    <h4><?php echo $translationService->get('menu.no_items', 'В этой категории пока нет блюд'); ?></h4>
-                                                    <p><?php echo $translationService->get('menu.working_on_it', 'Мы работаем над пополнением меню'); ?></p>
+                                                    <h4><?php echo $pageMeta['menu_no_items'] ?? ''; ?></h4>
+                                                    <p><?php echo $pageMeta['menu_working_on_it'] ?? ''; ?></p>
                                                 </div>
                                             </li>
                                         <?php endif; ?>
@@ -399,12 +294,12 @@ try {
                             <?php endforeach; ?>
                         <?php else: ?>
                             <div class="menu-block__group tab-content__item active">
-                                <h6 class="menu-block__cat-name"><?php echo $translationService->get('menu.title', 'Меню'); ?></h6>
+                                <h6 class="menu-block__cat-name"><?php echo $pageMeta['menu_title'] ?? ''; ?></h6>
                                 <ul class="menu-list">
                                     <li class="menu-list__item">
                                         <div class="menu-list__item-desc">
-                                            <h4><?php echo $translationService->get('menu.error', 'Упс, что-то с меню не так'); ?></h4>
-                                            <p><?php echo $translationService->get('menu.unavailable', 'К сожалению, меню временно недоступно. Попробуйте обновить страницу.'); ?></p>
+                                            <h4><?php echo $pageMeta['menu_error'] ?? ''; ?></h4>
+                                            <p><?php echo $pageMeta['menu_unavailable'] ?? ''; ?></p>
                                         </div>
                                     </li>
                                 </ul>
@@ -418,11 +313,11 @@ try {
             <div class="row s-menu__footer">
                 <div class="column xl-12 text-center">
                     <a href="/menu" class="btn btn--primary">
-                        <?php echo $translationService->get('menu.full_menu_button', 'Открыть полное меню'); ?>
+                        <?php echo $pageMeta['menu_full_button'] ?? ''; ?>
                     </a>
                 </div>
             </div> <!-- end s-menu__footer -->
-        </section> <!-- end s-menu -->  
+        </section> <!-- end s-menu -->
 
         <!-- # gallery
         ================================================== -->
@@ -430,21 +325,46 @@ try {
             <div class="row s-gallery__header">
                 <div class="column xl-12 section-header-wrap">
                     <div class="section-header" data-num="04">
-                        <h2 class="text-display-title"><?php echo $translationService->get('gallery.title', 'Галерея'); ?></h2>
+                        <h2 class="text-display-title"><?php echo $pageMeta['gallery_title'] ?? ''; ?></h2>
                     </div>               
                 </div> <!-- end section-header-wrap -->   
             </div> <!-- end s-gallery__header -->   
 
             <div class="gallery-items grid-cols grid-cols--wrap">
-                <?php for ($i = 1; $i <= 8; $i++): ?>
-                    <div class="gallery-items__item grid-cols__column">
-                        <a href="template/images/gallery/large/l-gallery-<?php echo sprintf('%02d', $i); ?>.jpg" class="gallery-items__item-thumb glightbox">
-                            <img src="template/images/gallery/gallery-<?php echo sprintf('%02d', $i); ?>.jpg" 
-                                srcset="template/images/gallery/gallery-<?php echo sprintf('%02d', $i); ?>.jpg 1x, 
-                                        template/images/gallery/gallery-<?php echo sprintf('%02d', $i); ?>@2x.jpg 2x" alt="">                                
-                        </a>
-                    </div>
-                <?php endfor; ?>
+                <?php 
+                // Получаем изображения галереи из БД
+                $galleryImages = $pageMeta['gallery_images'] ?? [];
+                
+                if (!empty($galleryImages)) {
+                    // Используем изображения из БД
+                    foreach ($galleryImages as $image) {
+                        $thumb = $image['thumb'] ?? '';
+                        $large = $image['large'] ?? $thumb;
+                        $thumb2x = $image['thumb2x'] ?? $thumb;
+                        $alt = $image['alt'] ?? '';
+                        ?>
+                        <div class="gallery-items__item grid-cols__column">
+                            <a href="<?php echo htmlspecialchars($large); ?>" class="gallery-items__item-thumb glightbox">
+                                <img src="<?php echo htmlspecialchars($thumb); ?>" 
+                                    srcset="<?php echo htmlspecialchars($thumb); ?> 1x, 
+                                            <?php echo htmlspecialchars($thumb2x); ?> 2x" alt="<?php echo htmlspecialchars($alt); ?>">                                
+                            </a>
+                        </div>
+                        <?php
+                    }
+                } else {
+                    // Fallback на статичные изображения
+                    for ($i = 1; $i <= 8; $i++): ?>
+                        <div class="gallery-items__item grid-cols__column">
+                            <a href="template/images/gallery/large/l-gallery-<?php echo sprintf('%02d', $i); ?>.jpg" class="gallery-items__item-thumb glightbox">
+                                <img src="template/images/gallery/gallery-<?php echo sprintf('%02d', $i); ?>.jpg" 
+                                    srcset="template/images/gallery/gallery-<?php echo sprintf('%02d', $i); ?>.jpg 1x, 
+                                            template/images/gallery/gallery-<?php echo sprintf('%02d', $i); ?>@2x.jpg 2x" alt="">                                
+                            </a>
+                        </div>
+                    <?php endfor;
+                }
+                ?>
             </div> <!-- end gallery-items -->
         </section> <!-- end s-gallery -->
 
