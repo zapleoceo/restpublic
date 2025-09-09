@@ -49,12 +49,39 @@ class PageContentService {
             return $_COOKIE['language'];
         }
         
-        // 3. Проверяем Accept-Language заголовок
+        // 3. Проверяем Accept-Language заголовок браузера
         if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
-            $acceptLanguage = $_SERVER['HTTP_ACCEPT_LANGUAGE'];
-            foreach ($this->availableLanguages as $lang) {
-                if (strpos($acceptLanguage, $lang) !== false) {
-                    return $lang;
+            $acceptLang = $_SERVER['HTTP_ACCEPT_LANGUAGE'];
+            
+            // Парсим заголовок Accept-Language
+            $languages = [];
+            $parts = explode(',', $acceptLang);
+            
+            foreach ($parts as $part) {
+                $part = trim($part);
+                if (strpos($part, ';') !== false) {
+                    list($lang, $q) = explode(';', $part, 2);
+                    $q = floatval(str_replace('q=', '', $q));
+                } else {
+                    $lang = $part;
+                    $q = 1.0;
+                }
+                
+                $lang = strtolower(trim($lang));
+                $languages[$lang] = $q;
+            }
+            
+            // Сортируем по приоритету (q-value)
+            arsort($languages);
+            
+            // Ищем поддерживаемые языки
+            foreach ($languages as $lang => $q) {
+                if (strpos($lang, 'en') === 0) {
+                    return 'en';
+                } elseif (strpos($lang, 'vi') === 0) {
+                    return 'vi';
+                } elseif (strpos($lang, 'ru') === 0) {
+                    return 'ru';
                 }
             }
         }

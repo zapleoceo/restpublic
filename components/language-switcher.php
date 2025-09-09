@@ -79,7 +79,7 @@ $availableLanguages = $translationService->getAvailableLanguages();
     position: absolute;
     top: 100%;
     right: 0;
-    background: var(--color-white, #fff);
+    background: var(--color-bg, #1e1e1e); /* Фон сайта */
     border: 1px solid var(--color-border, #e0e0e0);
     border-radius: 8px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
@@ -159,7 +159,7 @@ $availableLanguages = $translationService->getAvailableLanguages();
 .header-language {
     transform: translate(0, calc(-50% + 0.2rem));
     position: absolute;
-    right: calc(var(--gutter) * 2 + 200px); /* Слева от телефона */
+    right: calc(var(--gutter) * 2 + 220px); /* Слева от телефона с большим отступом */
     top: 50%;
 }
 
