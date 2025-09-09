@@ -47,7 +47,7 @@ $availableLanguages = $translationService->getAvailableLanguages();
     border-radius: 20px;
     color: var(--color-text-dark, #333);
     font-weight: 600;
-    font-size: var(--text-base);
+    font-size: var(--text-sm);
     cursor: pointer;
     transition: all 0.3s ease;
     min-width: 50px;
@@ -128,7 +128,7 @@ $availableLanguages = $translationService->getAvailableLanguages();
 }
 
 .language-option .language-code {
-    font-size: var(--text-base);
+    font-size: var(--text-sm);
     font-weight: 600;
 }
 
