@@ -1,76 +1,82 @@
 <?php
 /**
  * Управление страницами сайта с WYSIWYG редактором
- * Полная замена системы переводов на систему полного HTML контента
+ * Работает с файловой системой (fallback для MongoDB)
  */
 
 require_once __DIR__ . '/../includes/auth-check.php';
-require_once '../../classes/PageContentService.php';
 
-$pageContentService = new PageContentService();
 $error = '';
 $success = '';
 
-// Обработка AJAX запросов
+// Определяем текущую страницу и язык для редактирования
+$currentPage = $_GET['page'] ?? 'index';
+$currentLanguage = $_GET['lang'] ?? 'ru';
+$availableLanguages = ['ru', 'en', 'vi'];
+
+// Файлы для хранения контента
+$contentFile = __DIR__ . '/../../data/page_content.json';
+$contentDir = dirname($contentFile);
+
+if (!is_dir($contentDir)) {
+    mkdir($contentDir, 0755, true);
+}
+
+// Загружаем контент из файла
+$pageContent = [];
+if (file_exists($contentFile)) {
+    $pageContent = json_decode(file_get_contents($contentFile), true) ?: [];
+}
+
+// Получаем контент текущей страницы
+$currentContent = $pageContent[$currentPage][$currentLanguage] ?? [
+    'content' => '',
+    'meta' => [
+        'title' => '',
+        'description' => '',
+        'keywords' => ''
+    ],
+    'status' => 'draft'
+];
+
+// Обработка сохранения
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
-    header('Content-Type: application/json');
-    
-    try {
-        switch ($_POST['action']) {
-            case 'save':
-                $page = $_POST['page'] ?? '';
-                $language = $_POST['language'] ?? '';
-                $content = $_POST['content'] ?? '';
-                $meta = [
-                    'title' => $_POST['meta_title'] ?? '',
-                    'description' => $_POST['meta_description'] ?? '',
-                    'keywords' => $_POST['meta_keywords'] ?? ''
-                ];
-                $status = $_POST['status'] ?? 'draft';
-                
-                if ($pageContentService->savePageContent($page, $language, $content, $meta, $status, $_SESSION['admin_username'])) {
-                    echo json_encode(['success' => true, 'message' => 'Контент сохранен']);
-                } else {
-                    echo json_encode(['success' => false, 'message' => 'Ошибка сохранения']);
-                }
-                exit;
-                
-            case 'publish':
-                $page = $_POST['page'] ?? '';
-                $language = $_POST['language'] ?? '';
-                
-                if ($pageContentService->publishPage($page, $language, $_SESSION['admin_username'])) {
-                    echo json_encode(['success' => true, 'message' => 'Страница опубликована']);
-                } else {
-                    echo json_encode(['success' => false, 'message' => 'Ошибка публикации']);
-                }
-                exit;
-                
-            case 'get_content':
-                $page = $_POST['page'] ?? '';
-                $language = $_POST['language'] ?? '';
-                
-                $content = $pageContentService->getPageContent($page, $language);
-                echo json_encode(['success' => true, 'content' => $content]);
-                exit;
+    if ($_POST['action'] === 'save') {
+        $content = $_POST['content'] ?? '';
+        $meta = [
+            'title' => $_POST['meta_title'] ?? '',
+            'description' => $_POST['meta_description'] ?? '',
+            'keywords' => $_POST['meta_keywords'] ?? ''
+        ];
+        $status = $_POST['status'] ?? 'draft';
+        
+        // Сохраняем контент
+        if (!isset($pageContent[$currentPage])) {
+            $pageContent[$currentPage] = [];
         }
-    } catch (Exception $e) {
-        echo json_encode(['success' => false, 'message' => $e->getMessage()]);
-        exit;
+        
+        $pageContent[$currentPage][$currentLanguage] = [
+            'content' => $content,
+            'meta' => $meta,
+            'status' => $status,
+            'updated_at' => date('Y-m-d H:i:s'),
+            'updated_by' => $_SESSION['admin_username'] ?? 'admin'
+        ];
+        
+        if (file_put_contents($contentFile, json_encode($pageContent, JSON_PRETTY_PRINT))) {
+            $success = 'Контент сохранен';
+            $currentContent = $pageContent[$currentPage][$currentLanguage];
+        } else {
+            $error = 'Ошибка сохранения';
+        }
     }
 }
 
-// Получаем список страниц и статистику
-$pages = $pageContentService->getAllPages();
-$pagesStats = $pageContentService->getPagesStats();
-$availableLanguages = $pageContentService->getAvailableLanguages();
-
-// Определяем текущую страницу и язык для редактирования
-$currentPage = $_GET['page'] ?? ($pages[0] ?? 'index');
-$currentLanguage = $_GET['lang'] ?? 'ru';
-
-// Получаем контент текущей страницы
-$currentContent = $pageContentService->getPageContent($currentPage, $currentLanguage);
+// Получаем список страниц
+$pages = array_keys($pageContent);
+if (empty($pages)) {
+    $pages = ['index', 'about', 'menu', 'contact'];
+}
 ?>
 
 <!DOCTYPE html>
@@ -209,15 +215,6 @@ $currentContent = $pageContentService->getPageContent($currentPage, $currentLang
             background: #005a87;
         }
         
-        .btn-secondary {
-            background: #6c757d;
-            color: white;
-        }
-        
-        .btn-secondary:hover {
-            background: #545b62;
-        }
-        
         .btn-success {
             background: #28a745;
             color: white;
@@ -243,19 +240,6 @@ $currentContent = $pageContentService->getPageContent($currentPage, $currentLang
         .status-published {
             background: #d4edda;
             color: #155724;
-        }
-        
-        .page-stats {
-            margin-top: 1rem;
-            padding-top: 1rem;
-            border-top: 1px solid #eee;
-        }
-        
-        .stat-item {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 0.5rem;
-            font-size: 0.9rem;
         }
         
         @media (max-width: 768px) {
@@ -303,16 +287,6 @@ $currentContent = $pageContentService->getPageContent($currentPage, $currentLang
                             </li>
                         <?php endforeach; ?>
                     </ul>
-                    
-                    <div class="page-stats">
-                        <h4>Статистика</h4>
-                        <?php foreach ($pagesStats as $stat): ?>
-                            <div class="stat-item">
-                                <span><?php echo ucfirst($stat['_id']); ?>:</span>
-                                <span><?php echo count($stat['languages']); ?> языков</span>
-                            </div>
-                        <?php endforeach; ?>
-                    </div>
                 </div>
                 
                 <!-- Редактор -->
@@ -323,54 +297,55 @@ $currentContent = $pageContentService->getPageContent($currentPage, $currentLang
                     <div class="language-tabs">
                         <?php foreach ($availableLanguages as $lang): ?>
                             <div class="language-tab <?php echo $lang === $currentLanguage ? 'active' : ''; ?>" 
-                                 data-lang="<?php echo $lang; ?>">
+                                 onclick="window.location.href='?page=<?php echo urlencode($currentPage); ?>&lang=<?php echo $lang; ?>'">
                                 <?php echo strtoupper($lang); ?>
                             </div>
                         <?php endforeach; ?>
                     </div>
                     
-                    <!-- Мета-поля -->
-                    <div class="meta-fields">
-                        <div class="meta-field">
-                            <label for="meta_title">Заголовок страницы (Title)</label>
-                            <input type="text" id="meta_title" name="meta_title" 
-                                   value="<?php echo htmlspecialchars($currentContent['meta']['title'] ?? ''); ?>">
+                    <form method="POST">
+                        <input type="hidden" name="action" value="save">
+                        
+                        <!-- Мета-поля -->
+                        <div class="meta-fields">
+                            <div class="meta-field">
+                                <label for="meta_title">Заголовок страницы (Title)</label>
+                                <input type="text" id="meta_title" name="meta_title" 
+                                       value="<?php echo htmlspecialchars($currentContent['meta']['title'] ?? ''); ?>">
+                            </div>
+                            <div class="meta-field">
+                                <label for="meta_description">Описание (Description)</label>
+                                <textarea id="meta_description" name="meta_description"><?php echo htmlspecialchars($currentContent['meta']['description'] ?? ''); ?></textarea>
+                            </div>
+                            <div class="meta-field">
+                                <label for="meta_keywords">Ключевые слова</label>
+                                <input type="text" id="meta_keywords" name="meta_keywords" 
+                                       value="<?php echo htmlspecialchars($currentContent['meta']['keywords'] ?? ''); ?>">
+                            </div>
+                            <div class="meta-field">
+                                <label>Статус</label>
+                                <select name="status">
+                                    <option value="draft" <?php echo ($currentContent['status'] ?? 'draft') === 'draft' ? 'selected' : ''; ?>>Черновик</option>
+                                    <option value="published" <?php echo ($currentContent['status'] ?? 'draft') === 'published' ? 'selected' : ''; ?>>Опубликовано</option>
+                                </select>
+                            </div>
                         </div>
-                        <div class="meta-field">
-                            <label for="meta_description">Описание (Description)</label>
-                            <textarea id="meta_description" name="meta_description"><?php echo htmlspecialchars($currentContent['meta']['description'] ?? ''); ?></textarea>
+                        
+                        <!-- WYSIWYG редактор -->
+                        <div class="editor-wrapper">
+                            <textarea id="page_content" name="content"><?php echo htmlspecialchars($currentContent['content'] ?? ''); ?></textarea>
                         </div>
-                        <div class="meta-field">
-                            <label for="meta_keywords">Ключевые слова</label>
-                            <input type="text" id="meta_keywords" name="meta_keywords" 
-                                   value="<?php echo htmlspecialchars($currentContent['meta']['keywords'] ?? ''); ?>">
+                        
+                        <!-- Действия -->
+                        <div class="editor-actions">
+                            <button type="submit" class="btn btn-primary">
+                                💾 Сохранить
+                            </button>
+                            <button type="button" class="btn btn-success" onclick="previewContent()">
+                                👁️ Предпросмотр
+                            </button>
                         </div>
-                        <div class="meta-field">
-                            <label>Статус</label>
-                            <select id="content_status" name="status">
-                                <option value="draft">Черновик</option>
-                                <option value="published">Опубликовано</option>
-                            </select>
-                        </div>
-                    </div>
-                    
-                    <!-- WYSIWYG редактор -->
-                    <div class="editor-wrapper">
-                        <textarea id="page_content" name="content"><?php echo htmlspecialchars($currentContent['content'] ?? ''); ?></textarea>
-                    </div>
-                    
-                    <!-- Действия -->
-                    <div class="editor-actions">
-                        <button type="button" class="btn btn-primary" onclick="saveContent()">
-                            💾 Сохранить
-                        </button>
-                        <button type="button" class="btn btn-success" onclick="publishContent()">
-                            🚀 Опубликовать
-                        </button>
-                        <button type="button" class="btn btn-secondary" onclick="previewContent()">
-                            👁️ Предпросмотр
-                        </button>
-                    </div>
+                    </form>
                 </div>
             </div>
         </main>
@@ -400,80 +375,6 @@ $currentContent = $pageContentService->getPageContent($currentPage, $currentLang
             }
         });
         
-        // Переключение языков
-        document.querySelectorAll('.language-tab').forEach(tab => {
-            tab.addEventListener('click', function() {
-                const lang = this.dataset.lang;
-                if (lang !== currentLanguage) {
-                    window.location.href = `?page=${currentPage}&lang=${lang}`;
-                }
-            });
-        });
-        
-        // Сохранение контента
-        function saveContent() {
-            if (!editor) return;
-            
-            const content = editor.getContent();
-            const meta = {
-                title: document.getElementById('meta_title').value,
-                description: document.getElementById('meta_description').value,
-                keywords: document.getElementById('meta_keywords').value
-            };
-            const status = document.getElementById('content_status').value;
-            
-            const formData = new FormData();
-            formData.append('action', 'save');
-            formData.append('page', currentPage);
-            formData.append('language', currentLanguage);
-            formData.append('content', content);
-            formData.append('meta_title', meta.title);
-            formData.append('meta_description', meta.description);
-            formData.append('meta_keywords', meta.keywords);
-            formData.append('status', status);
-            
-            fetch('', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    showNotification('Контент сохранен', 'success');
-                } else {
-                    showNotification('Ошибка: ' + data.message, 'error');
-                }
-            })
-            .catch(error => {
-                showNotification('Ошибка сохранения', 'error');
-            });
-        }
-        
-        // Публикация контента
-        function publishContent() {
-            const formData = new FormData();
-            formData.append('action', 'publish');
-            formData.append('page', currentPage);
-            formData.append('language', currentLanguage);
-            
-            fetch('', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    showNotification('Страница опубликована', 'success');
-                    document.getElementById('content_status').value = 'published';
-                } else {
-                    showNotification('Ошибка: ' + data.message, 'error');
-                }
-            })
-            .catch(error => {
-                showNotification('Ошибка публикации', 'error');
-            });
-        }
-        
         // Предпросмотр
         function previewContent() {
             if (!editor) return;
@@ -499,33 +400,6 @@ $currentContent = $pageContentService->getPageContent($currentPage, $currentLang
                 </html>
             `);
         }
-        
-        // Уведомления
-        function showNotification(message, type) {
-            const notification = document.createElement('div');
-            notification.className = `alert alert-${type === 'success' ? 'success' : 'error'}`;
-            notification.textContent = message;
-            notification.style.position = 'fixed';
-            notification.style.top = '20px';
-            notification.style.right = '20px';
-            notification.style.zIndex = '9999';
-            notification.style.padding = '1rem';
-            notification.style.borderRadius = '5px';
-            notification.style.boxShadow = '0 2px 10px rgba(0,0,0,0.1)';
-            
-            document.body.appendChild(notification);
-            
-            setTimeout(() => {
-                notification.remove();
-            }, 3000);
-        }
-        
-        // Автосохранение каждые 30 секунд
-        setInterval(() => {
-            if (editor && editor.getContent()) {
-                saveContent();
-            }
-        }, 30000);
     </script>
 </body>
 </html>

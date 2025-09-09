@@ -47,6 +47,13 @@ $current_dir = basename(dirname($_SERVER['PHP_SELF']));
             </a>
         </li>
         
+        <li class="menu-item <?php echo ($current_dir === 'logs') ? 'active' : ''; ?>">
+            <a href="/admin/logs/">
+                <span class="menu-icon">📊</span>
+                <span class="menu-text">Логи админов</span>
+            </a>
+        </li>
+        
         <li class="menu-item <?php echo ($current_dir === 'users') ? 'active' : ''; ?>">
             <a href="/admin/users/">
                 <span class="menu-icon">👥</span>
