@@ -6,6 +6,50 @@ if (file_exists(__DIR__ . '/.env')) {
     $dotenv->load();
 }
 
+// Обновляем кеш меню при заходе на страницу (в фоновом режиме)
+function updateMenuCacheAsync() {
+    $cacheUrl = 'http://localhost:3002/api/cache/update-menu';
+    
+    // Создаем контекст для асинхронного запроса
+    $context = stream_context_create([
+        'http' => [
+            'method' => 'POST',
+            'timeout' => 5, // Короткий таймаут, чтобы не блокировать загрузку страницы
+            'header' => 'Content-Type: application/json',
+            'ignore_errors' => true // Игнорируем ошибки, чтобы не влиять на отображение страницы
+        ]
+    ]);
+    
+    // Выполняем запрос в фоновом режиме
+    @file_get_contents($cacheUrl, false, $context);
+}
+
+// Проверяем, нужно ли обновлять кеш (например, раз в 10 минут)
+$cacheUpdateFile = __DIR__ . '/data/menu_cache_last_update.txt';
+$shouldUpdateCache = true;
+
+if (file_exists($cacheUpdateFile)) {
+    $lastUpdate = (int)file_get_contents($cacheUpdateFile);
+    $currentTime = time();
+    $timeDiff = $currentTime - $lastUpdate;
+    
+    // Обновляем кеш только если прошло больше 10 минут
+    if ($timeDiff < 600) { // 600 секунд = 10 минут
+        $shouldUpdateCache = false;
+    }
+}
+
+if ($shouldUpdateCache) {
+    // Обновляем кеш асинхронно
+    updateMenuCacheAsync();
+    
+    // Записываем время последнего обновления
+    if (!is_dir(__DIR__ . '/data')) {
+        mkdir(__DIR__ . '/data', 0755, true);
+    }
+    file_put_contents($cacheUpdateFile, time());
+}
+
 // Load menu from MongoDB cache for fast rendering
 $categories = [];
 $products = [];
