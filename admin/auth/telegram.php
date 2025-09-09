@@ -27,50 +27,58 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } elseif (strlen($username) > 50 || strlen($password) > 100) {
             $error = 'Слишком длинные данные';
         } else {
-        // Проверяем пользователя в базе данных
+        // Проверяем пользователя в файле
         try {
-            require_once __DIR__ . '/../../vendor/autoload.php';
-            $client = new MongoDB\Client("mongodb://localhost:27017");
-            $db = $client->northrepublic;
-            $usersCollection = $db->admin_users;
+            $usersFile = __DIR__ . '/../../data/admin_users.json';
             
-            // Ищем пользователя
-            $user = $usersCollection->findOne([
-                'username' => $username,
-                'active' => true
-            ]);
-            
-            if ($user && password_verify($password, $user['password_hash'])) {
-                $_SESSION['admin_logged_in'] = true;
-                $_SESSION['admin_username'] = $user['username'];
-                $_SESSION['admin_user_id'] = (string)$user['_id'];
-                $_SESSION['admin_login_time'] = time();
-                $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+            if (file_exists($usersFile)) {
+                $users = json_decode(file_get_contents($usersFile), true) ?: [];
                 
-                // Обновляем время последнего входа
-                $usersCollection->updateOne(
-                    ['_id' => $user['_id']],
-                    ['$set' => ['last_login' => new MongoDB\BSON\UTCDateTime()]]
-                );
+                $user = null;
+                foreach ($users as $u) {
+                    if ($u['username'] === $username && $u['active'] === true) {
+                        $user = $u;
+                        break;
+                    }
+                }
                 
-                // Логируем вход
-                logAdminAction('login', 'Вход в админку', [
-                    'username' => $username,
-                    'ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown',
-                    'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'unknown'
-                ]);
-                
-                header('Location: ../index.php');
-                exit;
+                if ($user && password_verify($password, $user['password_hash'])) {
+                    $_SESSION['admin_logged_in'] = true;
+                    $_SESSION['admin_username'] = $user['username'];
+                    $_SESSION['admin_user_id'] = $user['username']; // Используем username как ID
+                    $_SESSION['admin_login_time'] = time();
+                    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+                    
+                    // Обновляем время последнего входа
+                    foreach ($users as &$u) {
+                        if ($u['username'] === $username) {
+                            $u['last_login'] = date('Y-m-d H:i:s');
+                            break;
+                        }
+                    }
+                    file_put_contents($usersFile, json_encode($users, JSON_PRETTY_PRINT));
+                    
+                    // Логируем вход
+                    logAdminAction('login', 'Вход в админку', [
+                        'username' => $username,
+                        'ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown',
+                        'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'unknown'
+                    ]);
+                    
+                    header('Location: ../index.php');
+                    exit;
+                } else {
+                    $error = 'Неверные данные для входа';
+                    
+                    // Логируем неудачную попытку входа
+                    logAdminAction('login_failed', 'Неудачная попытка входа', [
+                        'username' => $username,
+                        'ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown',
+                        'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'unknown'
+                    ]);
+                }
             } else {
-                $error = 'Неверные данные для входа';
-                
-                // Логируем неудачную попытку входа
-                logAdminAction('login_failed', 'Неудачная попытка входа', [
-                    'username' => $username,
-                    'ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown',
-                    'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'unknown'
-                ]);
+                $error = 'Пользователи не найдены. Создайте администратора.';
             }
         } catch (Exception $e) {
             error_log("Auth error: " . $e->getMessage());
@@ -83,20 +91,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 // Функция логирования действий админа
 function logAdminAction($action, $description, $data = []) {
     try {
-        require_once __DIR__ . '/../../vendor/autoload.php';
-        $client = new MongoDB\Client("mongodb://localhost:27017");
-        $db = $client->northrepublic;
-        $logsCollection = $db->admin_logs;
+        $logsFile = __DIR__ . '/../../data/admin_logs.json';
+        $logsDir = dirname($logsFile);
+        
+        if (!is_dir($logsDir)) {
+            mkdir($logsDir, 0755, true);
+        }
+        
+        $logs = [];
+        if (file_exists($logsFile)) {
+            $logs = json_decode(file_get_contents($logsFile), true) ?: [];
+        }
         
         $logEntry = [
             'action' => $action,
             'description' => $description,
             'data' => $data,
-            'timestamp' => new MongoDB\BSON\UTCDateTime(),
+            'timestamp' => date('Y-m-d H:i:s'),
             'session_id' => session_id()
         ];
         
-        $logsCollection->insertOne($logEntry);
+        $logs[] = $logEntry;
+        
+        // Ограничиваем количество логов (последние 1000 записей)
+        if (count($logs) > 1000) {
+            $logs = array_slice($logs, -1000);
+        }
+        
+        file_put_contents($logsFile, json_encode($logs, JSON_PRETTY_PRINT));
     } catch (Exception $e) {
         error_log("Ошибка логирования: " . $e->getMessage());
     }
