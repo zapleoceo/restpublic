@@ -4,7 +4,9 @@
  * Запуск: php admin/migrate-translations.php
  */
 
-// Подключаем MongoDB напрямую
+// Подключаем autoload
+require_once __DIR__ . '/../vendor/autoload.php';
+
 if (!class_exists('MongoDB\Client')) {
     echo "❌ MongoDB PHP драйвер не установлен.\n";
     echo "Установите: composer require mongodb/mongodb\n";
