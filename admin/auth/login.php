@@ -177,9 +177,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <button type="submit" class="btn-login">Войти</button>
             </form>
             
-            <div class="create-user-link">
-                <a href="create-user.php">Создать первого администратора</a>
-            </div>
             
             <div class="security-info">
                 <strong>Безопасная авторизация:</strong><br>
