@@ -87,7 +87,7 @@ $availableLanguages = $translationService->getAvailableLanguages();
     visibility: hidden;
     transform: translateY(-10px);
     transition: all 0.3s ease;
-    min-width: 120px;
+    width: 100%; /* Такая же ширина, как у переключателя */
     margin-top: 0.5rem;
     overflow: hidden;
 }
@@ -106,7 +106,7 @@ $availableLanguages = $translationService->getAvailableLanguages();
     color: var(--color-text-dark, #333);
     text-decoration: none;
     transition: all 0.3s ease;
-    border-bottom: 1px solid var(--color-border-light, #f0f0f0);
+    border-bottom: 1px solid #5f6362;
 }
 
 .language-option:last-child {
@@ -196,11 +196,13 @@ document.addEventListener('DOMContentLoaded', function() {
     
     if (!languageSwitcher) return;
     
-    // Toggle dropdown
-    languageCurrent.addEventListener('click', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        languageSwitcher.classList.toggle('open');
+    // Toggle dropdown on hover
+    languageSwitcher.addEventListener('mouseenter', function() {
+        languageSwitcher.classList.add('open');
+    });
+    
+    languageSwitcher.addEventListener('mouseleave', function() {
+        languageSwitcher.classList.remove('open');
     });
     
     // Handle language selection
@@ -227,12 +229,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Close dropdown when clicking outside
-    document.addEventListener('click', function(e) {
-        if (!languageSwitcher.contains(e.target)) {
-            languageSwitcher.classList.remove('open');
-        }
-    });
+    // No need for click outside handler with hover
     
     // Function to change language
     function changeLanguage(language) {
