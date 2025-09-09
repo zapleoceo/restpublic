@@ -2,10 +2,7 @@
 session_start();
 
 // Проверка авторизации
-if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
-    header('Location: auth/telegram.php');
-    exit;
-}
+require_once __DIR__ . '/includes/auth-check.php';
 
 // Подключение к MongoDB
 require_once __DIR__ . '/../vendor/autoload.php';
