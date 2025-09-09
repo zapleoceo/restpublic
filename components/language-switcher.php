@@ -239,7 +239,7 @@ document.addEventListener('DOMContentLoaded', function() {
         currentCode.textContent = '...';
         
         // Send AJAX request
-        fetch('/api/language/change', {
+        fetch('/api/language/change.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
