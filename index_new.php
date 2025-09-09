@@ -170,16 +170,16 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                 </div> <!-- end intro-header -->
 
                 <figure class="intro-pic-primary">
-                    <img src="template/images/shawa.png" 
-                         srcset="template/images/shawa.png 1x, 
-                         template/images/shawa.png 2x" alt="">  
+                    <img src="<?php echo $pageMeta['intro_image_primary'] ?? 'template/images/shawa.png'; ?>" 
+                         srcset="<?php echo $pageMeta['intro_image_primary'] ?? 'template/images/shawa.png'; ?> 1x, 
+                         <?php echo $pageMeta['intro_image_primary'] ?? 'template/images/shawa.png'; ?> 2x" alt="">  
                 </figure> <!-- end intro-pic-primary -->    
                     
                 <div class="intro-block-content">
                     <figure class="intro-block-content__pic">
-                        <img src="template/images/intro-pic-secondary.jpg" 
-                             srcset="template/images/intro-pic-secondary.jpg 1x, 
-                             template/images/intro-pic-secondary@2x.jpg 2x" alt=""> 
+                        <img src="<?php echo $pageMeta['intro_image_secondary'] ?? 'template/images/intro-pic-secondary.jpg'; ?>" 
+                             srcset="<?php echo $pageMeta['intro_image_secondary'] ?? 'template/images/intro-pic-secondary.jpg'; ?> 1x, 
+                             <?php echo $pageMeta['intro_image_secondary_2x'] ?? 'template/images/intro-pic-secondary@2x.jpg'; ?> 2x" alt=""> 
                     </figure>
                     <div class="intro-block-content__text">
                         <p class="lead">
@@ -211,9 +211,9 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                     </div>  
 
                     <figure class="about-pic-primary">
-                        <img src="template/images/about-pic-primary.jpg" 
-                             srcset="template/images/about-pic-primary.jpg 1x, 
-                             template/images/about-pic-primary@2x.jpg 2x" alt=""> 
+                        <img src="<?php echo $pageMeta['about_image_primary'] ?? 'template/images/about-pic-primary.jpg'; ?>" 
+                             srcset="<?php echo $pageMeta['about_image_primary'] ?? 'template/images/about-pic-primary.jpg'; ?> 1x, 
+                             <?php echo $pageMeta['about_image_primary_2x'] ?? 'template/images/about-pic-primary@2x.jpg'; ?> 2x" alt=""> 
                     </figure>
                 </div> <!-- end s-about__content-start -->
 
@@ -331,15 +331,40 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
             </div> <!-- end s-gallery__header -->   
 
             <div class="gallery-items grid-cols grid-cols--wrap">
-                <?php for ($i = 1; $i <= 8; $i++): ?>
-                    <div class="gallery-items__item grid-cols__column">
-                        <a href="template/images/gallery/large/l-gallery-<?php echo sprintf('%02d', $i); ?>.jpg" class="gallery-items__item-thumb glightbox">
-                            <img src="template/images/gallery/gallery-<?php echo sprintf('%02d', $i); ?>.jpg" 
-                                srcset="template/images/gallery/gallery-<?php echo sprintf('%02d', $i); ?>.jpg 1x, 
-                                        template/images/gallery/gallery-<?php echo sprintf('%02d', $i); ?>@2x.jpg 2x" alt="">                                
-                        </a>
-                    </div>
-                <?php endfor; ?>
+                <?php 
+                // Получаем изображения галереи из БД
+                $galleryImages = $pageMeta['gallery_images'] ?? [];
+                
+                if (!empty($galleryImages)) {
+                    // Используем изображения из БД
+                    foreach ($galleryImages as $image) {
+                        $thumb = $image['thumb'] ?? '';
+                        $large = $image['large'] ?? $thumb;
+                        $thumb2x = $image['thumb2x'] ?? $thumb;
+                        $alt = $image['alt'] ?? '';
+                        ?>
+                        <div class="gallery-items__item grid-cols__column">
+                            <a href="<?php echo htmlspecialchars($large); ?>" class="gallery-items__item-thumb glightbox">
+                                <img src="<?php echo htmlspecialchars($thumb); ?>" 
+                                    srcset="<?php echo htmlspecialchars($thumb); ?> 1x, 
+                                            <?php echo htmlspecialchars($thumb2x); ?> 2x" alt="<?php echo htmlspecialchars($alt); ?>">                                
+                            </a>
+                        </div>
+                        <?php
+                    }
+                } else {
+                    // Fallback на статичные изображения
+                    for ($i = 1; $i <= 8; $i++): ?>
+                        <div class="gallery-items__item grid-cols__column">
+                            <a href="template/images/gallery/large/l-gallery-<?php echo sprintf('%02d', $i); ?>.jpg" class="gallery-items__item-thumb glightbox">
+                                <img src="template/images/gallery/gallery-<?php echo sprintf('%02d', $i); ?>.jpg" 
+                                    srcset="template/images/gallery/gallery-<?php echo sprintf('%02d', $i); ?>.jpg 1x, 
+                                            template/images/gallery/gallery-<?php echo sprintf('%02d', $i); ?>@2x.jpg 2x" alt="">                                
+                            </a>
+                        </div>
+                    <?php endfor;
+                }
+                ?>
             </div> <!-- end gallery-items -->
         </section> <!-- end s-gallery -->
 

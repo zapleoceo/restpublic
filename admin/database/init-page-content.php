@@ -29,7 +29,62 @@ try {
             'menu_working_on_it' => 'Мы работаем над пополнением меню',
             'menu_unavailable' => 'К сожалению, меню временно недоступно. Попробуйте обновить страницу.',
             'menu_full_button' => 'Открыть полное меню',
-            'gallery_title' => 'Галерея'
+            'gallery_title' => 'Галерея',
+            'intro_image_primary' => 'template/images/shawa.png',
+            'intro_image_secondary' => 'template/images/intro-pic-secondary.jpg',
+            'intro_image_secondary_2x' => 'template/images/intro-pic-secondary@2x.jpg',
+            'about_image_primary' => 'template/images/about-pic-primary.jpg',
+            'about_image_primary_2x' => 'template/images/about-pic-primary@2x.jpg',
+            'gallery_images' => [
+                [
+                    'thumb' => 'template/images/gallery/gallery-01.jpg',
+                    'large' => 'template/images/gallery/large/l-gallery-01.jpg',
+                    'thumb2x' => 'template/images/gallery/gallery-01@2x.jpg',
+                    'alt' => 'Галерея 1'
+                ],
+                [
+                    'thumb' => 'template/images/gallery/gallery-02.jpg',
+                    'large' => 'template/images/gallery/large/l-gallery-02.jpg',
+                    'thumb2x' => 'template/images/gallery/gallery-02@2x.jpg',
+                    'alt' => 'Галерея 2'
+                ],
+                [
+                    'thumb' => 'template/images/gallery/gallery-03.jpg',
+                    'large' => 'template/images/gallery/large/l-gallery-03.jpg',
+                    'thumb2x' => 'template/images/gallery/gallery-03@2x.jpg',
+                    'alt' => 'Галерея 3'
+                ],
+                [
+                    'thumb' => 'template/images/gallery/gallery-04.jpg',
+                    'large' => 'template/images/gallery/large/l-gallery-04.jpg',
+                    'thumb2x' => 'template/images/gallery/gallery-04@2x.jpg',
+                    'alt' => 'Галерея 4'
+                ],
+                [
+                    'thumb' => 'template/images/gallery/gallery-05.jpg',
+                    'large' => 'template/images/gallery/large/l-gallery-05.jpg',
+                    'thumb2x' => 'template/images/gallery/gallery-05@2x.jpg',
+                    'alt' => 'Галерея 5'
+                ],
+                [
+                    'thumb' => 'template/images/gallery/gallery-06.jpg',
+                    'large' => 'template/images/gallery/large/l-gallery-06.jpg',
+                    'thumb2x' => 'template/images/gallery/gallery-06@2x.jpg',
+                    'alt' => 'Галерея 6'
+                ],
+                [
+                    'thumb' => 'template/images/gallery/gallery-07.jpg',
+                    'large' => 'template/images/gallery/large/l-gallery-07.jpg',
+                    'thumb2x' => 'template/images/gallery/gallery-07@2x.jpg',
+                    'alt' => 'Галерея 7'
+                ],
+                [
+                    'thumb' => 'template/images/gallery/gallery-08.jpg',
+                    'large' => 'template/images/gallery/large/l-gallery-08.jpg',
+                    'thumb2x' => 'template/images/gallery/gallery-08@2x.jpg',
+                    'alt' => 'Галерея 8'
+                ]
+            ]
         ],
         'status' => 'published',
         'updated_by' => 'admin'
@@ -54,7 +109,62 @@ try {
             'menu_working_on_it' => 'We are working on expanding our menu',
             'menu_unavailable' => 'Unfortunately, the menu is temporarily unavailable. Please try refreshing the page.',
             'menu_full_button' => 'View Full Menu',
-            'gallery_title' => 'Gallery'
+            'gallery_title' => 'Gallery',
+            'intro_image_primary' => 'template/images/shawa.png',
+            'intro_image_secondary' => 'template/images/intro-pic-secondary.jpg',
+            'intro_image_secondary_2x' => 'template/images/intro-pic-secondary@2x.jpg',
+            'about_image_primary' => 'template/images/about-pic-primary.jpg',
+            'about_image_primary_2x' => 'template/images/about-pic-primary@2x.jpg',
+            'gallery_images' => [
+                [
+                    'thumb' => 'template/images/gallery/gallery-01.jpg',
+                    'large' => 'template/images/gallery/large/l-gallery-01.jpg',
+                    'thumb2x' => 'template/images/gallery/gallery-01@2x.jpg',
+                    'alt' => 'Gallery 1'
+                ],
+                [
+                    'thumb' => 'template/images/gallery/gallery-02.jpg',
+                    'large' => 'template/images/gallery/large/l-gallery-02.jpg',
+                    'thumb2x' => 'template/images/gallery/gallery-02@2x.jpg',
+                    'alt' => 'Gallery 2'
+                ],
+                [
+                    'thumb' => 'template/images/gallery/gallery-03.jpg',
+                    'large' => 'template/images/gallery/large/l-gallery-03.jpg',
+                    'thumb2x' => 'template/images/gallery/gallery-03@2x.jpg',
+                    'alt' => 'Gallery 3'
+                ],
+                [
+                    'thumb' => 'template/images/gallery/gallery-04.jpg',
+                    'large' => 'template/images/gallery/large/l-gallery-04.jpg',
+                    'thumb2x' => 'template/images/gallery/gallery-04@2x.jpg',
+                    'alt' => 'Gallery 4'
+                ],
+                [
+                    'thumb' => 'template/images/gallery/gallery-05.jpg',
+                    'large' => 'template/images/gallery/large/l-gallery-05.jpg',
+                    'thumb2x' => 'template/images/gallery/gallery-05@2x.jpg',
+                    'alt' => 'Gallery 5'
+                ],
+                [
+                    'thumb' => 'template/images/gallery/gallery-06.jpg',
+                    'large' => 'template/images/gallery/large/l-gallery-06.jpg',
+                    'thumb2x' => 'template/images/gallery/gallery-06@2x.jpg',
+                    'alt' => 'Gallery 6'
+                ],
+                [
+                    'thumb' => 'template/images/gallery/gallery-07.jpg',
+                    'large' => 'template/images/gallery/large/l-gallery-07.jpg',
+                    'thumb2x' => 'template/images/gallery/gallery-07@2x.jpg',
+                    'alt' => 'Gallery 7'
+                ],
+                [
+                    'thumb' => 'template/images/gallery/gallery-08.jpg',
+                    'large' => 'template/images/gallery/large/l-gallery-08.jpg',
+                    'thumb2x' => 'template/images/gallery/gallery-08@2x.jpg',
+                    'alt' => 'Gallery 8'
+                ]
+            ]
         ],
         'status' => 'published',
         'updated_by' => 'admin'
@@ -65,7 +175,7 @@ try {
         'page' => 'index',
         'language' => 'vi',
         'content' => 'Chào mừng đến với <strong>North Republic</strong> — nơi ẩm thực tinh tế, bầu không khí ấm cúng và những khoảnh khắc khó quên gặp gỡ.',
-        'meta' => [
+                    'meta' => [
             'title' => 'North Republic - Nhà hàng tại Nha Trang',
             'description' => 'North Republic - nhà hàng tinh tế tại Nha Trang với ẩm thực tuyệt vời và bầu không khí ấm cúng. Đặt bàn trực tuyến.',
             'keywords' => 'nhà hàng, nha trang, việt nam, ẩm thực, thức ăn, bữa tối, bữa trưa, đặt bàn',
@@ -79,9 +189,64 @@ try {
             'menu_working_on_it' => 'Chúng tôi đang làm việc để mở rộng thực đơn',
             'menu_unavailable' => 'Rất tiếc, thực đơn tạm thời không khả dụng. Vui lòng thử làm mới trang.',
             'menu_full_button' => 'Xem thực đơn đầy đủ',
-            'gallery_title' => 'Thư viện ảnh'
-        ],
-        'status' => 'published',
+            'gallery_title' => 'Thư viện ảnh',
+            'intro_image_primary' => 'template/images/shawa.png',
+            'intro_image_secondary' => 'template/images/intro-pic-secondary.jpg',
+            'intro_image_secondary_2x' => 'template/images/intro-pic-secondary@2x.jpg',
+            'about_image_primary' => 'template/images/about-pic-primary.jpg',
+            'about_image_primary_2x' => 'template/images/about-pic-primary@2x.jpg',
+            'gallery_images' => [
+                [
+                    'thumb' => 'template/images/gallery/gallery-01.jpg',
+                    'large' => 'template/images/gallery/large/l-gallery-01.jpg',
+                    'thumb2x' => 'template/images/gallery/gallery-01@2x.jpg',
+                    'alt' => 'Thư viện ảnh 1'
+                ],
+                [
+                    'thumb' => 'template/images/gallery/gallery-02.jpg',
+                    'large' => 'template/images/gallery/large/l-gallery-02.jpg',
+                    'thumb2x' => 'template/images/gallery/gallery-02@2x.jpg',
+                    'alt' => 'Thư viện ảnh 2'
+                ],
+                [
+                    'thumb' => 'template/images/gallery/gallery-03.jpg',
+                    'large' => 'template/images/gallery/large/l-gallery-03.jpg',
+                    'thumb2x' => 'template/images/gallery/gallery-03@2x.jpg',
+                    'alt' => 'Thư viện ảnh 3'
+                ],
+                [
+                    'thumb' => 'template/images/gallery/gallery-04.jpg',
+                    'large' => 'template/images/gallery/large/l-gallery-04.jpg',
+                    'thumb2x' => 'template/images/gallery/gallery-04@2x.jpg',
+                    'alt' => 'Thư viện ảnh 4'
+                ],
+                [
+                    'thumb' => 'template/images/gallery/gallery-05.jpg',
+                    'large' => 'template/images/gallery/large/l-gallery-05.jpg',
+                    'thumb2x' => 'template/images/gallery/gallery-05@2x.jpg',
+                    'alt' => 'Thư viện ảnh 5'
+                ],
+                [
+                    'thumb' => 'template/images/gallery/gallery-06.jpg',
+                    'large' => 'template/images/gallery/large/l-gallery-06.jpg',
+                    'thumb2x' => 'template/images/gallery/gallery-06@2x.jpg',
+                    'alt' => 'Thư viện ảnh 6'
+                ],
+                [
+                    'thumb' => 'template/images/gallery/gallery-07.jpg',
+                    'large' => 'template/images/gallery/large/l-gallery-07.jpg',
+                    'thumb2x' => 'template/images/gallery/gallery-07@2x.jpg',
+                    'alt' => 'Thư viện ảnh 7'
+                ],
+                [
+                    'thumb' => 'template/images/gallery/gallery-08.jpg',
+                    'large' => 'template/images/gallery/large/l-gallery-08.jpg',
+                    'thumb2x' => 'template/images/gallery/gallery-08@2x.jpg',
+                    'alt' => 'Thư viện ảnh 8'
+                ]
+            ]
+                    ],
+                    'status' => 'published',
         'updated_by' => 'admin'
     ];
     
