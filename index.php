@@ -315,6 +315,18 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                     <a href="/menu" class="btn btn--primary">
                         <?php echo $pageMeta['menu_full_button'] ?? ''; ?>
                     </a>
+                    
+                    <!-- Menu Update Time -->
+                    <?php 
+                    $lastUpdateTime = $menuCache->getLastUpdateTimeFormatted();
+                    if ($lastUpdateTime): 
+                    ?>
+                    <div class="menu-update-time">
+                        <small style="color: #1e1e1e; font-size: 0.75rem; margin-top: 0.5rem; display: block;">
+                            Обновлено: <?php echo htmlspecialchars($lastUpdateTime); ?> (Нячанг)
+                        </small>
+                    </div>
+                    <?php endif; ?>
                 </div>
             </div> <!-- end s-menu__footer -->
         </section> <!-- end s-menu -->

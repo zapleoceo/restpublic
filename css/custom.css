@@ -169,3 +169,20 @@ h1,
 .intro-header__big-type {
   font-size: clamp(calc(var(--text-display) * 0.67), calc((var(--text-3xl) + 10vw) * 0.67), calc(18.4rem * 0.67)) !important;
 }
+
+/* Menu Update Time Styles */
+.menu-update-time {
+  margin-top: 0.5rem;
+}
+
+.menu-update-time small {
+  color: #1e1e1e !important;
+  font-size: 0.75rem !important;
+  opacity: 0.8;
+  font-weight: 400;
+  letter-spacing: 0.025em;
+}
+
+.menu-update-time small:hover {
+  opacity: 1;
+}

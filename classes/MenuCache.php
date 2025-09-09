@@ -199,6 +199,41 @@ class MenuCache {
     }
     
     /**
+     * Получить время последнего обновления меню из Poster API
+     */
+    public function getLastUpdateTime() {
+        try {
+            $menu = $this->menuCollection->findOne(['_id' => 'current_menu']);
+            
+            if (!$menu || !isset($menu['updated_at'])) {
+                return null;
+            }
+            
+            return $menu['updated_at']->toDateTime();
+            
+        } catch (Exception $e) {
+            error_log("Ошибка получения времени обновления: " . $e->getMessage());
+            return null;
+        }
+    }
+    
+    /**
+     * Получить время последнего обновления в формате для отображения (Нячанг)
+     */
+    public function getLastUpdateTimeFormatted() {
+        $updateTime = $this->getLastUpdateTime();
+        
+        if (!$updateTime) {
+            return null;
+        }
+        
+        // Устанавливаем часовой пояс Нячанга (UTC+7)
+        $updateTime->setTimezone(new DateTimeZone('Asia/Ho_Chi_Minh'));
+        
+        return $updateTime->format('d.m.Y H:i');
+    }
+    
+    /**
      * Обновить меню в фоне через API
      */
     private function updateMenuInBackground() {
