@@ -4,7 +4,7 @@
  * Полная замена системы переводов на систему полного HTML контента
  */
 
-require_once '../includes/auth-check.php';
+require_once __DIR__ . '/../includes/auth-check.php';
 require_once '../../classes/PageContentService.php';
 
 $pageContentService = new PageContentService();
