@@ -1,5 +1,5 @@
 <?php
-session_start();
+// session_start() уже вызывается в auth-check.php
 require_once 'auth-check.php';
 ?>
 <header class="admin-header">

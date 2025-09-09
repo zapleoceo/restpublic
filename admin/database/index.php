@@ -1,9 +1,23 @@
 <?php
-session_start();
-require_once '../includes/auth-check.php';
+// Проверка авторизации уже включена в header.php
 
 $error = '';
 $success = '';
+
+// Проверяем статус MongoDB
+$mongoStatus = 'Недоступна';
+$mongoConnection = false;
+
+try {
+    if (class_exists('MongoDB\Client')) {
+        $client = new MongoDB\Client('mongodb://localhost:27017');
+        $client->listDatabases();
+        $mongoStatus = 'Доступна';
+        $mongoConnection = true;
+    }
+} catch (Exception $e) {
+    $mongoStatus = 'Ошибка: ' . $e->getMessage();
+}
 
 // Функция для получения информации о файлах данных
 function getDataFilesInfo() {
@@ -276,6 +290,22 @@ function formatFileSize($bytes) {
                         <span class="info-label">PHP версия:</span>
                         <span class="info-value"><?php echo PHP_VERSION; ?></span>
                     </div>
+                </div>
+            </div>
+            
+            <!-- Статус MongoDB -->
+            <div class="database-info">
+                <h3>🗄️ Статус MongoDB</h3>
+                <div class="mongo-status" style="padding: 1rem; border-radius: 5px; background: <?php echo $mongoConnection ? '#d4edda' : '#f8d7da'; ?>; border: 1px solid <?php echo $mongoConnection ? '#c3e6cb' : '#f5c6cb'; ?>;">
+                    <strong>MongoDB:</strong> 
+                    <span style="color: <?php echo $mongoConnection ? '#155724' : '#721c24'; ?>;">
+                        <?php echo htmlspecialchars($mongoStatus); ?>
+                    </span>
+                    <?php if ($mongoConnection): ?>
+                        <span style="color: #155724;">✅</span>
+                    <?php else: ?>
+                        <span style="color: #721c24;">❌</span>
+                    <?php endif; ?>
                 </div>
             </div>
             
