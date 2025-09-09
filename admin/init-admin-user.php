@@ -22,7 +22,7 @@ try {
     
     // Создаем первого администратора
     $username = 'admin';
-    $password = 'SecurePassword123!'; // Смените на свой пароль
+    $password = '1q2w#E$R'; // Пароль по требованию
     
     $userData = [
         'username' => $username,
