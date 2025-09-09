@@ -1,6 +1,12 @@
 <?php
 // Footer component for North Republic website
 // Usage: include 'components/footer.php';
+
+// Initialize translation service if not already initialized
+if (!isset($translationService)) {
+    require_once __DIR__ . '/../classes/TranslationService.php';
+    $translationService = new TranslationService();
+}
 ?>
 <!-- # footer 
 ================================================== -->
@@ -96,7 +102,7 @@
         
         <div class="column xl-9 lg-12 s-footer__main-end grid-cols grid-cols--wrap">
             <div class="grid-cols__column footer-block">
-                <h6>Адрес</h6>
+                <h6><?php echo $translationService->get('footer.address_title', 'Адрес'); ?></h6>
                 <p>
                 <a href="https://maps.app.goo.gl/2KScvZCqUtkqtWN39" target="_blank" rel="noopener noreferrer">
                     Trần Khát Chân, Đường Đệ, Nha Trang, Khánh Hòa, Vietnam
@@ -105,7 +111,7 @@
             </div>
             
             <div class="grid-cols__column footer-block">     
-                <h6>Контакты</h6>
+                <h6><?php echo $translationService->get('footer.contacts_title', 'Контакты'); ?></h6>
                 <ul class="link-list">
                     <li><a href="mailto:info@northrepublic.me">info@northrepublic.me</a></li>
                     <li><a href="tel:+84349338758">+84 349 338 758</a></li>
@@ -113,11 +119,11 @@
             </div>
             
             <div class="grid-cols__column footer-block">                   
-                <h6>Часы работы</h6>
-                                        <ul class="opening-hours">
-                            <li><span class="opening-hours__days">Будни</span><span class="opening-hours__time">8:00 - 22:00</span></li>
-                            <li><span class="opening-hours__days">Выходные</span><span class="opening-hours__time">9:00 - 23:00</span></li>
-                        </ul> 
+                <h6><?php echo $translationService->get('footer.hours_title', 'Часы работы'); ?></h6>
+                <ul class="opening-hours">
+                    <li><span class="opening-hours__days"><?php echo $translationService->get('footer.weekdays', 'Будни'); ?></span><span class="opening-hours__time">8:00 - 22:00</span></li>
+                    <li><span class="opening-hours__days"><?php echo $translationService->get('footer.weekends', 'Выходные'); ?></span><span class="opening-hours__time">9:00 - 23:00</span></li>
+                </ul> 
             </div>  
         </div> <!-- s-footer__main-end -->                  
     </div> <!-- end  s-footer__main-content -->                 
@@ -125,16 +131,16 @@
     <div class="row s-footer__bottom">       
         <div class="column xl-6 lg-12 footer-copyright">
                             <p class="ss-copyright">
-                    <span>© <?php echo date('Y'); ?> North Republic. Все права защищены.</span> 
+                    <span><?php echo $translationService->get('footer.copyright', '© ' . date('Y') . ' North Republic. Все права защищены.'); ?></span> 
                     <span>Developed by <a href="https://zapleo.com" target="_blank">zapleo.com</a></span>
                 </p>
         </div>
     </div> <!-- end s-footer__bottom -->          
 
     <div class="ss-go-top">
-        <a class="smoothscroll" title="Наверх" href="#top">                 
+        <a class="smoothscroll" title="<?php echo $translationService->get('footer.back_to_top', 'Наверх'); ?>" href="#top">                 
             <svg clip-rule="evenodd" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="m14.523 18.787s4.501-4.505 6.255-6.26c.146-.146.219-.338.219-.53s-.073-.383-.219-.53c-1.753-1.754-6.255-6.258-6.255-6.258-.144-.145-.334-.217-.524-.217-.193 0-.385.074-.532.221-.293.292-.295.766-.004 1.056l4.978 4.978h-14.692c-.414 0-.75.336-.75.75s.336.75.75.75h14.692l-4.979 4.979c-.289.289-.286.762.006 1.054.148.148.341.222.533.222.19 0 .378-.072.522-.215z" fill-rule="nonzero"/></svg>
         </a>                                
-        <span>Наверх</span>   
+        <span><?php echo $translationService->get('footer.back_to_top', 'Наверх'); ?></span>   
     </div> <!-- end ss-go-top -->
 </footer> <!-- end s-footer -->
