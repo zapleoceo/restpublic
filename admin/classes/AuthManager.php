@@ -160,7 +160,7 @@ class AuthManager {
     /**
      * Получение количества пользователей
      */
-    private function getUsersCount() {
+    public function getUsersCount() {
         try {
             if ($this->useMongoDB) {
                 return $this->usersCollection->countDocuments();
