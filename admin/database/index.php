@@ -31,6 +31,26 @@ function getDataFilesInfo() {
 // Получаем информацию о файлах
 $dataFiles = getDataFilesInfo();
 
+// Обработка просмотра файла
+$viewFile = $_GET['view'] ?? '';
+$fileContent = '';
+$fileName = '';
+
+if ($viewFile) {
+    $filePath = $dataDir . '/' . $viewFile;
+    if (file_exists($filePath) && pathinfo($viewFile, PATHINFO_EXTENSION) === 'json') {
+        $fileName = $viewFile;
+        $content = file_get_contents($filePath);
+        $jsonData = json_decode($content, true);
+        
+        if ($jsonData !== null) {
+            $fileContent = json_encode($jsonData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+        } else {
+            $fileContent = $content; // Показываем как есть, если не валидный JSON
+        }
+    }
+}
+
 // Функция для форматирования размера файла
 function formatFileSize($bytes) {
     if ($bytes >= 1073741824) {
@@ -152,6 +172,52 @@ function formatFileSize($bytes) {
         .info-value {
             color: #333;
         }
+        
+        .json-viewer {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 1rem;
+            margin-top: 1rem;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        
+        .json-content {
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        
+        .json-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #545b62;
+        }
     </style>
 </head>
 <body>
@@ -247,6 +313,10 @@ function formatFileSize($bytes) {
                                     </td>
                                     <td>
                                         <span class="status-badge status-active">Активен</span>
+                                        <a href="?view=<?php echo urlencode($file['name']); ?>" 
+                                           class="btn btn-info" style="margin-left: 0.5rem; padding: 0.25rem 0.5rem; font-size: 0.8rem;">
+                                            👁️ Просмотр
+                                        </a>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
@@ -254,6 +324,17 @@ function formatFileSize($bytes) {
                     </table>
                 <?php endif; ?>
             </div>
+            
+            <!-- Просмотр JSON файла -->
+            <?php if ($fileContent): ?>
+                <div class="json-viewer">
+                    <div class="json-header">
+                        <h3>📄 Содержимое файла: <?php echo htmlspecialchars($fileName); ?></h3>
+                        <a href="?" class="btn btn-secondary">← Назад к списку</a>
+                    </div>
+                    <div class="json-content"><?php echo htmlspecialchars($fileContent); ?></div>
+                </div>
+            <?php endif; ?>
             
             <!-- Предупреждение -->
             <div class="alert alert-warning">

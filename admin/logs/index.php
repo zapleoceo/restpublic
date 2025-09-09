@@ -44,6 +44,17 @@ $totalLogs = count($filteredLogs);
 $totalPages = ceil($totalLogs / $limit);
 $paginatedLogs = array_slice($filteredLogs, $offset, $limit);
 
+// Обработка просмотра детальной информации о логе
+$viewLogIndex = $_GET['view'] ?? '';
+$viewLog = null;
+
+if ($viewLogIndex !== '') {
+    $logIndex = intval($viewLogIndex);
+    if ($logIndex >= 0 && $logIndex < count($filteredLogs)) {
+        $viewLog = $filteredLogs[$logIndex];
+    }
+}
+
 // Получаем уникальные действия и пользователей для фильтров
 $actions = array_unique(array_column($logs, 'action'));
 $users = array_unique(array_column($logs, 'username'));
@@ -271,6 +282,60 @@ function formatAction($action) {
             padding: 3rem;
             color: #666;
         }
+        
+        .log-detail {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 2rem;
+        }
+        
+        .log-detail-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .log-detail-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        
+        .log-detail-item {
+            padding: 0.75rem;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+        
+        .log-detail-label {
+            font-weight: 600;
+            color: #666;
+            margin-bottom: 0.25rem;
+        }
+        
+        .log-detail-value {
+            color: #333;
+            word-break: break-word;
+        }
+        
+        .log-detail-json {
+            grid-column: 1 / -1;
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            max-height: 300px;
+            overflow-y: auto;
+        }
     </style>
 </head>
 <body>
@@ -376,7 +441,17 @@ function formatAction($action) {
                                         <span class="log-user"><?php echo htmlspecialchars($log['username'] ?? 'unknown'); ?></span>
                                     </td>
                                     <td class="log-description">
-                                        <?php echo htmlspecialchars($log['message'] ?? $log['description'] ?? ''); ?>
+                                        <?php 
+                                        $description = $log['message'] ?? $log['description'] ?? '';
+                                        if (strlen($description) > 50) {
+                                            echo htmlspecialchars(substr($description, 0, 50)) . '...';
+                                        } else {
+                                            echo htmlspecialchars($description);
+                                        }
+                                        ?>
+                                        <?php if (strlen($description) > 50): ?>
+                                            <a href="?view=<?php echo $offset + $key; ?>" class="btn btn-info" style="margin-left: 0.5rem; padding: 0.25rem 0.5rem; font-size: 0.8rem;">👁️ Подробнее</a>
+                                        <?php endif; ?>
                                     </td>
                                     <td>
                                         <span style="font-family: monospace; font-size: 0.9rem;">
@@ -410,6 +485,66 @@ function formatAction($action) {
                     <?php endif; ?>
                 <?php endif; ?>
             </div>
+            
+            <!-- Детальный просмотр лога -->
+            <?php if ($viewLog): ?>
+                <div class="log-detail">
+                    <div class="log-detail-header">
+                        <h3>📋 Детальная информация о логе</h3>
+                        <a href="?" class="btn btn-secondary">← Назад к списку</a>
+                    </div>
+                    
+                    <div class="log-detail-content">
+                        <div class="log-detail-item">
+                            <div class="log-detail-label">Время</div>
+                            <div class="log-detail-value"><?php echo date('d.m.Y H:i:s', strtotime($viewLog['timestamp'] ?? '')); ?></div>
+                        </div>
+                        
+                        <div class="log-detail-item">
+                            <div class="log-detail-label">Уровень</div>
+                            <div class="log-detail-value">
+                                <span class="log-level <?php echo getLogLevelClass($viewLog['level'] ?? ''); ?>">
+                                    <?php echo strtoupper($viewLog['level'] ?? 'INFO'); ?>
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div class="log-detail-item">
+                            <div class="log-detail-label">Действие</div>
+                            <div class="log-detail-value"><?php echo formatAction($viewLog['action'] ?? ''); ?></div>
+                        </div>
+                        
+                        <div class="log-detail-item">
+                            <div class="log-detail-label">Пользователь</div>
+                            <div class="log-detail-value">
+                                <span class="log-user"><?php echo htmlspecialchars($viewLog['username'] ?? 'unknown'); ?></span>
+                            </div>
+                        </div>
+                        
+                        <div class="log-detail-item">
+                            <div class="log-detail-label">IP адрес</div>
+                            <div class="log-detail-value" style="font-family: monospace;"><?php echo htmlspecialchars($viewLog['ip'] ?? 'N/A'); ?></div>
+                        </div>
+                        
+                        <div class="log-detail-item">
+                            <div class="log-detail-label">User Agent</div>
+                            <div class="log-detail-value"><?php echo htmlspecialchars($viewLog['user_agent'] ?? 'N/A'); ?></div>
+                        </div>
+                        
+                        <div class="log-detail-item">
+                            <div class="log-detail-label">Описание</div>
+                            <div class="log-detail-value"><?php echo htmlspecialchars($viewLog['message'] ?? $viewLog['description'] ?? ''); ?></div>
+                        </div>
+                        
+                        <?php if (isset($viewLog['data']) && !empty($viewLog['data'])): ?>
+                            <div class="log-detail-json">
+                                <strong>Дополнительные данные:</strong><br>
+                                <?php echo htmlspecialchars(json_encode($viewLog['data'], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)); ?>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            <?php endif; ?>
         </main>
     </div>
 </body>
