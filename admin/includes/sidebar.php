@@ -11,10 +11,17 @@ $current_dir = basename(dirname($_SERVER['PHP_SELF']));
             </a>
         </li>
         
+        <li class="menu-item <?php echo ($current_dir === 'pages') ? 'active' : ''; ?>">
+            <a href="/admin/pages/">
+                <span class="menu-icon">📄</span>
+                <span class="menu-text">Страницы</span>
+            </a>
+        </li>
+        
         <li class="menu-item <?php echo ($current_dir === 'texts') ? 'active' : ''; ?>">
             <a href="/admin/texts/">
                 <span class="menu-icon">📝</span>
-                <span class="menu-text">Тексты</span>
+                <span class="menu-text">Тексты (старая)</span>
             </a>
         </li>
         
