@@ -1,216 +1,114 @@
 <?php
 /**
- * Инициализация новой структуры БД для полного HTML контента страниц
- * Создает коллекцию page_content для хранения полного HTML каждой страницы
+ * Инициализация контента страниц в MongoDB
+ * Добавляет базовый контент для главной страницы на всех языках
  */
 
-require_once '../includes/db.php';
+require_once __DIR__ . '/../../vendor/autoload.php';
+require_once __DIR__ . '/../../classes/PageContentService.php';
 
 try {
-    $db = get_db_connection();
-    $collection = $db->page_content;
+    $pageContentService = new PageContentService();
     
-    // Создаем индексы для быстрого поиска
-    $collection->createIndex(['page' => 1, 'language' => 1], ['unique' => true]);
-    $collection->createIndex(['page' => 1]);
-    $collection->createIndex(['language' => 1]);
-    $collection->createIndex(['updated_at' => -1]);
-    
-    echo "✅ Коллекция page_content создана с индексами\n";
-    
-    // Создаем базовые записи для главной страницы
-    $pages = [
-        'index' => 'Главная страница',
-        'menu' => 'Страница меню', 
-        'about' => 'О нас',
-        'contact' => 'Контакты'
+    // Контент для русского языка
+    $ruContent = [
+        'page' => 'index',
+        'language' => 'ru',
+        'content' => 'Добро пожаловать в <strong>North Republic</strong> — место, где встречаются изысканная кухня, уютная атмосфера и незабываемые моменты.',
+        'meta' => [
+            'title' => 'North Republic - Ресторан в Нячанге',
+            'description' => 'North Republic - изысканный ресторан в Нячанге с великолепной кухней и уютной атмосферой. Забронируйте столик онлайн.',
+            'keywords' => 'ресторан, нячанг, вьетнам, кухня, еда, ужин, обед, бронирование',
+            'intro_welcome' => 'Добро пожаловать в',
+            'intro_title' => 'North <br>Republic',
+            'about_title' => 'О нас',
+            'about_content' => '<p class="lead">Добро пожаловать в <strong>«Республику Север»</strong> — оазис приключений и гастономических открытий среди величественных пейзажей северного Нячанга. Здесь, в объятиях первозданной природы, у подножия легендарной горы Ко Тьен, современность встречается с дикой красотой тропического края, создавая пространство безграничных возможностей.</p><p>Взгляните вверх — перед вами раскинулись склоны Горы Феи, той самой Ко Тьен, чья мифическая красота веками вдохновляла поэтов и путешественников. Панорамные виды на изумрудные холмы и сверкающий залив превращают каждый момент здесь в кадр из волшебной сказки. Это место, где время замедляет свой бег, а душа находит долгожданный покой.</p><p><strong>«Республика Север»</strong> — это калейдоскоп впечатлений под открытым небом. Адреналиновые баталии в лазертаге и захватывающие дуэли с луками в арчеритаге соседствуют с уютными беседками для семейных пикников. Интеллектуальные квесты переплетаются с ароматами барбекю, а вечерние мероприятия наполняют воздух музыкой и смехом до поздней ночи.</p><p>Наш ресторан и кофейня — это кулинарное путешествие, где авторские блюда рождаются из слияния русских традиций и вьетнамской экзотики. Здесь каждое блюдо — произведение искусства, а каждый глоток кофе — мост между культурами. Творческие ярмарки, музыкальные вечера и тематические фестивали превращают каждый день в маленький праздник.</p><p>В <strong>«Республике Север»</strong> каждый найдет свой идеальный способ провести время: от корпоративных приключений до романтических ужинов под звездным небом, от детских праздников до философских бесед у камина. Это место, где рождаются новые дружбы, крепнут семейные узы и создаются воспоминания на всю жизнь.</p>',
+            'menu_title' => 'Наше меню',
+            'menu_error' => 'Упс, что-то с меню не так',
+            'menu_no_items' => 'В этой категории пока нет блюд',
+            'menu_working_on_it' => 'Мы работаем над пополнением меню',
+            'menu_unavailable' => 'К сожалению, меню временно недоступно. Попробуйте обновить страницу.',
+            'menu_full_button' => 'Открыть полное меню',
+            'gallery_title' => 'Галерея'
+        ],
+        'status' => 'published',
+        'updated_by' => 'admin'
     ];
     
-    $languages = ['ru', 'en', 'vi'];
+    // Контент для английского языка
+    $enContent = [
+        'page' => 'index',
+        'language' => 'en',
+        'content' => 'Welcome to <strong>North Republic</strong> — where exquisite cuisine, cozy atmosphere and unforgettable moments meet.',
+        'meta' => [
+            'title' => 'North Republic - Restaurant in Nha Trang',
+            'description' => 'North Republic - exquisite restaurant in Nha Trang with magnificent cuisine and cozy atmosphere. Book a table online.',
+            'keywords' => 'restaurant, nha trang, vietnam, cuisine, food, dinner, lunch, booking',
+            'intro_welcome' => 'Welcome to',
+            'intro_title' => 'North <br>Republic',
+            'about_title' => 'About Us',
+            'about_content' => '<p class="lead">Welcome to <strong>«North Republic»</strong> — an oasis of adventures and gastronomic discoveries among the majestic landscapes of northern Nha Trang. Here, in the embrace of pristine nature, at the foot of the legendary Co Tien Mountain, modernity meets the wild beauty of the tropical region, creating a space of unlimited possibilities.</p><p>Look up — before you stretch the slopes of the Fairy Mountain, that same Co Tien, whose mythical beauty has inspired poets and travelers for centuries. Panoramic views of emerald hills and sparkling bay turn every moment here into a frame from a magical fairy tale. This is a place where time slows down and the soul finds long-awaited peace.</p><p><strong>«North Republic»</strong> is a kaleidoscope of experiences under the open sky. Adrenaline battles in laser tag and exciting duels with bows in archery coexist with cozy gazebos for family picnics. Intellectual quests intertwine with the aromas of barbecue, and evening events fill the air with music and laughter until late at night.</p><p>Our restaurant and cafe is a culinary journey where signature dishes are born from the fusion of Russian traditions and Vietnamese exoticism. Here every dish is a work of art, and every sip of coffee is a bridge between cultures. Creative fairs, musical evenings and themed festivals turn every day into a small celebration.</p><p>At <strong>«North Republic»</strong> everyone will find their ideal way to spend time: from corporate adventures to romantic dinners under the starry sky, from children\'s parties to philosophical conversations by the fireplace. This is a place where new friendships are born, family bonds are strengthened and memories are created for life.</p>',
+            'menu_title' => 'Our Menu',
+            'menu_error' => 'Oops, something\'s wrong with the menu',
+            'menu_no_items' => 'No dishes in this category yet',
+            'menu_working_on_it' => 'We are working on expanding our menu',
+            'menu_unavailable' => 'Unfortunately, the menu is temporarily unavailable. Please try refreshing the page.',
+            'menu_full_button' => 'View Full Menu',
+            'gallery_title' => 'Gallery'
+        ],
+        'status' => 'published',
+        'updated_by' => 'admin'
+    ];
     
-    foreach ($pages as $page => $description) {
-        foreach ($languages as $lang) {
-            $existing = $collection->findOne(['page' => $page, 'language' => $lang]);
-            
-            if (!$existing) {
-                $document = [
-                    'page' => $page,
-                    'language' => $lang,
-                    'content' => getDefaultContent($page, $lang),
-                    'meta' => [
-                        'title' => getDefaultTitle($page, $lang),
-                        'description' => getDefaultDescription($page, $lang),
-                        'keywords' => getDefaultKeywords($page, $lang)
-                    ],
-                    'status' => 'published',
-                    'created_at' => new MongoDB\BSON\UTCDateTime(),
-                    'updated_at' => new MongoDB\BSON\UTCDateTime(),
-                    'updated_by' => 'system'
-                ];
-                
-                $collection->insertOne($document);
-                echo "✅ Создана запись: {$page} ({$lang})\n";
-            }
+    // Контент для вьетнамского языка
+    $viContent = [
+        'page' => 'index',
+        'language' => 'vi',
+        'content' => 'Chào mừng đến với <strong>North Republic</strong> — nơi ẩm thực tinh tế, bầu không khí ấm cúng và những khoảnh khắc khó quên gặp gỡ.',
+        'meta' => [
+            'title' => 'North Republic - Nhà hàng tại Nha Trang',
+            'description' => 'North Republic - nhà hàng tinh tế tại Nha Trang với ẩm thực tuyệt vời và bầu không khí ấm cúng. Đặt bàn trực tuyến.',
+            'keywords' => 'nhà hàng, nha trang, việt nam, ẩm thực, thức ăn, bữa tối, bữa trưa, đặt bàn',
+            'intro_welcome' => 'Chào mừng đến với',
+            'intro_title' => 'North <br>Republic',
+            'about_title' => 'Về chúng tôi',
+            'about_content' => '<p class="lead">Chào mừng đến với <strong>«Cộng hòa Bắc»</strong> — ốc đảo của những cuộc phiêu lưu và khám phá ẩm thực giữa những cảnh quan hùng vĩ của miền bắc Nha Trang. Ở đây, trong vòng tay của thiên nhiên nguyên sơ, dưới chân ngọn núi Co Tien huyền thoại, hiện đại gặp gỡ vẻ đẹp hoang dã của vùng nhiệt đới, tạo ra không gian của những khả năng vô hạn.</p><p>Nhìn lên — trước mặt bạn trải dài những sườn núi của Núi Tiên, chính Co Tien đó, vẻ đẹp huyền thoại đã truyền cảm hứng cho các nhà thơ và du khách trong nhiều thế kỷ. Tầm nhìn toàn cảnh của những ngọn đồi ngọc lục bảo và vịnh lấp lánh biến mỗi khoảnh khắc ở đây thành một khung hình từ câu chuyện cổ tích thần kỳ. Đây là nơi thời gian chậm lại và tâm hồn tìm thấy sự bình yên mong đợi.</p><p><strong>«Cộng hòa Bắc»</strong> là một caleidoscope của những trải nghiệm dưới bầu trời mở. Những trận chiến adrenaline trong laser tag và những cuộc đấu súng gay cấn với cung tên trong bắn cung cùng tồn tại với những gian hàng ấm cúng cho những buổi dã ngoại gia đình. Những cuộc tìm kiếm trí tuệ đan xen với hương thơm của thịt nướng, và các sự kiện buổi tối lấp đầy không khí với âm nhạc và tiếng cười cho đến tận đêm khuya.</p><p>Nhà hàng và quán cà phê của chúng tôi là một hành trình ẩm thực nơi những món ăn đặc trưng được sinh ra từ sự kết hợp của truyền thống Nga và sự kỳ lạ của Việt Nam. Ở đây mỗi món ăn là một tác phẩm nghệ thuật, và mỗi ngụm cà phê là một cây cầu giữa các nền văn hóa. Những hội chợ sáng tạo, những buổi tối âm nhạc và những lễ hội theo chủ đề biến mỗi ngày thành một lễ kỷ niệm nhỏ.</p><p>Tại <strong>«Cộng hòa Bắc»</strong> mọi người sẽ tìm thấy cách lý tưởng để dành thời gian: từ những cuộc phiêu lưu doanh nghiệp đến những bữa tối lãng mạn dưới bầu trời đầy sao, từ những bữa tiệc trẻ em đến những cuộc trò chuyện triết học bên lò sưởi. Đây là nơi những tình bạn mới được sinh ra, những mối liên kết gia đình được củng cố và những kỷ niệm được tạo ra cho cuộc sống.</p>',
+            'menu_title' => 'Thực đơn của chúng tôi',
+            'menu_error' => 'Ôi, có gì đó không ổn với thực đơn',
+            'menu_no_items' => 'Chưa có món ăn nào trong danh mục này',
+            'menu_working_on_it' => 'Chúng tôi đang làm việc để mở rộng thực đơn',
+            'menu_unavailable' => 'Rất tiếc, thực đơn tạm thời không khả dụng. Vui lòng thử làm mới trang.',
+            'menu_full_button' => 'Xem thực đơn đầy đủ',
+            'gallery_title' => 'Thư viện ảnh'
+        ],
+        'status' => 'published',
+        'updated_by' => 'admin'
+    ];
+    
+    // Сохраняем контент для всех языков
+    $languages = ['ru' => $ruContent, 'en' => $enContent, 'vi' => $viContent];
+    
+    foreach ($languages as $lang => $content) {
+        $result = $pageContentService->savePageContent(
+            $content['page'],
+            $content['language'],
+            $content['content'],
+            $content['meta'],
+            $content['status'],
+            $content['updated_by']
+        );
+        
+        if ($result) {
+            echo "✅ Контент для языка '$lang' успешно сохранен\n";
+        } else {
+            echo "❌ Ошибка сохранения контента для языка '$lang'\n";
         }
     }
     
-    echo "\n🎉 Инициализация завершена!\n";
-    echo "Создано страниц: " . count($pages) . "\n";
-    echo "Языков: " . count($languages) . "\n";
-    echo "Всего записей: " . (count($pages) * count($languages)) . "\n";
+    echo "\n🎉 Инициализация контента страниц завершена!\n";
+    echo "📝 Проверьте страницу: https://northrepublic.me/index_new.php\n";
     
 } catch (Exception $e) {
     echo "❌ Ошибка: " . $e->getMessage() . "\n";
-}
-
-function getDefaultContent($page, $lang) {
-    $content = [
-        'ru' => [
-            'index' => '<div class="intro-header">
-                <div class="intro-header__overline">Добро пожаловать в</div>
-                <h1 class="intro-header__big-type">North Republic</h1>
-                <p class="lead">Добро пожаловать в <strong>North Republic</strong> — место, где встречаются изысканная кухня, уютная атмосфера и незабываемые моменты.</p>
-            </div>
-            <div class="about-section">
-                <h2 class="text-display-title">О нас</h2>
-                <p class="lead">Добро пожаловать в <strong>«Республику Север»</strong> — оазис приключений и гастономических открытий среди величественных пейзажей северного Нячанга. Здесь, в объятиях первозданной природы, у подножия легендарной горы Ко Тьен, современность встречается с дикой красотой тропического края, создавая пространство безграничных возможностей.</p>
-            </div>',
-            'menu' => '<div class="menu-header">
-                <h1 class="text-display-title">Наше меню</h1>
-                <p class="lead">Откройте для себя изысканные блюда и напитки в нашем ресторане.</p>
-            </div>',
-            'about' => '<div class="about-header">
-                <h1 class="text-display-title">О нас</h1>
-                <p class="lead">Узнайте больше о нашей истории и философии.</p>
-            </div>',
-            'contact' => '<div class="contact-header">
-                <h1 class="text-display-title">Контакты</h1>
-                <p class="lead">Свяжитесь с нами для бронирования или вопросов.</p>
-            </div>'
-        ],
-        'en' => [
-            'index' => '<div class="intro-header">
-                <div class="intro-header__overline">Welcome to</div>
-                <h1 class="intro-header__big-type">North Republic</h1>
-                <p class="lead">Welcome to <strong>North Republic</strong> — where exquisite cuisine, cozy atmosphere and unforgettable moments meet.</p>
-            </div>
-            <div class="about-section">
-                <h2 class="text-display-title">About Us</h2>
-                <p class="lead">Welcome to <strong>North Republic</strong> — an oasis of adventure and gastronomic discoveries among the majestic landscapes of northern Nha Trang. Here, in the embrace of pristine nature, at the foot of the legendary Co Tien mountain, modernity meets the wild beauty of the tropical region, creating a space of unlimited possibilities.</p>
-            </div>',
-            'menu' => '<div class="menu-header">
-                <h1 class="text-display-title">Our Menu</h1>
-                <p class="lead">Discover exquisite dishes and drinks in our restaurant.</p>
-            </div>',
-            'about' => '<div class="about-header">
-                <h1 class="text-display-title">About Us</h1>
-                <p class="lead">Learn more about our history and philosophy.</p>
-            </div>',
-            'contact' => '<div class="contact-header">
-                <h1 class="text-display-title">Contact</h1>
-                <p class="lead">Contact us for reservations or questions.</p>
-            </div>'
-        ],
-        'vi' => [
-            'index' => '<div class="intro-header">
-                <div class="intro-header__overline">Chào mừng đến với</div>
-                <h1 class="intro-header__big-type">North Republic</h1>
-                <p class="lead">Chào mừng đến với <strong>North Republic</strong> — nơi ẩm thực tinh tế, không khí ấm cúng và những khoảnh khắc khó quên gặp gỡ.</p>
-            </div>
-            <div class="about-section">
-                <h2 class="text-display-title">Về chúng tôi</h2>
-                <p class="lead">Chào mừng đến với <strong>North Republic</strong> — ốc đảo của những cuộc phiêu lưu và khám phá ẩm thực giữa cảnh quan hùng vĩ của miền bắc Nha Trang. Tại đây, trong vòng tay của thiên nhiên hoang sơ, dưới chân ngọn núi huyền thoại Cô Tiên, hiện đại gặp gỡ vẻ đẹp hoang dã của vùng nhiệt đới, tạo nên không gian của những khả năng vô hạn.</p>
-            </div>',
-            'menu' => '<div class="menu-header">
-                <h1 class="text-display-title">Thực đơn của chúng tôi</h1>
-                <p class="lead">Khám phá những món ăn và đồ uống tinh tế trong nhà hàng của chúng tôi.</p>
-            </div>',
-            'about' => '<div class="about-header">
-                <h1 class="text-display-title">Về chúng tôi</h1>
-                <p class="lead">Tìm hiểu thêm về lịch sử và triết lý của chúng tôi.</p>
-            </div>',
-            'contact' => '<div class="contact-header">
-                <h1 class="text-display-title">Liên hệ</h1>
-                <p class="lead">Liên hệ với chúng tôi để đặt bàn hoặc câu hỏi.</p>
-            </div>'
-        ]
-    ];
-    
-    return $content[$lang][$page] ?? $content['ru'][$page];
-}
-
-function getDefaultTitle($page, $lang) {
-    $titles = [
-        'ru' => [
-            'index' => 'North Republic - Ресторан в Нячанге',
-            'menu' => 'Меню - North Republic',
-            'about' => 'О нас - North Republic',
-            'contact' => 'Контакты - North Republic'
-        ],
-        'en' => [
-            'index' => 'North Republic - Restaurant in Nha Trang',
-            'menu' => 'Menu - North Republic',
-            'about' => 'About Us - North Republic',
-            'contact' => 'Contact - North Republic'
-        ],
-        'vi' => [
-            'index' => 'North Republic - Nhà hàng tại Nha Trang',
-            'menu' => 'Thực đơn - North Republic',
-            'about' => 'Về chúng tôi - North Republic',
-            'contact' => 'Liên hệ - North Republic'
-        ]
-    ];
-    
-    return $titles[$lang][$page] ?? $titles['ru'][$page];
-}
-
-function getDefaultDescription($page, $lang) {
-    $descriptions = [
-        'ru' => [
-            'index' => 'North Republic - изысканный ресторан в Нячанге с великолепной кухней и уютной атмосферой.',
-            'menu' => 'Откройте для себя изысканные блюда и напитки в нашем ресторане North Republic.',
-            'about' => 'Узнайте больше о нашей истории, философии и команде в North Republic.',
-            'contact' => 'Свяжитесь с нами для бронирования столика или получения дополнительной информации.'
-        ],
-        'en' => [
-            'index' => 'North Republic - exquisite restaurant in Nha Trang with magnificent cuisine and cozy atmosphere.',
-            'menu' => 'Discover exquisite dishes and drinks at our North Republic restaurant.',
-            'about' => 'Learn more about our history, philosophy and team at North Republic.',
-            'contact' => 'Contact us to book a table or get additional information.'
-        ],
-        'vi' => [
-            'index' => 'North Republic - nhà hàng tinh tế tại Nha Trang với ẩm thực tuyệt vời và không khí ấm cúng.',
-            'menu' => 'Khám phá những món ăn và đồ uống tinh tế tại nhà hàng North Republic của chúng tôi.',
-            'about' => 'Tìm hiểu thêm về lịch sử, triết lý và đội ngũ của chúng tôi tại North Republic.',
-            'contact' => 'Liên hệ với chúng tôi để đặt bàn hoặc nhận thông tin bổ sung.'
-        ]
-    ];
-    
-    return $descriptions[$lang][$page] ?? $descriptions['ru'][$page];
-}
-
-function getDefaultKeywords($page, $lang) {
-    $keywords = [
-        'ru' => [
-            'index' => 'ресторан, нячанг, вьетнам, кухня, еда, ужин, обед',
-            'menu' => 'меню, блюда, напитки, ресторан, нячанг',
-            'about' => 'о нас, история, команда, ресторан, нячанг',
-            'contact' => 'контакты, адрес, телефон, бронирование, нячанг'
-        ],
-        'en' => [
-            'index' => 'restaurant, nha trang, vietnam, cuisine, food, dinner, lunch',
-            'menu' => 'menu, dishes, drinks, restaurant, nha trang',
-            'about' => 'about us, history, team, restaurant, nha trang',
-            'contact' => 'contact, address, phone, reservation, nha trang'
-        ],
-        'vi' => [
-            'index' => 'nhà hàng, nha trang, việt nam, ẩm thực, thức ăn, tối, trưa',
-            'menu' => 'thực đơn, món ăn, đồ uống, nhà hàng, nha trang',
-            'about' => 'về chúng tôi, lịch sử, đội ngũ, nhà hàng, nha trang',
-            'contact' => 'liên hệ, địa chỉ, điện thoại, đặt bàn, nha trang'
-        ]
-    ];
-    
-    return $keywords[$lang][$page] ?? $keywords['ru'][$page];
 }
 ?>

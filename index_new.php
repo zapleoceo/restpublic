@@ -23,9 +23,7 @@ $currentLanguage = $pageContentService->getLanguage();
 $pageContent = $pageContentService->getPageContent('index', $currentLanguage);
 $pageMeta = $pageContent['meta'] ?? [];
 
-// Initialize translation service for fallback
-require_once __DIR__ . '/classes/TranslationService.php';
-$translationService = new TranslationService();
+// No fallback - only database content
 
 // Load menu from MongoDB cache for fast rendering (if available)
 $categories = [];
@@ -78,10 +76,10 @@ try {
     error_log("Menu loading error: " . $e->getMessage());
 }
 
-// Set page title and meta tags
-$pageTitle = $pageMeta['title'] ?? 'North Republic - Ресторан в Нячанге';
-$pageDescription = $pageMeta['description'] ?? 'North Republic - изысканный ресторан в Нячанге с великолепной кухней и уютной атмосферой.';
-$pageKeywords = $pageMeta['keywords'] ?? 'ресторан, нячанг, вьетнам, кухня, еда, ужин, обед';
+// Set page title and meta tags from database only
+$pageTitle = $pageMeta['title'] ?? '';
+$pageDescription = $pageMeta['description'] ?? '';
+$pageKeywords = $pageMeta['keywords'] ?? '';
 ?>
 
 <!DOCTYPE html>
@@ -165,10 +163,9 @@ $pageKeywords = $pageMeta['keywords'] ?? 'ресторан, нячанг, вье
         <section id="intro" class="container s-intro target-section">
             <div class="grid-block s-intro__content">
                 <div class="intro-header">
-                    <div class="intro-header__overline"><?php echo $translationService->get('intro.welcome', 'Добро пожаловать в'); ?></div>
+                    <div class="intro-header__overline"><?php echo $pageMeta['intro_welcome'] ?? ''; ?></div>
                     <h1 class="intro-header__big-type">
-                        North <br>
-                        Republic
+                        <?php echo $pageMeta['intro_title'] ?? 'North <br>Republic'; ?>
                     </h1>
                 </div> <!-- end intro-header -->
 
@@ -186,14 +183,7 @@ $pageKeywords = $pageMeta['keywords'] ?? 'ресторан, нячанг, вье
                     </figure>
                     <div class="intro-block-content__text">
                         <p class="lead">
-                            <?php 
-                            // Используем контент из БД, если есть, иначе fallback на переводы
-                            if (!empty($pageContent['content'])) {
-                                echo $pageContent['content'];
-                            } else {
-                                echo $translationService->get('intro.description', 'Добро пожаловать в <strong>North Republic</strong> — место, где встречаются изысканная кухня, уютная атмосфера и незабываемые моменты.');
-                            }
-                            ?>
+                            <?php echo $pageContent['content'] ?? ''; ?>
                         </p>
                     </div>
                 </div> <!-- end intro-block-content -->
@@ -217,7 +207,7 @@ $pageKeywords = $pageMeta['keywords'] ?? 'ресторан, нячанг, вье
             <div class="row s-about__content">
                 <div class="column xl-4 lg-5 md-12 s-about__content-start">
                     <div class="section-header" data-num="01">
-                        <h2 class="text-display-title"><?php echo $translationService->get('about.title', 'О нас'); ?></h2>
+                        <h2 class="text-display-title"><?php echo $pageMeta['about_title'] ?? ''; ?></h2>
                     </div>  
 
                     <figure class="about-pic-primary">
@@ -228,25 +218,7 @@ $pageKeywords = $pageMeta['keywords'] ?? 'ресторан, нячанг, вье
                 </div> <!-- end s-about__content-start -->
 
                 <div class="column xl-6 lg-6 md-12 s-about__content-end">                   
-                    <p class="lead">
-                        <?php echo $translationService->get('about.paragraph1', 'Добро пожаловать в <strong>«Республику Север»</strong> — оазис приключений и гастономических открытий среди величественных пейзажей северного Нячанга. Здесь, в объятиях первозданной природы, у подножия легендарной горы Ко Тьен, современность встречается с дикой красотой тропического края, создавая пространство безграничных возможностей.'); ?>
-                    </p>
-
-                    <p>
-                        <?php echo $translationService->get('about.paragraph2', 'Взгляните вверх — перед вами раскинулись склоны Горы Феи, той самой Ко Тьен, чья мифическая красота веками вдохновляла поэтов и путешественников. Панорамные виды на изумрудные холмы и сверкающий залив превращают каждый момент здесь в кадр из волшебной сказки. Это место, где время замедляет свой бег, а душа находит долгожданный покой.'); ?>
-                    </p>
-
-                    <p>
-                        <?php echo $translationService->get('about.paragraph3', '<strong>«Республика Север»</strong> — это калейдоскоп впечатлений под открытым небом. Адреналиновые баталии в лазертаге и захватывающие дуэли с луками в арчеритаге соседствуют с уютными беседками для семейных пикников. Интеллектуальные квесты переплетаются с ароматами барбекю, а вечерние мероприятия наполняют воздух музыкой и смехом до поздней ночи.'); ?>
-                    </p>
-
-                    <p>
-                        <?php echo $translationService->get('about.paragraph4', 'Наш ресторан и кофейня — это кулинарное путешествие, где авторские блюда рождаются из слияния русских традиций и вьетнамской экзотики. Здесь каждое блюдо — произведение искусства, а каждый глоток кофе — мост между культурами. Творческие ярмарки, музыкальные вечера и тематические фестивали превращают каждый день в маленький праздник.'); ?>
-                    </p>
-
-                    <p>
-                        <?php echo $translationService->get('about.paragraph5', 'В <strong>«Республике Север»</strong> каждый найдет свой идеальный способ провести время: от корпоративных приключений до романтических ужинов под звездным небом, от детских праздников до философских бесед у камина. Это место, где рождаются новые дружбы, крепнут семейные узы и создаются воспоминания на всю жизнь.'); ?>
-                    </p>
+                    <?php echo $pageMeta['about_content'] ?? ''; ?>
                 </div> <!-- end s-about__content-end -->
             </div> <!-- end s-about__content -->
         </section> <!-- end s-about -->
@@ -257,7 +229,7 @@ $pageKeywords = $pageMeta['keywords'] ?? 'ресторан, нячанг, вье
             <div class="row s-menu__content">
                 <div class="column xl-4 lg-5 md-12 s-menu__content-start">
                     <div class="section-header" data-num="02">
-                        <h2 class="text-display-title"><?php echo $translationService->get('menu.title', 'Наше меню'); ?></h2>
+                        <h2 class="text-display-title"><?php echo $pageMeta['menu_title'] ?? ''; ?></h2>
                     </div>  
 
                     <nav class="tab-nav">
@@ -274,7 +246,7 @@ $pageKeywords = $pageMeta['keywords'] ?? 'ресторан, нячанг, вье
                             <?php else: ?>
                                 <li>
                                     <span style="color: #e74c3c; font-style: italic;">
-                                        <?php echo $translationService->get('menu.error', 'Упс, что-то с меню не так'); ?>
+                                        <?php echo $pageMeta['menu_error'] ?? ''; ?>
                                     </span>
                                 </li>
                             <?php endif; ?>
@@ -312,8 +284,8 @@ $pageKeywords = $pageMeta['keywords'] ?? 'ресторан, нячанг, вье
                                         <?php else: ?>
                                             <li class="menu-list__item">
                                                 <div class="menu-list__item-desc">
-                                                    <h4><?php echo $translationService->get('menu.no_items', 'В этой категории пока нет блюд'); ?></h4>
-                                                    <p><?php echo $translationService->get('menu.working_on_it', 'Мы работаем над пополнением меню'); ?></p>
+                                                    <h4><?php echo $pageMeta['menu_no_items'] ?? ''; ?></h4>
+                                                    <p><?php echo $pageMeta['menu_working_on_it'] ?? ''; ?></p>
                                                 </div>
                                             </li>
                                         <?php endif; ?>
@@ -322,12 +294,12 @@ $pageKeywords = $pageMeta['keywords'] ?? 'ресторан, нячанг, вье
                             <?php endforeach; ?>
                         <?php else: ?>
                             <div class="menu-block__group tab-content__item active">
-                                <h6 class="menu-block__cat-name"><?php echo $translationService->get('menu.title', 'Меню'); ?></h6>
+                                <h6 class="menu-block__cat-name"><?php echo $pageMeta['menu_title'] ?? ''; ?></h6>
                                 <ul class="menu-list">
                                     <li class="menu-list__item">
                                         <div class="menu-list__item-desc">
-                                            <h4><?php echo $translationService->get('menu.error', 'Упс, что-то с меню не так'); ?></h4>
-                                            <p><?php echo $translationService->get('menu.unavailable', 'К сожалению, меню временно недоступно. Попробуйте обновить страницу.'); ?></p>
+                                            <h4><?php echo $pageMeta['menu_error'] ?? ''; ?></h4>
+                                            <p><?php echo $pageMeta['menu_unavailable'] ?? ''; ?></p>
                                         </div>
                                     </li>
                                 </ul>
@@ -341,7 +313,7 @@ $pageKeywords = $pageMeta['keywords'] ?? 'ресторан, нячанг, вье
             <div class="row s-menu__footer">
                 <div class="column xl-12 text-center">
                     <a href="/menu" class="btn btn--primary">
-                        <?php echo $translationService->get('menu.full_menu_button', 'Открыть полное меню'); ?>
+                        <?php echo $pageMeta['menu_full_button'] ?? ''; ?>
                     </a>
                 </div>
             </div> <!-- end s-menu__footer -->
@@ -353,7 +325,7 @@ $pageKeywords = $pageMeta['keywords'] ?? 'ресторан, нячанг, вье
             <div class="row s-gallery__header">
                 <div class="column xl-12 section-header-wrap">
                     <div class="section-header" data-num="04">
-                        <h2 class="text-display-title"><?php echo $translationService->get('gallery.title', 'Галерея'); ?></h2>
+                        <h2 class="text-display-title"><?php echo $pageMeta['gallery_title'] ?? ''; ?></h2>
                     </div>               
                 </div> <!-- end section-header-wrap -->   
             </div> <!-- end s-gallery__header -->   
