@@ -53,6 +53,13 @@ $current_dir = basename(dirname($_SERVER['PHP_SELF']));
             </a>
         </li>
         
+        <li class="menu-item <?php echo ($current_dir === 'users') ? 'active' : ''; ?>">
+            <a href="/admin/users/">
+                <span class="menu-icon">👥</span>
+                <span class="menu-text">Пользователи</span>
+            </a>
+        </li>
+        
         <li class="menu-item <?php echo ($current_dir === 'settings') ? 'active' : ''; ?>">
             <a href="/admin/settings/">
                 <span class="menu-icon">⚙️</span>
