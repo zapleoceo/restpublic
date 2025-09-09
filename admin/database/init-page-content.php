@@ -7,6 +7,7 @@
 require_once '../includes/db.php';
 
 try {
+    $db = get_db_connection();
     $collection = $db->page_content;
     
     // Создаем индексы для быстрого поиска
@@ -41,7 +42,7 @@ try {
                         'description' => getDefaultDescription($page, $lang),
                         'keywords' => getDefaultKeywords($page, $lang)
                     ],
-                    'status' => 'draft', // draft, published
+                    'status' => 'published',
                     'created_at' => new MongoDB\BSON\UTCDateTime(),
                     'updated_at' => new MongoDB\BSON\UTCDateTime(),
                     'updated_by' => 'system'
@@ -72,7 +73,7 @@ function getDefaultContent($page, $lang) {
             </div>
             <div class="about-section">
                 <h2 class="text-display-title">О нас</h2>
-                <p class="lead">Добро пожаловать в <strong>«Республику Север»</strong> — оазис приключений и гастономических открытий среди величественных пейзажей северного Нячанга.</p>
+                <p class="lead">Добро пожаловать в <strong>«Республику Север»</strong> — оазис приключений и гастономических открытий среди величественных пейзажей северного Нячанга. Здесь, в объятиях первозданной природы, у подножия легендарной горы Ко Тьен, современность встречается с дикой красотой тропического края, создавая пространство безграничных возможностей.</p>
             </div>',
             'menu' => '<div class="menu-header">
                 <h1 class="text-display-title">Наше меню</h1>
@@ -95,7 +96,7 @@ function getDefaultContent($page, $lang) {
             </div>
             <div class="about-section">
                 <h2 class="text-display-title">About Us</h2>
-                <p class="lead">Welcome to <strong>North Republic</strong> — an oasis of adventure and gastronomic discoveries among the majestic landscapes of northern Nha Trang.</p>
+                <p class="lead">Welcome to <strong>North Republic</strong> — an oasis of adventure and gastronomic discoveries among the majestic landscapes of northern Nha Trang. Here, in the embrace of pristine nature, at the foot of the legendary Co Tien mountain, modernity meets the wild beauty of the tropical region, creating a space of unlimited possibilities.</p>
             </div>',
             'menu' => '<div class="menu-header">
                 <h1 class="text-display-title">Our Menu</h1>
@@ -118,7 +119,7 @@ function getDefaultContent($page, $lang) {
             </div>
             <div class="about-section">
                 <h2 class="text-display-title">Về chúng tôi</h2>
-                <p class="lead">Chào mừng đến với <strong>North Republic</strong> — ốc đảo của những cuộc phiêu lưu và khám phá ẩm thực giữa cảnh quan hùng vĩ của miền bắc Nha Trang.</p>
+                <p class="lead">Chào mừng đến với <strong>North Republic</strong> — ốc đảo của những cuộc phiêu lưu và khám phá ẩm thực giữa cảnh quan hùng vĩ của miền bắc Nha Trang. Tại đây, trong vòng tay của thiên nhiên hoang sơ, dưới chân ngọn núi huyền thoại Cô Tiên, hiện đại gặp gỡ vẻ đẹp hoang dã của vùng nhiệt đới, tạo nên không gian của những khả năng vô hạn.</p>
             </div>',
             'menu' => '<div class="menu-header">
                 <h1 class="text-display-title">Thực đơn của chúng tôi</h1>

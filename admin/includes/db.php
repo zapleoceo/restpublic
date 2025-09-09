@@ -2,6 +2,8 @@
 // Файл для подключения к базе данных MongoDB
 // Используется в админ-панели
 
+require_once __DIR__ . '/../../vendor/autoload.php';
+
 function get_db_connection() {
     static $client = null;
     static $db = null;
