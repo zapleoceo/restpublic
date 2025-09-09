@@ -3,6 +3,8 @@ const cors = require('cors');
 const helmet = require('helmet');
 const compression = require('compression');
 const morgan = require('morgan');
+const rateLimit = require('express-rate-limit');
+const slowDown = require('express-slow-down');
 require('dotenv').config({ path: '../.env' });
 
 const posterRoutes = require('./routes/poster');
@@ -12,12 +14,33 @@ const cacheRoutes = require('./routes/cache');
 const app = express();
 const PORT = process.env.PORT || 3002;
 
+// Rate limiting configuration
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limit each IP to 100 requests per windowMs
+  message: {
+    error: 'Too many requests from this IP, please try again later.',
+    retryAfter: '15 minutes'
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// Slow down configuration
+const speedLimiter = slowDown({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  delayAfter: 50, // allow 50 requests per 15 minutes, then...
+  delayMs: 500 // begin adding 500ms of delay per request above 50
+});
+
 // Middleware
 app.use(helmet());
 app.use(compression());
 app.use(morgan('combined'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(limiter);
+app.use(speedLimiter);
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // CORS configuration
 const corsOptions = {
@@ -37,10 +60,22 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// API Routes
-app.use('/api/poster', posterRoutes);
-app.use('/api/menu', menuRoutes);
-app.use('/api/cache', cacheRoutes);
+// Stricter rate limiting for API endpoints
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 50, // limit each IP to 50 requests per windowMs for API
+  message: {
+    error: 'API rate limit exceeded, please try again later.',
+    retryAfter: '15 minutes'
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// API Routes with stricter rate limiting
+app.use('/api/poster', apiLimiter, posterRoutes);
+app.use('/api/menu', apiLimiter, menuRoutes);
+app.use('/api/cache', apiLimiter, cacheRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

@@ -10,36 +10,68 @@ $success = '';
 
 // Обработка загрузки файлов
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['image'])) {
-    try {
-        $client = new MongoDB\Client("mongodb://localhost:27017");
-        $db = $client->northrepublic;
-        $imagesCollection = $db->admin_images;
-        
-        $uploadDir = '../../images/';
-        $originalDir = $uploadDir . 'original/';
-        $webpDir = $uploadDir . 'webp/';
-        
-        // Создаем директории если не существуют
-        if (!is_dir($originalDir)) mkdir($originalDir, 0755, true);
-        if (!is_dir($webpDir)) mkdir($webpDir, 0755, true);
-        
-        $file = $_FILES['image'];
-        $category = $_POST['category'] ?? 'general';
-        $description = trim($_POST['description'] ?? '');
-        
-        // Валидация файла
-        if ($file['error'] !== UPLOAD_ERR_OK) {
-            throw new Exception('Ошибка загрузки файла');
-        }
-        
-        if ($file['size'] > 10 * 1024 * 1024) { // 10MB
-            throw new Exception('Файл слишком большой (максимум 10MB)');
-        }
-        
-        $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-        if (!in_array($file['type'], $allowedTypes)) {
-            throw new Exception('Неподдерживаемый тип файла');
-        }
+    // Проверка rate limiting для загрузки файлов
+    require_once __DIR__ . '/../../classes/RateLimiter.php';
+    $rateLimiter = new RateLimiter();
+    
+    if (!$rateLimiter->checkUploadLimit($_SESSION['admin_username'] ?? null)) {
+        $error = 'Слишком много загрузок. Попробуйте через час.';
+    } elseif (!isset($_POST['csrf_token']) || !SecurityValidator::validateCSRFToken($_POST['csrf_token'])) {
+        $error = 'Неверный CSRF токен';
+    } elseif ($_SESSION['csrf_token'] !== $_POST['csrf_token']) {
+        $error = 'Неверный CSRF токен';
+    } else {
+        try {
+            $client = new MongoDB\Client("mongodb://localhost:27017");
+            $db = $client->northrepublic;
+            $imagesCollection = $db->admin_images;
+            
+            $uploadDir = '../../images/';
+            $originalDir = $uploadDir . 'original/';
+            $webpDir = $uploadDir . 'webp/';
+            
+            // Создаем директории если не существуют
+            if (!is_dir($originalDir)) mkdir($originalDir, 0755, true);
+            if (!is_dir($webpDir)) mkdir($webpDir, 0755, true);
+            
+            $file = $_FILES['image'];
+            $category = $_POST['category'] ?? 'general';
+            $description = trim($_POST['description'] ?? '');
+            
+            // Валидация входных данных
+            if (!SecurityValidator::validateImageCategory($category)) {
+                throw new Exception('Неверная категория');
+            }
+            
+            if (!SecurityValidator::validateDescription($description)) {
+                throw new Exception('Неверное описание');
+            }
+            
+            // Валидация файла
+            if ($file['error'] !== UPLOAD_ERR_OK) {
+                throw new Exception('Ошибка загрузки файла');
+            }
+            
+            if ($file['size'] > 10 * 1024 * 1024) { // 10MB
+                throw new Exception('Файл слишком большой (максимум 10MB)');
+            }
+            
+            // Проверка MIME типа по содержимому файла
+            $finfo = finfo_open(FILEINFO_MIME_TYPE);
+            $mimeType = finfo_file($finfo, $file['tmp_name']);
+            finfo_close($finfo);
+            
+            $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+            if (!in_array($mimeType, $allowedTypes)) {
+                throw new Exception('Неподдерживаемый тип файла');
+            }
+            
+            // Дополнительная проверка расширения файла
+            $extension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+            $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+            if (!in_array($extension, $allowedExtensions)) {
+                throw new Exception('Неподдерживаемое расширение файла');
+            }
         
         // Генерируем уникальное имя файла
         $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
@@ -131,8 +163,8 @@ try {
     $db = $client->northrepublic;
     $imagesCollection = $db->admin_images;
     
-    // Параметры фильтрации
-    $page = max(1, intval($_GET['page'] ?? 1));
+    // Параметры фильтрации с валидацией
+    $page = SecurityValidator::validatePageNumber($_GET['page'] ?? 1) ? (int)$_GET['page'] : 1;
     $limit = 20;
     $skip = ($page - 1) * $limit;
     
@@ -140,13 +172,14 @@ try {
     $sort = ['uploaded_at' => -1];
     
     // Фильтр по категории
-    if (!empty($_GET['category'])) {
-        $filter['category'] = $_GET['category'];
+    if (!empty($_GET['category']) && SecurityValidator::validateImageCategory($_GET['category'])) {
+        $filter['category'] = SecurityValidator::sanitizeForMongoDB($_GET['category']);
     }
     
     // Поиск по описанию
-    if (!empty($_GET['search'])) {
-        $filter['description'] = new MongoDB\BSON\Regex($_GET['search'], 'i');
+    if (!empty($_GET['search']) && SecurityValidator::validateSearchQuery($_GET['search'])) {
+        $searchQuery = SecurityValidator::sanitizeForMongoDB($_GET['search']);
+        $filter['description'] = new MongoDB\BSON\Regex($searchQuery, 'i');
     }
     
     // Получаем данные
@@ -451,6 +484,7 @@ logAdminAction('view_images', 'Просмотр управления изобр�
             <div class="upload-section">
                 <h3>Загрузить новое изображение</h3>
                 <form method="POST" enctype="multipart/form-data" class="upload-form">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token'] ?? ''); ?>">
                     <div>
                         <div class="file-upload-area" onclick="document.getElementById('image').click()">
                             <div class="upload-icon">📁</div>
@@ -560,7 +594,7 @@ logAdminAction('view_images', 'Просмотр управления изобр�
                                 <div class="image-actions">
                                     <a href="<?php echo htmlspecialchars($image['webp_path']); ?>" 
                                        target="_blank" class="btn-view">Просмотр</a>
-                                    <a href="delete.php?id=<?php echo $image['_id']; ?>" 
+                                    <a href="delete.php?id=<?php echo $image['_id']; ?>&csrf_token=<?php echo urlencode($_SESSION['csrf_token'] ?? ''); ?>" 
                                        class="btn-delete" 
                                        onclick="return confirm('Удалить изображение?')">Удалить</a>
                                 </div>

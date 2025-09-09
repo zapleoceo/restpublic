@@ -4,9 +4,24 @@ require_once '../includes/auth-check.php';
 
 // Подключение к MongoDB
 require_once __DIR__ . '/../../vendor/autoload.php';
+require_once __DIR__ . '/../../classes/SecurityValidator.php';
+
+// Валидация CSRF токена
+if (!isset($_GET['csrf_token']) || !SecurityValidator::validateCSRFToken($_GET['csrf_token'])) {
+    $_SESSION['error_message'] = 'Неверный CSRF токен';
+    header('Location: index.php');
+    exit;
+}
+
+if ($_SESSION['csrf_token'] !== $_GET['csrf_token']) {
+    $_SESSION['error_message'] = 'Неверный CSRF токен';
+    header('Location: index.php');
+    exit;
+}
 
 $imageId = $_GET['id'] ?? '';
-if (empty($imageId)) {
+if (empty($imageId) || !SecurityValidator::validateObjectId($imageId)) {
+    $_SESSION['error_message'] = 'Неверный ID изображения';
     header('Location: index.php');
     exit;
 }

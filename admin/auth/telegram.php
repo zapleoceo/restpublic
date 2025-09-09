@@ -11,26 +11,72 @@ $error = '';
 
 // Обработка авторизации
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = $_POST['username'] ?? '';
-    $password = $_POST['password'] ?? '';
+    // Проверка rate limiting для авторизации
+    require_once __DIR__ . '/../../classes/RateLimiter.php';
+    $rateLimiter = new RateLimiter();
     
-    // Проверяем пользователя zapleosoft
-    if ($username === 'zapleosoft' && $password === 'admin123') {
-        $_SESSION['admin_logged_in'] = true;
-        $_SESSION['admin_username'] = 'zapleosoft';
-        $_SESSION['admin_login_time'] = time();
-        
-        // Логируем вход
-        logAdminAction('login', 'Вход в админку', [
-            'username' => $username,
-            'ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown',
-            'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'unknown'
-        ]);
-        
-        header('Location: ../index.php');
-        exit;
+    if (!$rateLimiter->checkAuthLimit()) {
+        $error = 'Слишком много попыток входа. Попробуйте через 15 минут.';
     } else {
-        $error = 'Неверные данные для входа';
+        $username = trim($_POST['username'] ?? '');
+        $password = $_POST['password'] ?? '';
+        
+        // Валидация входных данных
+        if (empty($username) || empty($password)) {
+            $error = 'Заполните все поля';
+        } elseif (strlen($username) > 50 || strlen($password) > 100) {
+            $error = 'Слишком длинные данные';
+        } else {
+        // Проверяем пользователя в базе данных
+        try {
+            require_once __DIR__ . '/../../vendor/autoload.php';
+            $client = new MongoDB\Client("mongodb://localhost:27017");
+            $db = $client->northrepublic;
+            $usersCollection = $db->admin_users;
+            
+            // Ищем пользователя
+            $user = $usersCollection->findOne([
+                'username' => $username,
+                'active' => true
+            ]);
+            
+            if ($user && password_verify($password, $user['password_hash'])) {
+                $_SESSION['admin_logged_in'] = true;
+                $_SESSION['admin_username'] = $user['username'];
+                $_SESSION['admin_user_id'] = (string)$user['_id'];
+                $_SESSION['admin_login_time'] = time();
+                $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+                
+                // Обновляем время последнего входа
+                $usersCollection->updateOne(
+                    ['_id' => $user['_id']],
+                    ['$set' => ['last_login' => new MongoDB\BSON\UTCDateTime()]]
+                );
+                
+                // Логируем вход
+                logAdminAction('login', 'Вход в админку', [
+                    'username' => $username,
+                    'ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown',
+                    'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'unknown'
+                ]);
+                
+                header('Location: ../index.php');
+                exit;
+            } else {
+                $error = 'Неверные данные для входа';
+                
+                // Логируем неудачную попытку входа
+                logAdminAction('login_failed', 'Неудачная попытка входа', [
+                    'username' => $username,
+                    'ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown',
+                    'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'unknown'
+                ]);
+            }
+        } catch (Exception $e) {
+            error_log("Auth error: " . $e->getMessage());
+            $error = 'Ошибка системы. Попробуйте позже.';
+        }
+        }
     }
 }
 
@@ -184,10 +230,9 @@ function logAdminAction($action, $description, $data = []) {
             </form>
             
             <div class="telegram-info">
-                <strong>Временная авторизация:</strong><br>
-                Логин: <code>zapleosoft</code><br>
-                Пароль: <code>admin123</code><br><br>
-                <em>В будущем будет заменена на авторизацию через Telegram</em>
+                <strong>Безопасная авторизация:</strong><br>
+                Используйте учетные данные, предоставленные администратором<br><br>
+                <em>Все попытки входа логируются для безопасности</em>
             </div>
         </div>
     </div>
