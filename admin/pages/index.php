@@ -11,7 +11,8 @@ if (file_exists(__DIR__ . '/../../.env')) {
     $dotenv->load();
 }
 
-// Проверка авторизации уже включена в header.php
+session_start();
+require_once '../includes/auth-check.php';
 
 $error = '';
 $success = '';

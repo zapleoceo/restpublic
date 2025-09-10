@@ -11,7 +11,8 @@ if (file_exists(__DIR__ . '/../../.env')) {
     $dotenv->load();
 }
 
-// Проверка авторизации уже включена в header.php
+session_start();
+require_once '../includes/auth-check.php';
 
 $error = '';
 $success = '';
@@ -78,8 +79,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 
 // Статистика
 $totalUsers = count($users);
-$activeUsers = count(array_filter($users, function($user) { return $user['status'] === 'active'; }));
-$adminUsers = count(array_filter($users, function($user) { return $user['role'] === 'admin'; }));
+$activeUsers = count(array_filter($users, function($user) { return ($user['status'] ?? 'active') === 'active'; }));
+$adminUsers = count(array_filter($users, function($user) { return ($user['role'] ?? 'admin') === 'admin'; }));
 ?>
 <!DOCTYPE html>
 <html lang="ru">
