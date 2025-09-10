@@ -321,7 +321,6 @@ if ($menu_loaded) {
             border: 2px solid #5f6362;
             border-radius: 50%;
             background: rgba(255, 255, 255, 0.1);
-            color: #5f6362;
             cursor: pointer;
             display: flex;
             align-items: center;
@@ -329,20 +328,42 @@ if ($menu_loaded) {
             transition: all 0.3s ease;
             position: relative;
             backdrop-filter: blur(10px);
+            padding: 0;
+        }
+        
+        .auth-icon img,
+        .cart-icon img {
+            width: 24px;
+            height: 24px;
+            transition: all 0.3s ease;
         }
         
         .auth-icon:hover,
         .cart-icon:hover {
             border-color: #366b5b;
-            color: #366b5b;
             background: rgba(54, 107, 91, 0.1);
+        }
+        
+        .auth-icon:hover img {
+            filter: brightness(0) saturate(100%) invert(27%) sepia(51%) saturate(2878%) hue-rotate(346deg) brightness(104%) contrast(97%);
+        }
+        
+        .cart-icon:hover .cart-icon-img {
+            filter: brightness(0) saturate(100%) invert(27%) sepia(51%) saturate(2878%) hue-rotate(346deg) brightness(104%) contrast(97%);
         }
         
         .auth-icon.authenticated,
         .cart-icon.has-items {
-            color: #366b5b;
             border-color: #366b5b;
             background: rgba(54, 107, 91, 0.2);
+        }
+        
+        .auth-icon.authenticated img {
+            filter: brightness(0) saturate(100%) invert(27%) sepia(51%) saturate(2878%) hue-rotate(346deg) brightness(104%) contrast(97%);
+        }
+        
+        .cart-icon.has-items .cart-icon-img {
+            filter: brightness(0) saturate(100%) invert(27%) sepia(51%) saturate(2878%) hue-rotate(346deg) brightness(104%) contrast(97%);
         }
         
         .cart-count {
@@ -1154,18 +1175,14 @@ if ($menu_loaded) {
                         <!-- Authorization Icon -->
                         <div class="header-auth">
                             <button class="auth-icon" id="authIcon" title="Авторизация">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-                                </svg>
+                                <img src="images/icons/auth-gray.png" alt="Авторизация" width="24" height="24">
                             </button>
                         </div>
                         
                         <!-- Cart Icon -->
                         <div class="header-cart">
                             <button class="cart-icon" id="cartIcon" title="Корзина">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M7 18c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12L8.1 13h7.45c.75 0 1.41-.41 1.75-1.03L21.7 4H5.21l-.94-2H1zm16 16c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
-                                </svg>
+                                <img src="images/icons/cart-gray.png" alt="Корзина" width="24" height="24" class="cart-icon-img">
                                 <span class="cart-count" id="cartCount" style="display: none;">0</span>
                             </button>
                         </div>
