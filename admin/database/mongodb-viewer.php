@@ -1,18 +1,34 @@
 <?php
-// Загружаем переменные окружения
-require_once __DIR__ . '/../../vendor/autoload.php';
-if (file_exists(__DIR__ . '/../../.env')) {
-    $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../..');
-    $dotenv->load();
+// Используем данные из основного файла, если они доступны
+if (isset($database) && isset($databaseName)) {
+    // Используем уже установленное подключение
+    $mongoConnection = true;
+    $error = null;
+} else {
+    // Загружаем переменные окружения
+    require_once __DIR__ . '/../../vendor/autoload.php';
+    if (file_exists(__DIR__ . '/../../.env')) {
+        $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../..');
+        $dotenv->load();
+    }
+
+    // Подключение к MongoDB
+    $mongoUri = $_ENV['MONGODB_URL'] ?? 'mongodb://localhost:27018';
+    $databaseName = $_ENV['MONGODB_DB_NAME'] ?? 'northrepublic';
+    $mongoConnection = false;
+    $error = null;
+
+    try {
+        $client = new MongoDB\Client($mongoUri);
+        $database = $client->selectDatabase($databaseName);
+        $mongoConnection = true;
+    } catch (Exception $e) {
+        $error = $e->getMessage();
+    }
 }
 
-// Подключение к MongoDB
-$mongoUri = $_ENV['MONGODB_URL'] ?? 'mongodb://localhost:27018';
-$databaseName = $_ENV['MONGODB_DB_NAME'] ?? 'northrepublic';
-
-try {
-    $client = new MongoDB\Client($mongoUri);
-    $database = $client->selectDatabase($databaseName);
+if ($mongoConnection && !$error) {
+    try {
     
     // Получаем список коллекций
     $collections = $database->listCollections();
@@ -53,8 +69,14 @@ try {
         $collectionData = iterator_to_array($documents);
     }
     
-} catch (Exception $e) {
-    $error = $e->getMessage();
+    } catch (Exception $e) {
+        $error = $e->getMessage();
+    }
+} else {
+    // Если подключение не удалось, создаем пустые массивы
+    $collectionsList = [];
+    $collectionData = [];
+    $collectionStats = [];
 }
 
 // Функция для форматирования размера
