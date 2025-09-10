@@ -101,7 +101,11 @@ try {
                 
                 // Try to get popular products from API
                 try {
+                    $authToken = $_ENV['API_AUTH_TOKEN'] ?? getenv('API_AUTH_TOKEN');
                     $popularUrl = $api_base_url . '/menu/categories/' . $categoryId . '/popular?limit=5';
+                    if ($authToken) {
+                        $popularUrl .= '&token=' . urlencode($authToken);
+                    }
                     $popularResponse = @file_get_contents($popularUrl, false, $context);
                     
                     if ($popularResponse !== false) {

@@ -142,6 +142,12 @@ function fetchFromAPI($endpoint) {
     global $api_base_url;
     $url = $api_base_url . $endpoint;
     
+    // Добавляем токен авторизации из env файла
+    $authToken = $_ENV['API_AUTH_TOKEN'] ?? getenv('API_AUTH_TOKEN');
+    if ($authToken) {
+        $url .= (strpos($url, '?') !== false ? '&' : '?') . 'token=' . urlencode($authToken);
+    }
+    
     $context = stream_context_create([
         'http' => [
                 'timeout' => 10,

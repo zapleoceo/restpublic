@@ -15,8 +15,12 @@ router.post('/update-menu', async (req, res) => {
         console.log('🔄 Обновление кэша меню...');
         
         // Получаем данные от нашего API (который уже работает)
+        const authToken = process.env.API_AUTH_TOKEN;
         const apiResponse = await axios.get('http://127.0.0.1:3002/api/menu', {
-            timeout: 30000
+            timeout: 30000,
+            headers: {
+                'X-API-Token': authToken
+            }
         });
         
         if (apiResponse.status !== 200) {

@@ -3,6 +3,9 @@ RewriteEngine On
 # Обработка /menu без .php
 RewriteRule ^menu$ menu.php [L]
 
+# Обработка /menu2 без .php
+RewriteRule ^menu2$ menu2.php [L]
+
 # Обработка API
 RewriteRule ^api/language/change$ api/language/change.php [L]
 
