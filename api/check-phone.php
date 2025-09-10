@@ -81,7 +81,8 @@ try {
     }
     
     // Анализируем ответ Poster API
-    $clients = $posterResponse['response'] ?? [];
+    // Backend возвращает массив клиентов напрямую, а не в поле 'response'
+    $clients = is_array($posterResponse) ? $posterResponse : ($posterResponse['response'] ?? []);
     
     if (empty($clients)) {
         // Клиент не найден
@@ -92,7 +93,7 @@ try {
         ]);
     } else {
         $client = $clients[0]; // Берем первого клиента
-        $groupId = $client['client_groups_id_client'] ?? null;
+        $groupId = $client['client_groups_id'] ?? null;
         
         if ($groupId == 3) {
             // Гость
