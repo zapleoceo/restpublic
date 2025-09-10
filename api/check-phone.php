@@ -20,11 +20,16 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') {
 
 try {
     // Получаем данные из запроса
-    $input = json_decode(file_get_contents('php://input'), true);
+    $rawInput = file_get_contents('php://input');
+    $input = json_decode($rawInput, true);
+    
+    // Отладка
+    error_log('Raw input: ' . $rawInput);
+    error_log('Parsed input: ' . print_r($input, true));
     
     if (!isset($input['phone'])) {
         http_response_code(400);
-        echo json_encode(['error' => 'Phone number is required']);
+        echo json_encode(['error' => 'Phone number is required', 'debug' => ['raw' => $rawInput, 'parsed' => $input]]);
         exit();
     }
     
