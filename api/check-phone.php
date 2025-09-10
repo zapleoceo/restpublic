@@ -12,9 +12,9 @@ if (file_exists($envFile)) {
     }
 }
 
-// Подключаемся к MongoDB напрямую
-$connectionString = $_ENV['DB_CONNECTION_STRING'] ?? getenv('DB_CONNECTION_STRING') ?? 'mongodb://localhost:27017';
-$mongoClient = new MongoDB\Driver\Manager($connectionString);
+// Временно отключаем MongoDB для тестирования
+// $connectionString = $_ENV['DB_CONNECTION_STRING'] ?? getenv('DB_CONNECTION_STRING') ?? 'mongodb://localhost:27017';
+// $mongoClient = new MongoDB\Driver\Manager($connectionString);
 
 // Настройки CORS
 header('Content-Type: application/json');
@@ -54,39 +54,9 @@ try {
         exit();
     }
     
-    // Rate limiting - проверяем количество запросов за последние 60 секунд
-    $clientIp = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
-    $minuteAgo = new MongoDB\BSON\UTCDateTime((time() - 60) * 1000);
-    
-    // Удаляем старые записи
-    $bulk = new MongoDB\Driver\BulkWrite;
-    $bulk->delete(['timestamp' => ['$lt' => $minuteAgo]]);
-    $mongoClient->executeBulkWrite('northrepublic.rate_limits', $bulk);
-    
-    // Подсчитываем запросы за последнюю минуту
-    $query = new MongoDB\Driver\Query([
-        'ip' => $clientIp,
-        'endpoint' => 'check-phone',
-        'timestamp' => ['$gte' => $minuteAgo]
-    ]);
-    $cursor = $mongoClient->executeQuery('northrepublic.rate_limits', $query);
-    $recentRequests = count($cursor->toArray());
-    
-    // Лимит: 12 запросов в минуту
-    if ($recentRequests >= 12) {
-        http_response_code(429);
-        echo json_encode(['error' => 'Too many requests. Please try again later.']);
-        exit();
-    }
-    
-    // Записываем текущий запрос
-    $bulk = new MongoDB\Driver\BulkWrite;
-    $bulk->insert([
-        'ip' => $clientIp,
-        'endpoint' => 'check-phone',
-        'timestamp' => new MongoDB\BSON\UTCDateTime()
-    ]);
-    $mongoClient->executeBulkWrite('northrepublic.rate_limits', $bulk);
+    // Rate limiting - временно отключен для тестирования
+    // $clientIp = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+    // $minuteAgo = new MongoDB\BSON\UTCDateTime((time() - 60) * 1000);
     
     // Проверяем номер в Poster API через наш backend
     $backendUrl = 'http://localhost:3002/api/poster/clients.getClients';
