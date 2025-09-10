@@ -1270,8 +1270,6 @@ if ($menu_loaded) {
         <!-- Footer -->
         <?php include 'components/footer.php'; ?>
         
-        <!-- Cart Component -->
-        <?php include 'components/cart.php'; ?>
     </div>
 
     <!-- Cart Modal -->
