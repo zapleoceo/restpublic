@@ -1,13 +1,20 @@
 <?php
-require_once __DIR__ . '/../vendor/autoload.php';
+// Простая загрузка переменных окружения без Composer
+$envFile = __DIR__ . '/../.env';
+if (file_exists($envFile)) {
+    $lines = file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+    foreach ($lines as $line) {
+        if (strpos($line, '=') !== false && strpos($line, '#') !== 0) {
+            list($key, $value) = explode('=', $line, 2);
+            $_ENV[trim($key)] = trim($value);
+            putenv(trim($key) . '=' . trim($value));
+        }
+    }
+}
 
-// Загружаем переменные окружения
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/..');
-$dotenv->load();
-
-// Подключаемся к MongoDB
-$mongoClient = new MongoDB\Client($_ENV['DB_CONNECTION_STRING'] ?? getenv('DB_CONNECTION_STRING'));
-$db = $mongoClient->selectDatabase('northrepublic');
+// Подключаемся к MongoDB напрямую
+$connectionString = $_ENV['DB_CONNECTION_STRING'] ?? getenv('DB_CONNECTION_STRING') ?? 'mongodb://localhost:27017';
+$mongoClient = new MongoDB\Driver\Manager($connectionString);
 
 // Настройки CORS
 header('Content-Type: application/json');
@@ -48,19 +55,22 @@ try {
     }
     
     // Rate limiting - проверяем количество запросов за последние 60 секунд
-    $rateLimitCollection = $db->selectCollection('rate_limits');
     $clientIp = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
     $minuteAgo = new MongoDB\BSON\UTCDateTime((time() - 60) * 1000);
     
     // Удаляем старые записи
-    $rateLimitCollection->deleteMany(['timestamp' => ['$lt' => $minuteAgo]]);
+    $bulk = new MongoDB\Driver\BulkWrite;
+    $bulk->delete(['timestamp' => ['$lt' => $minuteAgo]]);
+    $mongoClient->executeBulkWrite('northrepublic.rate_limits', $bulk);
     
     // Подсчитываем запросы за последнюю минуту
-    $recentRequests = $rateLimitCollection->countDocuments([
+    $query = new MongoDB\Driver\Query([
         'ip' => $clientIp,
         'endpoint' => 'check-phone',
         'timestamp' => ['$gte' => $minuteAgo]
     ]);
+    $cursor = $mongoClient->executeQuery('northrepublic.rate_limits', $query);
+    $recentRequests = count($cursor->toArray());
     
     // Лимит: 12 запросов в минуту
     if ($recentRequests >= 12) {
@@ -70,11 +80,13 @@ try {
     }
     
     // Записываем текущий запрос
-    $rateLimitCollection->insertOne([
+    $bulk = new MongoDB\Driver\BulkWrite;
+    $bulk->insert([
         'ip' => $clientIp,
         'endpoint' => 'check-phone',
         'timestamp' => new MongoDB\BSON\UTCDateTime()
     ]);
+    $mongoClient->executeBulkWrite('northrepublic.rate_limits', $bulk);
     
     // Проверяем номер в Poster API через наш backend
     $backendUrl = 'http://localhost:3002/api/poster/clients.getClients';

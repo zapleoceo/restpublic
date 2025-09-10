@@ -296,6 +296,7 @@ if ($menu_loaded) {
             align-items: center;
             justify-content: space-between;
             position: relative;
+            width: 100%;
         }
         
         /* Header Actions */
@@ -304,9 +305,10 @@ if ($menu_loaded) {
             align-items: center;
             gap: 1rem;
             position: absolute;
-            right: 0;
+            right: 20px;
             top: 50%;
             transform: translateY(-50%);
+            z-index: 100;
         }
         
         .header-auth,
@@ -318,6 +320,8 @@ if ($menu_loaded) {
         .cart-icon {
             width: 40px;
             height: 40px;
+            min-width: 40px;
+            min-height: 40px;
             border: 2px solid #5f6362;
             border-radius: 50%;
             background: rgba(255, 255, 255, 0.1);
@@ -329,6 +333,7 @@ if ($menu_loaded) {
             position: relative;
             backdrop-filter: blur(10px);
             padding: 0;
+            box-sizing: border-box;
         }
         
         .auth-icon img,
@@ -652,6 +657,8 @@ if ($menu_loaded) {
         .add-to-cart-btn {
             width: 40px;
             height: 40px;
+            min-width: 40px;
+            min-height: 40px;
             border: 2px solid #366b5b;
             border-radius: 50%;
             background: transparent;
@@ -664,6 +671,7 @@ if ($menu_loaded) {
             flex-shrink: 0;
             position: relative;
             overflow: hidden;
+            box-sizing: border-box;
         }
         
         .add-to-cart-btn::before {
@@ -1174,12 +1182,17 @@ if ($menu_loaded) {
             .header-actions {
                 gap: 0.5rem;
                 right: 10px;
+                position: absolute;
+                top: 50%;
+                transform: translateY(-50%);
             }
             
             .auth-icon,
             .cart-icon {
                 width: 36px;
                 height: 36px;
+                min-width: 36px;
+                min-height: 36px;
             }
             
             .auth-icon img,
