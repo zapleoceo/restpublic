@@ -77,21 +77,21 @@ try {
                 ]
             ]);
             
-            // Get popular products by category using real sales data
+            // Get all products by category from API
             if ($categories) {
                 foreach ($categories as $category) {
                     $categoryId = (string)($category['category_id']);
                     $products_by_category[$categoryId] = [];
                     
-                    // Try to get popular products from API
+                    // Try to get all products from API
                     try {
-                        $popularUrl = $api_base_url . '/menu/categories/' . $categoryId . '/popular?limit=50';
+                        $popularUrl = $api_base_url . '/menu/categories/' . $categoryId . '/products';
                         $popularResponse = @file_get_contents($popularUrl, false, $context);
                         
                         if ($popularResponse !== false) {
                             $popularData = json_decode($popularResponse, true);
-                            if ($popularData && isset($popularData['popular_products'])) {
-                                $products_by_category[$categoryId] = $popularData['popular_products'];
+                            if ($popularData && isset($popularData['products'])) {
+                                $products_by_category[$categoryId] = $popularData['products'];
                                 continue;
                             }
                         }
@@ -99,7 +99,7 @@ try {
                         error_log("Failed to get popular products for category $categoryId: " . $e->getMessage());
                     }
                     
-                    // Fallback: get all products from category and sort by sort_order
+                    // Fallback: get all products from category and sort by sort_order (if API failed)
                     $categoryProducts = [];
                     foreach ($products as $product) {
                         if (($product['menu_category_id'] ?? $product['category_id']) == $categoryId) {
