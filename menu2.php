@@ -1979,7 +1979,7 @@ if ($menu_loaded) {
                 statusDiv.textContent = 'Проверяем номер...';
 
                 try {
-                    const response = await fetch('/api/check-phone', {
+                    const response = await fetch('/api/check-phone.php', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
