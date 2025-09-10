@@ -5,7 +5,7 @@ const compression = require('compression');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
 const slowDown = require('express-slow-down');
-require('dotenv').config({ path: '../.env' });
+require('dotenv').config({ path: './config.env' });
 
 const posterRoutes = require('./routes/poster');
 const menuRoutes = require('./routes/menu');
