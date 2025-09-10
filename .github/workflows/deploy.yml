@@ -45,35 +45,17 @@ jobs:
           # Install backend dependencies
           echo "📦 Installing backend dependencies..."
           cd backend
-          npm install
+          npm ci --only=production --prefer-offline
           
           # Install PHP dependencies
           echo "📦 Installing PHP dependencies..."
           cd ..
-          composer install --no-dev --optimize-autoloader
-          
-          # Copy PHP files to root
-          echo "📁 Copying PHP files to root..."
-          cp php/index.php .
-          cp php/menu.php .
-          cp -r php/components .
-          
-          # Copy template files
-          echo "📁 Copying template files..."
-          cp -r template/css .
-          cp -r template/js .
-          cp -r template/images .
-          cp template/*.png .
-          cp template/*.ico .
+          composer install --no-dev --optimize-autoloader --no-scripts
           
           # Restart backend with PM2
           echo "🔄 Restarting backend service..."
           pm2 restart northrepublic-backend || pm2 start backend/server.js --name northrepublic-backend
           pm2 save
-          
-          # Initialize menu cache
-          echo "🔄 Initializing menu cache..."
-          php php/init-cache.php || echo "⚠️ Cache initialization failed"
           
           # Check services status
           echo "📊 Checking services status..."
@@ -90,4 +72,4 @@ jobs:
       run: |
         echo "🏥 Final health check..."
         sleep 30
-        curl -f https://northrepublic.me/api/health || echo "❌ Production health check failed"
+        curl -f https://northrepublic.me/ || echo "❌ Production health check failed"
