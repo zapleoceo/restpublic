@@ -162,15 +162,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['force_update'])) {
     </style>
 </head>
 <body>
+    <?php include '../includes/header.php'; ?>
+    
     <div class="admin-container">
-        <div class="admin-header">
-            <h1>📊 Статистика обновлений меню</h1>
-            <nav class="breadcrumb">
-                <a href="/admin/">Главная</a> > 
-                <a href="/admin/settings/">Настройки</a> > 
-                Статистика меню
-            </nav>
-        </div>
+        <?php include '../includes/sidebar.php'; ?>
+        
+        <main class="admin-main">
+            <div class="page-header">
+                <h1>📊 Статистика обновлений меню</h1>
+                <nav class="breadcrumb">
+                    <a href="/admin/">Главная</a> > 
+                    <a href="/admin/settings/">Настройки</a> > 
+                    Статистика меню
+                </nav>
+            </div>
 
         <?php if (isset($success)): ?>
             <div class="alert alert-success">
@@ -255,6 +260,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['force_update'])) {
             <p><strong>Часовой пояс:</strong> Asia/Ho_Chi_Minh (UTC+7)</p>
             <p><strong>Источник данных:</strong> Poster API через Node.js backend</p>
         </div>
+        </main>
     </div>
 </body>
 </html>

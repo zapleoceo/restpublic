@@ -10,18 +10,20 @@ RewriteRule ^api/language/change$ api/language/change.php [L]
 RewriteRule ^admin$ admin/index.php [L]
 RewriteRule ^admin/$ admin/index.php [L]
 
-# Обработка разделов админки
+# Обработка разделов админки (4 основных раздела)
 RewriteRule ^admin/pages$ admin/pages/index.php [L]
 RewriteRule ^admin/pages/$ admin/pages/index.php [L]
-RewriteRule ^admin/images$ admin/images/index.php [L]
-RewriteRule ^admin/images/$ admin/images/index.php [L]
+RewriteRule ^admin/users$ admin/users/index.php [L]
+RewriteRule ^admin/users/$ admin/users/index.php [L]
 RewriteRule ^admin/database$ admin/database/index.php [L]
 RewriteRule ^admin/database/$ admin/database/index.php [L]
+
+# Компоненты (доступны через главную страницу)
 RewriteRule ^admin/sepay$ admin/sepay/index.php [L]
 RewriteRule ^admin/sepay/$ admin/sepay/index.php [L]
 RewriteRule ^admin/logs$ admin/logs/index.php [L]
 RewriteRule ^admin/logs/$ admin/logs/index.php [L]
+RewriteRule ^admin/images$ admin/images/index.php [L]
+RewriteRule ^admin/images/$ admin/images/index.php [L]
 RewriteRule ^admin/settings$ admin/settings/index.php [L]
 RewriteRule ^admin/settings/$ admin/settings/index.php [L]
-RewriteRule ^admin/users$ admin/users/index.php [L]
-RewriteRule ^admin/users/$ admin/users/index.php [L]

@@ -72,13 +72,18 @@ require_once __DIR__ . '/../includes/auth-check.php';
     </style>
 </head>
 <body>
+    <?php include '../includes/header.php'; ?>
+    
     <div class="admin-container">
-        <div class="admin-header">
-            <h1>⚙️ Настройки системы</h1>
-            <nav class="breadcrumb">
-                <a href="/admin/">Главная</a> > Настройки
-            </nav>
-        </div>
+        <?php include '../includes/sidebar.php'; ?>
+        
+        <main class="admin-main">
+            <div class="page-header">
+                <h1>⚙️ Настройки системы</h1>
+                <nav class="breadcrumb">
+                    <a href="/admin/">Главная</a> > Настройки
+                </nav>
+            </div>
 
         <div class="settings-grid">
             <div class="settings-card">
@@ -117,6 +122,7 @@ require_once __DIR__ . '/../includes/auth-check.php';
                 </a>
             </div>
         </div>
+        </main>
     </div>
 </body>
 </html>
