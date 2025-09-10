@@ -344,12 +344,9 @@ if ($menu_loaded) {
             background: rgba(54, 107, 91, 0.1);
         }
         
-        .auth-icon:hover img {
-            filter: brightness(0) saturate(100%) invert(27%) sepia(51%) saturate(2878%) hue-rotate(346deg) brightness(104%) contrast(97%);
-        }
-        
+        /* Cart icon hover - change to green SVG */
         .cart-icon:hover .cart-icon-img {
-            filter: brightness(0) saturate(100%) invert(27%) sepia(51%) saturate(2878%) hue-rotate(346deg) brightness(104%) contrast(97%);
+            content: url('images/icons/cart-green.svg');
         }
         
         .auth-icon.authenticated,
@@ -358,12 +355,14 @@ if ($menu_loaded) {
             background: rgba(54, 107, 91, 0.2);
         }
         
-        .auth-icon.authenticated img {
-            filter: brightness(0) saturate(100%) invert(27%) sepia(51%) saturate(2878%) hue-rotate(346deg) brightness(104%) contrast(97%);
+        /* Auth icon authenticated - change to green PNG */
+        .auth-icon.authenticated .auth-icon-img {
+            content: url('images/icons/auth-green.png');
         }
         
+        /* Cart icon has items - change to green SVG */
         .cart-icon.has-items .cart-icon-img {
-            filter: brightness(0) saturate(100%) invert(27%) sepia(51%) saturate(2878%) hue-rotate(346deg) brightness(104%) contrast(97%);
+            content: url('images/icons/cart-green.svg');
         }
         
         .cart-count {
@@ -1175,14 +1174,14 @@ if ($menu_loaded) {
                         <!-- Authorization Icon -->
                         <div class="header-auth">
                             <button class="auth-icon" id="authIcon" title="Авторизация">
-                                <img src="images/icons/auth-gray.png" alt="Авторизация" width="24" height="24">
+                                <img src="images/icons/auth-gray.png" alt="Авторизация" width="24" height="24" class="auth-icon-img">
                             </button>
                         </div>
                         
                         <!-- Cart Icon -->
                         <div class="header-cart">
                             <button class="cart-icon" id="cartIcon" title="Корзина">
-                                <img src="images/icons/cart-gray.png" alt="Корзина" width="24" height="24" class="cart-icon-img">
+                                <img src="images/icons/cart-gray.svg" alt="Корзина" width="24" height="24" class="cart-icon-img">
                                 <span class="cart-count" id="cartCount" style="display: none;">0</span>
                             </button>
                         </div>
