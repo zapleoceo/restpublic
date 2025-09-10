@@ -8,6 +8,8 @@ $success = '';
 // Проверяем статус MongoDB
 $mongoStatus = 'Недоступна';
 $mongoConnection = false;
+$database = null;
+$databaseName = 'northrepublic';
 
 try {
     // Загружаем переменные окружения
@@ -19,7 +21,9 @@ try {
     
     if (class_exists('MongoDB\Client')) {
         $mongoUri = $_ENV['MONGODB_URL'] ?? 'mongodb://localhost:27018';
+        $databaseName = $_ENV['MONGODB_DB_NAME'] ?? 'northrepublic';
         $client = new MongoDB\Client($mongoUri);
+        $database = $client->selectDatabase($databaseName);
         $client->listDatabases();
         $mongoStatus = 'Доступна';
         $mongoConnection = true;
