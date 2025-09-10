@@ -694,9 +694,10 @@ if ($menu_loaded) {
             transform: scale(0.95);
         }
         
-        .add-to-cart-btn svg {
+        .add-to-cart-btn img {
             position: relative;
             z-index: 1;
+            transition: all 0.3s ease;
         }
         
         /* Modal Styles */
@@ -1141,6 +1142,30 @@ if ($menu_loaded) {
                 width: 12px;
                 height: 12px;
             }
+            
+            /* Mobile header actions */
+            .header-actions {
+                gap: 0.5rem;
+                right: 10px;
+            }
+            
+            .auth-icon,
+            .cart-icon {
+                width: 36px;
+                height: 36px;
+            }
+            
+            .auth-icon img,
+            .cart-icon img {
+                width: 20px;
+                height: 20px;
+            }
+            
+            .cart-count {
+                width: 18px;
+                height: 18px;
+                font-size: 0.7rem;
+            }
         }
     </style>
 </head>
@@ -1301,9 +1326,7 @@ if ($menu_loaded) {
                                                                 'image' => $product['image_url'] ?? ''
                                                             ]); ?>'
                                                             title="Добавить в корзину">
-                                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                                                            <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
-                                                        </svg>
+                                                        <img src="images/icons/plus-icon.svg" alt="+" width="20" height="20">
                                                     </button>
                                                 </div>
                                             </li>
