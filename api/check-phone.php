@@ -58,11 +58,15 @@ try {
     $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
     
+    // Отладка
+    error_log('HTTP Code: ' . $httpCode);
+    error_log('Response: ' . $response);
+    
     if ($httpCode !== 200) {
         // Если API недоступен, возвращаем как нового пользователя
         echo json_encode([
             'found' => false,
-            'message' => 'Новый пользователь',
+            'message' => 'Новый пользователь (HTTP ' . $httpCode . ')',
             'groupId' => null
         ]);
         exit();
