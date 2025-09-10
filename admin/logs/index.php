@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once '../includes/auth-check.php';
+require_once __DIR__ . '/../includes/auth-check.php';
 
 // Загружаем переменные окружения
 require_once __DIR__ . '/../../vendor/autoload.php';
