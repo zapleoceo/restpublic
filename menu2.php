@@ -967,6 +967,7 @@ if ($menu_loaded) {
             gap: 8px;
             cursor: pointer;
             font-weight: 500;
+            width: auto;
         }
         
         .checkbox-label input[type="checkbox"] {
@@ -980,6 +981,7 @@ if ($menu_loaded) {
             border-radius: 4px;
             position: relative;
             transition: all 0.3s ease;
+            flex-shrink: 0;
         }
         
         .checkbox-label input[type="checkbox"]:checked + .checkbox-custom {
