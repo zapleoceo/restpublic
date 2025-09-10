@@ -981,6 +981,33 @@ if ($menu_loaded) {
             font-size: 12px;
         }
         
+        /* Phone check status */
+        .phone-check-status {
+            margin-top: 8px;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .phone-check-status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .phone-check-status.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        .phone-check-status.warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        
         /* Checkbox Styles */
         .checkbox-label {
             display: flex;
@@ -1453,6 +1480,23 @@ if ($menu_loaded) {
                     </div>
                 </div>
 
+                <!-- Guest Information (shown when not authenticated) -->
+                <div id="guestInfoFields" class="order-fields" style="display: none;">
+                    <h3>Информация о заказчике</h3>
+                    <div class="form-row">
+                        <div class="form-group form-group--half">
+                            <label for="guestName">Имя:</label>
+                            <input type="text" name="guest_name" id="guestName" required>
+                        </div>
+                        <div class="form-group form-group--half">
+                            <label for="guestPhone">Телефон:</label>
+                            <input type="tel" name="guest_phone" id="guestPhone" 
+                                   placeholder="+84 123 456 789" required>
+                            <div class="phone-check-status" id="phoneCheckStatus" style="display: none;"></div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Notification Checkbox -->
                 <div class="form-group">
                     <label class="checkbox-label">
@@ -1792,6 +1836,15 @@ if ($menu_loaded) {
             showCartModal() {
                 this.populateCartModal();
                 this.showModal();
+                this.showGuestFields();
+            }
+
+            showGuestFields() {
+                // Показываем поля гостя (в реальном приложении здесь была бы проверка авторизации)
+                const guestFields = document.getElementById('guestInfoFields');
+                if (guestFields) {
+                    guestFields.style.display = 'block';
+                }
             }
 
             populateCartModal() {
@@ -1859,6 +1912,11 @@ if ($menu_loaded) {
                     });
                 });
 
+                // Phone number check on blur
+                document.getElementById('guestPhone')?.addEventListener('blur', (e) => {
+                    this.checkPhoneNumber(e.target.value);
+                });
+
                 // Submit order
                 document.getElementById('cartModalSubmit')?.addEventListener('click', () => {
                     this.submitOrder();
@@ -1894,6 +1952,51 @@ if ($menu_loaded) {
                 // TODO: Implement order submission
                 this.showToast('Заказ будет отправлен в Poster API', 'info');
                 console.log('Order data:', orderData);
+            }
+
+            async checkPhoneNumber(phone) {
+                if (!phone || !phone.match(/^\+[0-9]{10,12}$/)) {
+                    this.showPhoneCheckResult('', 'error');
+                    return;
+                }
+
+                const statusDiv = document.getElementById('phoneCheckStatus');
+                statusDiv.style.display = 'block';
+                statusDiv.className = 'phone-check-status info';
+                statusDiv.textContent = 'Проверяем номер...';
+
+                try {
+                    const response = await fetch('/api/check-phone', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ phone: phone })
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        this.showPhoneCheckResult(data.message, data.found ? 'success' : 'info', data);
+                    } else {
+                        this.showPhoneCheckResult(data.error || 'Ошибка проверки номера', 'error');
+                    }
+                } catch (error) {
+                    console.error('Phone check error:', error);
+                    this.showPhoneCheckResult('Ошибка соединения', 'error');
+                }
+            }
+
+            showPhoneCheckResult(message, type, data = null) {
+                const statusDiv = document.getElementById('phoneCheckStatus');
+                statusDiv.style.display = 'block';
+                statusDiv.className = `phone-check-status ${type}`;
+                statusDiv.textContent = message;
+
+                // Сохраняем данные о клиенте для использования при оформлении заказа
+                if (data) {
+                    this.phoneCheckData = data;
+                }
             }
 
             showAuthModal() {
