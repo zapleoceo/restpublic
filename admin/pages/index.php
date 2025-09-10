@@ -85,8 +85,9 @@ $availablePages = ['index', 'menu', 'about', 'contact'];
     <link rel="stylesheet" href="../assets/css/admin.css">
     <link rel="icon" type="image/png" href="../../template/favicon-32x32.png">
     
-    <!-- TinyMCE -->
-    <script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+    <!-- Simple Editor (replacing TinyMCE) -->
+    <script src="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.snow.css" rel="stylesheet">
     
     <style>
         .page-editor {
@@ -303,7 +304,8 @@ $availablePages = ['index', 'menu', 'about', 'contact'];
                         
                         <div class="form-group">
                             <label for="content">HTML контент страницы:</label>
-                            <textarea id="content" name="content" rows="20"><?php echo htmlspecialchars($currentContent['content']); ?></textarea>
+                            <textarea id="content-hidden" name="content" rows="20" style="display: none;"><?php echo htmlspecialchars($currentContent['content']); ?></textarea>
+                            <div id="content" style="height: 500px; border: 1px solid #ccc; border-radius: 4px;"></div>
                         </div>
                         
                         <div class="form-group">
@@ -364,23 +366,31 @@ $availablePages = ['index', 'menu', 'about', 'contact'];
     </div>
     
     <script>
-        // Инициализация TinyMCE
-        tinymce.init({
-            selector: '#content',
-            height: 500,
-            plugins: [
-                'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
-                'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
-                'insertdatetime', 'media', 'table', 'help', 'wordcount'
-            ],
-            toolbar: 'undo redo | blocks | ' +
-                'bold italic backcolor | alignleft aligncenter ' +
-                'alignright alignjustify | bullist numlist outdent indent | ' +
-                'removeformat | help',
-            content_style: 'body { font-family: -apple-system, BlinkMacSystemFont, San Francisco, Segoe UI, Roboto, Helvetica Neue, sans-serif; font-size: 14px; }',
-            language: 'ru',
-            branding: false,
-            promotion: false
+        // Инициализация Quill Editor
+        let quill;
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            quill = new Quill('#content', {
+                theme: 'snow',
+                modules: {
+                    toolbar: [
+                        [{ 'header': [1, 2, 3, false] }],
+                        ['bold', 'italic', 'underline', 'strike'],
+                        [{ 'color': [] }, { 'background': [] }],
+                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                        [{ 'align': [] }],
+                        ['link', 'image'],
+                        ['clean']
+                    ]
+                },
+                placeholder: 'Введите содержимое страницы...'
+            });
+            
+            // Загружаем существующий контент если есть
+            const existingContent = document.getElementById('content-hidden').value;
+            if (existingContent) {
+                quill.root.innerHTML = existingContent;
+            }
         });
         
         // Функции для смены страницы и языка
@@ -396,13 +406,35 @@ $availablePages = ['index', 'menu', 'about', 'contact'];
             window.location.href = `?page=${page}&lang=${lang}`;
         }
         
+        // Функция для получения HTML контента из Quill
+        function getQuillContent() {
+            if (quill) {
+                return quill.root.innerHTML;
+            }
+            return document.getElementById('content-hidden').value;
+        }
+        
         // Автосохранение каждые 30 секунд
         setInterval(function() {
-            if (tinymce.get('content').isDirty()) {
+            if (quill && quill.getLength() > 1) {
                 console.log('Автосохранение...');
                 // Здесь можно добавить AJAX сохранение
             }
         }, 30000);
+        
+        // Обработчик отправки формы
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('form[method="POST"]');
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    // Обновляем textarea с контентом из Quill перед отправкой
+                    const contentTextarea = document.getElementById('content-hidden');
+                    if (quill && contentTextarea) {
+                        contentTextarea.value = quill.root.innerHTML;
+                    }
+                });
+            }
+        });
     </script>
 </body>
 </html>
