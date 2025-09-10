@@ -44,16 +44,11 @@ try {
     
     // Проверяем номер в Poster API через наш backend
     $backendUrl = 'http://localhost:3002/api/poster/clients.getClients';
-    $postData = [
-        'phone' => $phone
-    ];
     
     $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $backendUrl);
-    curl_setopt($ch, CURLOPT_POST, true);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($postData));
+    curl_setopt($ch, CURLOPT_URL, $backendUrl . '?phone=' . urlencode($phone));
+    curl_setopt($ch, CURLOPT_POST, false);
     curl_setopt($ch, CURLOPT_HTTPHEADER, [
-        'Content-Type: application/json',
         'X-API-Token: ' . ($_ENV['API_AUTH_TOKEN'] ?? getenv('API_AUTH_TOKEN'))
     ]);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
