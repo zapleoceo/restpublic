@@ -70,6 +70,10 @@ try {
     
     $posterResponse = json_decode($response, true);
     
+    // Отладка
+    error_log('Backend response: ' . $response);
+    error_log('Parsed response: ' . print_r($posterResponse, true));
+    
     if (isset($posterResponse['error'])) {
         // Если ошибка API, возвращаем как нового пользователя
         echo json_encode([
