@@ -27,13 +27,9 @@ try {
     
     $input = json_decode($rawInput, true);
     
-    // Отладка
-    error_log('Raw input: ' . $rawInput);
-    error_log('Parsed input: ' . print_r($input, true));
-    
     if (!isset($input['phone'])) {
         http_response_code(400);
-        echo json_encode(['error' => 'Phone number is required', 'debug' => ['raw' => $rawInput, 'parsed' => $input]]);
+        echo json_encode(['error' => 'Phone number is required']);
         exit();
     }
     
@@ -46,12 +42,81 @@ try {
         exit();
     }
     
-    // Возвращаем тестовый ответ
-    echo json_encode([
-        'found' => false,
-        'message' => 'Новый пользователь (тест)',
-        'groupId' => null
+    // Проверяем номер в Poster API через наш backend
+    $backendUrl = 'http://localhost:3002/api/poster/clients.getClients';
+    $postData = [
+        'phone' => $phone
+    ];
+    
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $backendUrl);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($postData));
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        'Content-Type: application/json',
+        'X-API-Token: ' . ($_ENV['API_AUTH_TOKEN'] ?? getenv('API_AUTH_TOKEN'))
     ]);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+    
+    $response = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+    
+    if ($httpCode !== 200) {
+        // Если API недоступен, возвращаем как нового пользователя
+        echo json_encode([
+            'found' => false,
+            'message' => 'Новый пользователь',
+            'groupId' => null
+        ]);
+        exit();
+    }
+    
+    $posterResponse = json_decode($response, true);
+    
+    if (isset($posterResponse['error'])) {
+        // Если ошибка API, возвращаем как нового пользователя
+        echo json_encode([
+            'found' => false,
+            'message' => 'Новый пользователь',
+            'groupId' => null
+        ]);
+        exit();
+    }
+    
+    // Анализируем ответ Poster API
+    $clients = $posterResponse['response'] ?? [];
+    
+    if (empty($clients)) {
+        // Клиент не найден
+        echo json_encode([
+            'found' => false,
+            'message' => 'Новый пользователь',
+            'groupId' => null
+        ]);
+    } else {
+        $client = $clients[0]; // Берем первого клиента
+        $groupId = $client['client_groups_id_client'] ?? null;
+        
+        if ($groupId == 3) {
+            // Гость
+            echo json_encode([
+                'found' => true,
+                'message' => 'Вы уже делали заказы как гость',
+                'groupId' => 3,
+                'hasOrders' => true
+            ]);
+        } else {
+            // Постоянный клиент
+            echo json_encode([
+                'found' => true,
+                'message' => 'Вы уже являетесь нашим постоянным клиентом',
+                'groupId' => $groupId,
+                'hasOrders' => true
+            ]);
+        }
+    }
     
 } catch (Exception $e) {
     error_log('Phone check error: ' . $e->getMessage());
