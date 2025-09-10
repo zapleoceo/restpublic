@@ -10,19 +10,21 @@ $mongoStatus = 'Недоступна';
 $mongoConnection = false;
 
 try {
+    // Загружаем переменные окружения
+    require_once __DIR__ . '/../../vendor/autoload.php';
+    if (file_exists(__DIR__ . '/../../.env')) {
+        $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../..');
+        $dotenv->load();
+    }
+    
     if (class_exists('MongoDB\Client')) {
-        // Загружаем переменные окружения
-        require_once __DIR__ . '/../../vendor/autoload.php';
-        if (file_exists(__DIR__ . '/../../.env')) {
-            $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../..');
-            $dotenv->load();
-        }
-        
         $mongoUri = $_ENV['MONGODB_URL'] ?? 'mongodb://localhost:27018';
         $client = new MongoDB\Client($mongoUri);
         $client->listDatabases();
         $mongoStatus = 'Доступна';
         $mongoConnection = true;
+    } else {
+        $mongoStatus = 'Класс MongoDB\Client не найден';
     }
 } catch (Exception $e) {
     $mongoStatus = 'Ошибка: ' . $e->getMessage();
