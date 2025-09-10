@@ -298,6 +298,62 @@ if ($menu_loaded) {
             position: relative;
         }
         
+        /* Header Actions */
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .header-auth,
+        .header-cart {
+            position: relative;
+        }
+        
+        .auth-icon,
+        .cart-icon {
+            width: 40px;
+            height: 40px;
+            border: 2px solid transparent;
+            border-radius: 50%;
+            background: transparent;
+            color: #5f6362;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .auth-icon:hover,
+        .cart-icon:hover {
+            border-color: #366b5b;
+            color: #366b5b;
+        }
+        
+        .auth-icon.authenticated,
+        .cart-icon.has-items {
+            color: rgb(54, 107, 91);
+        }
+        
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #e74c3c;
+            color: #fff;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+            min-width: 20px;
+        }
+        
         /* Mobile menu toggle - positioned outside s-header__block */
         .header-menu-toggle {
             --toggle-block-width: 44px;
@@ -557,6 +613,407 @@ if ($menu_loaded) {
             left: -1px;
         }
         
+        .menu-list__item-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .add-to-cart-btn {
+            width: 40px;
+            height: 40px;
+            border: 2px solid #366b5b;
+            border-radius: 50%;
+            background: transparent;
+            color: #366b5b;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+        
+        .add-to-cart-btn:hover {
+            background: #366b5b;
+            color: #fff;
+            transform: scale(1.1);
+        }
+        
+        .add-to-cart-btn:active {
+            transform: scale(0.95);
+        }
+        
+        /* Modal Styles */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 9999;
+        }
+        
+        .modal-content {
+            background: #fff;
+            border-radius: 12px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 10001;
+        }
+        
+        .modal-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-header h2 {
+            margin: 0;
+            color: #2c2c2c;
+            font-size: 1.5rem;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-close:hover {
+            color: #333;
+        }
+        
+        .modal-body {
+            padding: 24px;
+        }
+        
+        .modal-footer {
+            padding: 20px 24px;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+        
+        /* Order Type Selection */
+        .order-type-selection {
+            margin-bottom: 24px;
+        }
+        
+        .order-type-selection h3 {
+            margin: 0 0 16px 0;
+            color: #2c2c2c;
+            font-size: 1.2rem;
+        }
+        
+        .radio-group {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .radio-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        
+        .radio-label input[type="radio"] {
+            display: none;
+        }
+        
+        .radio-custom {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ddd;
+            border-radius: 50%;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .radio-label input[type="radio"]:checked + .radio-custom {
+            border-color: #366b5b;
+        }
+        
+        .radio-label input[type="radio"]:checked + .radio-custom::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 10px;
+            height: 10px;
+            background: #366b5b;
+            border-radius: 50%;
+        }
+        
+        /* Cart Items */
+        .cart-items-section {
+            margin-bottom: 24px;
+        }
+        
+        .cart-items-section h3 {
+            margin: 0 0 16px 0;
+            color: #2c2c2c;
+            font-size: 1.2rem;
+        }
+        
+        .cart-items-list {
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 12px;
+        }
+        
+        .cart-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .cart-item:last-child {
+            border-bottom: none;
+        }
+        
+        .cart-item-name {
+            flex: 1;
+            font-weight: 500;
+            color: #2c2c2c;
+        }
+        
+        .cart-item-price {
+            color: #366b5b;
+            font-weight: 600;
+            margin-right: 12px;
+        }
+        
+        .cart-item-quantity {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .cart-item-quantity button {
+            width: 24px;
+            height: 24px;
+            border: 1px solid #ddd;
+            background: #fff;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+        
+        .cart-item-quantity button:hover {
+            background: #f5f5f5;
+        }
+        
+        .cart-item-quantity span {
+            min-width: 30px;
+            text-align: center;
+            font-weight: 600;
+        }
+        
+        .cart-total {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 2px solid #366b5b;
+        }
+        
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        
+        .total-amount {
+            color: #366b5b;
+        }
+        
+        /* Form Groups */
+        .order-fields h3 {
+            margin: 0 0 16px 0;
+            color: #2c2c2c;
+            font-size: 1.2rem;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #2c2c2c;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #366b5b;
+        }
+        
+        .form-group textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+        
+        .form-group small {
+            display: block;
+            margin-top: 4px;
+            color: #666;
+            font-size: 12px;
+        }
+        
+        /* Checkbox Styles */
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        
+        .checkbox-label input[type="checkbox"] {
+            display: none;
+        }
+        
+        .checkbox-custom {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .checkbox-label input[type="checkbox"]:checked + .checkbox-custom {
+            background: #366b5b;
+            border-color: #366b5b;
+        }
+        
+        .checkbox-label input[type="checkbox"]:checked + .checkbox-custom::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        /* Buttons */
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+        
+        .btn-primary {
+            background: #366b5b;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #2d5a4d;
+        }
+        
+        .btn-secondary {
+            background: #f5f5f5;
+            color: #666;
+        }
+        
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+        
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .modal {
+                padding: 10px;
+            }
+            
+            .modal-content {
+                max-height: 95vh;
+            }
+            
+            .modal-header,
+            .modal-body,
+            .modal-footer {
+                padding: 16px;
+            }
+            
+            .radio-group {
+                flex-direction: column;
+                gap: 12px;
+            }
+            
+            .modal-footer {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+        
         .no-products {
             text-align: center;
             padding: 3rem;
@@ -633,6 +1090,28 @@ if ($menu_loaded) {
                         <a class="logo" href="/">
                             <img src="images/logo.png" alt="North Republic">
                         </a>
+                    </div>
+                    
+                    <!-- Header Actions -->
+                    <div class="header-actions">
+                        <!-- Authorization Icon -->
+                        <div class="header-auth">
+                            <button class="auth-icon" id="authIcon" title="Авторизация">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                                </svg>
+                            </button>
+                        </div>
+                        
+                        <!-- Cart Icon -->
+                        <div class="header-cart">
+                            <button class="cart-icon" id="cartIcon" title="Корзина">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M7 18c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12L8.1 13h7.45c.75 0 1.41-.41 1.75-1.03L21.7 4H5.21l-.94-2H1zm16 16c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+                                </svg>
+                                <span class="cart-count" id="cartCount" style="display: none;">0</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
                 
@@ -737,8 +1216,22 @@ if ($menu_loaded) {
                                                         <p><?php echo htmlspecialchars($product['description']); ?></p>
                                                     <?php endif; ?>
                                                 </div>
-                                                <div class="menu-list__item-price">
-                                                    <?php echo number_format($product['price_normalized'] ?? $product['price'] ?? 0, 0, ',', ' '); ?> ₫
+                                                <div class="menu-list__item-actions">
+                                                    <div class="menu-list__item-price">
+                                                        <?php echo number_format($product['price_normalized'] ?? $product['price'] ?? 0, 0, ',', ' '); ?> ₫
+                                                    </div>
+                                                    <button class="add-to-cart-btn" 
+                                                            data-product='<?php echo json_encode([
+                                                                'id' => $product['product_id'] ?? 0,
+                                                                'name' => $product['product_name'] ?? 'Без названия',
+                                                                'price' => $product['price_normalized'] ?? $product['price'] ?? 0,
+                                                                'image' => $product['image_url'] ?? ''
+                                                            ]); ?>'
+                                                            title="Добавить в корзину">
+                                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                                            <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                                                        </svg>
+                                                    </button>
                                                 </div>
                                             </li>
                                         <?php endforeach; ?>
@@ -780,6 +1273,109 @@ if ($menu_loaded) {
         <!-- Cart Component -->
         <?php include 'components/cart.php'; ?>
     </div>
+
+    <!-- Cart Modal -->
+    <div id="cartModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Оформление заказа</h2>
+                <button class="modal-close" id="cartModalClose">&times;</button>
+            </div>
+            
+            <div class="modal-body">
+                <!-- Order Type Selection -->
+                <div class="order-type-selection">
+                    <h3>Тип заказа</h3>
+                    <div class="radio-group">
+                        <label class="radio-label">
+                            <input type="radio" name="orderType" value="1" checked>
+                            <span class="radio-custom"></span>
+                            В заведении
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="orderType" value="3">
+                            <span class="radio-custom"></span>
+                            Доставка
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Cart Items -->
+                <div class="cart-items-section">
+                    <h3>Ваш заказ</h3>
+                    <div class="cart-items-list" id="cartItemsList">
+                        <!-- Cart items will be populated here -->
+                    </div>
+                    <div class="cart-total">
+                        <div class="total-row">
+                            <span>Итого:</span>
+                            <span class="total-amount" id="cartTotalAmount">0 ₫</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- In Restaurant Fields -->
+                <div id="inRestaurantFields" class="order-fields">
+                    <h3>Детали заказа</h3>
+                    <div class="form-group">
+                        <label for="tableSelect">Номер стола:</label>
+                        <select name="table_id" id="tableSelect" required>
+                            <option value="">Выберите стол</option>
+                            <!-- Tables will be loaded via API -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="guestsCount">Количество гостей:</label>
+                        <input type="number" name="guests_count" id="guestsCount" 
+                               min="1" max="20" value="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="takeaway" id="takeawayCheckbox">
+                            <span class="checkbox-custom"></span>
+                            Еда с собой
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label for="comment">Комментарий к заказу:</label>
+                        <textarea name="comment" id="comment" placeholder="Особые пожелания..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Delivery Fields -->
+                <div id="deliveryFields" class="order-fields" style="display: none;">
+                    <h3>Детали доставки</h3>
+                    <div class="form-group">
+                        <label for="deliveryAddress">Адрес доставки (ссылка на Google Maps):</label>
+                        <input type="url" name="delivery_address" id="deliveryAddress" 
+                               placeholder="https://maps.google.com/..." required>
+                        <small>Вставьте ссылку на ваше местоположение в Google Maps</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="deliveryComment">Комментарий к заказу:</label>
+                        <textarea name="comment" id="deliveryComment" placeholder="Особые пожелания..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Notification Checkbox -->
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="readyNotificationCheckbox">
+                        <span class="checkbox-custom"></span>
+                        Уведомить, когда заказ будет приготовлен
+                    </label>
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cartModalCancel">Отмена</button>
+                <button class="btn btn-primary" id="cartModalSubmit">Оформить заказ</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Overlay -->
+    <div id="modalOverlay" class="modal-overlay" style="display: none;"></div>
 
     <!-- JavaScript -->
     <script src="js/plugins.js"></script>
@@ -980,6 +1576,273 @@ if ($menu_loaded) {
     </style>
     
     <script>
+        // Cart functionality
+        class Cart {
+            constructor() {
+                this.items = JSON.parse(localStorage.getItem('cart') || '[]');
+                if (!Array.isArray(this.items)) {
+                    this.items = [];
+                }
+                this.init();
+            }
+
+            init() {
+                this.bindEvents();
+                this.updateCartDisplay();
+            }
+
+            bindEvents() {
+                // Cart icon click
+                document.getElementById('cartIcon')?.addEventListener('click', () => {
+                    this.toggleCart();
+                });
+
+                // Add to cart buttons
+                document.addEventListener('click', (e) => {
+                    if (e.target.closest('.add-to-cart-btn')) {
+                        const btn = e.target.closest('.add-to-cart-btn');
+                        const productData = JSON.parse(btn.dataset.product);
+                        this.addItem(productData);
+                        this.showToast(`${productData.name} добавлен в корзину!`, 'success');
+                    }
+                });
+
+                // Auth icon click
+                document.getElementById('authIcon')?.addEventListener('click', () => {
+                    this.showAuthModal();
+                });
+            }
+
+            addItem(product) {
+                const existingItem = this.items.find(item => item.id === product.id);
+                
+                if (existingItem) {
+                    existingItem.quantity += 1;
+                } else {
+                    this.items.push({
+                        id: product.id,
+                        name: product.name,
+                        price: product.price,
+                        quantity: 1,
+                        image: product.image
+                    });
+                }
+                
+                this.saveCart();
+                this.updateCartDisplay();
+            }
+
+            removeItem(productId) {
+                this.items = this.items.filter(item => item.id !== productId);
+                this.saveCart();
+                this.updateCartDisplay();
+            }
+
+            updateQuantity(productId, quantity) {
+                const item = this.items.find(item => item.id === productId);
+                if (item) {
+                    if (quantity <= 0) {
+                        this.removeItem(productId);
+                    } else {
+                        item.quantity = quantity;
+                        this.saveCart();
+                        this.updateCartDisplay();
+                    }
+                }
+            }
+
+            clearCart() {
+                this.items = [];
+                this.saveCart();
+                this.updateCartDisplay();
+            }
+
+            getTotal() {
+                return this.items.reduce((total, item) => total + (item.price * item.quantity), 0);
+            }
+
+            saveCart() {
+                localStorage.setItem('cart', JSON.stringify(this.items));
+            }
+
+            updateCartDisplay() {
+                const cartCount = document.getElementById('cartCount');
+                const cartIcon = document.getElementById('cartIcon');
+
+                const totalItems = this.items.reduce((sum, item) => sum + item.quantity, 0);
+                
+                if (cartCount) {
+                    cartCount.textContent = totalItems;
+                    cartCount.style.display = totalItems > 0 ? 'flex' : 'none';
+                }
+
+                if (cartIcon) {
+                    if (totalItems > 0) {
+                        cartIcon.classList.add('has-items');
+                    } else {
+                        cartIcon.classList.remove('has-items');
+                    }
+                }
+            }
+
+            toggleCart() {
+                if (this.items.length === 0) {
+                    this.showToast('Корзина пуста', 'info');
+                    return;
+                }
+                this.showCartModal();
+            }
+
+            showCartModal() {
+                this.populateCartModal();
+                this.showModal();
+            }
+
+            populateCartModal() {
+                const cartItemsList = document.getElementById('cartItemsList');
+                const cartTotalAmount = document.getElementById('cartTotalAmount');
+                
+                if (this.items.length === 0) {
+                    cartItemsList.innerHTML = '<p style="text-align: center; color: #666;">Корзина пуста</p>';
+                    cartTotalAmount.textContent = '0 ₫';
+                    return;
+                }
+
+                cartItemsList.innerHTML = this.items.map(item => `
+                    <div class="cart-item">
+                        <div class="cart-item-name">${item.name}</div>
+                        <div class="cart-item-price">${item.price.toFixed(0)} ₫</div>
+                        <div class="cart-item-quantity">
+                            <button onclick="cart.updateQuantity('${item.id}', ${item.quantity - 1})">-</button>
+                            <span>${item.quantity}</span>
+                            <button onclick="cart.updateQuantity('${item.id}', ${item.quantity + 1})">+</button>
+                        </div>
+                    </div>
+                `).join('');
+
+                cartTotalAmount.textContent = `${this.getTotal().toFixed(0)} ₫`;
+            }
+
+            showModal() {
+                const modal = document.getElementById('cartModal');
+                const overlay = document.getElementById('modalOverlay');
+                
+                modal.style.display = 'flex';
+                overlay.style.display = 'block';
+                
+                // Bind modal events
+                this.bindModalEvents();
+            }
+
+            hideModal() {
+                const modal = document.getElementById('cartModal');
+                const overlay = document.getElementById('modalOverlay');
+                
+                modal.style.display = 'none';
+                overlay.style.display = 'none';
+            }
+
+            bindModalEvents() {
+                // Close modal events
+                document.getElementById('cartModalClose')?.addEventListener('click', () => {
+                    this.hideModal();
+                });
+                
+                document.getElementById('cartModalCancel')?.addEventListener('click', () => {
+                    this.hideModal();
+                });
+                
+                document.getElementById('modalOverlay')?.addEventListener('click', () => {
+                    this.hideModal();
+                });
+
+                // Order type change
+                document.querySelectorAll('input[name="orderType"]').forEach(radio => {
+                    radio.addEventListener('change', (e) => {
+                        this.toggleOrderFields(e.target.value);
+                    });
+                });
+
+                // Submit order
+                document.getElementById('cartModalSubmit')?.addEventListener('click', () => {
+                    this.submitOrder();
+                });
+            }
+
+            toggleOrderFields(orderType) {
+                const inRestaurantFields = document.getElementById('inRestaurantFields');
+                const deliveryFields = document.getElementById('deliveryFields');
+                
+                if (orderType === '1') {
+                    inRestaurantFields.style.display = 'block';
+                    deliveryFields.style.display = 'none';
+                } else if (orderType === '3') {
+                    inRestaurantFields.style.display = 'none';
+                    deliveryFields.style.display = 'block';
+                }
+            }
+
+            submitOrder() {
+                if (this.items.length === 0) {
+                    this.showToast('Корзина пуста', 'error');
+                    return;
+                }
+
+                const orderType = document.querySelector('input[name="orderType"]:checked').value;
+                const orderData = {
+                    items: this.items,
+                    orderType: orderType,
+                    total: this.getTotal()
+                };
+
+                // TODO: Implement order submission
+                this.showToast('Заказ будет отправлен в Poster API', 'info');
+                console.log('Order data:', orderData);
+            }
+
+            showAuthModal() {
+                // TODO: Implement auth modal
+                this.showToast('Модалка авторизации будет реализована', 'info');
+            }
+
+            showToast(message, type = 'success') {
+                const toast = document.createElement('div');
+                toast.className = `toast toast-${type}`;
+                toast.textContent = message;
+                toast.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: ${type === 'success' ? '#4CAF50' : type === 'error' ? '#f44336' : '#2196F3'};
+                    color: white;
+                    padding: 12px 20px;
+                    border-radius: 4px;
+                    z-index: 10000;
+                    opacity: 0;
+                    transform: translateX(100%);
+                    transition: all 0.3s ease;
+                `;
+                
+                document.body.appendChild(toast);
+                
+                setTimeout(() => {
+                    toast.style.opacity = '1';
+                    toast.style.transform = 'translateX(0)';
+                }, 100);
+                
+                setTimeout(() => {
+                    toast.style.opacity = '0';
+                    toast.style.transform = 'translateX(100%)';
+                    setTimeout(() => toast.remove(), 300);
+                }, 3000);
+            }
+        }
+
+        // Initialize cart when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            window.cart = new Cart();
+        });
+
         // Category filtering with animations
         document.addEventListener('DOMContentLoaded', function() {
             const categoryBtns = document.querySelectorAll('.category-btn, .header-nav__links a');
