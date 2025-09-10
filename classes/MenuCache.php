@@ -199,17 +199,21 @@ class MenuCache {
     }
     
     /**
-     * Получить время последнего обновления меню из Poster API
+     * Получить время последнего обновления меню из настроек
      */
     public function getLastUpdateTime() {
         try {
-            $menu = $this->menuCollection->findOne(['_id' => 'current_menu']);
+            require_once __DIR__ . '/SettingsService.php';
+            $settingsService = new SettingsService();
+            $timestamp = $settingsService->getLastMenuUpdateTime();
             
-            if (!$menu || !isset($menu['updated_at'])) {
+            if (!$timestamp) {
                 return null;
             }
             
-            return $menu['updated_at']->toDateTime();
+            $updateTime = new DateTime();
+            $updateTime->setTimestamp($timestamp);
+            return $updateTime;
             
         } catch (Exception $e) {
             error_log("Ошибка получения времени обновления: " . $e->getMessage());
@@ -221,16 +225,14 @@ class MenuCache {
      * Получить время последнего обновления в формате для отображения (Нячанг)
      */
     public function getLastUpdateTimeFormatted() {
-        $updateTime = $this->getLastUpdateTime();
-        
-        if (!$updateTime) {
+        try {
+            require_once __DIR__ . '/SettingsService.php';
+            $settingsService = new SettingsService();
+            return $settingsService->getLastMenuUpdateTimeFormatted();
+        } catch (Exception $e) {
+            error_log("Ошибка получения форматированного времени обновления: " . $e->getMessage());
             return null;
         }
-        
-        // Устанавливаем часовой пояс Нячанга (UTC+7)
-        $updateTime->setTimezone(new DateTimeZone('Asia/Ho_Chi_Minh'));
-        
-        return $updateTime->format('d.m.Y H:i');
     }
     
     /**

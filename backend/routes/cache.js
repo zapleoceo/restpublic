@@ -43,6 +43,18 @@ router.post('/update-menu', async (req, res) => {
             { upsert: true }
         );
         
+        // Обновляем время последнего обновления в настройках
+        const settingsCollection = db.collection('settings');
+        await settingsCollection.replaceOne(
+            { key: 'menu_last_update_time' },
+            {
+                key: 'menu_last_update_time',
+                value: Math.floor(Date.now() / 1000), // Unix timestamp
+                updated_at: new Date()
+            },
+            { upsert: true }
+        );
+        
         console.log(`✅ Кэш обновлен. Модифицировано записей: ${result.modifiedCount}`);
         
         res.json({

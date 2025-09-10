@@ -30,30 +30,27 @@ function updateMenuCacheAsync() {
     @file_get_contents($cacheUrl, false, $context);
 }
 
-// Проверяем, нужно ли обновлять кеш (например, раз в час)
-$cacheUpdateFile = __DIR__ . '/data/menu_cache_last_update.txt';
-$shouldUpdateCache = true;
+// Инициализируем сервис настроек для работы с MongoDB
+require_once __DIR__ . '/classes/SettingsService.php';
+$settingsService = new SettingsService();
 
-if (file_exists($cacheUpdateFile)) {
-    $lastUpdate = (int)file_get_contents($cacheUpdateFile);
-    $currentTime = time();
-    $timeDiff = $currentTime - $lastUpdate;
-    
-    // Обновляем кеш только если прошло больше 1 часа
-    if ($timeDiff < 3600) { // 3600 секунд = 1 час
-        $shouldUpdateCache = false;
-    }
-}
+// Проверяем, нужно ли проверять необходимость обновления (раз в 5 минут)
+$shouldCheckForUpdate = $settingsService->shouldCheckForUpdate(300); // 5 минут
 
-if ($shouldUpdateCache) {
-    // Обновляем кеш асинхронно
-    updateMenuCacheAsync();
+if ($shouldCheckForUpdate) {
+    // Обновляем время последней проверки
+    $settingsService->setLastUpdateCheckTime();
     
-    // Записываем время последнего обновления
-    if (!is_dir(__DIR__ . '/data')) {
-        mkdir(__DIR__ . '/data', 0755, true);
+    // Проверяем, нужно ли обновлять кеш (раз в час)
+    $shouldUpdateCache = $settingsService->shouldUpdateMenu(3600); // 1 час
+    
+    if ($shouldUpdateCache) {
+        // Обновляем кеш асинхронно
+        updateMenuCacheAsync();
+        
+        // Записываем время последнего обновления
+        $settingsService->setLastMenuUpdateTime();
     }
-    file_put_contents($cacheUpdateFile, time());
 }
 
 // Initialize page content service
