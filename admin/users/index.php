@@ -1,27 +1,27 @@
 <?php
 /**
  * Управление пользователями админки
- * Полностью переписанный раздел Users
+ * Использует AuthManager для работы с MongoDB
  */
+
+// Загружаем переменные окружения
+require_once __DIR__ . '/../../vendor/autoload.php';
+if (file_exists(__DIR__ . '/../../.env')) {
+    $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../..');
+    $dotenv->load();
+}
 
 // Проверка авторизации уже включена в header.php
 
 $error = '';
 $success = '';
 
-// Файл для хранения пользователей
-$usersFile = __DIR__ . '/../../data/admin_users.json';
-$usersDir = dirname($usersFile);
+// Инициализируем AuthManager
+require_once __DIR__ . '/../classes/AuthManager.php';
+$authManager = new AuthManager();
 
-if (!is_dir($usersDir)) {
-    mkdir($usersDir, 0755, true);
-}
-
-// Загружаем пользователей
-$users = [];
-if (file_exists($usersFile)) {
-    $users = json_decode(file_get_contents($usersFile), true) ?: [];
-}
+// Получаем всех пользователей
+$users = $authManager->getAllUsers();
 
 // Обработка действий
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
@@ -34,24 +34,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             
             if (empty($username) || empty($password)) {
                 $error = 'Имя пользователя и пароль обязательны';
-            } elseif (isset($users[$username])) {
-                $error = 'Пользователь с таким именем уже существует';
             } else {
-                $users[$username] = [
-                    'username' => $username,
-                    'password' => password_hash($password, PASSWORD_DEFAULT),
-                    'email' => $email,
-                    'role' => $role,
-                    'created_at' => date('Y-m-d H:i:s'),
-                    'created_by' => $_SESSION['admin_username'] ?? 'unknown',
-                    'last_login' => null,
-                    'status' => 'active'
-                ];
-                
-                if (file_put_contents($usersFile, json_encode($users, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE))) {
+                $createdBy = $_SESSION['admin_username'] ?? 'admin';
+                if ($authManager->createUser($username, $password, $email, $role, $createdBy)) {
                     $success = 'Пользователь успешно создан!';
+                    $users = $authManager->getAllUsers(); // Обновляем список
                 } else {
-                    $error = 'Ошибка при сохранении пользователя';
+                    $error = 'Ошибка при создании пользователя';
                 }
             }
             break;
@@ -61,19 +50,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             $newRole = $_POST['role'] ?? '';
             $newStatus = $_POST['status'] ?? '';
             
-            if (isset($users[$username])) {
-                $users[$username]['role'] = $newRole;
-                $users[$username]['status'] = $newStatus;
-                $users[$username]['updated_at'] = date('Y-m-d H:i:s');
-                $users[$username]['updated_by'] = $_SESSION['admin_username'] ?? 'unknown';
-                
-                if (file_put_contents($usersFile, json_encode($users, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE))) {
-                    $success = 'Пользователь успешно обновлен!';
-                } else {
-                    $error = 'Ошибка при обновлении пользователя';
-                }
+            $updatedBy = $_SESSION['admin_username'] ?? 'admin';
+            if ($authManager->updateUser($username, $newRole, $newStatus, $updatedBy)) {
+                $success = 'Пользователь успешно обновлен!';
+                $users = $authManager->getAllUsers(); // Обновляем список
             } else {
-                $error = 'Пользователь не найден';
+                $error = 'Ошибка при обновлении пользователя';
             }
             break;
             
@@ -82,16 +64,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             
             if ($username === $_SESSION['admin_username']) {
                 $error = 'Нельзя удалить самого себя';
-            } elseif (isset($users[$username])) {
-                unset($users[$username]);
-                
-                if (file_put_contents($usersFile, json_encode($users, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE))) {
+            } else {
+                if ($authManager->deleteUser($username)) {
                     $success = 'Пользователь успешно удален!';
+                    $users = $authManager->getAllUsers(); // Обновляем список
                 } else {
                     $error = 'Ошибка при удалении пользователя';
                 }
-            } else {
-                $error = 'Пользователь не найден';
             }
             break;
     }
@@ -409,7 +388,7 @@ $adminUsers = count(array_filter($users, function($user) { return $user['role'] 
                                     <tr>
                                         <td>
                                             <strong><?php echo htmlspecialchars($user['username']); ?></strong><br>
-                                            <small><?php echo htmlspecialchars($user['email']); ?></small>
+                                            <small><?php echo htmlspecialchars($user['email'] ?? ''); ?></small>
                                         </td>
                                         <td>
                                             <span class="role-badge role-<?php echo $user['role']; ?>">
@@ -422,7 +401,7 @@ $adminUsers = count(array_filter($users, function($user) { return $user['role'] 
                                             </span>
                                         </td>
                                         <td>
-                                            <?php echo $user['last_login'] ? date('d.m.Y H:i', strtotime($user['last_login'])) : 'Никогда'; ?>
+                                            <?php echo isset($user['last_login']) && $user['last_login'] ? date('d.m.Y H:i', strtotime($user['last_login'])) : 'Никогда'; ?>
                                         </td>
                                         <td>
                                             <?php if ($user['username'] !== $_SESSION['admin_username']): ?>

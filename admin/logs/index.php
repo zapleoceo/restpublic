@@ -2,22 +2,22 @@
 session_start();
 require_once '../includes/auth-check.php';
 
+// Загружаем переменные окружения
+require_once __DIR__ . '/../../vendor/autoload.php';
+if (file_exists(__DIR__ . '/../../.env')) {
+    $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../..');
+    $dotenv->load();
+}
+
 $error = '';
 $success = '';
 
-// Файл для логов
-$logsFile = __DIR__ . '/../../data/admin_logs.json';
+// Инициализируем MongoDB для логов
+require_once __DIR__ . '/../../classes/Logger.php';
+$logger = new Logger();
 
-// Загружаем логи из файла
-$logs = [];
-if (file_exists($logsFile)) {
-    $logs = json_decode(file_get_contents($logsFile), true) ?: [];
-}
-
-// Сортируем логи по дате (новые сначала)
-usort($logs, function($a, $b) {
-    return strtotime($b['timestamp'] ?? '') - strtotime($a['timestamp'] ?? '');
-});
+// Получаем логи из MongoDB
+$logs = $logger->getAllLogs();
 
 // Фильтрация
 $filterAction = $_GET['action'] ?? '';

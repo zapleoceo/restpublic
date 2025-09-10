@@ -71,7 +71,7 @@ class AuthManager {
         // Успешная авторизация
         $this->logSuccessfulLogin($username);
         $this->resetFailedAttempts($user);
-        $this->updateLastLogin($user);
+        $this->updateLastLoginPrivate($user);
         
         return [
             'success' => true,
@@ -87,11 +87,7 @@ class AuthManager {
     /**
      * Создание нового пользователя
      */
-    public function createUser($username, $password, $email = '', $role = 'admin') {
-        // Проверяем, есть ли уже пользователи
-        if ($this->getUsersCount() > 0) {
-            return ['success' => false, 'error' => 'Пользователи уже существуют в системе'];
-        }
+    public function createUser($username, $password, $email = '', $role = 'admin', $createdBy = 'admin') {
         
         // Валидация
         $validation = $this->validateNewUser($username, $password, $email);
@@ -290,9 +286,9 @@ class AuthManager {
     }
     
     /**
-     * Обновление времени последнего входа
+     * Обновление времени последнего входа (private)
      */
-    private function updateLastLogin($user) {
+    private function updateLastLoginPrivate($user) {
         $this->updateUserField($user, 'last_login', $this->getCurrentTimestamp());
     }
     
@@ -378,6 +374,114 @@ class AuthManager {
             }
         } catch (Exception $e) {
             error_log("Auth log error: " . $e->getMessage());
+        }
+    }
+    
+    /**
+     * Аутентификация пользователя (упрощенная версия)
+     */
+    public function authenticateUser($username, $password) {
+        $result = $this->authenticate($username, $password);
+        return $result['success'];
+    }
+    
+    /**
+     * Получение всех пользователей
+     */
+    public function getAllUsers() {
+        try {
+            if ($this->useMongoDB) {
+                $users = $this->usersCollection->find([], ['sort' => ['created_at' => -1]]);
+                return iterator_to_array($users);
+            } else {
+                return $this->getUsersFromFile();
+            }
+        } catch (Exception $e) {
+            $this->log('error', 'Error getting all users: ' . $e->getMessage());
+            return [];
+        }
+    }
+    
+    /**
+     * Обновление пользователя
+     */
+    public function updateUser($username, $role, $status, $updatedBy) {
+        try {
+            if ($this->useMongoDB) {
+                $result = $this->usersCollection->updateOne(
+                    ['username' => $username],
+                    [
+                        '$set' => [
+                            'role' => $role,
+                            'status' => $status,
+                            'updated_at' => new MongoDB\BSON\UTCDateTime(),
+                            'updated_by' => $updatedBy
+                        ]
+                    ]
+                );
+                return $result->getModifiedCount() > 0;
+            } else {
+                $users = $this->getUsersFromFile();
+                foreach ($users as &$user) {
+                    if ($user['username'] === $username) {
+                        $user['role'] = $role;
+                        $user['status'] = $status;
+                        $user['updated_at'] = date('Y-m-d H:i:s');
+                        $user['updated_by'] = $updatedBy;
+                        break;
+                    }
+                }
+                return $this->saveUsersToFile($users);
+            }
+        } catch (Exception $e) {
+            $this->log('error', 'Error updating user: ' . $e->getMessage());
+            return false;
+        }
+    }
+    
+    /**
+     * Удаление пользователя
+     */
+    public function deleteUser($username) {
+        try {
+            if ($this->useMongoDB) {
+                $result = $this->usersCollection->deleteOne(['username' => $username]);
+                return $result->getDeletedCount() > 0;
+            } else {
+                $users = $this->getUsersFromFile();
+                $users = array_filter($users, function($user) use ($username) {
+                    return $user['username'] !== $username;
+                });
+                return $this->saveUsersToFile(array_values($users));
+            }
+        } catch (Exception $e) {
+            $this->log('error', 'Error deleting user: ' . $e->getMessage());
+            return false;
+        }
+    }
+    
+    /**
+     * Обновление времени последнего входа
+     */
+    public function updateLastLogin($username) {
+        try {
+            if ($this->useMongoDB) {
+                $this->usersCollection->updateOne(
+                    ['username' => $username],
+                    ['$set' => ['last_login' => new MongoDB\BSON\UTCDateTime()]]
+                );
+            } else {
+                $users = $this->getUsersFromFile();
+                foreach ($users as &$user) {
+                    if ($user['username'] === $username) {
+                        $user['last_login'] = date('Y-m-d H:i:s');
+                        break;
+                    }
+                }
+                $this->saveUsersToFile($users);
+            }
+        } catch (Exception $e) {
+            $this->log('error', 'Error updating last login: ' . $e->getMessage());
         }
     }
 }
