@@ -1,104 +1,18 @@
 RewriteEngine On
 
-# Разрешить показ индексных файлов
-Options +Indexes
-DirectoryIndex index.php index.html
-
-# ==================================================
-# СЖАТИЕ И КЭШИРОВАНИЕ ДЛЯ УСКОРЕНИЯ ЗАГРУЗКИ
-# ==================================================
-
-# Включить сжатие Gzip
-<IfModule mod_deflate.c>
-    # Сжимать HTML, CSS, JavaScript, Text, XML и шрифты
-    AddOutputFilterByType DEFLATE application/javascript
-    AddOutputFilterByType DEFLATE application/rss+xml
-    AddOutputFilterByType DEFLATE application/vnd.ms-fontobject
-    AddOutputFilterByType DEFLATE application/x-font
-    AddOutputFilterByType DEFLATE application/x-font-opentype
-    AddOutputFilterByType DEFLATE application/x-font-otf
-    AddOutputFilterByType DEFLATE application/x-font-truetype
-    AddOutputFilterByType DEFLATE application/x-font-ttf
-    AddOutputFilterByType DEFLATE application/x-javascript
-    AddOutputFilterByType DEFLATE application/xhtml+xml
-    AddOutputFilterByType DEFLATE application/xml
-    AddOutputFilterByType DEFLATE font/opentype
-    AddOutputFilterByType DEFLATE font/otf
-    AddOutputFilterByType DEFLATE font/ttf
-    AddOutputFilterByType DEFLATE image/svg+xml
-    AddOutputFilterByType DEFLATE image/x-icon
-    AddOutputFilterByType DEFLATE text/css
-    AddOutputFilterByType DEFLATE text/html
-    AddOutputFilterByType DEFLATE text/javascript
-    AddOutputFilterByType DEFLATE text/plain
-    AddOutputFilterByType DEFLATE text/xml
-    
-    # Удалить заголовок Vary для старых браузеров
-    <IfModule mod_headers.c>
-        # Удалить заголовок Vary для старых браузеров
-        Header unset Vary
-        Header append Vary Accept-Encoding
-    </IfModule>
-</IfModule>
-
-# Кэширование статических ресурсов
-<IfModule mod_expires.c>
-    ExpiresActive On
-    
-    # Изображения
-    ExpiresByType image/jpg "access plus 1 month"
-    ExpiresByType image/jpeg "access plus 1 month"
-    ExpiresByType image/gif "access plus 1 month"
-    ExpiresByType image/png "access plus 1 month"
-    ExpiresByType image/webp "access plus 1 month"
-    ExpiresByType image/svg+xml "access plus 1 month"
-    ExpiresByType image/x-icon "access plus 1 year"
-    
-    # CSS и JavaScript
-    ExpiresByType text/css "access plus 1 month"
-    ExpiresByType application/javascript "access plus 1 month"
-    ExpiresByType text/javascript "access plus 1 month"
-    
-    # Шрифты
-    ExpiresByType font/ttf "access plus 1 year"
-    ExpiresByType font/otf "access plus 1 year"
-    ExpiresByType application/x-font-woff "access plus 1 year"
-    ExpiresByType application/font-woff2 "access plus 1 year"
-    
-    # HTML
-    ExpiresByType text/html "access plus 1 hour"
-    
-    # XML и JSON
-    ExpiresByType application/xml "access plus 1 hour"
-    ExpiresByType application/json "access plus 1 hour"
-</IfModule>
-
-# Заголовки кэширования
-<IfModule mod_headers.c>
-    # Кэширование статических файлов
-    <FilesMatch "\.(css|js|png|jpg|jpeg|gif|webp|svg|woff|woff2|ttf|otf)$">
-        Header set Cache-Control "public, max-age=2592000"
-    </FilesMatch>
-    
-    # Кэширование HTML
-    <FilesMatch "\.(html|htm|php)$">
-        Header set Cache-Control "public, max-age=3600"
-    </FilesMatch>
-</IfModule>
-
 # Обработка /menu без .php
 RewriteRule ^menu$ menu.php [L]
 
-# API маршруты
+# Обработка API
 RewriteRule ^api/language/change$ api/language/change.php [L]
 
 # Обработка /admin без .php
 RewriteRule ^admin$ admin/index.php [L]
 RewriteRule ^admin/$ admin/index.php [L]
 
-# Обработка разделов админки без index.php
-RewriteRule ^admin/texts$ admin/texts/index.php [L]
-RewriteRule ^admin/texts/$ admin/texts/index.php [L]
+# Обработка разделов админки
+RewriteRule ^admin/pages$ admin/pages/index.php [L]
+RewriteRule ^admin/pages/$ admin/pages/index.php [L]
 RewriteRule ^admin/images$ admin/images/index.php [L]
 RewriteRule ^admin/images/$ admin/images/index.php [L]
 RewriteRule ^admin/database$ admin/database/index.php [L]
@@ -111,15 +25,3 @@ RewriteRule ^admin/settings$ admin/settings/index.php [L]
 RewriteRule ^admin/settings/$ admin/settings/index.php [L]
 RewriteRule ^admin/users$ admin/users/index.php [L]
 RewriteRule ^admin/users/$ admin/users/index.php [L]
-
-# Безопасность - запрет доступа к .htaccess
-<Files ".htaccess">
-    Order allow,deny
-    Deny from all
-</Files>
-
-# Безопасность - запрет доступа к конфигурационным файлам
-<FilesMatch "\.(env|config|log)$">
-    Order allow,deny
-    Deny from all
-</FilesMatch>
