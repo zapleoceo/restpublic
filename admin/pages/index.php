@@ -1,8 +1,15 @@
 <?php
 /**
  * Управление страницами сайта с WYSIWYG редактором
- * Полностью переписанный раздел Pages
+ * Использует PageContentService для работы с MongoDB
  */
+
+// Загружаем переменные окружения
+require_once __DIR__ . '/../../vendor/autoload.php';
+if (file_exists(__DIR__ . '/../../.env')) {
+    $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../..');
+    $dotenv->load();
+}
 
 // Проверка авторизации уже включена в header.php
 
@@ -14,29 +21,20 @@ $currentPage = $_GET['page'] ?? 'index';
 $currentLanguage = $_GET['lang'] ?? 'ru';
 $availableLanguages = ['ru', 'en', 'vi'];
 
-// Файлы для хранения контента
-$contentFile = __DIR__ . '/../../data/page_content.json';
-$contentDir = dirname($contentFile);
-
-if (!is_dir($contentDir)) {
-    mkdir($contentDir, 0755, true);
-}
-
-// Загружаем контент из файла
-$pageContent = [];
-if (file_exists($contentFile)) {
-    $pageContent = json_decode(file_get_contents($contentFile), true) ?: [];
-}
+// Инициализируем PageContentService
+require_once __DIR__ . '/../../classes/PageContentService.php';
+$pageContentService = new PageContentService();
 
 // Получаем контент текущей страницы
-$currentContent = $pageContent[$currentPage][$currentLanguage] ?? [
-    'content' => '',
-    'meta' => [
+$pageContent = $pageContentService->getPageContent($currentPage, $currentLanguage);
+$currentContent = [
+    'content' => $pageContent['content'] ?? '',
+    'meta' => $pageContent['meta'] ?? [
         'title' => '',
         'description' => '',
         'keywords' => ''
     ],
-    'status' => 'draft'
+    'status' => 'published'
 ];
 
 // Обработка сохранения
@@ -50,31 +48,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         ];
         $status = $_POST['status'] ?? 'draft';
         
-        // Обновляем контент
-        if (!isset($pageContent[$currentPage])) {
-            $pageContent[$currentPage] = [];
-        }
+        // Сохраняем через PageContentService
+        $updatedBy = $_SESSION['admin_username'] ?? 'admin';
         
-        $pageContent[$currentPage][$currentLanguage] = [
-            'content' => $content,
-            'meta' => $meta,
-            'status' => $status,
-            'updated_at' => date('Y-m-d H:i:s'),
-            'updated_by' => $_SESSION['admin_username'] ?? 'unknown'
-        ];
-        
-        // Сохраняем в файл
-        if (file_put_contents($contentFile, json_encode($pageContent, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE))) {
+        if ($pageContentService->savePageContent($currentPage, $currentLanguage, $content, $meta, $status, $updatedBy)) {
             $success = 'Страница успешно сохранена!';
-            $currentContent = $pageContent[$currentPage][$currentLanguage];
+            
+            // Обновляем текущий контент
+            $pageContent = $pageContentService->getPageContent($currentPage, $currentLanguage);
+            $currentContent = [
+                'content' => $pageContent['content'] ?? '',
+                'meta' => $pageContent['meta'] ?? $meta,
+                'status' => $status
+            ];
         } else {
             $error = 'Ошибка при сохранении страницы.';
         }
     }
 }
 
-// Получаем список всех страниц
-$availablePages = ['index', 'menu', 'about', 'contact'];
+// Получаем список всех страниц из PageContentService
+$availablePages = $pageContentService->getAllPages();
 ?>
 <!DOCTYPE html>
 <html lang="ru">
