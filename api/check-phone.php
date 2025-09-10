@@ -21,6 +21,10 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') {
 try {
     // Получаем данные из запроса
     $rawInput = file_get_contents('php://input');
+    
+    // Исправляем экранированные кавычки
+    $rawInput = str_replace(['\\"', '\\:'], ['"', ':'], $rawInput);
+    
     $input = json_decode($rawInput, true);
     
     // Отладка
