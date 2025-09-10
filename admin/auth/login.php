@@ -1,6 +1,13 @@
 <?php
 session_start();
 
+// Загружаем переменные окружения
+require_once __DIR__ . '/../../vendor/autoload.php';
+if (file_exists(__DIR__ . '/../../.env')) {
+    $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../..');
+    $dotenv->load();
+}
+
 require_once __DIR__ . '/../classes/AuthManager.php';
 
 // Если уже авторизован, перенаправляем на главную
@@ -17,7 +24,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = trim($_POST['username'] ?? '');
     $password = $_POST['password'] ?? '';
     
+    // Логируем попытку входа
+    error_log("Login attempt: username=$username, password_length=" . strlen($password));
+    
     $result = $authManager->authenticate($username, $password);
+    
+    // Логируем результат
+    error_log("Login result: success=" . ($result['success'] ? 'true' : 'false') . ", error=" . ($result['error'] ?? 'none'));
     
     if ($result['success']) {
         // Успешная авторизация
