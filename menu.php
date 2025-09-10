@@ -83,15 +83,16 @@ try {
                     $categoryId = (string)($category['category_id']);
                     $products_by_category[$categoryId] = [];
                     
-                    // Try to get all products from API
+                    // Try to get popular products from API (sorted by real sales)
                     try {
-                        $popularUrl = $api_base_url . '/menu/categories/' . $categoryId . '/products';
+                        $authToken = $_ENV['API_AUTH_TOKEN'] ?? getenv('API_AUTH_TOKEN');
+                        $popularUrl = $api_base_url . '/menu/categories/' . $categoryId . '/popular?limit=20&token=' . urlencode($authToken);
                         $popularResponse = @file_get_contents($popularUrl, false, $context);
                         
                         if ($popularResponse !== false) {
                             $popularData = json_decode($popularResponse, true);
-                            if ($popularData && isset($popularData['products'])) {
-                                $products_by_category[$categoryId] = $popularData['products'];
+                            if ($popularData && isset($popularData['popular_products'])) {
+                                $products_by_category[$categoryId] = $popularData['popular_products'];
                                 continue;
                             }
                         }
