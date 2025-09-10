@@ -31,6 +31,6 @@ if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true
 session_destroy();
 
 // Перенаправляем на страницу входа
-header('Location: telegram.php');
+header('Location: /admin/auth/telegram.php');
 exit;
 ?>

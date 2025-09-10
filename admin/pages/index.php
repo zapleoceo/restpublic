@@ -77,8 +77,8 @@ $availablePages = $pageContentService->getAllPages();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Управление страницами - North Republic Admin</title>
-    <link rel="stylesheet" href="../assets/css/admin.css">
-    <link rel="icon" type="image/png" href="../../template/favicon-32x32.png">
+    <link rel="stylesheet" href="/admin/assets/css/admin.css">
+    <link rel="icon" type="image/png" href="/template/favicon-32x32.png">
     
     <!-- Simple Editor (replacing TinyMCE) -->
     <script src="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.min.js"></script>

@@ -3,14 +3,14 @@ require_once __DIR__ . '/../config/auth.php';
 
 // Проверка авторизации для админских страниц
 if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
-    header('Location: ../auth/login.php');
+    header('Location: /admin/auth/login.php');
     exit;
 }
 
 // Проверка таймаута сессии
 if (isset($_SESSION['admin_login_time']) && (time() - $_SESSION['admin_login_time']) > SESSION_TIMEOUT) {
     session_destroy();
-    header('Location: ../auth/login.php');
+    header('Location: /admin/auth/login.php');
     exit;
 }
 

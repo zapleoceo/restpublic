@@ -10,7 +10,7 @@ if (file_exists(__DIR__ . '/../../.env')) {
 
 // Если уже авторизован, перенаправляем на главную
 if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true) {
-    header('Location: ../index.php');
+    header('Location: /admin/');
     exit;
 }
 
@@ -56,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'unknown'
                     ]);
                     
-                    header('Location: ../index.php');
+                    header('Location: /admin/');
                     exit;
                 } else {
                     $error = 'Неверные данные для входа';
@@ -99,8 +99,8 @@ function logAdminAction($action, $description, $data = []) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Авторизация - North Republic Admin</title>
-    <link rel="stylesheet" href="../assets/css/admin.css">
-    <link rel="icon" type="image/png" href="../../template/favicon-32x32.png">
+    <link rel="stylesheet" href="/admin/assets/css/admin.css">
+    <link rel="icon" type="image/png" href="/template/favicon-32x32.png">
     <style>
         .login-container {
             display: flex;
