@@ -303,6 +303,10 @@ if ($menu_loaded) {
             display: flex;
             align-items: center;
             gap: 1rem;
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
         }
         
         .header-auth,
@@ -314,9 +318,9 @@ if ($menu_loaded) {
         .cart-icon {
             width: 40px;
             height: 40px;
-            border: 2px solid transparent;
+            border: 2px solid #5f6362;
             border-radius: 50%;
-            background: transparent;
+            background: rgba(255, 255, 255, 0.1);
             color: #5f6362;
             cursor: pointer;
             display: flex;
@@ -324,17 +328,21 @@ if ($menu_loaded) {
             justify-content: center;
             transition: all 0.3s ease;
             position: relative;
+            backdrop-filter: blur(10px);
         }
         
         .auth-icon:hover,
         .cart-icon:hover {
             border-color: #366b5b;
             color: #366b5b;
+            background: rgba(54, 107, 91, 0.1);
         }
         
         .auth-icon.authenticated,
         .cart-icon.has-items {
-            color: rgb(54, 107, 91);
+            color: #366b5b;
+            border-color: #366b5b;
+            background: rgba(54, 107, 91, 0.2);
         }
         
         .cart-count {
@@ -352,6 +360,8 @@ if ($menu_loaded) {
             font-size: 0.75rem;
             font-weight: 600;
             min-width: 20px;
+            border: 2px solid #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
         
         /* Mobile menu toggle - positioned outside s-header__block */
@@ -632,16 +642,41 @@ if ($menu_loaded) {
             justify-content: center;
             transition: all 0.3s ease;
             flex-shrink: 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .add-to-cart-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #366b5b;
+            border-radius: 50%;
+            transform: scale(0);
+            transition: transform 0.3s ease;
+            z-index: -1;
         }
         
         .add-to-cart-btn:hover {
-            background: #366b5b;
             color: #fff;
             transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(54, 107, 91, 0.3);
+        }
+        
+        .add-to-cart-btn:hover::before {
+            transform: scale(1);
         }
         
         .add-to-cart-btn:active {
             transform: scale(0.95);
+        }
+        
+        .add-to-cart-btn svg {
+            position: relative;
+            z-index: 1;
         }
         
         /* Modal Styles */
@@ -873,8 +908,19 @@ if ($menu_loaded) {
             font-size: 1.2rem;
         }
         
+        .form-row {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+        
         .form-group {
             margin-bottom: 20px;
+        }
+        
+        .form-group--half {
+            flex: 1;
+            margin-bottom: 0;
         }
         
         .form-group label {
@@ -1003,6 +1049,15 @@ if ($menu_loaded) {
             .radio-group {
                 flex-direction: column;
                 gap: 12px;
+            }
+            
+            .form-row {
+                flex-direction: column;
+                gap: 12px;
+            }
+            
+            .form-group--half {
+                margin-bottom: 20px;
             }
             
             .modal-footer {
@@ -1315,17 +1370,19 @@ if ($menu_loaded) {
                 <!-- In Restaurant Fields -->
                 <div id="inRestaurantFields" class="order-fields">
                     <h3>Детали заказа</h3>
-                    <div class="form-group">
-                        <label for="tableSelect">Номер стола:</label>
-                        <select name="table_id" id="tableSelect" required>
-                            <option value="">Выберите стол</option>
-                            <!-- Tables will be loaded via API -->
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="guestsCount">Количество гостей:</label>
-                        <input type="number" name="guests_count" id="guestsCount" 
-                               min="1" max="20" value="1" required>
+                    <div class="form-row">
+                        <div class="form-group form-group--half">
+                            <label for="tableSelect">Номер стола:</label>
+                            <select name="table_id" id="tableSelect" required>
+                                <option value="">Выберите стол</option>
+                                <!-- Tables will be loaded via API -->
+                            </select>
+                        </div>
+                        <div class="form-group form-group--half">
+                            <label for="guestsCount">Количество гостей:</label>
+                            <input type="number" name="guests_count" id="guestsCount" 
+                                   min="1" max="20" value="1" required>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label class="checkbox-label">
