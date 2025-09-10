@@ -254,7 +254,7 @@ function formatFileSize($bytes) {
         <main class="admin-main">
             <div class="page-header">
                 <h1>База данных</h1>
-                <p>Просмотр информации о файлах данных системы</p>
+                <p>Просмотр содержимого MongoDB и статистики системы</p>
             </div>
             
             <?php if ($error): ?>
@@ -268,19 +268,41 @@ function formatFileSize($bytes) {
             <!-- Общая информация -->
             <div class="info-grid">
                 <div class="info-card">
-                    <h3>📊 Статистика</h3>
-                    <div class="info-item">
-                        <span class="info-label">Файлов данных:</span>
-                        <span class="info-value"><?php echo count($dataFiles); ?></span>
-                    </div>
-                    <div class="info-item">
-                        <span class="info-label">Общий размер:</span>
-                        <span class="info-value"><?php echo formatFileSize(array_sum(array_column($dataFiles, 'size'))); ?></span>
-                    </div>
-                    <div class="info-item">
-                        <span class="info-label">Последнее обновление:</span>
-                        <span class="info-value"><?php echo count($dataFiles) > 0 ? date('d.m.Y H:i', max(array_column($dataFiles, 'modified'))) : 'Нет данных'; ?></span>
-                    </div>
+                    <h3>📊 Статистика MongoDB</h3>
+                    <?php if ($mongoConnection): ?>
+                        <?php
+                        try {
+                            $collections = $database->listCollections();
+                            $totalCollections = 0;
+                            $totalDocuments = 0;
+                            
+                            foreach ($collections as $collection) {
+                                $totalCollections++;
+                                $totalDocuments += $database->selectCollection($collection->getName())->countDocuments();
+                            }
+                        } catch (Exception $e) {
+                            $totalCollections = 0;
+                            $totalDocuments = 0;
+                        }
+                        ?>
+                        <div class="info-item">
+                            <span class="info-label">Коллекций:</span>
+                            <span class="info-value"><?php echo $totalCollections; ?></span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Документов:</span>
+                            <span class="info-value"><?php echo number_format($totalDocuments); ?></span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">База данных:</span>
+                            <span class="info-value"><?php echo htmlspecialchars($databaseName); ?></span>
+                        </div>
+                    <?php else: ?>
+                        <div class="info-item">
+                            <span class="info-label">Статус:</span>
+                            <span class="info-value">MongoDB недоступна</span>
+                        </div>
+                    <?php endif; ?>
                 </div>
                 
                 <div class="info-card">
@@ -320,51 +342,8 @@ function formatFileSize($bytes) {
                 </div>
             </div>
             
-            <!-- Файлы данных -->
-            <div class="database-info">
-                <h3>📁 Файлы данных</h3>
-                <p>Список всех JSON файлов с данными системы:</p>
-                
-                <?php if (empty($dataFiles)): ?>
-                    <div class="alert alert-info">
-                        <strong>Нет файлов данных</strong><br>
-                        Файлы данных будут созданы автоматически при первом использовании системы.
-                    </div>
-                <?php else: ?>
-                    <table class="files-table">
-                        <thead>
-                            <tr>
-                                <th>Имя файла</th>
-                                <th>Размер</th>
-                                <th>Изменен</th>
-                                <th>Статус</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php foreach ($dataFiles as $file): ?>
-                                <tr>
-                                    <td>
-                                        <span class="file-name"><?php echo htmlspecialchars($file['name']); ?></span>
-                                    </td>
-                                    <td class="file-size">
-                                        <?php echo formatFileSize($file['size']); ?>
-                                    </td>
-                                    <td class="file-date">
-                                        <?php echo date('d.m.Y H:i', $file['modified']); ?>
-                                    </td>
-                                    <td>
-                                        <span class="status-badge status-active">Активен</span>
-                                        <a href="?view=<?php echo urlencode($file['name']); ?>" 
-                                           class="btn btn-info" style="margin-left: 0.5rem; padding: 0.25rem 0.5rem; font-size: 0.8rem;">
-                                            👁️ Просмотр
-                                        </a>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                <?php endif; ?>
-            </div>
+            <!-- MongoDB Viewer -->
+            <?php include 'mongodb-viewer.php'; ?>
             
             <!-- Просмотр JSON файла -->
             <?php if ($fileContent): ?>
