@@ -6,6 +6,9 @@ if (file_exists(__DIR__ . '/.env')) {
     $dotenv->load();
 }
 
+// Load category translator
+require_once __DIR__ . '/category-translator.php';
+
 // Обновляем кеш меню при заходе на страницу (в фоновом режиме)
 function updateMenuCacheAsync() {
     $cacheUrl = 'http://localhost:3002/api/cache/update-menu';
@@ -1278,7 +1281,7 @@ if ($menu_loaded) {
                             <?php foreach ($categories as $index => $category): ?>
                                 <li <?php echo $index === 0 ? 'class="current"' : ''; ?>>
                                     <a href="#" data-category="<?php echo htmlspecialchars($category['category_id']); ?>">
-                                        <?php echo htmlspecialchars($category['category_name'] ?? $category['name']); ?>
+                                        <?php echo htmlspecialchars(translateCategoryName($category['category_name'] ?? $category['name'], getCurrentLanguage())); ?>
                                     </a>
                                 </li>
                             <?php endforeach; ?>
@@ -1293,7 +1296,7 @@ if ($menu_loaded) {
                         <div class="menu-categories">
                             <?php foreach ($categories as $index => $category): ?>
                                 <button class="category-btn <?php echo $index === 0 ? 'active' : ''; ?>" data-category="<?php echo htmlspecialchars($category['category_id']); ?>">
-                                    <?php echo htmlspecialchars($category['category_name'] ?? $category['name']); ?>
+                                    <?php echo htmlspecialchars(translateCategoryName($category['category_name'] ?? $category['name'], getCurrentLanguage())); ?>
                                 </button>
                             <?php endforeach; ?>
                             

@@ -316,7 +316,7 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                                 $topProducts = array_slice($categoryProducts, 0, 5); // Top 5 products
                                 ?>
                                 <div id="tab-<?php echo htmlspecialchars($category['category_id']); ?>" class="menu-block__group tab-content__item <?php echo $index === 0 ? 'active' : ''; ?>">
-                                    <h6 class="menu-block__cat-name"><?php echo htmlspecialchars($category['category_name'] ?? $category['name'] ?? 'Без названия'); ?></h6>
+                                    <h6 class="menu-block__cat-name"><?php echo htmlspecialchars(translateCategoryName($category['category_name'] ?? $category['name'] ?? 'Без названия', getCurrentLanguage())); ?></h6>
                                     <ul class="menu-list">
                                         <?php if (!empty($topProducts)): ?>
                                             <?php foreach ($topProducts as $product): ?>
