@@ -341,9 +341,10 @@ if ($menu_loaded) {
         
         .auth-icon img,
         .cart-icon img {
-            width: 24px;
-            height: 24px;
+            width: 32px;
+            height: 32px;
             transition: all 0.3s ease;
+            object-fit: contain;
         }
         
         .auth-icon:hover,
@@ -1200,8 +1201,8 @@ if ($menu_loaded) {
             
             .auth-icon img,
             .cart-icon img {
-                width: 20px;
-                height: 20px;
+                width: 28px;
+                height: 28px;
             }
             
             .cart-count {
@@ -1242,14 +1243,14 @@ if ($menu_loaded) {
                         <!-- Authorization Icon -->
                         <div class="header-auth">
                             <button class="auth-icon" id="authIcon" title="Авторизация">
-                                <img src="images/icons/auth-gray.png" alt="Авторизация" width="24" height="24" class="auth-icon-img">
+                                <img src="images/icons/auth-gray.png" alt="Авторизация" class="auth-icon-img">
                             </button>
                         </div>
                         
                         <!-- Cart Icon -->
                         <div class="header-cart">
                             <button class="cart-icon" id="cartIcon" title="Корзина">
-                                <img src="images/icons/cart gray.png" alt="Корзина" width="24" height="24" class="cart-icon-img">
+                                <img src="images/icons/cart gray.png" alt="Корзина" class="cart-icon-img">
                                 <span class="cart-count" id="cartCount" style="display: none;">0</span>
                             </button>
                         </div>
