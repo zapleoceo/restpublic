@@ -349,9 +349,9 @@ if ($menu_loaded) {
             background: rgba(54, 107, 91, 0.1);
         }
         
-        /* Cart icon hover - change to green SVG */
+        /* Cart icon hover - change to green PNG */
         .cart-icon:hover .cart-icon-img {
-            content: url('images/icons/cart-green.svg');
+            content: url('images/icons/cart green.png');
         }
         
         .auth-icon.authenticated,
@@ -365,9 +365,9 @@ if ($menu_loaded) {
             content: url('images/icons/auth-green.png');
         }
         
-        /* Cart icon has items - change to green SVG */
+        /* Cart icon has items - change to green PNG */
         .cart-icon.has-items .cart-icon-img {
-            content: url('images/icons/cart-green.svg');
+            content: url('images/icons/cart green.png');
         }
         
         .cart-count {
@@ -1246,7 +1246,7 @@ if ($menu_loaded) {
                         <!-- Cart Icon -->
                         <div class="header-cart">
                             <button class="cart-icon" id="cartIcon" title="Корзина">
-                                <img src="images/icons/cart-gray.svg" alt="Корзина" width="24" height="24" class="cart-icon-img">
+                                <img src="images/icons/cart gray.png" alt="Корзина" width="24" height="24" class="cart-icon-img">
                                 <span class="cart-count" id="cartCount" style="display: none;">0</span>
                             </button>
                         </div>
