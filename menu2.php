@@ -341,10 +341,10 @@ if ($menu_loaded) {
         
         .auth-icon img,
         .cart-icon img {
-            width: 32px;
-            height: 32px;
+            width: 36px;
+            height: 36px;
             transition: all 0.3s ease;
-            object-fit: contain;
+            object-fit: cover;
         }
         
         .auth-icon:hover,
@@ -1201,8 +1201,8 @@ if ($menu_loaded) {
             
             .auth-icon img,
             .cart-icon img {
-                width: 28px;
-                height: 28px;
+                width: 32px;
+                height: 32px;
             }
             
             .cart-count {
