@@ -323,8 +323,6 @@ if ($menu_loaded) {
         .cart-icon {
             width: 40px;
             height: 40px;
-            min-width: 40px;
-            min-height: 40px;
             border: 2px solid #5f6362;
             border-radius: 50%;
             background: rgba(255, 255, 255, 0.1);
@@ -341,10 +339,11 @@ if ($menu_loaded) {
         
         .auth-icon img,
         .cart-icon img {
-            width: 36px;
-            height: 36px;
+            width: 24px;
+            height: 24px;
             transition: all 0.3s ease;
-            object-fit: cover;
+            object-fit: contain;
+            display: block;
         }
         
         .auth-icon:hover,
@@ -1195,14 +1194,12 @@ if ($menu_loaded) {
             .cart-icon {
                 width: 36px;
                 height: 36px;
-                min-width: 36px;
-                min-height: 36px;
             }
             
             .auth-icon img,
             .cart-icon img {
-                width: 32px;
-                height: 32px;
+                width: 20px;
+                height: 20px;
             }
             
             .cart-count {
