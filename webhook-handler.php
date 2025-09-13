@@ -45,6 +45,11 @@ if ($receivedApiKey !== $apiKey) {
 try {
     // Получаем данные от SePay
     $input = file_get_contents('php://input');
+    
+    // Исправляем возможные проблемы с JSON (лишние пробелы, экранирование)
+    $input = trim($input);
+    $input = str_replace(['\\"', '\\:'], ['"', ':'], $input);
+    
     $data = json_decode($input, true);
 
     // Логируем входящий запрос (для отладки)
