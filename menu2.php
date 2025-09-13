@@ -556,7 +556,7 @@ if ($menu_loaded) {
             
             <div class="modal-footer">
                 <div class="discount-info">
-                    <span class="discount-text">-20% на первый заказ после регистрации гостя</span>
+                    <span class="discount-text">-20% на первый заказ при регистрации нового гостя</span>
                 </div>
             </div>
         </div>
