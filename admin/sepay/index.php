@@ -70,6 +70,12 @@ try {
     $error = $e->getMessage();
     $transactions = [];
     $stats = [];
+    
+    // Проверяем, есть ли информация о времени ожидания при Rate Limit
+    if (strpos($error, 'Rate limit exceeded') !== false) {
+        $retryAfter = 5; // По умолчанию 5 секунд
+        $error .= " Подождите {$retryAfter} секунд и обновите страницу.";
+    }
 }
 ?>
 <!DOCTYPE html>
