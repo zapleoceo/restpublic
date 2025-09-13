@@ -269,6 +269,7 @@ class PosterService {
       const processedOrderData = {
         spot_id: parseInt(orderData.spot_id),
         phone: orderData.phone,
+        service_mode: orderData.service_mode || 1, // 1 - в заведении, 2 - навынос, 3 - доставка
         products: orderData.products.map(product => ({
           product_id: parseInt(product.product_id),
           count: parseInt(product.count),
@@ -282,6 +283,13 @@ class PosterService {
       }
       if (orderData.client_id) {
         processedOrderData.client_id = parseInt(orderData.client_id);
+      }
+      
+      // Для заказов на вынос/доставку добавляем адрес
+      if (orderData.service_mode === 2 || orderData.service_mode === 3) {
+        if (orderData.client_address) {
+          processedOrderData.client_address = orderData.client_address;
+        }
       }
 
       console.log(`📡 Poster API Request: ${url}`);

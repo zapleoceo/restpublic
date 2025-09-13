@@ -431,6 +431,7 @@ class Cart {
         const orderData = {
             spot_id: 1, // Default spot
             phone: phone, // Обязательный параметр согласно документации
+            service_mode: orderType === 'table' ? 1 : 2, // 1 - в заведении, 2 - навынос
             products: this.items.map(item => ({
                 product_id: parseInt(item.id),
                 count: item.quantity,
@@ -438,6 +439,17 @@ class Cart {
             })),
             comment: this.getOrderComment(orderType)
         };
+
+        // Для заказов на вынос добавляем адрес
+        if (orderType === 'takeaway') {
+            const address = document.getElementById('takeawayAddress').value.trim();
+            if (address) {
+                orderData.client_address = {
+                    address1: address,
+                    comment: 'Адрес для заказа на вынос'
+                };
+            }
+        }
 
         try {
             this.showToast('Отправляем заказ...', 'info');
