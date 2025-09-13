@@ -399,8 +399,8 @@ class Cart {
         try {
             this.showToast('Отправляем заказ...', 'info');
             
-            // Используем правильный URL для продакшн сервера
-            const apiUrl = window.location.hostname === 'localhost' ? 'http://localhost:3002' : 'https://northrepublic.me';
+            // Используем Node.js backend напрямую
+            const apiUrl = window.location.hostname === 'localhost' ? 'http://localhost:3002' : 'https://northrepublic.me:3002';
             const response = await fetch(`${apiUrl}/api/poster/orders/create`, {
                 method: 'POST',
                 headers: {
