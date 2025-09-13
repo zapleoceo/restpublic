@@ -1155,6 +1155,12 @@ if ($menu_loaded) {
                 display: block !important;
             }
         }
+        
+        @media (max-width: 760px) {
+            .header-actions {
+                right: 80px !important;
+            }
+        }
 
         @media (max-width: 768px) {
             .menu-page {
