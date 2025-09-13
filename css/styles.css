@@ -1109,7 +1109,7 @@ table {
 /* --------------------------------------------------------------------
  * ## additional column stackpoints 
  * -------------------------------------------------------------------- */
-@media screen and (max-width: 900px) {
+@media screen and (max-width: 768px) {
     .stack-on-900 {
         flex        : none;
         width       : 100%;
@@ -3459,7 +3459,7 @@ td:last-child {
     }
 }
 
-@media screen and (max-width: 900px) {
+@media screen and (max-width: 768px) {
     .s-header {
         --header-height: 80px;
         top            : 0;
@@ -3948,7 +3948,7 @@ td:last-child {
     }
 }
 
-@media screen and (max-width: 900px) {
+@media screen and (max-width: 768px) {
     .s-intro {
         --content-padding-top: max(13.6rem, 20vh);
     }

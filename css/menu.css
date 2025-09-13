@@ -478,6 +478,28 @@
     opacity: 1;
 }
 
+/* Hover effect when hovering over the entire menu item */
+.menu-list__item:hover .add-to-cart-btn {
+    color: var(--color-white);
+    background: var(--color-bg-primary);
+    border-radius: 4px;
+    padding: 4px 8px;
+}
+
+.menu-list__item:hover .add-to-cart-btn .add-text {
+    opacity: 0;
+}
+
+.menu-list__item:hover .add-to-cart-btn::after {
+    content: 'заказать';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 14px;
+    opacity: 1;
+}
+
 .no-products {
     text-align: center;
     padding: 3rem;
@@ -554,12 +576,13 @@
     opacity: 1;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 768px) {
     .header-menu-toggle {
         display: block !important;
     }
-    
-    /* Сдвигаем иконки влево когда появляется кнопка меню */
+}
+
+@media (max-width: 760px) {
     .header-actions {
         right: 80px !important;
     }
@@ -599,10 +622,10 @@
         height: 12px;
     }
     
-    /* Mobile header actions - дополнительный сдвиг для маленьких экранов */
+    /* Mobile header actions */
     .header-actions {
         gap: 0.5rem;
-        right: 60px !important;
+        right: 60px;
         position: absolute;
         top: 50%;
         transform: translateY(-50%);
