@@ -46,11 +46,11 @@ try {
         // Форматируем столы для frontend
         foreach ($tablesDoc['tables'] as $table) {
             $formattedTables[] = [
-                'id' => $table['table_id'] ?? $table['_id']->__toString() ?? uniqid(),
-                'table_id' => $table['table_id'] ?? $table['_id']->__toString() ?? uniqid(),
-                'name' => $table['table_title'] ?? $table['name'] ?? 'Стол ' . ($table['table_num'] ?? $table['table_id'] ?? ''),
-                'capacity' => $table['table_seats'] ?? $table['capacity'] ?? 2,
-                'status' => ($table['is_deleted'] ?? 0) === 0 ? 'available' : 'unavailable'
+                'id' => $table['poster_table_id'] ?? uniqid(),
+                'table_id' => $table['poster_table_id'] ?? uniqid(),
+                'name' => $table['name'] ?? 'Стол ' . ($table['poster_table_id'] ?? ''),
+                'capacity' => 2, // По умолчанию
+                'status' => 'available'
             ];
         }
     }
