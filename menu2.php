@@ -373,12 +373,12 @@ if ($menu_loaded) {
         
         /* Cart icon has items - change to green PNG */
         .cart-icon.has-items .cart-icon-img {
-            content: url('images/icons/cart green.png');
+            content: url('images/icons/cart green.png') !important;
         }
         
         /* Cart icon hover - only green if has items, otherwise stay gray */
         .cart-icon.has-items:hover .cart-icon-img {
-            content: url('images/icons/cart green.png');
+            content: url('images/icons/cart green.png') !important;
         }
         
         /* Active states for better UX */
@@ -1849,8 +1849,10 @@ if ($menu_loaded) {
                 if (cartIcon) {
                     if (totalItems > 0) {
                         cartIcon.classList.add('has-items');
+                        console.log('Cart has items, added has-items class');
                     } else {
                         cartIcon.classList.remove('has-items');
+                        console.log('Cart is empty, removed has-items class');
                     }
                 }
             }
