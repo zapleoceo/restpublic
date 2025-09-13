@@ -227,6 +227,58 @@ class PosterService {
     
     return `https://joinposter.com/api/image?image_id=${imageId}&size=${sizes[size] || sizes.medium}`;
   }
+
+  // Get tables list
+  async getTables() {
+    console.log(`🔍 getTables() called`);
+    try {
+      const tables = await this.makeRequest('tables.getTables');
+      console.log(`📥 Raw tables from Poster API:`, tables);
+      console.log(`📋 Retrieved ${tables.length} tables`);
+      return tables;
+    } catch (error) {
+      console.error('Error getting tables:', error);
+      // Return empty array if tables API is not available
+      return [];
+    }
+  }
+
+  // Create incoming order
+  async createIncomingOrder(orderData) {
+    console.log(`🔍 createIncomingOrder() called with data:`, orderData);
+    
+    try {
+      if (!this.token) {
+        throw new Error('Poster API token not configured');
+      }
+
+      const url = `${this.baseURL}/incomingOrders.createIncomingOrder?token=${this.token}`;
+      
+      // Convert prices to minor units (multiply by 100)
+      const processedOrderData = {
+        ...orderData,
+        products: orderData.products.map(product => ({
+          ...product,
+          price: Math.round(product.price * 100) // Convert to minor units
+        }))
+      };
+
+      console.log(`📡 Poster API Request: ${url}`);
+      console.log(`📦 Order data:`, processedOrderData);
+
+      const response = await this.api.post(url, processedOrderData, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      console.log(`✅ Order created successfully:`, response.data);
+      return response.data;
+    } catch (error) {
+      console.error(`❌ Poster API Error (createIncomingOrder):`, error.message);
+      throw new Error(`Failed to create order: ${error.message}`);
+    }
+  }
 }
 
 module.exports = new PosterService();

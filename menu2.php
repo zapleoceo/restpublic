@@ -948,6 +948,133 @@ if ($menu_loaded) {
             font-size: 14px;
         }
         
+        .order-type-selection {
+            margin-bottom: 20px;
+            padding: 16px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .order-type-selection h3 {
+            margin: 0 0 12px 0;
+            font-size: 16px;
+            color: #333;
+        }
+
+        .order-type-options {
+            display: flex;
+            gap: 16px;
+        }
+
+        .order-type-option {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 6px;
+            transition: background-color 0.2s;
+        }
+
+        .order-type-option:hover {
+            background: #e9ecef;
+        }
+
+        .order-type-option input[type="radio"] {
+            margin-right: 8px;
+            accent-color: #366b5b;
+        }
+
+        .order-type-label {
+            font-size: 14px;
+            color: #333;
+        }
+
+        .order-fields {
+            margin-bottom: 20px;
+        }
+
+        .order-field-group {
+            padding: 16px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 16px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.2s;
+            box-sizing: border-box;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #366b5b;
+            box-shadow: 0 0 0 2px rgba(54, 107, 91, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-group input[type="tel"] {
+            font-family: monospace;
+        }
+
+        .modal-footer {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .discount-info {
+            text-align: center;
+            padding: 8px 0;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .discount-text {
+            font-size: 12px;
+            color: #666;
+            font-style: italic;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
         .cart-total {
             margin-top: 16px;
             padding-top: 16px;
@@ -1547,6 +1674,69 @@ if ($menu_loaded) {
             </div>
             
             <div class="modal-body">
+                <!-- Order Type Selection -->
+                <div class="order-type-selection">
+                    <h3>Тип заказа</h3>
+                    <div class="order-type-options">
+                        <label class="order-type-option">
+                            <input type="radio" name="orderType" value="table" checked>
+                            <span class="order-type-label">Заказ на столик</span>
+                        </label>
+                        <label class="order-type-option">
+                            <input type="radio" name="orderType" value="takeaway">
+                            <span class="order-type-label">Заказ с собой</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Order Fields -->
+                <div class="order-fields" id="orderFields">
+                    <!-- Table Order Fields -->
+                    <div class="order-field-group" id="tableOrderFields">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="customerName">Ваше имя</label>
+                                <input type="text" id="customerName" name="customerName" placeholder="Введите ваше имя" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="tableNumber">Стол</label>
+                                <select id="tableNumber" name="tableNumber" required>
+                                    <option value="">Выберите стол</option>
+                                    <!-- Table options will be populated here -->
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="tableComment">Комментарий</label>
+                            <textarea id="tableComment" name="tableComment" rows="3" placeholder="Сюда можно написать все, что вы хотели бы, чтобы мы учли"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Takeaway Order Fields -->
+                    <div class="order-field-group" id="takeawayOrderFields" style="display: none;">
+                        <div class="form-group">
+                            <label for="takeawayName">Имя</label>
+                            <input type="text" id="takeawayName" name="takeawayName" placeholder="Майкл Джексон">
+                        </div>
+                        <div class="form-group">
+                            <label for="takeawayPhone">Телефон</label>
+                            <input type="tel" id="takeawayPhone" name="takeawayPhone" placeholder="+84" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="takeawayAddress">Адрес (ссылка на Google карту)</label>
+                            <input type="url" id="takeawayAddress" name="takeawayAddress" placeholder="https://maps.google.com/..." required>
+                        </div>
+                        <div class="form-group">
+                            <label for="deliveryTime">Время доставки</label>
+                            <input type="datetime-local" id="deliveryTime" name="deliveryTime" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="takeawayComment">Комментарий</label>
+                            <textarea id="takeawayComment" name="takeawayComment" rows="3" placeholder="Сюда можно написать все, что вы хотели бы, чтобы мы учли"></textarea>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="cart-items-list" id="cartItemsList">
                     <!-- Cart items will be populated here -->
                 </div>
@@ -1559,8 +1749,13 @@ if ($menu_loaded) {
             </div>
             
             <div class="modal-footer">
-                <button class="btn btn-secondary" id="cartModalCancel">Отмена</button>
-                <button class="btn btn-primary" id="cartModalSubmit">Оформить заказ</button>
+                <div class="discount-info">
+                    <span class="discount-text">-20% на первый заказ после регистрации гостя</span>
+                </div>
+                <div class="modal-buttons">
+                    <button class="btn btn-secondary" id="cartModalCancel">Отмена</button>
+                    <button class="btn btn-primary" id="cartModalSubmit">Оформить заказ</button>
+                </div>
             </div>
         </div>
     </div>
@@ -1983,27 +2178,236 @@ if ($menu_loaded) {
                     this.hideModal();
                 });
 
+                // Order type change events
+                document.querySelectorAll('input[name="orderType"]').forEach(radio => {
+                    radio.addEventListener('change', (e) => {
+                        this.toggleOrderFields(e.target.value);
+                    });
+                });
+
+                // Phone validation
+                document.getElementById('takeawayPhone')?.addEventListener('input', (e) => {
+                    this.validatePhone(e.target);
+                });
+
+                // Delivery time validation
+                document.getElementById('deliveryTime')?.addEventListener('change', (e) => {
+                    this.validateDeliveryTime(e.target);
+                });
+
                 // Submit order
                 document.getElementById('cartModalSubmit')?.addEventListener('click', () => {
                     this.submitOrder();
                 });
+
+                // Load tables when modal opens
+                this.loadTables();
             }
 
 
-            submitOrder() {
+            toggleOrderFields(orderType) {
+                const tableFields = document.getElementById('tableOrderFields');
+                const takeawayFields = document.getElementById('takeawayOrderFields');
+                
+                if (orderType === 'table') {
+                    tableFields.style.display = 'block';
+                    takeawayFields.style.display = 'none';
+                } else {
+                    tableFields.style.display = 'none';
+                    takeawayFields.style.display = 'block';
+                }
+            }
+
+            async loadTables() {
+                try {
+                    const response = await fetch('/api/poster/tables/list', {
+                        headers: {
+                            'X-API-Token': 'your-api-token' // TODO: Get from config
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        this.populateTableSelect(data.tables);
+                    } else {
+                        console.warn('Failed to load tables, using fallback');
+                        this.populateTableSelect([]);
+                    }
+                } catch (error) {
+                    console.error('Error loading tables:', error);
+                    this.populateTableSelect([]);
+                }
+            }
+
+            populateTableSelect(tables) {
+                const select = document.getElementById('tableNumber');
+                if (!select) return;
+
+                // Clear existing options except the first one
+                select.innerHTML = '<option value="">Выберите стол</option>';
+                
+                if (tables && tables.length > 0) {
+                    tables.forEach(table => {
+                        const option = document.createElement('option');
+                        option.value = table.table_id || table.id;
+                        option.textContent = table.table_name || `Стол ${table.table_id || table.id}`;
+                        select.appendChild(option);
+                    });
+                } else {
+                    // Fallback: create some default table options
+                    for (let i = 1; i <= 10; i++) {
+                        const option = document.createElement('option');
+                        option.value = i;
+                        option.textContent = `Стол ${i}`;
+                        select.appendChild(option);
+                    }
+                }
+            }
+
+            validatePhone(input) {
+                const phone = input.value;
+                const phoneRegex = /^\+84\d{9}$/;
+                
+                if (phone && !phoneRegex.test(phone)) {
+                    input.setCustomValidity('Введите корректный вьетнамский номер телефона (+84xxxxxxxxx)');
+                } else {
+                    input.setCustomValidity('');
+                }
+            }
+
+            validateDeliveryTime(input) {
+                const selectedTime = new Date(input.value);
+                const now = new Date();
+                const oneHourFromNow = new Date(now.getTime() + 60 * 60 * 1000);
+                
+                if (selectedTime < oneHourFromNow) {
+                    input.setCustomValidity('Время доставки должно быть не менее чем через час');
+                    this.showToast('Мы не успеем так быстро, но постараемся!', 'warning');
+                } else {
+                    input.setCustomValidity('');
+                }
+            }
+
+            validateOrderForm() {
+                const orderType = document.querySelector('input[name="orderType"]:checked').value;
+                
+                if (orderType === 'table') {
+                    const name = document.getElementById('customerName').value.trim();
+                    const table = document.getElementById('tableNumber').value;
+                    
+                    if (!name) {
+                        this.showToast('Введите ваше имя', 'error');
+                        return false;
+                    }
+                    
+                    if (!table) {
+                        this.showToast('Выберите стол', 'error');
+                        return false;
+                    }
+                } else {
+                    const name = document.getElementById('takeawayName').value.trim();
+                    const phone = document.getElementById('takeawayPhone').value.trim();
+                    const address = document.getElementById('takeawayAddress').value.trim();
+                    const deliveryTime = document.getElementById('deliveryTime').value;
+                    
+                    if (!name) {
+                        this.showToast('Введите ваше имя', 'error');
+                        return false;
+                    }
+                    
+                    if (!phone) {
+                        this.showToast('Введите номер телефона', 'error');
+                        return false;
+                    }
+                    
+                    if (!address) {
+                        this.showToast('Введите адрес доставки', 'error');
+                        return false;
+                    }
+                    
+                    if (!deliveryTime) {
+                        this.showToast('Выберите время доставки', 'error');
+                        return false;
+                    }
+                }
+                
+                return true;
+            }
+
+            async submitOrder() {
                 if (this.items.length === 0) {
                     this.showToast('Корзина пуста', 'error');
                     return;
                 }
 
+                if (!this.validateOrderForm()) {
+                    return;
+                }
+
+                const orderType = document.querySelector('input[name="orderType"]:checked').value;
+                
                 const orderData = {
-                    items: this.items,
-                    total: this.getTotal()
+                    spot_id: 1, // Default spot
+                    products: this.items.map(item => ({
+                        product_id: parseInt(item.id),
+                        count: item.quantity,
+                        price: item.price
+                    })),
+                    comment: this.getOrderComment(orderType)
                 };
 
-                // TODO: Implement order submission
-                this.showToast('Заказ будет отправлен в Poster API', 'info');
-                console.log('Order data:', orderData);
+                try {
+                    this.showToast('Отправляем заказ...', 'info');
+                    
+                    const response = await fetch('/api/poster/orders/create', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-API-Token': 'your-api-token' // TODO: Get from config
+                        },
+                        body: JSON.stringify(orderData)
+                    });
+
+                    if (response.ok) {
+                        const result = await response.json();
+                        this.showToast('Заказ успешно отправлен!', 'success');
+                        this.clearCart();
+                        this.hideModal();
+                        console.log('Order created:', result);
+                    } else {
+                        const error = await response.json();
+                        this.showToast(`Ошибка: ${error.message}`, 'error');
+                    }
+                } catch (error) {
+                    console.error('Order submission error:', error);
+                    this.showToast('Ошибка при отправке заказа', 'error');
+                }
+            }
+
+            getOrderComment(orderType) {
+                if (orderType === 'table') {
+                    const name = document.getElementById('customerName').value.trim();
+                    const table = document.getElementById('tableNumber').value;
+                    const comment = document.getElementById('tableComment').value.trim();
+                    
+                    let commentText = `Заказ на столик. Имя: ${name}, Стол: ${table}`;
+                    if (comment) {
+                        commentText += `. Комментарий: ${comment}`;
+                    }
+                    return commentText;
+                } else {
+                    const name = document.getElementById('takeawayName').value.trim();
+                    const phone = document.getElementById('takeawayPhone').value.trim();
+                    const address = document.getElementById('takeawayAddress').value.trim();
+                    const deliveryTime = document.getElementById('deliveryTime').value;
+                    const comment = document.getElementById('takeawayComment').value.trim();
+                    
+                    let commentText = `Заказ с собой. Имя: ${name}, Телефон: ${phone}, Адрес: ${address}, Время: ${deliveryTime}`;
+                    if (comment) {
+                        commentText += `. Комментарий: ${comment}`;
+                    }
+                    return commentText;
+                }
             }
 
 
@@ -2015,6 +2419,12 @@ if ($menu_loaded) {
                         cartIcon.classList.remove('cart-highlight');
                     }, 1000);
                 }
+            }
+
+            clearCart() {
+                this.items = [];
+                this.saveToStorage();
+                this.updateCartDisplay();
             }
 
             showAuthModal() {
@@ -2030,7 +2440,7 @@ if ($menu_loaded) {
                     position: fixed;
                     top: 20px;
                     right: 20px;
-                    background: ${type === 'success' ? '#4CAF50' : type === 'error' ? '#f44336' : '#2196F3'};
+                    background: ${type === 'success' ? '#4CAF50' : type === 'error' ? '#f44336' : type === 'warning' ? '#ff9800' : '#2196F3'};
                     color: white;
                     padding: 12px 20px;
                     border-radius: 4px;

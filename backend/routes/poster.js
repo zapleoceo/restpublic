@@ -67,4 +67,51 @@ router.post('/:method', requireAuth, async (req, res) => {
   }
 });
 
+// Get tables list
+router.get('/tables/list', requireAuth, async (req, res) => {
+  try {
+    console.log('📡 Getting tables list...');
+    const tables = await posterService.getTables();
+    res.json({
+      success: true,
+      tables: tables,
+      count: tables.length
+    });
+  } catch (error) {
+    console.error('Tables API Error:', error);
+    res.status(500).json({
+      error: 'Failed to fetch tables',
+      message: error.message
+    });
+  }
+});
+
+// Create order
+router.post('/orders/create', requireAuth, async (req, res) => {
+  try {
+    console.log('📡 Creating order...');
+    const orderData = req.body;
+    
+    // Validate required fields
+    if (!orderData.products || !Array.isArray(orderData.products) || orderData.products.length === 0) {
+      return res.status(400).json({
+        error: 'Invalid order data',
+        message: 'Products array is required and cannot be empty'
+      });
+    }
+    
+    const result = await posterService.createIncomingOrder(orderData);
+    res.json({
+      success: true,
+      order: result
+    });
+  } catch (error) {
+    console.error('Order creation error:', error);
+    res.status(500).json({
+      error: 'Failed to create order',
+      message: error.message
+    });
+  }
+});
+
 module.exports = router;
