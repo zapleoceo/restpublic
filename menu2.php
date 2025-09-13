@@ -890,8 +890,9 @@ if ($menu_loaded) {
         .cart-item {
             display: flex;
             align-items: center;
-            padding: 12px 0;
+            padding: 8px 0;
             border-bottom: 1px solid #f0f0f0;
+            min-height: 40px;
         }
         
         .cart-item:last-child {
@@ -917,8 +918,8 @@ if ($menu_loaded) {
         }
         
         .cart-item-quantity button {
-            width: 18px;
-            height: 18px;
+            width: 20px;
+            height: 20px;
             border: 1px solid #ddd;
             background: #fff;
             border-radius: 3px;
@@ -930,6 +931,7 @@ if ($menu_loaded) {
             font-weight: bold;
             color: #333;
             padding: 0;
+            line-height: 1;
         }
         
         .cart-item-quantity button:hover {
