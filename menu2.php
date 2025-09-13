@@ -344,6 +344,10 @@ if ($menu_loaded) {
             object-fit: contain;
             display: block;
             filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
         }
         
         .auth-icon:hover,
@@ -675,7 +679,7 @@ if ($menu_loaded) {
             height: 40px;
             min-width: 40px;
             min-height: 40px;
-            border: none;
+            border: 2px solid #366b5b;
             border-radius: 50%;
             background: transparent;
             cursor: pointer;
@@ -687,23 +691,17 @@ if ($menu_loaded) {
             position: relative;
             overflow: hidden;
             box-sizing: border-box;
+            font-size: 20px;
+            font-weight: bold;
+            color: #366b5b;
         }
         
         .add-to-cart-btn:hover {
             transform: scale(1.1);
+            color: #fff;
+            background: #366b5b;
         }
         
-        .add-to-cart-btn img {
-            width: 24px;
-            height: 24px;
-            transition: all 0.3s ease;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
-        }
-        
-        .add-to-cart-btn:hover img {
-            filter: drop-shadow(0 4px 8px rgba(54, 107, 91, 0.5));
-            transform: scale(1.05);
-        }
         
         /* Modal Styles */
         .modal {
@@ -1194,6 +1192,10 @@ if ($menu_loaded) {
             .cart-icon img {
                 width: 28px;
                 height: 28px;
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
             }
             
             .cart-count {
@@ -1361,7 +1363,7 @@ if ($menu_loaded) {
                                                                 'image' => $product['image_url'] ?? ''
                                                             ]); ?>'
                                                             title="Добавить в корзину">
-                                                        <img src="images/icons/plus-icon.svg" alt="Добавить в корзину">
+                                                        +
                                                     </button>
                                                 </div>
                                             </li>
