@@ -2,8 +2,8 @@ import { Telegraf, Markup, session, Context } from 'telegraf';
 import dotenv from 'dotenv';
 import fetch from 'node-fetch';
 
-// Загружаем переменные окружения
-dotenv.config();
+// Загружаем переменные окружения из общего .env файла
+dotenv.config({ path: '../../.cursor/env.txt' });
 
 // Определяем интерфейс для сессии
 interface SessionData {

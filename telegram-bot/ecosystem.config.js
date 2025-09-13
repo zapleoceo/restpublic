@@ -8,9 +8,9 @@ module.exports = {
       exec_mode: 'fork',
       watch: false,
       max_memory_restart: '200M',
+      env_file: '/var/www/northrepubli_usr/data/www/northrepublic.me/.cursor/env.txt',
       env: {
         NODE_ENV: 'production',
-        TELEGRAM_BOT_TOKEN: process.env.TELEGRAM_BOT_TOKEN,
         BACKEND_URL: 'https://northrepublic.me'
       },
       error_file: '/var/www/northrepubli_usr/data/.pm2/logs/northrepublic-telegram-bot-error.log',
