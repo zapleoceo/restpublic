@@ -9,7 +9,7 @@ ini_set('memory_limit', '128M');
 ini_set('max_execution_time', 60);
 
 // Подключаем необходимые классы
-require_once '../../classes/SepayNotificationService.php';
+require_once __DIR__ . '/../../classes/SepayNotificationService.php';
 
 // Логирование
 function logMessage($message) {
