@@ -228,13 +228,28 @@ class Cart {
 
         // Phone validation
         document.getElementById('takeawayPhone')?.addEventListener('input', (e) => {
+            this.applyPhoneMask(e.target);
             this.validatePhone(e.target);
+        });
+        
+        // Предотвращаем удаление + в начале для takeaway
+        document.getElementById('takeawayPhone')?.addEventListener('keydown', (e) => {
+            if (e.target.selectionStart === 1 && e.key === 'Backspace') {
+                e.preventDefault();
+            }
         });
         
         // Table phone validation and mask
         document.getElementById('tablePhone')?.addEventListener('input', (e) => {
             this.applyPhoneMask(e.target);
             this.validatePhone(e.target);
+        });
+        
+        // Предотвращаем удаление + в начале
+        document.getElementById('tablePhone')?.addEventListener('keydown', (e) => {
+            if (e.target.selectionStart === 1 && e.key === 'Backspace') {
+                e.preventDefault();
+            }
         });
 
         // Delivery time validation
@@ -311,42 +326,36 @@ class Cart {
     }
 
     applyPhoneMask(input) {
-        let value = input.value.replace(/\D/g, ''); // Удаляем все нецифровые символы
+        let value = input.value;
         
-        // Если пользователь не начал с +, добавляем +
-        if (value.length > 0 && !input.value.startsWith('+')) {
-            value = '+' + value;
+        // Если поле пустое, устанавливаем +
+        if (value === '') {
+            input.value = '+';
+            return;
         }
         
-        // Ограничиваем до 15 цифр (максимум для международного номера)
+        // Если не начинается с +, добавляем +
+        if (!value.startsWith('+')) {
+            value = '+' + value.replace(/\D/g, '');
+        } else {
+            // Оставляем + и только цифры после него
+            value = '+' + value.substring(1).replace(/\D/g, '');
+        }
+        
+        // Ограничиваем длину (максимум 15 символов включая +)
         if (value.length > 15) {
             value = value.substring(0, 15);
         }
         
-        // Форматируем с пробелами для читаемости
-        if (value.length > 1) {
-            let formatted = value;
-            // Добавляем пробелы через каждые 3-4 цифры для читаемости
-            if (value.length > 4) {
-                formatted = value.substring(0, 4) + ' ' + value.substring(4);
-            }
-            if (value.length > 8) {
-                formatted = value.substring(0, 4) + ' ' + value.substring(4, 8) + ' ' + value.substring(8);
-            }
-            input.value = formatted;
-        } else if (value.length > 0) {
-            input.value = value;
-        }
+        input.value = value;
     }
 
     validatePhone(input) {
-        const phone = input.value.replace(/\s/g, ''); // Убираем пробелы для валидации
+        const phone = input.value;
         
-        // Проверяем, что номер начинается с + и содержит от 7 до 15 цифр
-        const phoneRegex = /^\+[1-9]\d{6,14}$/;
-        
-        if (phone && !phoneRegex.test(phone)) {
-            input.setCustomValidity('Введите корректный международный номер телефона (+код страны + номер)');
+        // Простая проверка: должен начинаться с + и содержать минимум 7 цифр
+        if (phone && (phone.length < 8 || !phone.startsWith('+'))) {
+            input.setCustomValidity('Введите номер телефона в формате +код_страны_номер');
         } else {
             input.setCustomValidity('');
         }
@@ -384,9 +393,8 @@ class Cart {
             }
             
             // Проверяем валидность телефона
-            const phoneRegex = /^\+[1-9]\d{6,14}$/;
-            if (!phoneRegex.test(phone.replace(/\s/g, ''))) {
-                this.showToast('Введите корректный международный номер телефона', 'error');
+            if (phone.length < 8 || !phone.startsWith('+')) {
+                this.showToast('Введите корректный номер телефона', 'error');
                 return false;
             }
             
