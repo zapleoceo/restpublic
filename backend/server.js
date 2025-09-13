@@ -11,7 +11,6 @@ const posterRoutes = require('./routes/poster');
 const menuRoutes = require('./routes/menu');
 const cacheRoutes = require('./routes/cache');
 const tablesRoutes = require('./routes/tables');
-const testMongoRoutes = require('./routes/test-mongo');
 
 const app = express();
 const PORT = process.env.PORT || 3002;
@@ -79,7 +78,6 @@ app.use('/api/poster', apiLimiter, posterRoutes);
 app.use('/api/menu', apiLimiter, menuRoutes);
 app.use('/api/cache', apiLimiter, cacheRoutes);
 app.use('/api/tables', apiLimiter, tablesRoutes);
-app.use('/api/test-mongo', apiLimiter, testMongoRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

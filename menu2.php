@@ -539,13 +539,14 @@ if ($menu_loaded) {
                 </div>
             </div>
             
+            <div class="modal-buttons">
+                <button class="btn btn-secondary" id="cartModalCancel">Отмена</button>
+                <button class="btn btn-primary" id="cartModalSubmit">Оформить заказ</button>
+            </div>
+            
             <div class="modal-footer">
                 <div class="discount-info">
                     <span class="discount-text">-20% на первый заказ после регистрации гостя</span>
-                </div>
-                <div class="modal-buttons">
-                    <button class="btn btn-secondary" id="cartModalCancel">Отмена</button>
-                    <button class="btn btn-primary" id="cartModalSubmit">Оформить заказ</button>
                 </div>
             </div>
         </div>
