@@ -1,5 +1,5 @@
 <?php
-require_once '../includes/auth.php';
+require_once '../includes/auth-check.php';
 require_once '../../classes/SePayTransactionService.php';
 
 header('Content-Type: application/json');
