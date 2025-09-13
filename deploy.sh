@@ -52,6 +52,12 @@ fi
 cd /var/www/northrepubli_usr/data/www/northrepublic.me
 log "📍 Рабочая директория: $(pwd)"
 
+# Проверяем права доступа к скрипту
+if [ ! -x "deploy.sh" ]; then
+    log "🔧 Устанавливаю права на выполнение для deploy.sh"
+    chmod +x deploy.sh
+fi
+
 # Проверяем статус Git
 log "🔍 Проверяю статус Git..."
 git status --porcelain > /dev/null 2>&1 || true
@@ -90,7 +96,7 @@ install_backend_deps() {
         cd backend
         if [ -f "package.json" ]; then
             # Проверяем, нужно ли обновлять зависимости
-            if [ ! -d "node_modules" ] || [ ! -f "node_modules/.package-lock.json" ] || [ "package.json" -nt "node_modules" ] || [ "package-lock.json" -nt "node_modules" ]; then
+            if [ ! -d "node_modules" ] || [ "package.json" -nt "node_modules" ] || ([ -f "package-lock.json" ] && [ "package-lock.json" -nt "node_modules" ]); then
                 log "📦 Обновляю backend зависимости..."
                 npm ci --only=production --prefer-offline --silent
                 success "Backend зависимости установлены"
@@ -110,10 +116,10 @@ install_backend_deps() {
 install_php_deps() {
     if [ -f "composer.json" ]; then
         # Проверяем, нужно ли обновлять зависимости
-        if [ ! -d "vendor" ] || [ ! -f "vendor/autoload.php" ] || [ "composer.json" -nt "vendor" ] || [ "composer.lock" -nt "vendor" ]; then
-            log "📦 Обновляю PHP зависимости..."
-            composer install --no-dev --optimize-autoloader --no-scripts --quiet
-            success "PHP зависимости установлены"
+        if [ ! -d "vendor" ] || [ ! -f "vendor/autoload.php" ] || [ "composer.json" -nt "vendor" ] || ([ -f "composer.lock" ] && [ "composer.lock" -nt "vendor" ]); then
+                log "📦 Обновляю PHP зависимости..."
+                composer install --no-dev --optimize-autoloader --no-scripts --quiet
+                success "PHP зависимости установлены"
         else
             log "📦 PHP зависимости актуальны, пропускаю установку"
         fi
@@ -154,6 +160,11 @@ if [ ! -f "menu.php" ]; then
     exit 1
 fi
 
+if [ ! -f "menu2.php" ]; then
+    error "menu2.php не найден в корне"
+    exit 1
+fi
+
 if [ ! -d "components" ]; then
     error "Папка components не найдена в корне"
     exit 1
@@ -174,6 +185,22 @@ if [ ! -d "js" ]; then
     exit 1
 fi
 
+if [ ! -d "backend" ]; then
+    error "Папка backend не найдена в корне"
+    exit 1
+fi
+
+if [ ! -d "admin" ]; then
+    error "Папка admin не найдена в корне"
+    exit 1
+fi
+
+# Проверяем только критически важные файлы
+if [ ! -f "backend/server.js" ] || [ ! -f "backend/package.json" ]; then
+    error "Критически важные файлы backend отсутствуют"
+    exit 1
+fi
+
 success "Структура файлов корректна (файлы уже в корне)"
 
 # Перезапускаем сервисы
@@ -181,16 +208,11 @@ log "🔄 Перезапускаю сервисы..."
 if command -v pm2 > /dev/null 2>&1; then
     pm2 restart all
     success "Сервисы перезапущены"
-    
-    # Показываем статус PM2
-    log "📊 Статус PM2:"
-    pm2 list
 else
     warning "PM2 не установлен или недоступен"
 fi
 
 # Проверяем статус Git
-log "📊 Статус Git:"
 git status --porcelain || success "Рабочая директория чистая"
 
 # Проверки сервисов (пропускаем в быстром режиме)
@@ -242,8 +264,7 @@ log "📝 Если нужно перезагрузить Nginx: sudo systemctl r
 log "🧪 Тестируйте сайт через 30 секунд"
 
 # Показываем последние коммиты
-log "📝 Последние коммиты:"
-git log --oneline -5
+git log --oneline -3
 
 echo ""
 if [ "$FAST_MODE" = true ]; then
