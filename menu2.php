@@ -703,6 +703,12 @@ if ($menu_loaded) {
             padding: 4px 8px;
         }
         
+        .add-to-cart-btn .add-icon {
+            width: 20px;
+            height: 20px;
+            object-fit: contain;
+        }
+        
         
         /* Modal Styles */
         .modal {
@@ -1376,7 +1382,7 @@ if ($menu_loaded) {
                                                                     'image' => $product['image_url'] ?? ''
                                                                 ]); ?>'
                                                                 title="Добавить в корзину">
-                                                            +
+                                                            <img src="images/icons/add.png" alt="Добавить" class="add-icon">
                                                         </button>
                                                     </div>
                                                 </div>
