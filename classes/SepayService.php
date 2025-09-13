@@ -13,7 +13,7 @@ class SepayService {
         // Загружаем переменные окружения
         $this->loadEnvironmentVariables();
         
-        $this->apiToken = $_ENV['SEPAY_API_TOKEN'] ?? 'MAM0JWTFVWQUZJ5YDISKYO8BFPPAURIOVMR2SDN3XK1TZ2ST9K39JC7KDITBXP6N';
+        $this->apiToken = $_ENV['SEPAY_API_TOKEN'] ?? null;
         $this->apiBaseUrl = 'https://my.sepay.vn/userapi';
         
         // Инициализируем кэш (простой файловый кэш)
@@ -233,6 +233,10 @@ class SepayService {
      * Выполнить запрос к API
      */
     private function makeApiRequest($url) {
+        if (empty($this->apiToken)) {
+            throw new Exception('SEPAY_API_TOKEN не установлен в переменных окружения');
+        }
+        
         $headers = [
             'Authorization: Bearer ' . $this->apiToken,
             'Content-Type: application/json',
