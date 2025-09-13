@@ -612,9 +612,11 @@ if ($menu_loaded) {
             padding: var(--vspace-1);
             border-radius: var(--border-radius);
             margin-bottom: 1rem;
-            transition: all 0.3s ease;
+            transition: all 0.6s var(--ease-smooth-in-out);
             cursor: pointer;
             min-height: 80px;
+            opacity: 0;
+            transform: translateY(20px);
         }
         
         .menu-list__item:nth-child(odd) {
@@ -1557,12 +1559,6 @@ if ($menu_loaded) {
     
     <style>
         /* Анимации появления блюд */
-        .menu-list__item {
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.6s var(--ease-smooth-in-out);
-        }
-        
         .menu-list__item.animate-in {
             opacity: 1;
             transform: translateY(0);
