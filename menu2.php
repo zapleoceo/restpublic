@@ -336,8 +336,8 @@ if ($menu_loaded) {
             box-sizing: border-box;
         }
         
-        .auth-icon img,
-        .cart-icon img {
+        .auth-icon .auth-icon-img,
+        .cart-icon .cart-icon-img {
             width: 32px;
             height: 32px;
             transition: all 0.3s ease;
@@ -365,8 +365,8 @@ if ($menu_loaded) {
             transform: scale(1.1);
         }
         
-        .auth-icon:hover img,
-        .cart-icon:hover img {
+        .auth-icon:hover .auth-icon-img,
+        .cart-icon:hover .cart-icon-img {
             filter: drop-shadow(0 4px 8px rgba(54, 107, 91, 0.4));
             transform: translate(-50%, -50%) scale(1.05);
         }
@@ -379,6 +379,7 @@ if ($menu_loaded) {
         /* Cart icon has items - change to green PNG */
         .cart-icon.has-items .cart-icon-img {
             content: url('images/icons/cart green.png') !important;
+            background: red !important; /* Debug: should show red background when has items */
         }
         
         /* Cart icon hover - only green if has items, otherwise stay gray */
@@ -1215,8 +1216,8 @@ if ($menu_loaded) {
                 height: 36px;
             }
             
-            .auth-icon img,
-            .cart-icon img {
+            .auth-icon .auth-icon-img,
+            .cart-icon .cart-icon-img {
                 width: 28px;
                 height: 28px;
                 position: absolute;
@@ -1225,8 +1226,8 @@ if ($menu_loaded) {
                 transform: translate(-50%, -50%);
             }
             
-            .auth-icon:hover img,
-            .cart-icon:hover img {
+            .auth-icon:hover .auth-icon-img,
+            .cart-icon:hover .cart-icon-img {
                 transform: translate(-50%, -50%) scale(1.05);
             }
             
