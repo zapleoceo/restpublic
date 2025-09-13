@@ -86,7 +86,8 @@ try {
         ];
         
         $saved = $transactionService->saveTransaction($transactionData);
-        
+        file_put_contents('logs/sepay_webhook.log', date('Y-m-d H:i:s') . " - SAVE RESULT: " . ($saved ? 'SUCCESS' : 'FAILED') . "\n", FILE_APPEND | LOCK_EX);
+
         if ($saved) {
             // Отправляем уведомление в Telegram
             $message = "💵 **Новый платеж: " . number_format($amount, 0, ',', ' ') . " VND**\n\n";
@@ -96,11 +97,12 @@ try {
             $message .= "🆔 ID: `{$transactionId}`";
             
             $telegramResult = $telegramService->sendToAllChats($message);
-            
+            file_put_contents('logs/sepay_webhook.log', date('Y-m-d H:i:s') . " - TELEGRAM RESULT: " . json_encode($telegramResult) . "\n", FILE_APPEND | LOCK_EX);
+
             // Обновляем статус отправки в Telegram
             $telegramSent = false;
             $telegramMessageId = null;
-            
+
             foreach ($telegramResult as $chatId => $success) {
                 if ($success) {
                     $telegramSent = true;
@@ -109,9 +111,10 @@ try {
                     break;
                 }
             }
-            
+
             if ($telegramSent) {
                 $transactionService->markTelegramSent($transactionId, $telegramMessageId);
+                file_put_contents('logs/sepay_webhook.log', date('Y-m-d H:i:s') . " - TELEGRAM MARKED AS SENT\n", FILE_APPEND | LOCK_EX);
             }
             
             // ОБЯЗАТЕЛЬНО: Возвращаем успешный ответ
