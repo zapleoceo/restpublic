@@ -2,69 +2,45 @@
 session_start();
 require_once '../includes/auth-check.php';
 
-// Подключение к MongoDB
-require_once __DIR__ . '/../../vendor/autoload.php';
+// Подключение к Sepay API
+require_once __DIR__ . '/../../classes/SepayService.php';
 
 try {
-    $client = new MongoDB\Client("mongodb://localhost:27017");
-    $db = $client->northrepublic;
-    $sepayCollection = $db->sepay_transactions;
+    $sepayService = new SepayService();
     
     // Параметры фильтрации
     $page = max(1, intval($_GET['page'] ?? 1));
     $limit = 50;
-    $skip = ($page - 1) * $limit;
     
-    $filter = [];
-    $sort = ['timestamp' => -1]; // Сортировка по дате (новые сначала)
+    $filters = [
+        'page' => $page,
+        'limit' => $limit,
+        'date_from' => $_GET['date_from'] ?? '',
+        'date_to' => $_GET['date_to'] ?? '',
+        'status' => $_GET['status'] ?? '',
+        'amount_min' => $_GET['amount_min'] ?? '',
+        'amount_max' => $_GET['amount_max'] ?? '',
+        'search' => $_GET['search'] ?? ''
+    ];
     
-    // Фильтр по дате
-    if (!empty($_GET['date_from'])) {
-        $filter['timestamp']['$gte'] = new MongoDB\BSON\UTCDateTime(strtotime($_GET['date_from']) * 1000);
-    }
-    if (!empty($_GET['date_to'])) {
-        $filter['timestamp']['$lte'] = new MongoDB\BSON\UTCDateTime(strtotime($_GET['date_to'] . ' 23:59:59') * 1000);
-    }
+    // Получаем транзакции от API
+    $apiResponse = $sepayService->getTransactions($filters);
     
-    // Фильтр по статусу
-    if (!empty($_GET['status'])) {
-        $filter['status'] = $_GET['status'];
-    }
-    
-    // Фильтр по сумме
-    if (!empty($_GET['amount_min'])) {
-        $filter['amount']['$gte'] = floatval($_GET['amount_min']);
-    }
-    if (!empty($_GET['amount_max'])) {
-        $filter['amount']['$lte'] = floatval($_GET['amount_max']);
+    if (isset($apiResponse['error'])) {
+        throw new Exception("Ошибка API Sepay: " . $apiResponse['error']);
     }
     
-    // Поиск по тексту
-    if (!empty($_GET['search'])) {
-        $filter['$or'] = [
-            ['transaction_id' => new MongoDB\BSON\Regex($_GET['search'], 'i')],
-            ['description' => new MongoDB\BSON\Regex($_GET['search'], 'i')],
-            ['account_number' => new MongoDB\BSON\Regex($_GET['search'], 'i')]
-        ];
-    }
+    $logs = $apiResponse['transactions'] ?? [];
+    $totalCount = $apiResponse['total'] ?? 0;
+    $totalPages = $apiResponse['total_pages'] ?? 0;
     
-    // Получаем данные
-    $logs = $sepayCollection->find($filter, [
-        'sort' => $sort,
-        'skip' => $skip,
-        'limit' => $limit
-    ])->toArray();
-    
-    // Подсчитываем общее количество
-    $totalCount = $sepayCollection->countDocuments($filter);
-    $totalPages = ceil($totalCount / $limit);
-    
-    // Статистика
+    // Получаем статистику
+    $statsResponse = $sepayService->getStats($filters);
     $stats = [
-        'total' => $totalCount,
-        'success' => $sepayCollection->countDocuments(array_merge($filter, ['status' => 'success'])),
-        'failed' => $sepayCollection->countDocuments(array_merge($filter, ['status' => 'failed'])),
-        'pending' => $sepayCollection->countDocuments(array_merge($filter, ['status' => 'pending']))
+        'total' => $statsResponse['total'] ?? 0,
+        'success' => $statsResponse['success'] ?? 0,
+        'failed' => $statsResponse['failed'] ?? 0,
+        'pending' => $statsResponse['pending'] ?? 0
     ];
     
 } catch (Exception $e) {
@@ -72,7 +48,7 @@ try {
     $totalCount = 0;
     $totalPages = 0;
     $stats = ['total' => 0, 'success' => 0, 'failed' => 0, 'pending' => 0];
-    $error = "Ошибка подключения к базе данных: " . $e->getMessage();
+    $error = "Ошибка подключения к Sepay API: " . $e->getMessage();
 }
 
 // Логируем просмотр логов
@@ -320,12 +296,12 @@ logAdminAction('view_sepay_logs', 'Просмотр логов платежей 
                                     <tr>
                                         <td>
                                             <?php 
-                                            $date = $log['timestamp']->toDateTime();
+                                            $date = isset($log['created_at']) ? new DateTime($log['created_at']) : new DateTime();
                                             echo $date->format('d.m.Y H:i:s');
                                             ?>
                                         </td>
                                         <td>
-                                            <code><?php echo htmlspecialchars($log['transaction_id'] ?? 'N/A'); ?></code>
+                                            <code><?php echo htmlspecialchars($log['id'] ?? $log['transaction_id'] ?? 'N/A'); ?></code>
                                         </td>
                                         <td>
                                             <strong><?php echo number_format($log['amount'] ?? 0, 0, ',', ' '); ?> ₫</strong>
@@ -347,7 +323,7 @@ logAdminAction('view_sepay_logs', 'Просмотр логов платежей 
                                             <code><?php echo htmlspecialchars($log['account_number'] ?? 'N/A'); ?></code>
                                         </td>
                                         <td>
-                                            <button class="btn btn-secondary" onclick="showTransactionDetails('<?php echo htmlspecialchars($log['_id']); ?>')">
+                                            <button class="btn btn-secondary" onclick="showTransactionDetails('<?php echo htmlspecialchars($log['id'] ?? $log['transaction_id'] ?? ''); ?>')">
                                                 Подробнее
                                             </button>
                                         </td>

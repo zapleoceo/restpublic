@@ -9,14 +9,11 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
     exit;
 }
 
-// Подключение к MongoDB
-require_once __DIR__ . '/../../vendor/autoload.php';
+// Подключение к Sepay API
+require_once __DIR__ . '/../../classes/SepayService.php';
 
 try {
-    $client = new MongoDB\Client("mongodb://localhost:27017");
-    $db = $client->northrepublic;
-    $sepayCollection = $db->sepay_transactions;
-    
+    $sepayService = new SepayService();
     $action = $_GET['action'] ?? '';
     
     switch ($action) {
@@ -26,118 +23,87 @@ try {
                 throw new Exception('Transaction ID is required');
             }
             
-            $transaction = $sepayCollection->findOne(['_id' => new MongoDB\BSON\ObjectId($transactionId)]);
+            $transaction = $sepayService->getTransactionDetails($transactionId);
             
-            if (!$transaction) {
-                throw new Exception('Transaction not found');
-            }
-            
-            // Конвертируем BSON в массив
-            $transactionArray = $transaction->toArray();
-            
-            // Конвертируем дату
-            if (isset($transactionArray['timestamp'])) {
-                $transactionArray['timestamp'] = $transactionArray['timestamp']->toDateTime()->format('Y-m-d H:i:s');
+            if (isset($transaction['error'])) {
+                throw new Exception($transaction['error']);
             }
             
             echo json_encode([
                 'success' => true,
-                'data' => $transactionArray
+                'data' => $transaction
             ]);
             break;
             
         case 'export':
-            $filter = [];
+            $filters = [
+                'date_from' => $_GET['date_from'] ?? '',
+                'date_to' => $_GET['date_to'] ?? '',
+                'status' => $_GET['status'] ?? '',
+                'amount_min' => $_GET['amount_min'] ?? '',
+                'amount_max' => $_GET['amount_max'] ?? '',
+                'search' => $_GET['search'] ?? '',
+                'limit' => 1000 // Больше записей для экспорта
+            ];
             
-            // Применяем те же фильтры, что и в основном интерфейсе
-            if (!empty($_GET['date_from'])) {
-                $filter['timestamp']['$gte'] = new MongoDB\BSON\UTCDateTime(strtotime($_GET['date_from']) * 1000);
-            }
-            if (!empty($_GET['date_to'])) {
-                $filter['timestamp']['$lte'] = new MongoDB\BSON\UTCDateTime(strtotime($_GET['date_to'] . ' 23:59:59') * 1000);
-            }
-            if (!empty($_GET['status'])) {
-                $filter['status'] = $_GET['status'];
-            }
-            if (!empty($_GET['amount_min'])) {
-                $filter['amount']['$gte'] = floatval($_GET['amount_min']);
-            }
-            if (!empty($_GET['amount_max'])) {
-                $filter['amount']['$lte'] = floatval($_GET['amount_max']);
-            }
-            if (!empty($_GET['search'])) {
-                $filter['$or'] = [
-                    ['transaction_id' => new MongoDB\BSON\Regex($_GET['search'], 'i')],
-                    ['description' => new MongoDB\BSON\Regex($_GET['search'], 'i')],
-                    ['account_number' => new MongoDB\BSON\Regex($_GET['search'], 'i')]
-                ];
+            $apiResponse = $sepayService->getTransactions($filters);
+            
+            if (isset($apiResponse['error'])) {
+                throw new Exception($apiResponse['error']);
             }
             
-            $transactions = $sepayCollection->find($filter, [
-                'sort' => ['timestamp' => -1]
-            ])->toArray();
+            $transactions = $apiResponse['transactions'] ?? [];
             
             // Конвертируем в CSV
             $csv = "Дата,ID Транзакции,Сумма,Статус,Описание,Номер счета,Дополнительные данные\n";
             
             foreach ($transactions as $transaction) {
-                $date = $transaction['timestamp']->toDateTime()->format('Y-m-d H:i:s');
+                $date = isset($transaction['created_at']) ? $transaction['created_at'] : date('Y-m-d H:i:s');
                 $csv .= sprintf(
                     '"%s","%s","%s","%s","%s","%s","%s"' . "\n",
                     $date,
-                    $transaction['transaction_id'] ?? '',
+                    $transaction['id'] ?? $transaction['transaction_id'] ?? '',
                     $transaction['amount'] ?? 0,
                     $transaction['status'] ?? '',
                     str_replace('"', '""', $transaction['description'] ?? ''),
                     $transaction['account_number'] ?? '',
-                    str_replace('"', '""', json_encode($transaction['additional_data'] ?? []))
+                    str_replace('"', '""', json_encode($transaction))
                 );
             }
             
             header('Content-Type: text/csv; charset=utf-8');
-            header('Content-Disposition: attachment; filename="sepay_logs_' . date('Y-m-d_H-i-s') . '.csv"');
+            header('Content-Disposition: attachment; filename="sepay_transactions_' . date('Y-m-d_H-i-s') . '.csv"');
             echo "\xEF\xBB\xBF"; // BOM для UTF-8
             echo $csv;
             break;
             
         case 'stats':
-            $filter = [];
-            
-            // Применяем фильтры по дате
-            if (!empty($_GET['date_from'])) {
-                $filter['timestamp']['$gte'] = new MongoDB\BSON\UTCDateTime(strtotime($_GET['date_from']) * 1000);
-            }
-            if (!empty($_GET['date_to'])) {
-                $filter['timestamp']['$lte'] = new MongoDB\BSON\UTCDateTime(strtotime($_GET['date_to'] . ' 23:59:59') * 1000);
-            }
-            
-            $stats = [
-                'total' => $sepayCollection->countDocuments($filter),
-                'success' => $sepayCollection->countDocuments(array_merge($filter, ['status' => 'success'])),
-                'failed' => $sepayCollection->countDocuments(array_merge($filter, ['status' => 'failed'])),
-                'pending' => $sepayCollection->countDocuments(array_merge($filter, ['status' => 'pending']))
+            $filters = [
+                'date_from' => $_GET['date_from'] ?? '',
+                'date_to' => $_GET['date_to'] ?? '',
+                'status' => $_GET['status'] ?? '',
+                'amount_min' => $_GET['amount_min'] ?? '',
+                'amount_max' => $_GET['amount_max'] ?? '',
+                'search' => $_GET['search'] ?? ''
             ];
             
-            // Статистика по суммам
-            $pipeline = [
-                ['$match' => $filter],
-                ['$group' => [
-                    '_id' => null,
-                    'total_amount' => ['$sum' => '$amount'],
-                    'avg_amount' => ['$avg' => '$amount'],
-                    'min_amount' => ['$min' => '$amount'],
-                    'max_amount' => ['$max' => '$amount']
-                ]]
-            ];
+            $stats = $sepayService->getStats($filters);
             
-            $amountStats = $sepayCollection->aggregate($pipeline)->toArray();
-            if (!empty($amountStats)) {
-                $stats = array_merge($stats, $amountStats[0]);
+            if (isset($stats['error'])) {
+                throw new Exception($stats['error']);
             }
             
             echo json_encode([
                 'success' => true,
                 'data' => $stats
+            ]);
+            break;
+            
+        case 'api_status':
+            $status = $sepayService->checkApiStatus();
+            echo json_encode([
+                'success' => true,
+                'data' => $status
             ]);
             break;
             

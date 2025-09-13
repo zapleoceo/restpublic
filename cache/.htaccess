@@ -1,0 +1,3 @@
+# Запрещаем доступ к файлам кэша
+Order Deny,Allow
+Deny from all

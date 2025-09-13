@@ -178,10 +178,10 @@ admin/
 ## 🔗 API Endpoints
 
 ### Sepay:
-- `GET /admin/sepay/api.php?action=get_transactions` - Получить транзакции
-- `GET /admin/sepay/api.php?action=export_csv` - Экспорт в CSV
-- `GET /admin/sepay/test-connection.php` - Тест подключения к БД
-- `GET /admin/sepay/fetch-transactions.php` - Синхронизация с Sepay API
+- `GET /admin/sepay/api.php?action=get_transaction&id=ID` - Получить детали транзакции
+- `GET /admin/sepay/api.php?action=export` - Экспорт в CSV
+- `GET /admin/sepay/api.php?action=stats` - Получить статистику
+- `GET /admin/sepay/api.php?action=api_status` - Проверить статус API
 
 ### Общие:
 - `POST /admin/auth/telegram.php` - Авторизация
@@ -211,16 +211,17 @@ admin/
 
 4. **Нет транзакций Sepay в админке**
    ```bash
-   # Проверьте подключение к БД
-   php admin/sepay/test-connection.php
+   # Проверьте статус API Sepay
+   curl "https://northrepublic.me/admin/sepay/api.php?action=api_status"
    
-   # Запустите синхронизацию вручную
-   php admin/sepay/fetch-transactions.php
+   # Проверьте токен API в .env файле
+   grep SEPAY_API_TOKEN .env
    
-   # Настройте cron job для автоматической синхронизации
-   crontab -e
-   # Добавьте строку:
-   */5 * * * * /usr/bin/php /path/to/admin/sepay/fetch-transactions.php
+   # Очистите кэш если нужно
+   rm -rf cache/sepay/*
+   
+   # Проверьте логи ошибок
+   tail -f /var/log/apache2/error.log
    ```
 
 ### Логи:
