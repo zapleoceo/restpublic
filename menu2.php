@@ -1826,8 +1826,10 @@ if ($menu_loaded) {
 
                 const totalItems = this.items.reduce((sum, item) => sum + item.quantity, 0);
                 
-                console.log('updateCartDisplay called, totalItems:', totalItems);
-                console.log('cartIconImg found:', cartIconImg);
+                console.log('=== updateCartDisplay DEBUG ===');
+                console.log('1. totalItems:', totalItems);
+                console.log('2. cartIconImg found:', cartIconImg);
+                console.log('3. current src before change:', cartIconImg ? cartIconImg.src : 'N/A');
                 
                 if (cartCount) {
                     cartCount.textContent = totalItems;
@@ -1837,22 +1839,58 @@ if ($menu_loaded) {
                 if (cartIcon) {
                     if (totalItems > 0) {
                         cartIcon.classList.add('has-items');
+                        console.log('4. Added has-items class');
                         if (cartIconImg) {
-                            cartIconImg.src = 'images/icons/cart green.png?' + Date.now();
-                            console.log('Changed to green icon, new src:', cartIconImg.src);
+                            const newSrc = 'images/icons/cart green.png?' + Date.now();
+                            console.log('5. Setting new src to:', newSrc);
+                            
+                            // Проверяем загрузку изображения
+                            const testImg = new Image();
+                            testImg.onload = function() {
+                                console.log('6. ✅ Green image loaded successfully');
+                            };
+                            testImg.onerror = function() {
+                                console.log('6. ❌ Green image failed to load!');
+                            };
+                            testImg.src = newSrc;
+                            
+                            cartIconImg.src = newSrc;
+                            console.log('7. cartIconImg.src after change:', cartIconImg.src);
+                            
+                            // Проверяем через небольшую задержку
+                            setTimeout(() => {
+                                console.log('8. Final check - cartIconImg.src:', cartIconImg.src);
+                                console.log('9. Final check - cartIconImg.complete:', cartIconImg.complete);
+                                console.log('10. Final check - cartIconImg.naturalWidth:', cartIconImg.naturalWidth);
+                            }, 100);
                         } else {
-                            console.log('cartIconImg not found!');
+                            console.log('5. ❌ cartIconImg not found!');
                         }
                     } else {
                         cartIcon.classList.remove('has-items');
+                        console.log('4. Removed has-items class');
                         if (cartIconImg) {
-                            cartIconImg.src = 'images/icons/cart gray.png?' + Date.now();
-                            console.log('Changed to gray icon, new src:', cartIconImg.src);
+                            const newSrc = 'images/icons/cart gray.png?' + Date.now();
+                            console.log('5. Setting new src to:', newSrc);
+                            
+                            // Проверяем загрузку изображения
+                            const testImg = new Image();
+                            testImg.onload = function() {
+                                console.log('6. ✅ Gray image loaded successfully');
+                            };
+                            testImg.onerror = function() {
+                                console.log('6. ❌ Gray image failed to load!');
+                            };
+                            testImg.src = newSrc;
+                            
+                            cartIconImg.src = newSrc;
+                            console.log('7. cartIconImg.src after change:', cartIconImg.src);
                         } else {
-                            console.log('cartIconImg not found!');
+                            console.log('5. ❌ cartIconImg not found!');
                         }
                     }
                 }
+                console.log('=== END updateCartDisplay DEBUG ===');
             }
 
             toggleCart() {
