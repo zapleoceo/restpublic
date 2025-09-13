@@ -1247,7 +1247,7 @@ if ($menu_loaded) {
                         <!-- Authorization Icon -->
                         <div class="header-auth">
                             <button class="auth-icon" id="authIcon" title="Авторизация">
-                                <img alt="Авторизация" class="auth-icon-img">
+                                <img src="images/icons/auth-gray.png" alt="Авторизация" class="auth-icon-img">
                             </button>
                         </div>
                         
@@ -1826,6 +1826,9 @@ if ($menu_loaded) {
 
                 const totalItems = this.items.reduce((sum, item) => sum + item.quantity, 0);
                 
+                console.log('updateCartDisplay called, totalItems:', totalItems);
+                console.log('cartIconImg found:', cartIconImg);
+                
                 if (cartCount) {
                     cartCount.textContent = totalItems;
                     cartCount.style.display = totalItems > 0 ? 'flex' : 'none';
@@ -1836,11 +1839,17 @@ if ($menu_loaded) {
                         cartIcon.classList.add('has-items');
                         if (cartIconImg) {
                             cartIconImg.src = 'images/icons/cart green.png';
+                            console.log('Changed to green icon');
+                        } else {
+                            console.log('cartIconImg not found!');
                         }
                     } else {
                         cartIcon.classList.remove('has-items');
                         if (cartIconImg) {
                             cartIconImg.src = 'images/icons/cart gray.png';
+                            console.log('Changed to gray icon');
+                        } else {
+                            console.log('cartIconImg not found!');
                         }
                     }
                 }
