@@ -694,6 +694,7 @@ if ($menu_loaded) {
             transition: all 0.3s ease;
             padding: 0;
             margin: 0;
+            position: relative;
         }
         
         .add-to-cart-btn:hover {
