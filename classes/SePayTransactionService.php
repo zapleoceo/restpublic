@@ -45,7 +45,13 @@ class SePayTransactionService {
     public function markTelegramSent($transactionId, $telegramMessageId = null) {
         try {
             $result = $this->collection->updateOne(
-                ['transaction_id' => $transactionId],
+                [
+                    '$or' => [
+                        ['transaction_id' => $transactionId],
+                        ['transaction_id' => (string)$transactionId],
+                        ['transaction_id' => (int)$transactionId]
+                    ]
+                ],
                 [
                     '$set' => [
                         'telegram_sent' => true,
@@ -209,7 +215,14 @@ class SePayTransactionService {
      */
     public function getSentStatus($transactionId) {
         try {
-            $document = $this->collection->findOne(['transaction_id' => $transactionId]);
+            // Ищем как строку и как число
+            $document = $this->collection->findOne([
+                '$or' => [
+                    ['transaction_id' => $transactionId],
+                    ['transaction_id' => (string)$transactionId],
+                    ['transaction_id' => (int)$transactionId]
+                ]
+            ]);
             
             if (!$document) {
                 return ['sent' => false, 'sent_at' => null, 'message_id' => null];
@@ -233,7 +246,14 @@ class SePayTransactionService {
      */
     public function getTransactionById($transactionId) {
         try {
-            $document = $this->collection->findOne(['transaction_id' => $transactionId]);
+            // Ищем как строку и как число
+            $document = $this->collection->findOne([
+                '$or' => [
+                    ['transaction_id' => $transactionId],
+                    ['transaction_id' => (string)$transactionId],
+                    ['transaction_id' => (int)$transactionId]
+                ]
+            ]);
             
             if (!$document) {
                 return null;
