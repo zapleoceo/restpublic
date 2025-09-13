@@ -40,6 +40,27 @@ try {
     // Добавляем информацию о Telegram статусе из MongoDB
     foreach ($transactions as &$transaction) {
         $telegramStatus = $transactionService->getSentStatus($transaction['id']);
+        
+        // Если транзакция не найдена в MongoDB, создаем запись
+        if ($telegramStatus['sent'] === null) {
+            $transactionData = [
+                'transaction_id' => $transaction['id'],
+                'amount' => floatval($transaction['amount_in']),
+                'content' => $transaction['transaction_content'],
+                'code' => $transaction['reference_number'],
+                'gateway' => $transaction['bank_brand_name'],
+                'account_number' => $transaction['account_number'],
+                'transaction_date' => $transaction['transaction_date'],
+                'webhook_received_at' => null, // Не получено через webhook
+                'telegram_sent' => false, // По умолчанию не отправлено
+                'telegram_sent_at' => null,
+                'telegram_message_id' => null
+            ];
+            
+            $transactionService->saveTransaction($transactionData);
+            $telegramStatus = $transactionService->getSentStatus($transaction['id']);
+        }
+        
         $transaction['telegram_sent'] = $telegramStatus['sent'] ?? false;
         $transaction['telegram_sent_at'] = $telegramStatus['sent_at'] ?? null;
         $transaction['telegram_message_id'] = $telegramStatus['message_id'] ?? null;
