@@ -673,6 +673,13 @@ if ($menu_loaded) {
             align-self: center;
         }
         
+        .add-to-cart-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+        }
+        
         .add-to-cart-btn {
             border: none;
             background: transparent;
@@ -1383,15 +1390,17 @@ if ($menu_loaded) {
                                                     <div class="menu-list__item-price">
                                                         <?php echo number_format($product['price_normalized'] ?? $product['price'] ?? 0, 0, ',', ' '); ?> ₫
                                                     </div>
-                                                    <button class="add-to-cart-btn" 
-                                                            data-product='<?php echo json_encode([
-                                                                'id' => $product['product_id'] ?? 0,
-                                                                'name' => $product['product_name'] ?? 'Без названия',
-                                                                'price' => $product['price_normalized'] ?? $product['price'] ?? 0,
-                                                                'image' => $product['image_url'] ?? ''
-                                                            ]); ?>'
-                                                            title="Добавить в корзину">
-                                                    </button>
+                                                    <div class="add-to-cart-wrapper">
+                                                        <button class="add-to-cart-btn" 
+                                                                data-product='<?php echo json_encode([
+                                                                    'id' => $product['product_id'] ?? 0,
+                                                                    'name' => $product['product_name'] ?? 'Без названия',
+                                                                    'price' => $product['price_normalized'] ?? $product['price'] ?? 0,
+                                                                    'image' => $product['image_url'] ?? ''
+                                                                ]); ?>'
+                                                                title="Добавить в корзину">
+                                                        </button>
+                                                    </div>
                                                 </div>
                                             </li>
                                         <?php endforeach; ?>
