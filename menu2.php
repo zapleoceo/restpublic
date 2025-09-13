@@ -706,24 +706,20 @@ if ($menu_loaded) {
             transform: scale(1.05);
         }
         
-        .add-to-cart-btn::before {
-            content: '';
-            background-image: url('images/icons/add.png');
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
+        .add-to-cart-btn .add-icon {
             width: 20px;
             height: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             transition: all 0.3s ease;
         }
         
-        .add-to-cart-btn:hover::before {
+        .add-to-cart-btn:hover .add-icon {
+            display: none;
+        }
+        
+        .add-to-cart-btn:hover::after {
             content: 'в заказ';
-            background-image: none;
             font-size: 14px;
+            transition: all 0.3s ease;
         }
         
         
@@ -1399,6 +1395,7 @@ if ($menu_loaded) {
                                                                     'image' => $product['image_url'] ?? ''
                                                                 ]); ?>'
                                                                 title="Добавить в корзину">
+                                                            <img src="images/icons/add.png" alt="Добавить" class="add-icon">
                                                         </button>
                                                     </div>
                                                 </div>
