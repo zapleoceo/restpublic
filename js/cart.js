@@ -449,12 +449,17 @@ class Cart {
             comment: this.getOrderComment(orderType)
         };
 
-        // Для заказа на столик добавляем table_id
+        // Для заказа на столик добавляем имя стола
         if (orderType === 'table') {
             const tableSelect = document.getElementById('tableNumber');
             const selectedTableId = tableSelect.value;
             if (selectedTableId) {
-                orderData.table_id = parseInt(selectedTableId);
+                // Находим выбранную опцию и получаем текст (имя стола)
+                const selectedOption = tableSelect.options[tableSelect.selectedIndex];
+                const tableName = selectedOption.text;
+                
+                // Передаем имя стола в комментарии (Poster API может не поддерживать table_id)
+                orderData.comment = orderData.comment.replace(/Стол: \d+/, `Стол: ${tableName}`);
             }
         }
 
