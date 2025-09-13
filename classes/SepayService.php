@@ -14,7 +14,7 @@ class SepayService {
         $this->loadEnvironmentVariables();
         
         $this->apiToken = $_ENV['SEPAY_API_TOKEN'] ?? 'MAM0JWTFVWQUZJ5YDISKYO8BFPPAURIOVMR2SDN3XK1TZ2ST9K39JC7KDITBXP6N';
-        $this->apiBaseUrl = 'https://sepay.vn/api/v1';
+        $this->apiBaseUrl = 'https://my.sepay.vn/userapi';
         
         // Инициализируем кэш (простой файловый кэш)
         $this->cache = new SepayCache();
@@ -47,7 +47,7 @@ class SepayService {
         
         try {
             $params = $this->buildApiParams($filters);
-            $url = $this->apiBaseUrl . '/transactions?' . http_build_query($params);
+            $url = $this->apiBaseUrl . '/transactions/list?' . http_build_query($params);
             
             error_log("SepayService: Making request to: " . $url);
             $response = $this->makeApiRequest($url);
@@ -96,7 +96,7 @@ class SepayService {
         
         try {
             $params = $this->buildApiParams($filters);
-            $url = $this->apiBaseUrl . '/transactions/stats?' . http_build_query($params);
+            $url = $this->apiBaseUrl . '/transactions/count?' . http_build_query($params);
             
             $response = $this->makeApiRequest($url);
             
@@ -145,7 +145,7 @@ class SepayService {
         }
         
         try {
-            $url = $this->apiBaseUrl . '/transactions/' . $transactionId;
+            $url = $this->apiBaseUrl . '/transactions/details/' . $transactionId;
             $response = $this->makeApiRequest($url);
             
             if (!$response || !isset($response['data'])) {
