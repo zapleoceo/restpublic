@@ -224,9 +224,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['force_update'])) {
                     <?php endif; ?>
                 </div>
 
-                <div class="stat-card">
+                <div class="stat-card" style="grid-column: 1 / -1; width: 100%;">
                     <h3>Доступные столы</h3>
-                    <p class="stat-value">
+                    <div style="text-align: left; margin-top: 0.5rem;">
                         <?php
                         // Получаем список столов из MongoDB
                         $tables = [];
@@ -248,18 +248,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['force_update'])) {
                         }
                         
                         if (!empty($tables)): ?>
-                            <div style="text-align: left; margin-top: 0.5rem;">
+                            <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
                                 <?php foreach ($tables as $table): ?>
-                                    <div style="display: inline-block; background: #e3f2fd; padding: 0.25rem 0.5rem; margin: 0.125rem; border-radius: 3px; font-size: 0.85rem;">
-                                        <?php echo htmlspecialchars($table['name'] ?? 'Стол ' . ($table['poster_table_id'] ?? 'N/A')); ?>
-                                        <small style="color: #666; margin-left: 0.25rem;">(ID: <?php echo htmlspecialchars($table['poster_table_id'] ?? 'N/A'); ?>)</small>
+                                    <div style="background: #e3f2fd; padding: 0.5rem 0.75rem; border-radius: 4px; font-size: 0.9rem; border: 1px solid #bbdefb;">
+                                        <strong><?php echo htmlspecialchars($table['name'] ?? 'Стол ' . ($table['poster_table_id'] ?? 'N/A')); ?></strong>
+                                        <small style="color: #666; margin-left: 0.5rem;">ID: <?php echo htmlspecialchars($table['poster_table_id'] ?? 'N/A'); ?></small>
                                     </div>
                                 <?php endforeach; ?>
                             </div>
                         <?php else: ?>
                             <span class="status-badge status-warning">Столы не загружены</span>
                         <?php endif; ?>
-                    </p>
+                    </div>
                 </div>
             </div>
 
