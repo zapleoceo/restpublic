@@ -295,15 +295,15 @@ class Cart {
                 option.textContent = table.name || table.table_name || `Стол ${table.table_id || table.id}`;
                 select.appendChild(option);
             });
+            console.log(`Loaded ${tables.length} tables from MongoDB`);
         } else {
-            console.warn('No tables received from MongoDB, using fallback');
-            // Fallback: create some default table options
-            for (let i = 1; i <= 10; i++) {
-                const option = document.createElement('option');
-                option.value = i;
-                option.textContent = `Стол ${i}`;
-                select.appendChild(option);
-            }
+            console.warn('No tables received from MongoDB');
+            // Не добавляем fallback столы - только из MongoDB
+            const option = document.createElement('option');
+            option.value = '';
+            option.textContent = 'Столы не найдены';
+            option.disabled = true;
+            select.appendChild(option);
         }
     }
 
