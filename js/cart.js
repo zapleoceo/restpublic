@@ -444,9 +444,13 @@ class Cart {
 
         const orderType = document.querySelector('input[name="orderType"]:checked').value;
         
-        // Получаем телефон клиента
-        const phone = document.getElementById('tablePhone')?.value?.trim() || 
-                     document.getElementById('takeawayPhone')?.value?.trim();
+        // Получаем телефон клиента в зависимости от типа заказа
+        let phone = '';
+        if (orderType === 'table') {
+            phone = document.getElementById('tablePhone')?.value?.trim() || '';
+        } else {
+            phone = document.getElementById('takeawayPhone')?.value?.trim() || '';
+        }
         
         const orderData = {
             spot_id: 1, // Default spot

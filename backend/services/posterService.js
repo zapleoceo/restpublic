@@ -252,16 +252,37 @@ class PosterService {
         throw new Error('Poster API token not configured');
       }
 
-      const url = `${this.baseURL}/transactions.createOrder?token=${this.token}`;
+      const url = `${this.baseURL}/incomingOrders.createIncomingOrder?token=${this.token}`;
       
+      // Валидация обязательных полей
+      if (!orderData.spot_id) {
+        throw new Error('spot_id is required');
+      }
+      if (!orderData.phone && !orderData.client_id) {
+        throw new Error('phone or client_id is required');
+      }
+      if (!orderData.products || orderData.products.length === 0) {
+        throw new Error('products array is required');
+      }
+
       // Process order data - prices should already be in minor units from frontend
       const processedOrderData = {
-        ...orderData,
+        spot_id: parseInt(orderData.spot_id),
+        phone: orderData.phone,
         products: orderData.products.map(product => ({
-          ...product,
+          product_id: parseInt(product.product_id),
+          count: parseInt(product.count),
           price: Math.round(product.price) // Ensure price is integer
         }))
       };
+
+      // Добавляем опциональные поля если они есть
+      if (orderData.comment) {
+        processedOrderData.comment = orderData.comment;
+      }
+      if (orderData.client_id) {
+        processedOrderData.client_id = parseInt(orderData.client_id);
+      }
 
       console.log(`📡 Poster API Request: ${url}`);
       console.log(`📦 Order data:`, processedOrderData);
@@ -271,6 +292,14 @@ class PosterService {
           'Content-Type': 'application/json'
         }
       });
+      
+      console.log(`📥 Poster API Response:`, response.data);
+      
+      // Проверяем, есть ли ошибка в ответе Poster API
+      if (response.data.error) {
+        console.error(`❌ Poster API returned error:`, response.data.error);
+        throw new Error(`Poster API error: ${response.data.error.message || 'Unknown error'}`);
+      }
       
       console.log(`✅ Order created successfully:`, response.data);
       return response.data;
