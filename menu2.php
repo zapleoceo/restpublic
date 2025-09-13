@@ -1838,16 +1838,16 @@ if ($menu_loaded) {
                     if (totalItems > 0) {
                         cartIcon.classList.add('has-items');
                         if (cartIconImg) {
-                            cartIconImg.src = 'images/icons/cart green.png';
-                            console.log('Changed to green icon');
+                            cartIconImg.src = 'images/icons/cart green.png?' + Date.now();
+                            console.log('Changed to green icon, new src:', cartIconImg.src);
                         } else {
                             console.log('cartIconImg not found!');
                         }
                     } else {
                         cartIcon.classList.remove('has-items');
                         if (cartIconImg) {
-                            cartIconImg.src = 'images/icons/cart gray.png';
-                            console.log('Changed to gray icon');
+                            cartIconImg.src = 'images/icons/cart gray.png?' + Date.now();
+                            console.log('Changed to gray icon, new src:', cartIconImg.src);
                         } else {
                             console.log('cartIconImg not found!');
                         }
