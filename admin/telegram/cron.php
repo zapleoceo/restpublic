@@ -1,7 +1,7 @@
 <?php
 /**
  * Cron задача для проверки новых транзакций Sepay и отправки уведомлений в Telegram
- * Запускать каждые 30 минут: */30 * * * * /usr/bin/php /var/www/northrepubli_usr/data/www/northrepublic.me/admin/telegram/cron.php
+ * Запускать каждые 30 минут: 0,30 * * * * /usr/bin/php /var/www/northrepubli_usr/data/www/northrepublic.me/admin/telegram/cron.php
  */
 
 // Устанавливаем лимиты для cron задачи
