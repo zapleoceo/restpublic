@@ -1,16 +1,10 @@
 <?php
 session_start();
-require_once '../includes/auth-check.php';
-require_once '../../classes/SePayTransactionService.php';
 
-// Проверяем авторизацию
-if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
-    header('Location: /admin/auth/login.php');
-    exit;
-}
+// Проверка авторизации
+require_once __DIR__ . '/../includes/auth-check.php';
 
-$pageTitle = 'SePay Transactions';
-include '../includes/header.php';
+require_once __DIR__ . '/../../classes/SePayTransactionService.php';
 
 try {
     $transactionService = new SePayTransactionService();
@@ -42,16 +36,32 @@ try {
     $stats = [];
 }
 ?>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SePay Transactions - North Republic Admin</title>
+    <link rel="stylesheet" href="../assets/css/admin.css">
+    <link rel="icon" type="image/png" href="../../template/favicon-32x32.png">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <?php include '../includes/header.php'; ?>
+    
+    <div class="admin-container">
+        <?php include '../includes/sidebar.php'; ?>
+        
+        <main class="admin-main">
+            <div class="page-header">
+                <h1>SePay Transactions</h1>
+                <p>Просмотр транзакций полученных через webhook</p>
+            </div>
 
 <div class="container-fluid">
-    <div class="row">
-        <div class="col-12">
-            <div class="page-title-box">
-                <h4 class="page-title">SePay Transactions</h4>
-                <p class="text-muted">Просмотр транзакций полученных через webhook</p>
-            </div>
-        </div>
-    </div>
 
     <?php if (isset($error)): ?>
     <div class="row">
@@ -367,4 +377,10 @@ function viewTransaction(transactionId) {
 }
 </script>
 
-<?php include '../includes/footer.php'; ?>
+        </main>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
