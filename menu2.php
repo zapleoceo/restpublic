@@ -670,6 +670,7 @@ if ($menu_loaded) {
             gap: 1rem;
             height: 100%;
             min-height: 60px;
+            align-self: center;
         }
         
         .add-to-cart-btn {
