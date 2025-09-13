@@ -705,7 +705,7 @@ if ($menu_loaded) {
         
         .add-to-cart-btn .add-icon {
             width: 20px;
-            height: 20px;
+            height: 100%;
             object-fit: contain;
         }
         
