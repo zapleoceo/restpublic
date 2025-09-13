@@ -9,6 +9,7 @@ class SepayNotificationService {
     private $telegramService;
     private $tracker;
     private $lastTransactionId;
+    private $lastTransactionIdFile;
     private $isRunning;
     private $checkInterval;
     
@@ -17,6 +18,7 @@ class SepayNotificationService {
         $this->telegramService = new TelegramService();
         $this->tracker = new TelegramTransactionTracker();
         $this->lastTransactionId = null;
+        $this->lastTransactionIdFile = __DIR__ . '/../logs/last_transaction_id.txt';
         $this->isRunning = false;
         $this->checkInterval = 30; // Проверка каждые 30 секунд
     }
