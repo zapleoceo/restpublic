@@ -244,6 +244,9 @@
 .order-type-option input[type="radio"] {
     margin-right: 8px;
     accent-color: #366b5b;
+    width: 20px;
+    height: 20px;
+    transform: scale(1.2);
 }
 
 .order-type-label {
