@@ -1768,6 +1768,12 @@ if ($menu_loaded) {
                 if (!Array.isArray(this.items)) {
                     this.items = [];
                 }
+            }
+            
+            // Функция для форматирования чисел с пробелами
+            formatNumber(num) {
+                return num.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+            }
                 this.init();
             }
 
@@ -1884,7 +1890,7 @@ if ($menu_loaded) {
                     cartItemsList.innerHTML = this.items.map(item => `
                         <div class="cart-item">
                             <div class="cart-item-name">${item.name}</div>
-                            <div class="cart-item-price">${item.price.toFixed(0)} ₫</div>
+                            <div class="cart-item-price">${this.formatNumber(item.price)} ₫</div>
                             <div class="cart-item-quantity">
                                 <a href="#" class="quantity-btn" onclick="cart.updateQuantity('${item.id}', ${item.quantity - 1}); return false;">-</a>
                                 <span>${item.quantity}</span>
@@ -1893,7 +1899,7 @@ if ($menu_loaded) {
                         </div>
                     `).join('');
 
-                    cartTotalAmount.textContent = `${this.getTotal().toFixed(0)} ₫`;
+                    cartTotalAmount.textContent = `${this.formatNumber(this.getTotal())} ₫`;
                 }
             }
 
@@ -1932,7 +1938,7 @@ if ($menu_loaded) {
                 cartItemsList.innerHTML = this.items.map(item => `
                     <div class="cart-item">
                         <div class="cart-item-name">${item.name}</div>
-                        <div class="cart-item-price">${item.price.toFixed(0)} ₫</div>
+                        <div class="cart-item-price">${this.formatNumber(item.price)} ₫</div>
                         <div class="cart-item-quantity">
                             <a href="#" class="quantity-btn" onclick="cart.updateQuantity('${item.id}', ${item.quantity - 1}); return false;">-</a>
                             <span>${item.quantity}</span>
@@ -1941,7 +1947,7 @@ if ($menu_loaded) {
                     </div>
                 `).join('');
 
-                cartTotalAmount.textContent = `${this.getTotal().toFixed(0)} ₫`;
+                cartTotalAmount.textContent = `${this.formatNumber(this.getTotal())} ₫`;
             }
 
             showModal() {
