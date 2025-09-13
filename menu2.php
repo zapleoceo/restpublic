@@ -350,6 +350,11 @@ if ($menu_loaded) {
             transform: translate(-50%, -50%);
         }
         
+        /* Auth icon default state - gray */
+        .auth-icon .auth-icon-img {
+            content: url('images/icons/auth-gray.png');
+        }
+        
         /* Cart icon default state - gray */
         .cart-icon .cart-icon-img {
             content: url('images/icons/cart gray.png');
@@ -1263,14 +1268,14 @@ if ($menu_loaded) {
                         <!-- Authorization Icon -->
                         <div class="header-auth">
                             <button class="auth-icon" id="authIcon" title="Авторизация">
-                                <img src="images/icons/auth-gray.png" alt="Авторизация" class="auth-icon-img">
+                                <img alt="Авторизация" class="auth-icon-img">
                             </button>
                         </div>
                         
                         <!-- Cart Icon -->
                         <div class="header-cart">
                             <button class="cart-icon" id="cartIcon" title="Корзина">
-                                <img src="images/icons/cart gray.png" alt="Корзина" class="cart-icon-img">
+                                <img alt="Корзина" class="cart-icon-img">
                                 <span class="cart-count" id="cartCount" style="display: none;">0</span>
                             </button>
                         </div>
