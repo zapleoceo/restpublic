@@ -699,12 +699,20 @@ if ($menu_loaded) {
         }
         
         .add-to-cart-btn::before {
-            content: '+';
+            content: '';
+            background-image: url('images/icons/add.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            width: 20px;
+            height: 20px;
+            display: inline-block;
             transition: all 0.3s ease;
         }
         
         .add-to-cart-btn:hover::before {
             content: 'в заказ';
+            background-image: none;
             font-size: 14px;
         }
         
@@ -1826,83 +1834,32 @@ if ($menu_loaded) {
 
                 const totalItems = this.items.reduce((sum, item) => sum + item.quantity, 0);
                 
-                console.log('=== updateCartDisplay DEBUG ===');
-                console.log('1. totalItems:', totalItems);
-                console.log('2. cartIconImg found:', cartIconImg);
-                console.log('3. current src before change:', cartIconImg ? cartIconImg.src : 'N/A');
-                
                 if (cartCount) {
                     cartCount.textContent = totalItems;
                     cartCount.style.display = totalItems > 0 ? 'flex' : 'none';
                 }
 
-                if (cartIcon) {
+                if (cartIcon && cartIconImg) {
                     if (totalItems > 0) {
                         cartIcon.classList.add('has-items');
-                        console.log('4. Added has-items class');
-                        if (cartIconImg) {
-                            const newSrc = 'images/icons/cart green.png?' + Date.now();
-                            console.log('5. Setting new src to:', newSrc);
-                            
-                            // Проверяем загрузку изображения
-                            const testImg = new Image();
-                            testImg.onload = function() {
-                                console.log('6. ✅ Green image loaded successfully');
-                            };
-                            testImg.onerror = function() {
-                                console.log('6. ❌ Green image failed to load!');
-                            };
-                            testImg.src = newSrc;
-                            
-                            // Принудительно перезагружаем изображение
-                            cartIconImg.style.display = 'none';
-                            cartIconImg.src = '';
-                            setTimeout(() => {
-                                cartIconImg.src = newSrc;
-                                cartIconImg.style.display = 'block';
-                                console.log('7. cartIconImg.src after forced reload:', cartIconImg.src);
-                                
-                                // Проверяем через небольшую задержку
-                                setTimeout(() => {
-                                    console.log('8. Final check - cartIconImg.src:', cartIconImg.src);
-                                    console.log('9. Final check - cartIconImg.complete:', cartIconImg.complete);
-                                    console.log('10. Final check - cartIconImg.naturalWidth:', cartIconImg.naturalWidth);
-                                }, 100);
-                            }, 10);
-                        } else {
-                            console.log('5. ❌ cartIconImg not found!');
-                        }
+                        // Принудительно перезагружаем зеленую иконку
+                        cartIconImg.style.display = 'none';
+                        cartIconImg.src = '';
+                        setTimeout(() => {
+                            cartIconImg.src = 'images/icons/cart green.png?' + Date.now();
+                            cartIconImg.style.display = 'block';
+                        }, 10);
                     } else {
                         cartIcon.classList.remove('has-items');
-                        console.log('4. Removed has-items class');
-                        if (cartIconImg) {
-                            const newSrc = 'images/icons/cart gray.png?' + Date.now();
-                            console.log('5. Setting new src to:', newSrc);
-                            
-                            // Проверяем загрузку изображения
-                            const testImg = new Image();
-                            testImg.onload = function() {
-                                console.log('6. ✅ Gray image loaded successfully');
-                            };
-                            testImg.onerror = function() {
-                                console.log('6. ❌ Gray image failed to load!');
-                            };
-                            testImg.src = newSrc;
-                            
-                            // Принудительно перезагружаем изображение
-                            cartIconImg.style.display = 'none';
-                            cartIconImg.src = '';
-                            setTimeout(() => {
-                                cartIconImg.src = newSrc;
-                                cartIconImg.style.display = 'block';
-                                console.log('7. cartIconImg.src after forced reload:', cartIconImg.src);
-                            }, 10);
-                        } else {
-                            console.log('5. ❌ cartIconImg not found!');
-                        }
+                        // Принудительно перезагружаем серую иконку
+                        cartIconImg.style.display = 'none';
+                        cartIconImg.src = '';
+                        setTimeout(() => {
+                            cartIconImg.src = 'images/icons/cart gray.png?' + Date.now();
+                            cartIconImg.style.display = 'block';
+                        }, 10);
                     }
                 }
-                console.log('=== END updateCartDisplay DEBUG ===');
             }
 
             toggleCart() {
