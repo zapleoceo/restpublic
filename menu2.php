@@ -681,45 +681,26 @@ if ($menu_loaded) {
         }
         
         .add-to-cart-btn {
+            font-family: var(--type-body);
+            font-weight: 500;
+            font-size: var(--text-base);
+            color: var(--color-bg-primary);
+            display: flex;
+            align-items: center;
+            height: 32px;
             border: none;
             background: transparent;
             cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             transition: all 0.3s ease;
-            flex-shrink: 0;
-            position: relative;
-            box-sizing: border-box;
-            font-size: 18px;
-            font-weight: bold;
-            color: #366b5b;
-            padding: 8px 12px;
-            border-radius: 6px;
-            min-width: 40px;
-            height: 32px;
+            padding: 0;
+            margin: 0;
         }
         
         .add-to-cart-btn:hover {
-            color: #fff;
-            background: #366b5b;
-            transform: scale(1.05);
-        }
-        
-        .add-to-cart-btn .add-icon {
-            width: 20px;
-            height: 20px;
-            transition: all 0.3s ease;
-        }
-        
-        .add-to-cart-btn:hover .add-icon {
-            display: none;
-        }
-        
-        .add-to-cart-btn:hover::after {
-            content: 'в заказ';
-            font-size: 14px;
-            transition: all 0.3s ease;
+            color: var(--color-white);
+            background: var(--color-bg-primary);
+            border-radius: 4px;
+            padding: 4px 8px;
         }
         
         
@@ -1395,7 +1376,7 @@ if ($menu_loaded) {
                                                                     'image' => $product['image_url'] ?? ''
                                                                 ]); ?>'
                                                                 title="Добавить в корзину">
-                                                            <img src="images/icons/add.png" alt="Добавить" class="add-icon">
+                                                            +
                                                         </button>
                                                     </div>
                                                 </div>
