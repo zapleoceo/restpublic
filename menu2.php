@@ -323,44 +323,38 @@ if ($menu_loaded) {
         .cart-icon {
             width: 40px;
             height: 40px;
-            border: 2px solid #5f6362;
+            border: none;
             border-radius: 50%;
-            background: rgba(255, 255, 255, 0.1);
+            background: transparent;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             transition: all 0.3s ease;
             position: relative;
-            backdrop-filter: blur(10px);
             padding: 0;
             box-sizing: border-box;
         }
         
         .auth-icon img,
         .cart-icon img {
-            width: 24px;
-            height: 24px;
+            width: 32px;
+            height: 32px;
             transition: all 0.3s ease;
             object-fit: contain;
             display: block;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
         }
         
         .auth-icon:hover,
         .cart-icon:hover {
-            border-color: #366b5b;
-            background: rgba(54, 107, 91, 0.1);
+            transform: scale(1.1);
         }
         
-        /* Cart icon hover - change to green PNG */
-        .cart-icon:hover .cart-icon-img {
-            content: url('images/icons/cart green.png');
-        }
-        
-        .auth-icon.authenticated,
-        .cart-icon.has-items {
-            border-color: #366b5b;
-            background: rgba(54, 107, 91, 0.2);
+        .auth-icon:hover img,
+        .cart-icon:hover img {
+            filter: drop-shadow(0 4px 8px rgba(54, 107, 91, 0.4));
+            transform: scale(1.05);
         }
         
         /* Auth icon authenticated - change to green PNG */
@@ -371,6 +365,18 @@ if ($menu_loaded) {
         /* Cart icon has items - change to green PNG */
         .cart-icon.has-items .cart-icon-img {
             content: url('images/icons/cart green.png');
+        }
+        
+        /* Cart icon hover - change to green PNG */
+        .cart-icon:hover .cart-icon-img {
+            content: url('images/icons/cart green.png');
+        }
+        
+        /* Active states for better UX */
+        .auth-icon:active,
+        .cart-icon:active,
+        .add-to-cart-btn:active {
+            transform: scale(0.95);
         }
         
         .cart-count {
@@ -389,7 +395,14 @@ if ($menu_loaded) {
             font-weight: 600;
             min-width: 20px;
             border: 2px solid #fff;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            box-shadow: 0 2px 6px rgba(231, 76, 60, 0.4);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
         }
         
         /* Mobile menu toggle - positioned outside s-header__block */
@@ -662,10 +675,9 @@ if ($menu_loaded) {
             height: 40px;
             min-width: 40px;
             min-height: 40px;
-            border: 2px solid #366b5b;
+            border: none;
             border-radius: 50%;
             background: transparent;
-            color: #366b5b;
             cursor: pointer;
             display: flex;
             align-items: center;
@@ -677,38 +689,20 @@ if ($menu_loaded) {
             box-sizing: border-box;
         }
         
-        .add-to-cart-btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #366b5b;
-            border-radius: 50%;
-            transform: scale(0);
-            transition: transform 0.3s ease;
-            z-index: -1;
-        }
-        
         .add-to-cart-btn:hover {
-            color: #fff;
             transform: scale(1.1);
-            box-shadow: 0 4px 12px rgba(54, 107, 91, 0.3);
-        }
-        
-        .add-to-cart-btn:hover::before {
-            transform: scale(1);
-        }
-        
-        .add-to-cart-btn:active {
-            transform: scale(0.95);
         }
         
         .add-to-cart-btn img {
-            position: relative;
-            z-index: 1;
+            width: 24px;
+            height: 24px;
             transition: all 0.3s ease;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+        }
+        
+        .add-to-cart-btn:hover img {
+            filter: drop-shadow(0 4px 8px rgba(54, 107, 91, 0.5));
+            transform: scale(1.05);
         }
         
         /* Modal Styles */
@@ -1198,8 +1192,8 @@ if ($menu_loaded) {
             
             .auth-icon img,
             .cart-icon img {
-                width: 20px;
-                height: 20px;
+                width: 28px;
+                height: 28px;
             }
             
             .cart-count {
@@ -1367,7 +1361,7 @@ if ($menu_loaded) {
                                                                 'image' => $product['image_url'] ?? ''
                                                             ]); ?>'
                                                             title="Добавить в корзину">
-                                                        <img src="images/icons/plus-icon.svg" alt="+" width="20" height="20">
+                                                        <img src="images/icons/plus-icon.svg" alt="Добавить в корзину">
                                                     </button>
                                                 </div>
                                             </li>
