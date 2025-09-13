@@ -500,6 +500,12 @@ if ($menu_loaded) {
                                 <input type="text" id="customerName" name="customerName" placeholder="Введите ваше имя" required>
                             </div>
                             <div class="form-group">
+                                <label for="tablePhone">Телефон</label>
+                                <input type="tel" id="tablePhone" name="tablePhone" placeholder="+84" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
                                 <label for="tableNumber">Стол</label>
                                 <select id="tableNumber" name="tableNumber" required>
                                     <option value="">Выберите стол</option>

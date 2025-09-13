@@ -230,6 +230,12 @@ class Cart {
         document.getElementById('takeawayPhone')?.addEventListener('input', (e) => {
             this.validatePhone(e.target);
         });
+        
+        // Table phone validation and mask
+        document.getElementById('tablePhone')?.addEventListener('input', (e) => {
+            this.applyPhoneMask(e.target);
+            this.validatePhone(e.target);
+        });
 
         // Delivery time validation
         document.getElementById('deliveryTime')?.addEventListener('change', (e) => {
@@ -304,8 +310,36 @@ class Cart {
         }
     }
 
+    applyPhoneMask(input) {
+        let value = input.value.replace(/\D/g, ''); // Удаляем все нецифровые символы
+        
+        // Если начинается не с 84, добавляем +84
+        if (!value.startsWith('84')) {
+            value = '84' + value;
+        }
+        
+        // Ограничиваем до 11 цифр (84 + 9 цифр)
+        if (value.length > 11) {
+            value = value.substring(0, 11);
+        }
+        
+        // Форматируем: +84 xxxx xxxxx
+        if (value.length >= 2) {
+            let formatted = '+' + value.substring(0, 2);
+            if (value.length > 2) {
+                formatted += ' ' + value.substring(2, 6);
+            }
+            if (value.length > 6) {
+                formatted += ' ' + value.substring(6);
+            }
+            input.value = formatted;
+        } else if (value.length > 0) {
+            input.value = '+' + value;
+        }
+    }
+
     validatePhone(input) {
-        const phone = input.value;
+        const phone = input.value.replace(/\s/g, ''); // Убираем пробелы для валидации
         const phoneRegex = /^\+84\d{9}$/;
         
         if (phone && !phoneRegex.test(phone)) {
@@ -333,10 +367,23 @@ class Cart {
         
         if (orderType === 'table') {
             const name = document.getElementById('customerName').value.trim();
+            const phone = document.getElementById('tablePhone').value.trim();
             const table = document.getElementById('tableNumber').value;
             
             if (!name) {
                 this.showToast('Введите ваше имя', 'error');
+                return false;
+            }
+            
+            if (!phone) {
+                this.showToast('Введите номер телефона', 'error');
+                return false;
+            }
+            
+            // Проверяем валидность телефона
+            const phoneRegex = /^\+84\d{9}$/;
+            if (!phoneRegex.test(phone.replace(/\s/g, ''))) {
+                this.showToast('Введите корректный номер телефона', 'error');
                 return false;
             }
             
@@ -434,10 +481,11 @@ class Cart {
     getOrderComment(orderType) {
         if (orderType === 'table') {
             const name = document.getElementById('customerName').value.trim();
+            const phone = document.getElementById('tablePhone').value.trim();
             const table = document.getElementById('tableNumber').value;
             const comment = document.getElementById('tableComment').value.trim();
             
-            let commentText = `Заказ на столик. Имя: ${name}, Стол: ${table}`;
+            let commentText = `Заказ на столик. Имя: ${name}, Телефон: ${phone}, Стол: ${table}`;
             if (comment) {
                 commentText += `. Комментарий: ${comment}`;
             }
