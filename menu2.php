@@ -917,7 +917,7 @@ if ($menu_loaded) {
             gap: 4px;
         }
         
-        .cart-item-quantity button {
+        .cart-item-quantity .quantity-btn {
             width: 20px;
             height: 20px;
             border: 1px solid #ddd;
@@ -932,10 +932,22 @@ if ($menu_loaded) {
             color: #333;
             padding: 0;
             line-height: 1;
+            text-decoration: none;
+            user-select: none;
         }
         
-        .cart-item-quantity button:hover {
+        .cart-item-quantity .quantity-btn:hover {
             background: #f5f5f5;
+        }
+        
+        .cart-item-quantity .quantity-btn img {
+            width: 12px;
+            height: 12px;
+            object-fit: contain;
+        }
+        
+        .cart-item-quantity .quantity-btn .minus-icon {
+            transform: rotate(45deg);
         }
         
         .cart-item-quantity span {
@@ -1883,9 +1895,13 @@ if ($menu_loaded) {
                             <div class="cart-item-name">${item.name}</div>
                             <div class="cart-item-price">${item.price.toFixed(0)} ₫</div>
                             <div class="cart-item-quantity">
-                                <button onclick="cart.updateQuantity('${item.id}', ${item.quantity - 1})">-</button>
+                                <a href="#" class="quantity-btn" onclick="cart.updateQuantity('${item.id}', ${item.quantity - 1}); return false;">
+                                    <img src="images/icons/add.png" alt="Уменьшить" class="minus-icon">
+                                </a>
                                 <span>${item.quantity}</span>
-                                <button onclick="cart.updateQuantity('${item.id}', ${item.quantity + 1})">+</button>
+                                <a href="#" class="quantity-btn" onclick="cart.updateQuantity('${item.id}', ${item.quantity + 1}); return false;">
+                                    <img src="images/icons/add.png" alt="Увеличить">
+                                </a>
                             </div>
                         </div>
                     `).join('');
@@ -1931,9 +1947,13 @@ if ($menu_loaded) {
                         <div class="cart-item-name">${item.name}</div>
                         <div class="cart-item-price">${item.price.toFixed(0)} ₫</div>
                         <div class="cart-item-quantity">
-                            <button onclick="cart.updateQuantity('${item.id}', ${item.quantity - 1})">-</button>
+                            <a href="#" class="quantity-btn" onclick="cart.updateQuantity('${item.id}', ${item.quantity - 1}); return false;">
+                                <img src="images/icons/add.png" alt="Уменьшить" class="minus-icon">
+                            </a>
                             <span>${item.quantity}</span>
-                            <button onclick="cart.updateQuantity('${item.id}', ${item.quantity + 1})">+</button>
+                            <a href="#" class="quantity-btn" onclick="cart.updateQuantity('${item.id}', ${item.quantity + 1}); return false;">
+                                <img src="images/icons/add.png" alt="Увеличить">
+                            </a>
                         </div>
                     </div>
                 `).join('');
