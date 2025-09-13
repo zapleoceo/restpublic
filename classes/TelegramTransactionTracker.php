@@ -86,23 +86,24 @@ class TelegramTransactionTracker {
      */
     public function getUnsentTransactions(array $transactionIds) {
         try {
+            // Сначала получаем все отправленные транзакции
             $cursor = $this->collection->find(
                 [
                     'transaction_id' => ['$in' => $transactionIds],
-                    '$or' => [
-                        ['telegram_sent' => ['$ne' => true]],
-                        ['telegram_sent' => ['$exists' => false]]
-                    ]
+                    'telegram_sent' => true
                 ],
                 ['projection' => ['transaction_id' => 1]]
             );
             
-            $unsentIds = [];
+            $sentIds = [];
             foreach ($cursor as $document) {
-                $unsentIds[] = $document['transaction_id'];
+                $sentIds[] = $document['transaction_id'];
             }
             
-            return $unsentIds;
+            // Возвращаем все транзакции, которые НЕ в списке отправленных
+            $unsentIds = array_diff($transactionIds, $sentIds);
+            
+            return array_values($unsentIds);
         } catch (Exception $e) {
             error_log("Error getting unsent transactions: " . $e->getMessage());
             return $transactionIds; // В случае ошибки считаем все неотправленными
