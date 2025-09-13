@@ -6,6 +6,18 @@ class TelegramService {
     private $chatIds;
     
     public function __construct() {
+        // Загружаем переменные окружения из .env файла
+        if (file_exists(__DIR__ . '/../.env')) {
+            $lines = file(__DIR__ . '/../.env', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+            foreach ($lines as $line) {
+                if (strpos($line, '=') !== false) {
+                    list($key, $value) = explode('=', $line, 2);
+                    $_ENV[$key] = $value;
+                    putenv("$key=$value");
+                }
+            }
+        }
+        
         $this->botToken = $_ENV['TELEGRAM_BOT_TOKEN'] ?? getenv('TELEGRAM_BOT_TOKEN');
         $this->apiUrl = "https://api.telegram.org/bot{$this->botToken}";
         
