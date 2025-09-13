@@ -14,7 +14,7 @@ class SepayService {
         $this->loadEnvironmentVariables();
         
         $this->apiToken = $_ENV['SEPAY_API_TOKEN'] ?? 'MAM0JWTFVWQUZJ5YDISKYO8BFPPAURIOVMR2SDN3XK1TZ2ST9K39JC7KDITBXP6N';
-        $this->apiBaseUrl = 'https://api.sepay.vn/v1';
+        $this->apiBaseUrl = 'https://sepay.vn/api/v1';
         
         // Инициализируем кэш (простой файловый кэш)
         $this->cache = new SepayCache();
@@ -49,6 +49,7 @@ class SepayService {
             $params = $this->buildApiParams($filters);
             $url = $this->apiBaseUrl . '/transactions?' . http_build_query($params);
             
+            error_log("SepayService: Making request to: " . $url);
             $response = $this->makeApiRequest($url);
             
             if (!$response || !isset($response['data'])) {
@@ -212,9 +213,11 @@ class SepayService {
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 60);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($ch, CURLOPT_USERAGENT, 'NorthRepublic/1.0');
         
         $response = curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
@@ -225,8 +228,14 @@ class SepayService {
             throw new Exception("cURL Error: {$error}");
         }
         
+        if ($httpCode === 429) {
+            // Rate limit exceeded - Sepay allows 2 requests per second
+            $retryAfter = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+            throw new Exception("Rate limit exceeded. Sepay allows 2 requests per second. Please wait before retrying.");
+        }
+        
         if ($httpCode !== 200) {
-            throw new Exception("API Error: HTTP {$httpCode}");
+            throw new Exception("API Error: HTTP {$httpCode} - {$response}");
         }
         
         $data = json_decode($response, true);
