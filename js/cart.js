@@ -260,11 +260,8 @@ class Cart {
 
     async loadTables() {
         try {
-            const response = await fetch('http://localhost:3002/api/tables/list', {
-                headers: {
-                    'X-API-Token': window.API_TOKEN
-                }
-            });
+            // Используем PHP API для загрузки столов
+            const response = await fetch('/api/tables.php');
             
             if (response.ok) {
                 const data = await response.json();
@@ -402,7 +399,9 @@ class Cart {
         try {
             this.showToast('Отправляем заказ...', 'info');
             
-            const response = await fetch('http://localhost:3002/api/poster/orders/create', {
+            // Используем правильный URL для продакшн сервера
+            const apiUrl = window.location.hostname === 'localhost' ? 'http://localhost:3002' : 'https://northrepublic.me';
+            const response = await fetch(`${apiUrl}/api/poster/orders/create`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
