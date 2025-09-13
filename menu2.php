@@ -358,7 +358,7 @@ if ($menu_loaded) {
         .auth-icon:hover img,
         .cart-icon:hover img {
             filter: drop-shadow(0 4px 8px rgba(54, 107, 91, 0.4));
-            transform: scale(1.05);
+            transform: translate(-50%, -50%) scale(1.05);
         }
         
         /* Auth icon authenticated - change to green PNG */
@@ -1196,6 +1196,11 @@ if ($menu_loaded) {
                 top: 50%;
                 left: 50%;
                 transform: translate(-50%, -50%);
+            }
+            
+            .auth-icon:hover img,
+            .cart-icon:hover img {
+                transform: translate(-50%, -50%) scale(1.05);
             }
             
             .cart-count {
