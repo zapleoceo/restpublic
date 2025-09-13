@@ -1842,22 +1842,10 @@ if ($menu_loaded) {
                 if (cartIcon && cartIconImg) {
                     if (totalItems > 0) {
                         cartIcon.classList.add('has-items');
-                        // Принудительно перезагружаем зеленую иконку
-                        cartIconImg.style.display = 'none';
-                        cartIconImg.src = '';
-                        setTimeout(() => {
-                            cartIconImg.src = 'images/icons/cart green.png?' + Date.now();
-                            cartIconImg.style.display = 'block';
-                        }, 10);
+                        cartIconImg.src = 'images/icons/cart green.png';
                     } else {
                         cartIcon.classList.remove('has-items');
-                        // Принудительно перезагружаем серую иконку
-                        cartIconImg.style.display = 'none';
-                        cartIconImg.src = '';
-                        setTimeout(() => {
-                            cartIconImg.src = 'images/icons/cart gray.png?' + Date.now();
-                            cartIconImg.style.display = 'block';
-                        }, 10);
+                        cartIconImg.src = 'images/icons/cart gray.png';
                     }
                 }
             }
