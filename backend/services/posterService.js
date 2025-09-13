@@ -232,7 +232,7 @@ class PosterService {
   async getTables() {
     console.log(`🔍 getTables() called`);
     try {
-      const tables = await this.makeRequest('tables.getTables');
+      const tables = await this.makeRequest('spots.getTableHallTables');
       console.log(`📥 Raw tables from Poster API:`, tables);
       console.log(`📋 Retrieved ${tables.length} tables`);
       return tables;
