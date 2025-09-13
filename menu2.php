@@ -707,6 +707,8 @@ if ($menu_loaded) {
             width: 20px;
             height: 100%;
             object-fit: contain;
+            object-position: center;
+            display: block;
         }
         
         
