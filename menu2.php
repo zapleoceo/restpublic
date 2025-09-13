@@ -771,7 +771,7 @@ if ($menu_loaded) {
         .modal-content {
             background: #fff;
             border-radius: 12px;
-            max-width: 400px;
+            max-width: 90vw;
             width: 100%;
             max-height: 80vh;
             overflow-y: auto;
@@ -913,22 +913,23 @@ if ($menu_loaded) {
         .cart-item-quantity {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 4px;
         }
         
         .cart-item-quantity button {
-            width: 24px;
-            height: 24px;
+            width: 18px;
+            height: 18px;
             border: 1px solid #ddd;
             background: #fff;
-            border-radius: 4px;
+            border-radius: 3px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 14px;
+            font-size: 12px;
             font-weight: bold;
             color: #333;
+            padding: 0;
         }
         
         .cart-item-quantity button:hover {
@@ -936,9 +937,10 @@ if ($menu_loaded) {
         }
         
         .cart-item-quantity span {
-            min-width: 30px;
+            min-width: 20px;
             text-align: center;
             font-weight: 600;
+            font-size: 14px;
         }
         
         .cart-total {
