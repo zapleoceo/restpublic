@@ -581,7 +581,7 @@ class Cart {
             position: fixed;
             top: 20px;
             right: 20px;
-            background: ${type === 'success' ? '#4CAF50' : type === 'error' ? '#f44336' : type === 'warning' ? '#ff9800' : '#366b5b'};
+            background: ${type === 'success' ? '#366b5b' : type === 'error' ? '#f44336' : type === 'warning' ? '#ff9800' : '#366b5b'};
             color: white;
             padding: 12px 20px;
             border-radius: 4px;
