@@ -72,15 +72,6 @@ class SepayService {
         } catch (Exception $e) {
             error_log("SepayService Error: " . $e->getMessage());
             
-            // Если это rate limit, попробуем вернуть кэшированные данные
-            if (strpos($e->getMessage(), 'Rate limit exceeded') !== false) {
-                $cachedData = $this->cache->get($cacheKey, 3600); // Ищем в кэше до 1 часа
-                if ($cachedData !== null) {
-                    error_log("SepayService: Returning cached data due to rate limit");
-                    return $cachedData;
-                }
-            }
-            
             return [
                 'transactions' => [],
                 'total' => 0,
@@ -273,7 +264,18 @@ class SepayService {
             if ($retryAfter) {
                 $message .= " Retry after {$retryAfter} seconds.";
             }
-            throw new Exception($message);
+            
+            // Возвращаем специальную структуру для rate limit
+            return [
+                'transactions' => [],
+                'total' => 0,
+                'page' => 1,
+                'per_page' => 50,
+                'total_pages' => 0,
+                'error' => $message,
+                'rate_limit' => true,
+                'retry_after' => $retryAfter
+            ];
         }
         
         if ($httpCode !== 200) {

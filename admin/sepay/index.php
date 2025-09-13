@@ -26,7 +26,15 @@ try {
     // Получаем транзакции от API
     $apiResponse = $sepayService->getTransactions($filters);
     
-    if (isset($apiResponse['error'])) {
+    // Проверяем на rate limit
+    $rateLimit = false;
+    $retryAfter = null;
+    if (isset($apiResponse['rate_limit']) && $apiResponse['rate_limit']) {
+        $rateLimit = true;
+        $retryAfter = $apiResponse['retry_after'] ?? null;
+    }
+    
+    if (isset($apiResponse['error']) && !$rateLimit) {
         throw new Exception("Ошибка API Sepay: " . $apiResponse['error']);
     }
     
@@ -49,6 +57,8 @@ try {
     $totalPages = 0;
     $stats = ['total' => 0, 'success' => 0, 'failed' => 0, 'pending' => 0];
     $error = "Ошибка подключения к Sepay API: " . $e->getMessage();
+    $rateLimit = false;
+    $retryAfter = null;
 }
 
 // Логируем просмотр логов
@@ -190,7 +200,37 @@ logAdminAction('view_sepay_logs', 'Просмотр логов платежей 
             </div>
             
             <?php if (isset($error)): ?>
-                <div class="alert alert-error"><?php echo htmlspecialchars($error); ?></div>
+                <div class="alert alert-error">
+                    <?php echo htmlspecialchars($error); ?>
+                    <?php if ($rateLimit && $retryAfter): ?>
+                        <br><br>
+                        <strong>Rate Limit активен!</strong><br>
+                        Можно обновить через: <span id="countdown"><?php echo $retryAfter; ?></span> секунд
+                        <br><br>
+                        <button id="refreshBtn" onclick="location.reload()" disabled>
+                            Обновить (через <?php echo $retryAfter; ?> сек)
+                        </button>
+                        
+                        <script>
+                        let countdown = <?php echo $retryAfter; ?>;
+                        const countdownElement = document.getElementById('countdown');
+                        const refreshBtn = document.getElementById('refreshBtn');
+                        
+                        const timer = setInterval(() => {
+                            countdown--;
+                            countdownElement.textContent = countdown;
+                            refreshBtn.textContent = `Обновить (через ${countdown} сек)`;
+                            
+                            if (countdown <= 0) {
+                                clearInterval(timer);
+                                refreshBtn.disabled = false;
+                                refreshBtn.textContent = 'Обновить';
+                                countdownElement.textContent = '0';
+                            }
+                        }, 1000);
+                        </script>
+                    <?php endif; ?>
+                </div>
             <?php endif; ?>
             
             <!-- Статистика -->
