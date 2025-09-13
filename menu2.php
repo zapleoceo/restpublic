@@ -1960,6 +1960,9 @@ if ($menu_loaded) {
     </style>
     
     <script>
+        // API Configuration
+        window.API_TOKEN = '<?php echo $_ENV['API_AUTH_TOKEN'] ?? 'nr_api_2024_7f8a9b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0u1v2w3x4y5z6'; ?>';
+        
         // Cart functionality
         class Cart {
             constructor() {
@@ -2225,7 +2228,7 @@ if ($menu_loaded) {
                 try {
                     const response = await fetch('/api/poster/tables/list', {
                         headers: {
-                            'X-API-Token': 'northrepublic-api-2024' // API token for authentication
+                            'X-API-Token': window.API_TOKEN || 'nr_api_2024_7f8a9b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0u1v2w3x4y5z6'
                         }
                     });
                     
@@ -2368,7 +2371,7 @@ if ($menu_loaded) {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
-                            'X-API-Token': 'northrepublic-api-2024' // API token for authentication
+                            'X-API-Token': window.API_TOKEN || 'nr_api_2024_7f8a9b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0u1v2w3x4y5z6'
                         },
                         body: JSON.stringify(orderData)
                     });
