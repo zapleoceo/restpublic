@@ -473,7 +473,11 @@ if ($menu_loaded) {
                     </label>
                     <label class="order-type-option">
                         <input type="radio" name="orderType" value="takeaway">
-                        <span class="order-type-label">Заказ с собой</span>
+                        <span class="order-type-label">Заказать с собой</span>
+                    </label>
+                    <label class="order-type-option">
+                        <input type="radio" name="orderType" value="delivery">
+                        <span class="order-type-label">Заказать доставку</span>
                     </label>
                 </div>
                 <button class="modal-close" id="cartModalClose">&times;</button>
@@ -522,16 +526,24 @@ if ($menu_loaded) {
                     <!-- Takeaway Order Fields -->
                     <div class="order-field-group" id="takeawayOrderFields" style="display: none;">
                         <div class="form-group">
-                            <label for="takeawayAddress">Адрес (ссылка на Google карту)</label>
-                            <input type="url" id="takeawayAddress" name="takeawayAddress" placeholder="https://maps.google.com/..." required>
+                            <label for="takeawayComment">Комментарий</label>
+                            <textarea id="takeawayComment" name="takeawayComment" rows="3" placeholder="Сюда можно написать все, что вы хотели бы, чтобы мы учли"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Delivery Order Fields -->
+                    <div class="order-field-group" id="deliveryOrderFields" style="display: none;">
+                        <div class="form-group">
+                            <label for="deliveryAddress">Адрес доставки (ссылка на Google карту)</label>
+                            <input type="url" id="deliveryAddress" name="deliveryAddress" placeholder="https://maps.google.com/..." required>
                         </div>
                         <div class="form-group">
                             <label for="deliveryTime">Время доставки</label>
                             <input type="datetime-local" id="deliveryTime" name="deliveryTime" required>
                         </div>
                         <div class="form-group">
-                            <label for="takeawayComment">Комментарий</label>
-                            <textarea id="takeawayComment" name="takeawayComment" rows="3" placeholder="Сюда можно написать все, что вы хотели бы, чтобы мы учли"></textarea>
+                            <label for="deliveryComment">Комментарий</label>
+                            <textarea id="deliveryComment" name="deliveryComment" rows="3" placeholder="Сюда можно написать все, что вы хотели бы, чтобы мы учли"></textarea>
                         </div>
                     </div>
                 </div>

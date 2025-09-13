@@ -256,15 +256,22 @@ class Cart {
     toggleOrderFields(orderType) {
         const tableFields = document.getElementById('tableOrderFields');
         const takeawayFields = document.getElementById('takeawayOrderFields');
+        const deliveryFields = document.getElementById('deliveryOrderFields');
         const tableFieldGroup = document.getElementById('tableFieldGroup');
+        
+        // Скрываем все поля
+        tableFields.style.display = 'none';
+        takeawayFields.style.display = 'none';
+        deliveryFields.style.display = 'none';
         
         if (orderType === 'table') {
             tableFields.style.display = 'block';
-            takeawayFields.style.display = 'none';
             tableFieldGroup.style.display = 'block'; // Показываем поле стола
-        } else {
-            tableFields.style.display = 'none';
+        } else if (orderType === 'takeaway') {
             takeawayFields.style.display = 'block';
+            tableFieldGroup.style.display = 'none'; // Скрываем поле стола
+        } else if (orderType === 'delivery') {
+            deliveryFields.style.display = 'block';
             tableFieldGroup.style.display = 'none'; // Скрываем поле стола
         }
     }
@@ -394,8 +401,10 @@ class Cart {
                 this.showToast('Выберите стол', 'error');
                 return false;
             }
-        } else {
-            const address = document.getElementById('takeawayAddress').value.trim();
+        } else if (orderType === 'takeaway') {
+            // Для заказа с собой дополнительных полей не требуется
+        } else if (orderType === 'delivery') {
+            const address = document.getElementById('deliveryAddress').value.trim();
             const deliveryTime = document.getElementById('deliveryTime').value;
             
             if (!address) {
@@ -431,7 +440,7 @@ class Cart {
         const orderData = {
             spot_id: 1, // Default spot
             phone: phone, // Обязательный параметр согласно документации
-            service_mode: orderType === 'table' ? 1 : 2, // 1 - в заведении, 2 - навынос
+            service_mode: orderType === 'table' ? 1 : (orderType === 'takeaway' ? 2 : 3), // 1 - в заведении, 2 - навынос, 3 - доставка
             products: this.items.map(item => ({
                 product_id: parseInt(item.id),
                 count: item.quantity,
@@ -440,13 +449,13 @@ class Cart {
             comment: this.getOrderComment(orderType)
         };
 
-        // Для заказов на вынос добавляем адрес
-        if (orderType === 'takeaway') {
-            const address = document.getElementById('takeawayAddress').value.trim();
+        // Для заказов на доставку добавляем адрес
+        if (orderType === 'delivery') {
+            const address = document.getElementById('deliveryAddress').value.trim();
             if (address) {
                 orderData.client_address = {
                     address1: address,
-                    comment: 'Адрес для заказа на вынос'
+                    comment: 'Адрес для доставки'
                 };
             }
         }
@@ -495,12 +504,20 @@ class Cart {
                 commentText += `. Комментарий: ${comment}`;
             }
             return commentText;
-        } else {
-            const address = document.getElementById('takeawayAddress').value.trim();
-            const deliveryTime = document.getElementById('deliveryTime').value;
+        } else if (orderType === 'takeaway') {
             const comment = document.getElementById('takeawayComment').value.trim();
             
-            let commentText = `Заказ с собой. Имя: ${name}, Телефон: ${phone}, Адрес: ${address}, Время: ${deliveryTime}`;
+            let commentText = `Заказ с собой. Имя: ${name}, Телефон: ${phone}`;
+            if (comment) {
+                commentText += `. Комментарий: ${comment}`;
+            }
+            return commentText;
+        } else if (orderType === 'delivery') {
+            const address = document.getElementById('deliveryAddress').value.trim();
+            const deliveryTime = document.getElementById('deliveryTime').value;
+            const comment = document.getElementById('deliveryComment').value.trim();
+            
+            let commentText = `Заказ на доставку. Имя: ${name}, Телефон: ${phone}, Адрес: ${address}, Время: ${deliveryTime}`;
             if (comment) {
                 commentText += `. Комментарий: ${comment}`;
             }
