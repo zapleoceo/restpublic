@@ -252,6 +252,15 @@ logAdminAction('view_sepay_logs', 'Просмотр логов платежей 
                 </button>
                 <p style="margin-top: 10px; color: #666; font-size: 14px;">
                     Последнее обновление: <?php echo date('H:i:s'); ?>
+                    <?php if ($rateLimit && $retryAfter): ?>
+                        <br><span style="color: #e74c3c; font-weight: bold;">
+                            ⚠️ Rate Limit активен! Следующий запрос через: <?php echo $retryAfter; ?> сек
+                        </span>
+                    <?php else: ?>
+                        <br><span style="color: #27ae60;">
+                            ✅ API доступен
+                        </span>
+                    <?php endif; ?>
                 </p>
             </div>
             
