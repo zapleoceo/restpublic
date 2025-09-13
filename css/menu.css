@@ -558,9 +558,8 @@
     .header-menu-toggle {
         display: block !important;
     }
-}
-
-@media (max-width: 760px) {
+    
+    /* Сдвигаем иконки влево когда появляется кнопка меню */
     .header-actions {
         right: 80px !important;
     }
@@ -600,10 +599,10 @@
         height: 12px;
     }
     
-    /* Mobile header actions */
+    /* Mobile header actions - дополнительный сдвиг для маленьких экранов */
     .header-actions {
         gap: 0.5rem;
-        right: 60px;
+        right: 60px !important;
         position: absolute;
         top: 50%;
         transform: translateY(-50%);
