@@ -665,6 +665,9 @@ if ($menu_loaded) {
             font-size: var(--text-base);
             padding-right: 0.2rem;
             color: var(--color-bg-primary);
+            display: flex;
+            align-items: center;
+            height: 32px;
         }
         
         .menu-list__item-price span {
@@ -677,7 +680,10 @@ if ($menu_loaded) {
         .menu-list__item-actions {
             display: flex;
             align-items: center;
+            justify-content: flex-end;
             gap: 1rem;
+            height: 100%;
+            min-height: 60px;
         }
         
         .add-to-cart-btn {
