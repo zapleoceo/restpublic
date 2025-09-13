@@ -786,12 +786,21 @@ if ($menu_loaded) {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
         }
         
         .modal-header h2 {
             margin: 0;
             color: #2c2c2c;
             font-size: 1.5rem;
+            flex: 1;
+        }
+        
+        .modal-header .order-type-options {
+            display: flex;
+            gap: 16px;
+            margin: 0;
         }
         
         .modal-close {
@@ -990,20 +999,20 @@ if ($menu_loaded) {
         }
 
         .order-fields {
-            margin-bottom: 20px;
+            margin-bottom: 12px;
         }
 
         .order-field-group {
-            padding: 16px;
+            padding: 12px;
             background: #f8f9fa;
             border-radius: 8px;
-            margin-bottom: 16px;
+            margin-bottom: 8px;
         }
 
         .form-row {
             display: flex;
-            gap: 16px;
-            margin-bottom: 16px;
+            gap: 12px;
+            margin-bottom: 12px;
         }
 
         .form-row .form-group {
@@ -1011,7 +1020,7 @@ if ($menu_loaded) {
         }
 
         .form-group {
-            margin-bottom: 16px;
+            margin-bottom: 12px;
         }
 
         .form-group label {
@@ -1669,26 +1678,21 @@ if ($menu_loaded) {
     <div id="cartModal" class="modal modal-hidden">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>Корзина</h2>
+                <h2>Ваш заказ</h2>
+                <div class="order-type-options">
+                    <label class="order-type-option">
+                        <input type="radio" name="orderType" value="table" checked>
+                        <span class="order-type-label">Заказ на столик</span>
+                    </label>
+                    <label class="order-type-option">
+                        <input type="radio" name="orderType" value="takeaway">
+                        <span class="order-type-label">Заказ с собой</span>
+                    </label>
+                </div>
                 <button class="modal-close" id="cartModalClose">&times;</button>
             </div>
             
             <div class="modal-body">
-                <!-- Order Type Selection -->
-                <div class="order-type-selection">
-                    <h3>Тип заказа</h3>
-                    <div class="order-type-options">
-                        <label class="order-type-option">
-                            <input type="radio" name="orderType" value="table" checked>
-                            <span class="order-type-label">Заказ на столик</span>
-                        </label>
-                        <label class="order-type-option">
-                            <input type="radio" name="orderType" value="takeaway">
-                            <span class="order-type-label">Заказ с собой</span>
-                        </label>
-                    </div>
-                </div>
-
                 <div class="cart-items-list" id="cartItemsList">
                     <!-- Cart items will be populated here -->
                 </div>
