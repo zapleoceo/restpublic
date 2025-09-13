@@ -706,7 +706,8 @@ if ($menu_loaded) {
             background-position: center;
             width: 20px;
             height: 20px;
-            display: inline-block;
+            display: block;
+            margin: 0 auto;
             transition: all 0.3s ease;
         }
         
