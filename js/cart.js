@@ -449,14 +449,36 @@ class Cart {
             comment: this.getOrderComment(orderType)
         };
 
-        // Для заказов на доставку добавляем адрес
+        // Для заказа на столик добавляем table_id
+        if (orderType === 'table') {
+            const tableSelect = document.getElementById('tableNumber');
+            const selectedTableId = tableSelect.value;
+            if (selectedTableId) {
+                orderData.table_id = parseInt(selectedTableId);
+            }
+        }
+
+        // Для заказов на доставку добавляем адрес и время
         if (orderType === 'delivery') {
             const address = document.getElementById('deliveryAddress').value.trim();
+            const deliveryTime = document.getElementById('deliveryTime').value;
+            
             if (address) {
                 orderData.client_address = {
                     address1: address,
                     comment: 'Адрес для доставки'
                 };
+            }
+            
+            if (deliveryTime) {
+                // Конвертируем в формат YYYY-MM-DD HH:MM:SS
+                const date = new Date(deliveryTime);
+                const formattedTime = date.getFullYear() + '-' + 
+                    String(date.getMonth() + 1).padStart(2, '0') + '-' + 
+                    String(date.getDate()).padStart(2, '0') + ' ' + 
+                    String(date.getHours()).padStart(2, '0') + ':' + 
+                    String(date.getMinutes()).padStart(2, '0') + ':00';
+                orderData.delivery_time = formattedTime;
             }
         }
 
