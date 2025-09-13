@@ -350,6 +350,11 @@ if ($menu_loaded) {
             transform: translate(-50%, -50%);
         }
         
+        /* Cart icon default state - gray */
+        .cart-icon .cart-icon-img {
+            content: url('images/icons/cart gray.png');
+        }
+        
         .auth-icon:hover,
         .cart-icon:hover {
             transform: scale(1.1);
@@ -371,8 +376,8 @@ if ($menu_loaded) {
             content: url('images/icons/cart green.png');
         }
         
-        /* Cart icon hover - change to green PNG */
-        .cart-icon:hover .cart-icon-img {
+        /* Cart icon hover - only green if has items, otherwise stay gray */
+        .cart-icon.has-items:hover .cart-icon-img {
             content: url('images/icons/cart green.png');
         }
         
