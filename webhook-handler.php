@@ -27,9 +27,16 @@ if (empty($apiKey)) {
 // Проверяем авторизацию через API ключ
 $headers = getallheaders();
 $authHeader = $headers['Authorization'] ?? $headers['authorization'] ?? '';
-$bearerToken = str_replace('Bearer ', '', $authHeader);
 
-if ($bearerToken !== $apiKey) {
+// SePay отправляет: Authorization: Apikey API_KEY
+$receivedApiKey = '';
+if (strpos($authHeader, 'Apikey ') === 0) {
+    $receivedApiKey = str_replace('Apikey ', '', $authHeader);
+} elseif (strpos($authHeader, 'Bearer ') === 0) {
+    $receivedApiKey = str_replace('Bearer ', '', $authHeader);
+}
+
+if ($receivedApiKey !== $apiKey) {
     http_response_code(401);
     echo json_encode(['success' => false, 'error' => 'Unauthorized']);
     exit;
