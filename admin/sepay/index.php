@@ -4,9 +4,11 @@ session_start();
 // Проверка авторизации
 require_once __DIR__ . '/../includes/auth-check.php';
 
+require_once __DIR__ . '/../../classes/SePayApiService.php';
 require_once __DIR__ . '/../../classes/SePayTransactionService.php';
 
 try {
+    $apiService = new SePayApiService();
     $transactionService = new SePayTransactionService();
     
     // Получаем параметры фильтрации
@@ -21,14 +23,27 @@ try {
         'search' => $_GET['search'] ?? ''
     ];
     
-    // Получаем транзакции
-    $result = $transactionService->getTransactions($page, $limit, $filters);
-    $transactions = $result['transactions'];
+    // Получаем транзакции из API
+    $result = $apiService->getTransactions($filters);
+    $allTransactions = $result['transactions'];
     $total = $result['total'];
-    $pages = $result['pages'];
+    
+    // Пагинация
+    $limit = 50;
+    $pages = ceil($total / $limit);
+    $offset = ($page - 1) * $limit;
+    $transactions = array_slice($allTransactions, $offset, $limit);
     
     // Получаем статистику
-    $stats = $transactionService->getStats();
+    $stats = $apiService->getStats();
+    
+    // Добавляем информацию о Telegram статусе из MongoDB
+    foreach ($transactions as &$transaction) {
+        $telegramStatus = $transactionService->getSentStatus($transaction['id']);
+        $transaction['telegram_sent'] = $telegramStatus['sent'] ?? false;
+        $transaction['telegram_sent_at'] = $telegramStatus['sent_at'] ?? null;
+        $transaction['telegram_message_id'] = $telegramStatus['message_id'] ?? null;
+    }
     
 } catch (Exception $e) {
     $error = $e->getMessage();
@@ -227,23 +242,22 @@ try {
                                         <code><?php echo htmlspecialchars($transaction['id']); ?></code>
                                     </td>
                                     <td>
-                                        <strong><?php echo number_format($transaction['amount'], 0, ',', ' '); ?> VND</strong>
+                                        <strong><?php echo number_format($transaction['amount_in'], 0, ',', ' '); ?> VND</strong>
                                     </td>
                                     <td>
-                                        <?php echo htmlspecialchars($transaction['content']); ?>
-                                        <?php if (!empty($transaction['code'])): ?>
-                                        <br><small class="text-muted">Код: <?php echo htmlspecialchars($transaction['code']); ?></small>
+                                        <?php echo htmlspecialchars($transaction['transaction_content']); ?>
+                                        <?php if (!empty($transaction['reference_number'])): ?>
+                                        <br><small class="text-muted">Код: <?php echo htmlspecialchars($transaction['reference_number']); ?></small>
                                         <?php endif; ?>
                                     </td>
                                     <td>
-                                        <?php echo htmlspecialchars($transaction['gateway']); ?>
+                                        <?php echo htmlspecialchars($transaction['bank_brand_name']); ?>
                                         <?php if (!empty($transaction['account_number'])): ?>
                                         <br><small class="text-muted"><?php echo htmlspecialchars($transaction['account_number']); ?></small>
                                         <?php endif; ?>
                                     </td>
                                     <td>
                                         <?php echo date('d.m.Y H:i', strtotime($transaction['transaction_date'])); ?>
-                                        <br><small class="text-muted">Webhook: <?php echo date('d.m.Y H:i', strtotime($transaction['webhook_received_at'])); ?></small>
                                     </td>
                                     <td>
                                         <?php if ($transaction['telegram_sent']): ?>

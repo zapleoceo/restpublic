@@ -204,6 +204,30 @@ class SePayTransactionService {
     }
     
     /**
+     * Получить статус отправки в Telegram
+     */
+    public function getSentStatus($transactionId) {
+        try {
+            $document = $this->collection->findOne(['transaction_id' => $transactionId]);
+            
+            if (!$document) {
+                return ['sent' => false, 'sent_at' => null, 'message_id' => null];
+            }
+            
+            return [
+                'sent' => $document['telegram_sent'] ?? false,
+                'sent_at' => isset($document['telegram_sent_at']) ? 
+                    $document['telegram_sent_at']->toDateTime()->format('Y-m-d H:i:s') : null,
+                'message_id' => $document['telegram_message_id'] ?? null
+            ];
+            
+        } catch (Exception $e) {
+            error_log("Error getting sent status: " . $e->getMessage());
+            return ['sent' => false, 'sent_at' => null, 'message_id' => null];
+        }
+    }
+    
+    /**
      * Получить детали транзакции по ID
      */
     public function getTransactionById($transactionId) {
