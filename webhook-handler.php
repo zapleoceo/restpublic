@@ -61,14 +61,14 @@ try {
         $transactionService = new SePayTransactionService();
         $telegramService = new TelegramService();
         
-        // Извлекаем данные
+        // Извлекаем данные (поддерживаем разные форматы от SePay)
         $transactionId = $data['id'];
         $amount = $data['transferAmount'] ?? $data['amount'] ?? 0;
         $content = $data['content'] ?? $data['transaction_content'] ?? '';
-        $code = $data['code'] ?? $data['reference_number'] ?? '';
+        $code = $data['referenceCode'] ?? $data['code'] ?? $data['reference_number'] ?? '';
         $gateway = $data['gateway'] ?? $data['bank_brand_name'] ?? '';
         $accountNumber = $data['accountNumber'] ?? $data['account_number'] ?? '';
-        $transactionDate = $data['transaction_date'] ?? date('Y-m-d H:i:s');
+        $transactionDate = $data['transactionDate'] ?? $data['transaction_date'] ?? date('Y-m-d H:i:s');
         
         // Сохраняем транзакцию в MongoDB
         $transactionData = [
