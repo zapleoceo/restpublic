@@ -362,6 +362,27 @@ if ($menu_loaded) {
             filter: drop-shadow(0 4px 8px rgba(54, 107, 91, 0.4));
             transform: translate(-50%, -50%) scale(1.05);
         }
+
+        .cart-highlight {
+            background: rgba(54, 107, 91, 0.2) !important;
+            border-radius: 50%;
+            animation: cartPulse 1s ease-in-out;
+        }
+
+        @keyframes cartPulse {
+            0% {
+                background: rgba(54, 107, 91, 0.2);
+                transform: scale(1);
+            }
+            50% {
+                background: rgba(54, 107, 91, 0.4);
+                transform: scale(1.05);
+            }
+            100% {
+                background: rgba(54, 107, 91, 0.2);
+                transform: scale(1);
+            }
+        }
         
         /* Icons are now controlled by JavaScript src attribute */
         
@@ -1681,7 +1702,7 @@ if ($menu_loaded) {
                         const btn = e.target.closest('.add-to-cart-btn');
                         const productData = JSON.parse(btn.dataset.product);
                         this.addItem(productData);
-                        this.showToast(`${productData.name} добавлен в корзину!`, 'success');
+                        this.highlightCart();
                     }
                 });
 
@@ -1889,6 +1910,16 @@ if ($menu_loaded) {
                 console.log('Order data:', orderData);
             }
 
+
+            highlightCart() {
+                const cartIcon = document.getElementById('cartIcon');
+                if (cartIcon) {
+                    cartIcon.classList.add('cart-highlight');
+                    setTimeout(() => {
+                        cartIcon.classList.remove('cart-highlight');
+                    }, 1000);
+                }
+            }
 
             showAuthModal() {
                 // TODO: Implement auth modal
