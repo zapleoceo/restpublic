@@ -136,7 +136,8 @@ try {
 } catch (Exception $e) {
     // Логируем ошибку
     file_put_contents('logs/sepay_webhook.log', date('Y-m-d H:i:s') . " - ERROR: " . $e->getMessage() . "\n", FILE_APPEND | LOCK_EX);
-    
+    file_put_contents('logs/sepay_webhook.log', date('Y-m-d H:i:s') . " - STACK TRACE: " . $e->getTraceAsString() . "\n", FILE_APPEND | LOCK_EX);
+
     http_response_code(500);
     echo json_encode(['success' => false, 'error' => 'Internal server error']);
 }
