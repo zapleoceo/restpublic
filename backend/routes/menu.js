@@ -161,4 +161,25 @@ router.get('/products/:productId', async (req, res) => {
   }
 });
 
+// Get tables list
+router.get('/tables', async (req, res) => {
+  try {
+    console.log('🔄 Starting tables fetch...');
+    const tables = await posterService.getTables();
+    console.log(`✅ Tables fetched: ${tables.length}`);
+    
+    res.json({
+      tables,
+      count: tables.length,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('Tables API Error:', error);
+    res.status(500).json({
+      error: 'Failed to fetch tables',
+      message: error.message
+    });
+  }
+});
+
 module.exports = router;

@@ -8,6 +8,13 @@ if (file_exists(__DIR__ . '/../../.env')) {
     $dotenv->load();
 }
 
+// Загружаем MongoDB класс
+if (class_exists('MongoDB\Client')) {
+    // MongoDB уже доступен
+} else {
+    error_log('MongoDB\Client class not found');
+}
+
 require_once __DIR__ . '/../includes/auth-check.php';
 
 // Инициализируем сервис настроек
@@ -218,23 +225,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['force_update'])) {
                 </div>
 
                 <div class="stat-card">
-                    <h3>Статус обновления</h3>
+                    <h3>Доступные столы</h3>
                     <p class="stat-value">
-                        <?php if ($stats['should_update']): ?>
-                            <span class="status-badge status-warning">Требуется обновление</span>
+                        <?php
+                        // Получаем список столов из MongoDB
+                        $tables = [];
+                        try {
+                            require_once __DIR__ . '/../../classes/SettingsService.php';
+                            $settingsService = new SettingsService();
+                            
+                            // Подключаемся к MongoDB для получения столов
+                            $client = new MongoDB\Client($_ENV['MONGODB_URL'] ?? 'mongodb://localhost:27017');
+                            $db = $client->selectDatabase($_ENV['MONGODB_DB_NAME'] ?? 'northrepublic');
+                            $menuCollection = $db->selectCollection('menu');
+                            
+                            $tablesDoc = $menuCollection->findOne(['_id' => 'current_tables']);
+                            if ($tablesDoc && isset($tablesDoc['tables'])) {
+                                $tables = $tablesDoc['tables'];
+                            }
+                        } catch (Exception $e) {
+                            error_log("Ошибка получения столов: " . $e->getMessage());
+                        }
+                        
+                        if (!empty($tables)): ?>
+                            <div style="text-align: left; margin-top: 0.5rem;">
+                                <?php foreach ($tables as $table): ?>
+                                    <div style="display: inline-block; background: #e3f2fd; padding: 0.25rem 0.5rem; margin: 0.125rem; border-radius: 3px; font-size: 0.85rem;">
+                                        Стол <?php echo htmlspecialchars($table['table_id'] ?? $table['id'] ?? 'N/A'); ?>
+                                        <?php if (isset($table['table_name']) && !empty($table['table_name'])): ?>
+                                            (<?php echo htmlspecialchars($table['table_name']); ?>)
+                                        <?php endif; ?>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
                         <?php else: ?>
-                            <span class="status-badge status-success">Актуально</span>
-                        <?php endif; ?>
-                    </p>
-                </div>
-
-                <div class="stat-card">
-                    <h3>Статус проверки</h3>
-                    <p class="stat-value">
-                        <?php if ($stats['should_check']): ?>
-                            <span class="status-badge status-warning">Требуется проверка</span>
-                        <?php else: ?>
-                            <span class="status-badge status-success">Проверено</span>
+                            <span class="status-badge status-warning">Столы не загружены</span>
                         <?php endif; ?>
                     </p>
                 </div>

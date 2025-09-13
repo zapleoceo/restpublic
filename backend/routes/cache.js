@@ -50,22 +50,33 @@ router.post('/update-menu', async (req, res) => {
         // Загружаем и сохраняем список столов
         console.log('🔄 Загрузка списка столов...');
         try {
-            const posterService = require('../services/posterService');
-            const tables = await posterService.getTables();
+            // Получаем столы через наш API
+            const tablesResponse = await axios.get('http://127.0.0.1:3002/api/menu/tables', {
+                timeout: 15000,
+                headers: {
+                    'X-API-Token': authToken
+                }
+            });
             
-            // Сохраняем столы в отдельный документ
-            const tablesResult = await collection.replaceOne(
-                { _id: 'current_tables' },
-                {
-                    _id: 'current_tables',
-                    tables: tables,
-                    updated_at: new Date(),
-                    count: tables.length
-                },
-                { upsert: true }
-            );
-            
-            console.log(`✅ Столы загружены. Количество: ${tables.length}`);
+            if (tablesResponse.status === 200) {
+                const tablesData = tablesResponse.data;
+                
+                // Сохраняем столы в отдельный документ
+                const tablesResult = await collection.replaceOne(
+                    { _id: 'current_tables' },
+                    {
+                        _id: 'current_tables',
+                        tables: tablesData.tables || [],
+                        updated_at: new Date(),
+                        count: tablesData.count || 0
+                    },
+                    { upsert: true }
+                );
+                
+                console.log(`✅ Столы загружены. Количество: ${tablesData.count || 0}`);
+            } else {
+                throw new Error(`Tables API вернул код: ${tablesResponse.status}`);
+            }
         } catch (tablesError) {
             console.error('❌ Ошибка загрузки столов:', tablesError.message);
             // Не прерываем выполнение, если загрузка столов не удалась
