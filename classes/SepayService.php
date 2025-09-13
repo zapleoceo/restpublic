@@ -52,13 +52,21 @@ class SepayService {
             error_log("SepayService: Making request to: " . $url);
             $response = $this->makeApiRequest($url);
             
-            if (!$response || !isset($response['transactions'])) {
+            if (!$response) {
                 throw new Exception('Invalid API response');
             }
             
+            // Проверяем структуру ответа API
+            $transactions = [];
+            if (isset($response['transactions'])) {
+                $transactions = $response['transactions'];
+            } elseif (isset($response['data']['transactions'])) {
+                $transactions = $response['data']['transactions'];
+            }
+            
             $result = [
-                'transactions' => $response['transactions'],
-                'total' => count($response['transactions']),
+                'transactions' => $transactions,
+                'total' => count($transactions),
                 'page' => 1,
                 'per_page' => 50,
                 'total_pages' => 1
