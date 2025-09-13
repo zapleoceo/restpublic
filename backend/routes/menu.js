@@ -168,9 +168,19 @@ router.get('/tables', async (req, res) => {
     const tables = await posterService.getTables();
     console.log(`✅ Tables fetched: ${tables.length}`);
     
+    // Фильтруем только активные столы и преобразуем в нужный формат
+    const activeTables = tables
+      .filter(table => table.is_deleted === 0)
+      .map(table => ({
+        name: table.table_num,
+        poster_table_id: table.table_id
+      }));
+    
+    console.log(`✅ Active tables processed: ${activeTables.length}`);
+    
     res.json({
-      tables,
-      count: tables.length,
+      tables: activeTables,
+      count: activeTables.length,
       timestamp: new Date().toISOString()
     });
   } catch (error) {
