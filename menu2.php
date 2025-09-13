@@ -1170,6 +1170,85 @@ if ($menu_loaded) {
             margin-bottom: 1rem;
             color: var(--color-text-dark);
         }
+
+        /* Inline styles moved to CSS */
+        .cart-count-hidden {
+            display: none;
+        }
+        
+        .page-title {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .menu-section-hidden {
+            display: none;
+        }
+        
+        .error-section {
+            text-align: center;
+            padding: 4rem 0;
+        }
+        
+        .error-title {
+            color: var(--color-text-dark);
+            margin-bottom: 2rem;
+        }
+        
+        .error-text {
+            color: var(--color-text-light);
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .back-to-home {
+            margin-top: 4rem;
+            text-align: center;
+        }
+        
+        .modal-hidden {
+            display: none !important;
+        }
+        
+        .overlay-hidden {
+            display: none !important;
+        }
+        
+        .cart-empty-message {
+            text-align: center;
+            color: #666;
+        }
+
+        /* Mobile menu animation classes */
+        .mobile-nav-hidden {
+            display: none !important;
+        }
+        
+        .mobile-nav-visible {
+            display: block !important;
+        }
+        
+        .mobile-links-hidden {
+            transform: translateY(-2rem);
+            opacity: 0;
+            visibility: hidden;
+        }
+        
+        .mobile-links-visible {
+            transform: translateY(0);
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .mobile-nav-closing {
+            transform: scaleY(0);
+            opacity: 0;
+        }
+        
+        .mobile-nav-opening {
+            transform: scaleY(1);
+            opacity: 1;
+        }
         
         @media (max-width: 900px) {
             .header-menu-toggle {
@@ -1293,7 +1372,7 @@ if ($menu_loaded) {
                         <div class="header-cart">
                             <button class="cart-icon" id="cartIcon" title="Корзина">
                                 <img src="images/icons/cart gray.png" alt="Корзина" class="cart-icon-img">
-                                <span class="cart-count" id="cartCount" style="display: none;">0</span>
+                                <span class="cart-count cart-count-hidden" id="cartCount">0</span>
                             </button>
                         </div>
                     </div>
@@ -1312,12 +1391,12 @@ if ($menu_loaded) {
                 <!-- Page Title -->
                 <div class="row">
                     <div class="column xl-12">
-                        <h1 class="text-display-title" style="text-align: center; margin-bottom: 3rem;">Наше меню v2</h1>
+                        <h1 class="text-display-title page-title">Наше меню v2</h1>
                     </div>
                 </div>
 
                 <!-- Mobile Category Navigation -->
-                <nav class="header-nav" id="mobileCategoryNav">
+                <nav class="header-nav mobile-nav-hidden" id="mobileCategoryNav">
                     <!-- Categories List -->
                     <ul class="header-nav__links">
                         <?php if ($menu_loaded && !empty($categories)): ?>
@@ -1379,7 +1458,7 @@ if ($menu_loaded) {
                 <!-- Menu Sections -->
                 <?php if ($menu_loaded && !empty($categories)): ?>
                     <?php foreach ($categories as $index => $category): ?>
-                        <div class="menu-section <?php echo $index === 0 ? 'active' : ''; ?>" data-category="<?php echo htmlspecialchars($category['category_id']); ?>" style="<?php echo $index === 0 ? '' : 'display: none;'; ?>">
+                        <div class="menu-section <?php echo $index === 0 ? 'active' : 'menu-section-hidden'; ?>" data-category="<?php echo htmlspecialchars($category['category_id']); ?>">
                             
                             <?php 
                             $category_products = $products_by_category[$category['category_id']] ?? [];
@@ -1431,9 +1510,9 @@ if ($menu_loaded) {
                     <?php endforeach; ?>
                 <?php else: ?>
                     <!-- Error message when menu data is not loaded -->
-                    <div class="menu-section" style="text-align: center; padding: 4rem 0;">
-                        <h2 style="color: var(--color-text-dark); margin-bottom: 2rem;">Упс, что-то с меню не так</h2>
-                        <p style="color: var(--color-text-light); font-size: 1.2rem; margin-bottom: 2rem;">
+                    <div class="menu-section error-section">
+                        <h2 class="error-title">Упс, что-то с меню не так</h2>
+                        <p class="error-text">
                             К сожалению, меню временно недоступно. Попробуйте обновить страницу или зайти позже.
                         </p>
                         <button onclick="window.location.reload()" class="btn btn--primary">
@@ -1443,7 +1522,7 @@ if ($menu_loaded) {
                 <?php endif; ?>
 
                 <!-- Back to Home -->
-                <div class="row" style="margin-top: 4rem; text-align: center;">
+                <div class="row back-to-home">
                     <div class="column xl-12">
                         <a href="/" class="btn btn--primary">Вернуться на главную</a>
                     </div>
@@ -1457,7 +1536,7 @@ if ($menu_loaded) {
     </div>
 
     <!-- Cart Modal -->
-    <div id="cartModal" class="modal" style="display: none;">
+    <div id="cartModal" class="modal modal-hidden">
         <div class="modal-content">
             <div class="modal-header">
                 <h2>Корзина</h2>
@@ -1484,7 +1563,7 @@ if ($menu_loaded) {
     </div>
 
     <!-- Modal Overlay -->
-    <div id="modalOverlay" class="modal-overlay" style="display: none;"></div>
+    <div id="modalOverlay" class="modal-overlay overlay-hidden"></div>
 
     <!-- JavaScript -->
     <script src="js/plugins.js"></script>
@@ -1780,7 +1859,11 @@ if ($menu_loaded) {
                 // Обновляем иконку корзины
                 if (cartCount) {
                     cartCount.textContent = totalItems;
-                    cartCount.style.display = totalItems > 0 ? 'flex' : 'none';
+                    if (totalItems > 0) {
+                        cartCount.classList.remove('cart-count-hidden');
+                    } else {
+                        cartCount.classList.add('cart-count-hidden');
+                    }
                 }
 
                 if (cartIcon && cartIconImg) {
@@ -1838,7 +1921,7 @@ if ($menu_loaded) {
                 const cartTotalAmount = document.getElementById('cartTotalAmount');
                 
                 if (this.items.length === 0) {
-                    cartItemsList.innerHTML = '<p style="text-align: center; color: #666;">Корзина пуста</p>';
+                    cartItemsList.innerHTML = '<p class="cart-empty-message">Корзина пуста</p>';
                     cartTotalAmount.textContent = '0 ₫';
                     return;
                 }
@@ -1862,8 +1945,8 @@ if ($menu_loaded) {
                 const modal = document.getElementById('cartModal');
                 const overlay = document.getElementById('modalOverlay');
                 
-                modal.style.display = 'flex';
-                overlay.style.display = 'block';
+                modal.classList.remove('modal-hidden');
+                overlay.classList.remove('overlay-hidden');
                 
                 // Bind modal events
                 this.bindModalEvents();
@@ -1873,8 +1956,8 @@ if ($menu_loaded) {
                 const modal = document.getElementById('cartModal');
                 const overlay = document.getElementById('modalOverlay');
                 
-                modal.style.display = 'none';
-                overlay.style.display = 'none';
+                modal.classList.add('modal-hidden');
+                overlay.classList.add('overlay-hidden');
             }
 
             bindModalEvents() {
@@ -1989,52 +2072,51 @@ if ($menu_loaded) {
                     console.log('Mobile toggle clicked!');
                     
                     // Toggle button state
-                    const isOpen = mobileNav.style.display === 'block';
+                    const isOpen = !mobileNav.classList.contains('mobile-nav-hidden');
                     
                     if (isOpen) {
                         // Close menu with animation
                         const links = mobileNav.querySelector('.header-nav__links');
                         if (links) {
-                            links.style.transform = 'translateY(-2rem)';
-                            links.style.opacity = '0';
-                            links.style.visibility = 'hidden';
+                            links.classList.remove('mobile-links-visible');
+                            links.classList.add('mobile-links-hidden');
                         }
                         
-                        mobileNav.style.transform = 'scaleY(0)';
-                        mobileNav.style.opacity = '0';
+                        mobileNav.classList.remove('mobile-nav-opening');
+                        mobileNav.classList.add('mobile-nav-closing');
                         mobileToggle.classList.remove('is-clicked');
                         document.body.classList.remove('menu-is-open');
                         
                         setTimeout(() => {
-                            mobileNav.style.display = 'none';
+                            mobileNav.classList.add('mobile-nav-hidden');
                         }, 300);
                     } else {
                         // Open menu with animation
-                        mobileNav.style.display = 'block';
-                        mobileNav.style.transform = 'scaleY(0)';
-                        mobileNav.style.opacity = '0';
+                        mobileNav.classList.remove('mobile-nav-hidden');
+                        mobileNav.classList.add('mobile-nav-visible');
+                        mobileNav.classList.remove('mobile-nav-opening');
+                        mobileNav.classList.add('mobile-nav-closing');
                         mobileToggle.classList.add('is-clicked');
                         document.body.classList.add('menu-is-open');
                         
                         // Trigger animation
                         setTimeout(() => {
-                            mobileNav.style.transform = 'scaleY(1)';
-                            mobileNav.style.opacity = '1';
+                            mobileNav.classList.remove('mobile-nav-closing');
+                            mobileNav.classList.add('mobile-nav-opening');
                             
                             // Animate links
                             const links = mobileNav.querySelector('.header-nav__links');
                             if (links) {
                                 setTimeout(() => {
-                                    links.style.transform = 'translateY(0)';
-                                    links.style.opacity = '1';
-                                    links.style.visibility = 'visible';
+                                    links.classList.remove('mobile-links-hidden');
+                                    links.classList.add('mobile-links-visible');
                                 }, 150);
                             }
                         }, 10);
                     }
                     
                     console.log('Button is-clicked:', mobileToggle.classList.contains('is-clicked'));
-                    console.log('Menu display:', mobileNav.style.display);
+                    console.log('Menu classes:', mobileNav.className);
                 });
             } else {
                 console.error('Mobile toggle button not found!');
@@ -2047,7 +2129,7 @@ if ($menu_loaded) {
             if (menuSections.length > 0) {
                 menuSections.forEach((section, index) => {
                     if (index === 0) {
-                        section.style.display = 'block';
+                        section.classList.remove('menu-section-hidden');
                         section.classList.add('active');
                         // Анимация появления первой секции
                         setTimeout(() => {
@@ -2055,7 +2137,7 @@ if ($menu_loaded) {
                             animateMenuItems(section);
                         }, 100);
                     } else {
-                        section.style.display = 'none';
+                        section.classList.add('menu-section-hidden');
                     }
                 });
             }
@@ -2082,24 +2164,23 @@ if ($menu_loaded) {
                     // Close mobile category navigation with animation
                     const links = mobileNav.querySelector('.header-nav__links');
                     if (links) {
-                        links.style.transform = 'translateY(-2rem)';
-                        links.style.opacity = '0';
-                        links.style.visibility = 'hidden';
+                        links.classList.remove('mobile-links-visible');
+                        links.classList.add('mobile-links-hidden');
                     }
                     
-                    mobileNav.style.transform = 'scaleY(0)';
-                    mobileNav.style.opacity = '0';
+                    mobileNav.classList.remove('mobile-nav-opening');
+                    mobileNav.classList.add('mobile-nav-closing');
                     mobileToggle.classList.remove('is-clicked');
                     document.body.classList.remove('menu-is-open');
                     
                     setTimeout(() => {
-                        mobileNav.style.display = 'none';
+                        mobileNav.classList.add('mobile-nav-hidden');
                     }, 300);
                     
                     // Show/hide sections with animation
                     menuSections.forEach(section => {
                         if (section.dataset.category === category) {
-                            section.style.display = 'block';
+                            section.classList.remove('menu-section-hidden');
                             section.classList.add('active');
                             section.classList.remove('animate-in');
                             
@@ -2112,7 +2193,7 @@ if ($menu_loaded) {
                             section.classList.remove('active');
                             section.classList.remove('animate-in');
                             setTimeout(() => {
-                                section.style.display = 'none';
+                                section.classList.add('menu-section-hidden');
                             }, 300);
                         }
                     });
