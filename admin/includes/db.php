@@ -115,7 +115,6 @@ function getSystemStats() {
             'images' => $db->admin_images->countDocuments(),
             'users' => $db->admin_users->countDocuments(),
             'logs' => $db->admin_logs->countDocuments(),
-            'sepay_transactions' => $db->sepay_transactions->countDocuments()
         ];
         
         return $stats;

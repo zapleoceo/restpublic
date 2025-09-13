@@ -97,28 +97,6 @@ class TelegramService {
         return $results;
     }
     
-    /**
-     * Форматирование сообщения о транзакции Sepay
-     */
-    public function formatSepayTransactionMessage($transaction) {
-        $amount = number_format($transaction['amount_in'], 0, ',', ' ');
-        $date = date('d.m.Y H:i', strtotime($transaction['transaction_date']));
-        
-        $message = "💵 **Новый платеж: {$amount} VND**\n\n";
-        $message .= "📅 Время: {$date}\n";
-        $message .= "📝 Описание: {$transaction['transaction_content']}\n";
-        $message .= "🆔 ID: `{$transaction['id']}`";
-        
-        return $message;
-    }
-    
-    /**
-     * Отправка уведомления о новой транзакции Sepay
-     */
-    public function sendSepayTransactionNotification($transaction) {
-        $message = $this->formatSepayTransactionMessage($transaction);
-        return $this->sendToAllChats($message);
-    }
     
     /**
      * Проверка статуса бота
