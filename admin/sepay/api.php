@@ -24,7 +24,35 @@ try {
                 throw new Exception('Transaction ID is required');
             }
             
+            // Сначала пытаемся получить из MongoDB
             $transaction = $transactionService->getTransactionById($transactionId);
+            
+            // Если не найдено в MongoDB, получаем из SePay API
+            if (!$transaction) {
+                require_once '../../classes/SePayApiService.php';
+                $apiService = new SePayApiService();
+                $allTransactions = $apiService->getAllTransactions();
+                
+                // Ищем транзакцию в API данных
+                foreach ($allTransactions['transactions'] as $apiTransaction) {
+                    if ($apiTransaction['id'] == $transactionId) {
+                        $transaction = [
+                            'id' => $apiTransaction['id'],
+                            'amount' => floatval($apiTransaction['amount_in']),
+                            'content' => $apiTransaction['transaction_content'],
+                            'code' => $apiTransaction['reference_number'],
+                            'gateway' => $apiTransaction['bank_brand_name'],
+                            'account_number' => $apiTransaction['account_number'],
+                            'transaction_date' => $apiTransaction['transaction_date'],
+                            'telegram_sent' => false,
+                            'telegram_sent_at' => null,
+                            'telegram_message_id' => null
+                        ];
+                        break;
+                    }
+                }
+            }
+            
             if (!$transaction) {
                 throw new Exception('Transaction not found');
             }
