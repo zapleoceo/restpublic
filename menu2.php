@@ -379,7 +379,6 @@ if ($menu_loaded) {
         /* Cart icon has items - change to green PNG */
         .cart-icon.has-items .cart-icon-img {
             content: url('images/icons/cart green.png') !important;
-            background: red !important; /* Debug: should show red background when has items */
         }
         
         /* Cart icon hover - only green if has items, otherwise stay gray */
@@ -1855,10 +1854,8 @@ if ($menu_loaded) {
                 if (cartIcon) {
                     if (totalItems > 0) {
                         cartIcon.classList.add('has-items');
-                        console.log('Cart has items, added has-items class');
                     } else {
                         cartIcon.classList.remove('has-items');
-                        console.log('Cart is empty, removed has-items class');
                     }
                 }
             }
