@@ -6,10 +6,10 @@
 SCRIPT_DIR="/var/www/northrepubli_usr/data/www/northrepublic.me"
 LOG_FILE="/var/www/northrepubli_usr/data/.pm2/logs/sepay-monitor.log"
 
-echo "$(date): Запуск мониторинга Sepay транзакций каждую секунду" >> "$LOG_FILE"
+echo "$(date): Запуск мониторинга Sepay транзакций каждые 2 секунды" >> "$LOG_FILE"
 
 while true; do
     echo "$(date): Проверка новых транзакций..." >> "$LOG_FILE"
     cd "$SCRIPT_DIR" && php admin/telegram/cron.php >> "$LOG_FILE" 2>&1
-    sleep 1
+    sleep 2
 done
