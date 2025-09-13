@@ -296,34 +296,27 @@ logAdminAction('view_sepay_logs', 'Просмотр логов платежей 
                                     <tr>
                                         <td>
                                             <?php 
-                                            $date = isset($log['created_at']) ? new DateTime($log['created_at']) : new DateTime();
+                                            $date = isset($log['transaction_date']) ? new DateTime($log['transaction_date']) : new DateTime();
                                             echo $date->format('d.m.Y H:i:s');
                                             ?>
                                         </td>
                                         <td>
-                                            <code><?php echo htmlspecialchars($log['id'] ?? $log['transaction_id'] ?? 'N/A'); ?></code>
+                                            <code><?php echo htmlspecialchars($log['id'] ?? 'N/A'); ?></code>
                                         </td>
                                         <td>
-                                            <strong><?php echo number_format($log['amount'] ?? 0, 0, ',', ' '); ?> ₫</strong>
+                                            <strong><?php echo number_format(floatval($log['amount_in'] ?? 0), 0, ',', ' '); ?> ₫</strong>
                                         </td>
                                         <td>
-                                            <span class="status-badge status-<?php echo htmlspecialchars($log['status'] ?? 'unknown'); ?>">
-                                                <?php 
-                                                $statusText = [
-                                                    'success' => 'Успешно',
-                                                    'failed' => 'Неудачно',
-                                                    'pending' => 'В обработке'
-                                                ];
-                                                echo $statusText[$log['status'] ?? 'unknown'] ?? 'Неизвестно';
-                                                ?>
+                                            <span class="status-badge status-<?php echo floatval($log['amount_in'] ?? 0) > 0 ? 'success' : 'failed'; ?>">
+                                                <?php echo floatval($log['amount_in'] ?? 0) > 0 ? 'Успешно' : 'Неудачно'; ?>
                                             </span>
                                         </td>
-                                        <td><?php echo htmlspecialchars($log['description'] ?? 'N/A'); ?></td>
+                                        <td><?php echo htmlspecialchars($log['transaction_content'] ?? 'N/A'); ?></td>
                                         <td>
                                             <code><?php echo htmlspecialchars($log['account_number'] ?? 'N/A'); ?></code>
                                         </td>
                                         <td>
-                                            <button class="btn btn-secondary" onclick="showTransactionDetails('<?php echo htmlspecialchars($log['id'] ?? $log['transaction_id'] ?? ''); ?>')">
+                                            <button class="btn btn-secondary" onclick="showTransactionDetails('<?php echo htmlspecialchars($log['id'] ?? ''); ?>')">
                                                 Подробнее
                                             </button>
                                         </td>

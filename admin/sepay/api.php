@@ -58,14 +58,14 @@ try {
             $csv = "Дата,ID Транзакции,Сумма,Статус,Описание,Номер счета,Дополнительные данные\n";
             
             foreach ($transactions as $transaction) {
-                $date = isset($transaction['created_at']) ? $transaction['created_at'] : date('Y-m-d H:i:s');
+                $date = isset($transaction['transaction_date']) ? $transaction['transaction_date'] : date('Y-m-d H:i:s');
                 $csv .= sprintf(
                     '"%s","%s","%s","%s","%s","%s","%s"' . "\n",
                     $date,
-                    $transaction['id'] ?? $transaction['transaction_id'] ?? '',
-                    $transaction['amount'] ?? 0,
-                    $transaction['status'] ?? '',
-                    str_replace('"', '""', $transaction['description'] ?? ''),
+                    $transaction['id'] ?? '',
+                    $transaction['amount_in'] ?? 0,
+                    floatval($transaction['amount_in'] ?? 0) > 0 ? 'success' : 'failed',
+                    str_replace('"', '""', $transaction['transaction_content'] ?? ''),
                     $transaction['account_number'] ?? '',
                     str_replace('"', '""', json_encode($transaction))
                 );

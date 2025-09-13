@@ -52,16 +52,16 @@ class SepayService {
             error_log("SepayService: Making request to: " . $url);
             $response = $this->makeApiRequest($url);
             
-            if (!$response || !isset($response['data'])) {
+            if (!$response || !isset($response['transactions'])) {
                 throw new Exception('Invalid API response');
             }
             
             $result = [
-                'transactions' => $response['data'],
-                'total' => $response['total'] ?? count($response['data']),
-                'page' => $response['page'] ?? 1,
-                'per_page' => $response['per_page'] ?? 50,
-                'total_pages' => $response['total_pages'] ?? 1
+                'transactions' => $response['transactions'],
+                'total' => count($response['transactions']),
+                'page' => 1,
+                'per_page' => 50,
+                'total_pages' => 1
             ];
             
             // Кэшируем результат
@@ -100,17 +100,36 @@ class SepayService {
             
             $response = $this->makeApiRequest($url);
             
-            if (!$response) {
+            if (!$response || !isset($response['transactions'])) {
                 throw new Exception('Invalid API response');
             }
             
+            $transactions = $response['transactions'];
+            $total = count($transactions);
+            $success = 0;
+            $failed = 0;
+            $pending = 0;
+            $totalAmount = 0;
+            
+            foreach ($transactions as $transaction) {
+                $amount = floatval($transaction['amount_in'] ?? 0);
+                $totalAmount += $amount;
+                
+                // Определяем статус на основе суммы
+                if ($amount > 0) {
+                    $success++;
+                } else {
+                    $failed++;
+                }
+            }
+            
             $stats = [
-                'total' => $response['total'] ?? 0,
-                'success' => $response['success'] ?? 0,
-                'failed' => $response['failed'] ?? 0,
-                'pending' => $response['pending'] ?? 0,
-                'total_amount' => $response['total_amount'] ?? 0,
-                'avg_amount' => $response['avg_amount'] ?? 0
+                'total' => $total,
+                'success' => $success,
+                'failed' => $failed,
+                'pending' => $pending,
+                'total_amount' => $totalAmount,
+                'avg_amount' => $total > 0 ? $totalAmount / $total : 0
             ];
             
             // Кэшируем результат
@@ -148,14 +167,16 @@ class SepayService {
             $url = $this->apiBaseUrl . '/transactions/details/' . $transactionId;
             $response = $this->makeApiRequest($url);
             
-            if (!$response || !isset($response['data'])) {
+            if (!$response || !isset($response['transactions']) || empty($response['transactions'])) {
                 throw new Exception('Transaction not found');
             }
             
-            // Кэшируем результат
-            $this->cache->set($cacheKey, $response['data']);
+            $transaction = $response['transactions'][0];
             
-            return $response['data'];
+            // Кэшируем результат
+            $this->cache->set($cacheKey, $transaction);
+            
+            return $transaction;
             
         } catch (Exception $e) {
             error_log("SepayService Transaction Details Error: " . $e->getMessage());
