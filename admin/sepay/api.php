@@ -15,7 +15,7 @@ require_once __DIR__ . '/../../vendor/autoload.php';
 try {
     $client = new MongoDB\Client("mongodb://localhost:27017");
     $db = $client->northrepublic;
-    $sepayCollection = $db->sepay_logs;
+    $sepayCollection = $db->sepay_transactions;
     
     $action = $_GET['action'] ?? '';
     

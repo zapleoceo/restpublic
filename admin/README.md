@@ -180,6 +180,8 @@ admin/
 ### Sepay:
 - `GET /admin/sepay/api.php?action=get_transactions` - Получить транзакции
 - `GET /admin/sepay/api.php?action=export_csv` - Экспорт в CSV
+- `GET /admin/sepay/test-connection.php` - Тест подключения к БД
+- `GET /admin/sepay/fetch-transactions.php` - Синхронизация с Sepay API
 
 ### Общие:
 - `POST /admin/auth/telegram.php` - Авторизация
@@ -205,6 +207,20 @@ admin/
    ```bash
    # Проверьте GD extension
    php -m | grep gd
+   ```
+
+4. **Нет транзакций Sepay в админке**
+   ```bash
+   # Проверьте подключение к БД
+   php admin/sepay/test-connection.php
+   
+   # Запустите синхронизацию вручную
+   php admin/sepay/fetch-transactions.php
+   
+   # Настройте cron job для автоматической синхронизации
+   crontab -e
+   # Добавьте строку:
+   */5 * * * * /usr/bin/php /path/to/admin/sepay/fetch-transactions.php
    ```
 
 ### Логи:

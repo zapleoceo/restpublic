@@ -8,7 +8,7 @@ require_once __DIR__ . '/../../vendor/autoload.php';
 try {
     $client = new MongoDB\Client("mongodb://localhost:27017");
     $db = $client->northrepublic;
-    $sepayCollection = $db->sepay_logs;
+    $sepayCollection = $db->sepay_transactions;
     
     // Параметры фильтрации
     $page = max(1, intval($_GET['page'] ?? 1));
