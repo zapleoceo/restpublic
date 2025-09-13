@@ -226,27 +226,14 @@ class Cart {
             });
         });
 
-        // Phone validation
-        document.getElementById('takeawayPhone')?.addEventListener('input', (e) => {
-            this.applyPhoneMask(e.target);
-            this.validatePhone(e.target);
-        });
-        
-        // Предотвращаем удаление + в начале для takeaway
-        document.getElementById('takeawayPhone')?.addEventListener('keydown', (e) => {
-            if (e.target.selectionStart === 1 && e.key === 'Backspace') {
-                e.preventDefault();
-            }
-        });
-        
-        // Table phone validation and mask
-        document.getElementById('tablePhone')?.addEventListener('input', (e) => {
+        // Phone validation for unified phone field
+        document.getElementById('customerPhone')?.addEventListener('input', (e) => {
             this.applyPhoneMask(e.target);
             this.validatePhone(e.target);
         });
         
         // Предотвращаем удаление + в начале
-        document.getElementById('tablePhone')?.addEventListener('keydown', (e) => {
+        document.getElementById('customerPhone')?.addEventListener('keydown', (e) => {
             if (e.target.selectionStart === 1 && e.key === 'Backspace') {
                 e.preventDefault();
             }
@@ -269,13 +256,16 @@ class Cart {
     toggleOrderFields(orderType) {
         const tableFields = document.getElementById('tableOrderFields');
         const takeawayFields = document.getElementById('takeawayOrderFields');
+        const tableFieldGroup = document.getElementById('tableFieldGroup');
         
         if (orderType === 'table') {
             tableFields.style.display = 'block';
             takeawayFields.style.display = 'none';
+            tableFieldGroup.style.display = 'block'; // Показываем поле стола
         } else {
             tableFields.style.display = 'none';
             takeawayFields.style.display = 'block';
+            tableFieldGroup.style.display = 'none'; // Скрываем поле стола
         }
     }
 
@@ -377,46 +367,36 @@ class Cart {
     validateOrderForm() {
         const orderType = document.querySelector('input[name="orderType"]:checked').value;
         
+        // Общие поля для всех типов заказов
+        const name = document.getElementById('customerName').value.trim();
+        const phone = document.getElementById('customerPhone').value.trim();
+        
+        if (!name) {
+            this.showToast('Введите ваше имя', 'error');
+            return false;
+        }
+        
+        if (!phone) {
+            this.showToast('Введите номер телефона', 'error');
+            return false;
+        }
+        
+        // Проверяем валидность телефона
+        if (phone.length < 8 || !phone.startsWith('+')) {
+            this.showToast('Введите корректный номер телефона', 'error');
+            return false;
+        }
+        
         if (orderType === 'table') {
-            const name = document.getElementById('customerName').value.trim();
-            const phone = document.getElementById('tablePhone').value.trim();
             const table = document.getElementById('tableNumber').value;
-            
-            if (!name) {
-                this.showToast('Введите ваше имя', 'error');
-                return false;
-            }
-            
-            if (!phone) {
-                this.showToast('Введите номер телефона', 'error');
-                return false;
-            }
-            
-            // Проверяем валидность телефона
-            if (phone.length < 8 || !phone.startsWith('+')) {
-                this.showToast('Введите корректный номер телефона', 'error');
-                return false;
-            }
             
             if (!table) {
                 this.showToast('Выберите стол', 'error');
                 return false;
             }
         } else {
-            const name = document.getElementById('takeawayName').value.trim();
-            const phone = document.getElementById('takeawayPhone').value.trim();
             const address = document.getElementById('takeawayAddress').value.trim();
             const deliveryTime = document.getElementById('deliveryTime').value;
-            
-            if (!name) {
-                this.showToast('Введите ваше имя', 'error');
-                return false;
-            }
-            
-            if (!phone) {
-                this.showToast('Введите номер телефона', 'error');
-                return false;
-            }
             
             if (!address) {
                 this.showToast('Введите адрес доставки', 'error');
@@ -444,13 +424,9 @@ class Cart {
 
         const orderType = document.querySelector('input[name="orderType"]:checked').value;
         
-        // Получаем телефон клиента в зависимости от типа заказа
-        let phone = '';
-        if (orderType === 'table') {
-            phone = document.getElementById('tablePhone')?.value?.trim() || '';
-        } else {
-            phone = document.getElementById('takeawayPhone')?.value?.trim() || '';
-        }
+        // Получаем данные из единых полей
+        const name = document.getElementById('customerName').value.trim();
+        const phone = document.getElementById('customerPhone').value.trim();
         
         const orderData = {
             spot_id: 1, // Default spot
@@ -494,9 +470,11 @@ class Cart {
     }
 
     getOrderComment(orderType) {
+        // Используем единые поля для имени и телефона
+        const name = document.getElementById('customerName').value.trim();
+        const phone = document.getElementById('customerPhone').value.trim();
+        
         if (orderType === 'table') {
-            const name = document.getElementById('customerName').value.trim();
-            const phone = document.getElementById('tablePhone').value.trim();
             const table = document.getElementById('tableNumber').value;
             const comment = document.getElementById('tableComment').value.trim();
             
@@ -506,8 +484,6 @@ class Cart {
             }
             return commentText;
         } else {
-            const name = document.getElementById('takeawayName').value.trim();
-            const phone = document.getElementById('takeawayPhone').value.trim();
             const address = document.getElementById('takeawayAddress').value.trim();
             const deliveryTime = document.getElementById('deliveryTime').value;
             const comment = document.getElementById('takeawayComment').value.trim();

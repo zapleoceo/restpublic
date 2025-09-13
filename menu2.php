@@ -492,25 +492,27 @@ if ($menu_loaded) {
 
                 <!-- Order Fields -->
                 <div class="order-fields" id="orderFields">
+                    <!-- Общие поля для всех типов заказов -->
+                    <div class="form-row form-row-three">
+                        <div class="form-group form-group-name">
+                            <label for="customerName">Ваше имя</label>
+                            <input type="text" id="customerName" name="customerName" placeholder="Введите ваше имя" required>
+                        </div>
+                        <div class="form-group form-group-phone">
+                            <label for="customerPhone">Телефон</label>
+                            <input type="tel" id="customerPhone" name="customerPhone" placeholder="+" required>
+                        </div>
+                        <div class="form-group form-group-table" id="tableFieldGroup">
+                            <label for="tableNumber">Стол</label>
+                            <select id="tableNumber" name="tableNumber" required>
+                                <option value="">Выберите стол</option>
+                                <!-- Table options will be populated here -->
+                            </select>
+                        </div>
+                    </div>
+
                     <!-- Table Order Fields -->
                     <div class="order-field-group" id="tableOrderFields">
-                        <div class="form-row form-row-three">
-                            <div class="form-group form-group-name">
-                                <label for="customerName">Ваше имя</label>
-                                <input type="text" id="customerName" name="customerName" placeholder="Введите ваше имя" required>
-                            </div>
-                            <div class="form-group form-group-phone">
-                                <label for="tablePhone">Телефон</label>
-                                <input type="tel" id="tablePhone" name="tablePhone" placeholder="+" required>
-                            </div>
-                            <div class="form-group form-group-table">
-                                <label for="tableNumber">Стол</label>
-                                <select id="tableNumber" name="tableNumber" required>
-                                    <option value="">Выберите стол</option>
-                                    <!-- Table options will be populated here -->
-                                </select>
-                            </div>
-                        </div>
                         <div class="form-group">
                             <label for="tableComment">Комментарий</label>
                             <textarea id="tableComment" name="tableComment" rows="3" placeholder="Сюда можно написать все, что вы хотели бы, чтобы мы учли"></textarea>
@@ -519,14 +521,6 @@ if ($menu_loaded) {
 
                     <!-- Takeaway Order Fields -->
                     <div class="order-field-group" id="takeawayOrderFields" style="display: none;">
-                        <div class="form-group">
-                            <label for="takeawayName">Имя</label>
-                            <input type="text" id="takeawayName" name="takeawayName" placeholder="Майкл Джексон">
-                        </div>
-                        <div class="form-group">
-                            <label for="takeawayPhone">Телефон</label>
-                            <input type="tel" id="takeawayPhone" name="takeawayPhone" placeholder="+" required>
-                        </div>
                         <div class="form-group">
                             <label for="takeawayAddress">Адрес (ссылка на Google карту)</label>
                             <input type="url" id="takeawayAddress" name="takeawayAddress" placeholder="https://maps.google.com/..." required>
