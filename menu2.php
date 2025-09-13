@@ -707,8 +707,9 @@ if ($menu_loaded) {
             background-position: center;
             width: 20px;
             height: 20px;
-            display: block;
-            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             transition: all 0.3s ease;
         }
         
@@ -1192,7 +1193,7 @@ if ($menu_loaded) {
             /* Mobile header actions */
             .header-actions {
                 gap: 0.5rem;
-                right: 10px;
+                right: 60px;
                 position: absolute;
                 top: 50%;
                 transform: translateY(-50%);
