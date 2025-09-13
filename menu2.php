@@ -750,9 +750,9 @@ if ($menu_loaded) {
         .modal-content {
             background: #fff;
             border-radius: 12px;
-            max-width: 600px;
+            max-width: 400px;
             width: 100%;
-            max-height: 90vh;
+            max-height: 80vh;
             overflow-y: auto;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
             position: relative;
@@ -857,22 +857,13 @@ if ($menu_loaded) {
         }
         
         /* Cart Items */
-        .cart-items-section {
-            margin-bottom: 24px;
-        }
-        
-        .cart-items-section h3 {
-            margin: 0 0 16px 0;
-            color: #2c2c2c;
-            font-size: 1.2rem;
-        }
-        
         .cart-items-list {
-            max-height: 200px;
+            max-height: 300px;
             overflow-y: auto;
             border: 1px solid #e0e0e0;
             border-radius: 8px;
             padding: 12px;
+            margin-bottom: 16px;
         }
         
         .cart-item {
@@ -1444,111 +1435,19 @@ if ($menu_loaded) {
     <div id="cartModal" class="modal" style="display: none;">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>Оформление заказа</h2>
+                <h2>Корзина</h2>
                 <button class="modal-close" id="cartModalClose">&times;</button>
             </div>
             
             <div class="modal-body">
-                <!-- Order Type Selection -->
-                <div class="order-type-selection">
-                    <h3>Тип заказа</h3>
-                    <div class="radio-group">
-                        <label class="radio-label">
-                            <input type="radio" name="orderType" value="1" checked>
-                            <span class="radio-custom"></span>
-                            В заведении
-                        </label>
-                        <label class="radio-label">
-                            <input type="radio" name="orderType" value="3">
-                            <span class="radio-custom"></span>
-                            Доставка
-                        </label>
-                    </div>
+                <div class="cart-items-list" id="cartItemsList">
+                    <!-- Cart items will be populated here -->
                 </div>
-
-                <!-- Cart Items -->
-                <div class="cart-items-section">
-                    <h3>Ваш заказ</h3>
-                    <div class="cart-items-list" id="cartItemsList">
-                        <!-- Cart items will be populated here -->
+                <div class="cart-total">
+                    <div class="total-row">
+                        <span>Итого:</span>
+                        <span class="total-amount" id="cartTotalAmount">0 ₫</span>
                     </div>
-                    <div class="cart-total">
-                        <div class="total-row">
-                            <span>Итого:</span>
-                            <span class="total-amount" id="cartTotalAmount">0 ₫</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- In Restaurant Fields -->
-                <div id="inRestaurantFields" class="order-fields">
-                    <h3>Детали заказа</h3>
-                    <div class="form-row">
-                        <div class="form-group form-group--half">
-                            <label for="tableSelect">Номер стола:</label>
-                            <select name="table_id" id="tableSelect" required>
-                                <option value="">Выберите стол</option>
-                                <!-- Tables will be loaded via API -->
-                            </select>
-                        </div>
-                        <div class="form-group form-group--half">
-                            <label for="guestsCount">Количество гостей:</label>
-                            <input type="number" name="guests_count" id="guestsCount" 
-                                   min="1" max="20" value="1" required>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="checkbox-label">
-                            <input type="checkbox" name="takeaway" id="takeawayCheckbox">
-                            <span class="checkbox-custom"></span>
-                            Еда с собой
-                        </label>
-                    </div>
-                    <div class="form-group">
-                        <label for="comment">Комментарий к заказу:</label>
-                        <textarea name="comment" id="comment" placeholder="Особые пожелания..."></textarea>
-                    </div>
-                </div>
-
-                <!-- Delivery Fields -->
-                <div id="deliveryFields" class="order-fields" style="display: none;">
-                    <h3>Детали доставки</h3>
-                    <div class="form-group">
-                        <label for="deliveryAddress">Адрес доставки (ссылка на Google Maps):</label>
-                        <input type="url" name="delivery_address" id="deliveryAddress" 
-                               placeholder="https://maps.google.com/..." required>
-                        <small>Вставьте ссылку на ваше местоположение в Google Maps</small>
-                    </div>
-                    <div class="form-group">
-                        <label for="deliveryComment">Комментарий к заказу:</label>
-                        <textarea name="comment" id="deliveryComment" placeholder="Особые пожелания..."></textarea>
-                    </div>
-                </div>
-
-                <!-- Guest Information (shown when not authenticated) -->
-                <div id="guestInfoFields" class="order-fields" style="display: none;">
-                    <h3>Информация о заказчике</h3>
-                    <div class="form-row">
-                        <div class="form-group form-group--half">
-                            <label for="guestName">Имя:</label>
-                            <input type="text" name="guest_name" id="guestName" required>
-                        </div>
-                        <div class="form-group form-group--half">
-                            <label for="guestPhone">Телефон:</label>
-                            <input type="tel" name="guest_phone" id="guestPhone" 
-                                   placeholder="+84 123 456 789" required>
-                            <div class="phone-check-status" id="phoneCheckStatus" style="display: none;"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Notification Checkbox -->
-                <div class="form-group">
-                    <label class="checkbox-label">
-                        <input type="checkbox" id="readyNotificationCheckbox">
-                        <span class="checkbox-custom"></span>
-                        Уведомить, когда заказ будет приготовлен
-                    </label>
                 </div>
             </div>
             
@@ -1826,7 +1725,6 @@ if ($menu_loaded) {
                         item.quantity = quantity;
                         this.saveCart();
                         this.updateCartDisplay();
-                        this.updateCartModal(); // Добавил обновление модального окна
                     }
                 }
             }
@@ -1849,9 +1747,12 @@ if ($menu_loaded) {
                 const cartCount = document.getElementById('cartCount');
                 const cartIcon = document.getElementById('cartIcon');
                 const cartIconImg = document.querySelector('.cart-icon-img');
+                const cartItemsList = document.getElementById('cartItemsList');
+                const cartTotalAmount = document.getElementById('cartTotalAmount');
 
                 const totalItems = this.items.reduce((sum, item) => sum + item.quantity, 0);
                 
+                // Обновляем иконку корзины
                 if (cartCount) {
                     cartCount.textContent = totalItems;
                     cartCount.style.display = totalItems > 0 ? 'flex' : 'none';
@@ -1865,6 +1766,23 @@ if ($menu_loaded) {
                         cartIcon.classList.remove('has-items');
                         cartIconImg.src = 'images/icons/cart gray.png';
                     }
+                }
+
+                // Обновляем содержимое корзины
+                if (cartItemsList && cartTotalAmount) {
+                    cartItemsList.innerHTML = this.items.map(item => `
+                        <div class="cart-item">
+                            <div class="cart-item-name">${item.name}</div>
+                            <div class="cart-item-price">${item.price.toFixed(0)} ₫</div>
+                            <div class="cart-item-quantity">
+                                <button onclick="cart.updateQuantity('${item.id}', ${item.quantity - 1})">-</button>
+                                <span>${item.quantity}</span>
+                                <button onclick="cart.updateQuantity('${item.id}', ${item.quantity + 1})">+</button>
+                            </div>
+                        </div>
+                    `).join('');
+
+                    cartTotalAmount.textContent = `${this.getTotal().toFixed(0)} ₫`;
                 }
             }
 
@@ -1948,36 +1866,12 @@ if ($menu_loaded) {
                     this.hideModal();
                 });
 
-                // Order type change
-                document.querySelectorAll('input[name="orderType"]').forEach(radio => {
-                    radio.addEventListener('change', (e) => {
-                        this.toggleOrderFields(e.target.value);
-                    });
-                });
-
-                // Phone number check on blur
-                document.getElementById('guestPhone')?.addEventListener('blur', (e) => {
-                    this.checkPhoneNumber(e.target.value);
-                });
-
                 // Submit order
                 document.getElementById('cartModalSubmit')?.addEventListener('click', () => {
                     this.submitOrder();
                 });
             }
 
-            toggleOrderFields(orderType) {
-                const inRestaurantFields = document.getElementById('inRestaurantFields');
-                const deliveryFields = document.getElementById('deliveryFields');
-                
-                if (orderType === '1') {
-                    inRestaurantFields.style.display = 'block';
-                    deliveryFields.style.display = 'none';
-                } else if (orderType === '3') {
-                    inRestaurantFields.style.display = 'none';
-                    deliveryFields.style.display = 'block';
-                }
-            }
 
             submitOrder() {
                 if (this.items.length === 0) {
@@ -1985,10 +1879,8 @@ if ($menu_loaded) {
                     return;
                 }
 
-                const orderType = document.querySelector('input[name="orderType"]:checked').value;
                 const orderData = {
                     items: this.items,
-                    orderType: orderType,
                     total: this.getTotal()
                 };
 
@@ -1997,50 +1889,6 @@ if ($menu_loaded) {
                 console.log('Order data:', orderData);
             }
 
-            async checkPhoneNumber(phone) {
-                if (!phone || !phone.match(/^\+[0-9]{10,12}$/)) {
-                    this.showPhoneCheckResult('', 'error');
-                    return;
-                }
-
-                const statusDiv = document.getElementById('phoneCheckStatus');
-                statusDiv.style.display = 'block';
-                statusDiv.className = 'phone-check-status info';
-                statusDiv.textContent = 'Проверяем номер...';
-
-                try {
-                    const response = await fetch('/api/check-phone.php', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ phone: phone })
-                    });
-
-                    const data = await response.json();
-
-                    if (response.ok) {
-                        this.showPhoneCheckResult(data.message, data.found ? 'success' : 'info', data);
-                    } else {
-                        this.showPhoneCheckResult(data.error || 'Ошибка проверки номера', 'error');
-                    }
-                } catch (error) {
-                    console.error('Phone check error:', error);
-                    this.showPhoneCheckResult('Ошибка соединения', 'error');
-                }
-            }
-
-            showPhoneCheckResult(message, type, data = null) {
-                const statusDiv = document.getElementById('phoneCheckStatus');
-                statusDiv.style.display = 'block';
-                statusDiv.className = `phone-check-status ${type}`;
-                statusDiv.textContent = message;
-
-                // Сохраняем данные о клиенте для использования при оформлении заказа
-                if (data) {
-                    this.phoneCheckData = data;
-                }
-            }
 
             showAuthModal() {
                 // TODO: Implement auth modal
