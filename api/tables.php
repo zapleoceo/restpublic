@@ -53,6 +53,34 @@ try {
                 'status' => 'available'
             ];
         }
+        
+        // Сортируем столы: сначала числовые, потом буквенные
+        usort($formattedTables, function($a, $b) {
+            $nameA = $a['name'];
+            $nameB = $b['name'];
+            
+            // Проверяем, является ли название числовым
+            $isNumericA = is_numeric($nameA);
+            $isNumericB = is_numeric($nameB);
+            
+            // Если оба числовые - сортируем по числовому значению
+            if ($isNumericA && $isNumericB) {
+                return intval($nameA) - intval($nameB);
+            }
+            
+            // Если только A числовое - A идет первым
+            if ($isNumericA && !$isNumericB) {
+                return -1;
+            }
+            
+            // Если только B числовое - B идет первым
+            if (!$isNumericA && $isNumericB) {
+                return 1;
+            }
+            
+            // Если оба буквенные - сортируем по алфавиту
+            return strcmp($nameA, $nameB);
+        });
     }
     
     echo json_encode([
