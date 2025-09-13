@@ -494,18 +494,16 @@ if ($menu_loaded) {
                 <div class="order-fields" id="orderFields">
                     <!-- Table Order Fields -->
                     <div class="order-field-group" id="tableOrderFields">
-                        <div class="form-row">
-                            <div class="form-group">
+                        <div class="form-row form-row-three">
+                            <div class="form-group form-group-name">
                                 <label for="customerName">Ваше имя</label>
                                 <input type="text" id="customerName" name="customerName" placeholder="Введите ваше имя" required>
                             </div>
-                            <div class="form-group">
+                            <div class="form-group form-group-phone">
                                 <label for="tablePhone">Телефон</label>
-                                <input type="tel" id="tablePhone" name="tablePhone" placeholder="+84" required>
+                                <input type="tel" id="tablePhone" name="tablePhone" placeholder="+" required>
                             </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
+                            <div class="form-group form-group-table">
                                 <label for="tableNumber">Стол</label>
                                 <select id="tableNumber" name="tableNumber" required>
                                     <option value="">Выберите стол</option>
@@ -527,7 +525,7 @@ if ($menu_loaded) {
                         </div>
                         <div class="form-group">
                             <label for="takeawayPhone">Телефон</label>
-                            <input type="tel" id="takeawayPhone" name="takeawayPhone" placeholder="+84" required>
+                            <input type="tel" id="takeawayPhone" name="takeawayPhone" placeholder="+" required>
                         </div>
                         <div class="form-group">
                             <label for="takeawayAddress">Адрес (ссылка на Google карту)</label>

@@ -272,6 +272,25 @@
     flex: 1;
 }
 
+/* Трехколоночная компоновка для имени, телефона и стола */
+.form-row-three {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.form-row-three .form-group-name {
+    flex: 1;
+}
+
+.form-row-three .form-group-phone {
+    flex: 1;
+}
+
+.form-row-three .form-group-table {
+    flex: 0 0 120px; /* Фиксированная ширина для дропдауна стола */
+}
+
 .form-group {
     margin-bottom: 8px;
 }
@@ -411,6 +430,15 @@
     .form-row {
         flex-direction: column;
         gap: 12px;
+    }
+    
+    .form-row-three {
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .form-row-three .form-group-table {
+        flex: 1; /* На мобильных дропдаун занимает всю ширину */
     }
     
     .form-group--half {

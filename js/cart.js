@@ -313,37 +313,40 @@ class Cart {
     applyPhoneMask(input) {
         let value = input.value.replace(/\D/g, ''); // Удаляем все нецифровые символы
         
-        // Если начинается не с 84, добавляем +84
-        if (!value.startsWith('84')) {
-            value = '84' + value;
+        // Если пользователь не начал с +, добавляем +
+        if (value.length > 0 && !input.value.startsWith('+')) {
+            value = '+' + value;
         }
         
-        // Ограничиваем до 11 цифр (84 + 9 цифр)
-        if (value.length > 11) {
-            value = value.substring(0, 11);
+        // Ограничиваем до 15 цифр (максимум для международного номера)
+        if (value.length > 15) {
+            value = value.substring(0, 15);
         }
         
-        // Форматируем: +84 xxxx xxxxx
-        if (value.length >= 2) {
-            let formatted = '+' + value.substring(0, 2);
-            if (value.length > 2) {
-                formatted += ' ' + value.substring(2, 6);
+        // Форматируем с пробелами для читаемости
+        if (value.length > 1) {
+            let formatted = value;
+            // Добавляем пробелы через каждые 3-4 цифры для читаемости
+            if (value.length > 4) {
+                formatted = value.substring(0, 4) + ' ' + value.substring(4);
             }
-            if (value.length > 6) {
-                formatted += ' ' + value.substring(6);
+            if (value.length > 8) {
+                formatted = value.substring(0, 4) + ' ' + value.substring(4, 8) + ' ' + value.substring(8);
             }
             input.value = formatted;
         } else if (value.length > 0) {
-            input.value = '+' + value;
+            input.value = value;
         }
     }
 
     validatePhone(input) {
         const phone = input.value.replace(/\s/g, ''); // Убираем пробелы для валидации
-        const phoneRegex = /^\+84\d{9}$/;
+        
+        // Проверяем, что номер начинается с + и содержит от 7 до 15 цифр
+        const phoneRegex = /^\+[1-9]\d{6,14}$/;
         
         if (phone && !phoneRegex.test(phone)) {
-            input.setCustomValidity('Введите корректный вьетнамский номер телефона (+84xxxxxxxxx)');
+            input.setCustomValidity('Введите корректный международный номер телефона (+код страны + номер)');
         } else {
             input.setCustomValidity('');
         }
@@ -381,9 +384,9 @@ class Cart {
             }
             
             // Проверяем валидность телефона
-            const phoneRegex = /^\+84\d{9}$/;
+            const phoneRegex = /^\+[1-9]\d{6,14}$/;
             if (!phoneRegex.test(phone.replace(/\s/g, ''))) {
-                this.showToast('Введите корректный номер телефона', 'error');
+                this.showToast('Введите корректный международный номер телефона', 'error');
                 return false;
             }
             
@@ -517,7 +520,7 @@ class Cart {
 
     clearCart() {
         this.items = [];
-        this.saveToStorage();
+        this.saveCart();
         this.updateCartDisplay();
     }
 
