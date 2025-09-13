@@ -73,44 +73,8 @@ class SepayNotificationService {
      * Отправка уведомлений о новых транзакциях
      */
     public function sendTransactionNotifications() {
-        try {
-            $newTransactions = $this->getNewTransactions();
-            
-            if (empty($newTransactions)) {
-                return ['count' => 0, 'sent' => 0];
-            }
-            
-            error_log("SepayNotificationService: Найдено " . count($newTransactions) . " новых транзакций");
-            
-            $sentCount = 0;
-            foreach ($newTransactions as $transaction) {
-                // Проверяем, не была ли уже отправлена эта транзакция
-                if ($this->tracker->isSent($transaction['id'])) {
-                    error_log("SepayNotificationService: Транзакция " . $transaction['id'] . " уже отправлена, пропускаем");
-                    continue;
-                }
-                
-                $result = $this->telegramService->sendSepayTransactionNotification($transaction);
-                
-                if ($result) {
-                    // Отмечаем в MongoDB как отправленную
-                    $this->tracker->markAsSent($transaction['id'], $result['message_id'] ?? null);
-                    $sentCount++;
-                    error_log("SepayNotificationService: Уведомление отправлено для транзакции " . $transaction['id']);
-                } else {
-                    error_log("SepayNotificationService: Ошибка отправки уведомления для транзакции " . $transaction['id']);
-                }
-                
-                // Небольшая задержка между отправками
-                sleep(1);
-            }
-            
-            return ['count' => count($newTransactions), 'sent' => $sentCount];
-            
-        } catch (Exception $e) {
-            error_log("SepayNotificationService: Ошибка отправки уведомлений: " . $e->getMessage());
-            return ['count' => 0, 'sent' => 0, 'error' => $e->getMessage()];
-        }
+        // Используем новый метод sendUnsentTransactions для избежания дублирования
+        return $this->sendUnsentTransactions();
     }
     
     /**
