@@ -391,7 +391,7 @@ class Cart {
             products: this.items.map(item => ({
                 product_id: parseInt(item.id),
                 count: item.quantity,
-                price: item.price
+                price: Math.round(item.price * 100) // Convert to minor units (kopecks)
             })),
             comment: this.getOrderComment(orderType)
         };

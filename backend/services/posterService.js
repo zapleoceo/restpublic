@@ -254,12 +254,12 @@ class PosterService {
 
       const url = `${this.baseURL}/incomingOrders.createIncomingOrder?token=${this.token}`;
       
-      // Convert prices to minor units (multiply by 100)
+      // Process order data - prices should already be in minor units from frontend
       const processedOrderData = {
         ...orderData,
         products: orderData.products.map(product => ({
           ...product,
-          price: Math.round(product.price * 100) // Convert to minor units
+          price: Math.round(product.price) // Ensure price is integer
         }))
       };
 
