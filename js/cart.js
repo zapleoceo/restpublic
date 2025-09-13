@@ -260,7 +260,7 @@ class Cart {
 
     async loadTables() {
         try {
-            const response = await fetch('/api/poster/tables/list', {
+            const response = await fetch('/api/tables/list', {
                 headers: {
                     'X-API-Token': window.API_TOKEN
                 }
@@ -268,10 +268,10 @@ class Cart {
             
             if (response.ok) {
                 const data = await response.json();
-                console.log('Tables loaded from API:', data);
+                console.log('Tables loaded from MongoDB:', data);
                 this.populateTableSelect(data.tables);
             } else {
-                console.warn('Failed to load tables from API, using fallback');
+                console.warn('Failed to load tables from MongoDB, using fallback');
                 this.populateTableSelect([]);
             }
         } catch (error) {
@@ -291,11 +291,12 @@ class Cart {
             tables.forEach(table => {
                 const option = document.createElement('option');
                 option.value = table.table_id || table.id;
-                option.textContent = table.table_name || `Стол ${table.table_id || table.id}`;
+                // Показываем только название стола
+                option.textContent = table.name || table.table_name || `Стол ${table.table_id || table.id}`;
                 select.appendChild(option);
             });
         } else {
-            console.warn('No tables received from API, using fallback');
+            console.warn('No tables received from MongoDB, using fallback');
             // Fallback: create some default table options
             for (let i = 1; i <= 10; i++) {
                 const option = document.createElement('option');

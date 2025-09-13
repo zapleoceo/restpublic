@@ -10,6 +10,7 @@ require('dotenv').config({ path: './config.env' });
 const posterRoutes = require('./routes/poster');
 const menuRoutes = require('./routes/menu');
 const cacheRoutes = require('./routes/cache');
+const tablesRoutes = require('./routes/tables');
 
 const app = express();
 const PORT = process.env.PORT || 3002;
@@ -76,6 +77,7 @@ const apiLimiter = rateLimit({
 app.use('/api/poster', apiLimiter, posterRoutes);
 app.use('/api/menu', apiLimiter, menuRoutes);
 app.use('/api/cache', apiLimiter, cacheRoutes);
+app.use('/api/tables', apiLimiter, tablesRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
