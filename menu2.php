@@ -1963,15 +1963,14 @@ if ($menu_loaded) {
                 if (!Array.isArray(this.items)) {
                     this.items = [];
                 }
+                this.init();
             }
             
             // Функция для форматирования чисел с пробелами
             formatNumber(num) {
                 return num.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
             }
-                this.init();
-            }
-
+            
             init() {
                 this.bindEvents();
                 this.updateCartDisplay();
