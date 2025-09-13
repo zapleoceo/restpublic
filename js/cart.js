@@ -386,8 +386,13 @@ class Cart {
 
         const orderType = document.querySelector('input[name="orderType"]:checked').value;
         
+        // Получаем телефон клиента
+        const phone = document.getElementById('tablePhone')?.value?.trim() || 
+                     document.getElementById('takeawayPhone')?.value?.trim();
+        
         const orderData = {
             spot_id: 1, // Default spot
+            phone: phone, // Обязательный параметр согласно документации
             products: this.items.map(item => ({
                 product_id: parseInt(item.id),
                 count: item.quantity,
