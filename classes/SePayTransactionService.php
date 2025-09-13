@@ -118,7 +118,8 @@ class SePayTransactionService {
                     'gateway' => $document['gateway'],
                     'account_number' => $document['account_number'],
                     'transaction_date' => $document['transaction_date'],
-                    'webhook_received_at' => $document['webhook_received_at']->toDateTime()->format('Y-m-d H:i:s'),
+                    'webhook_received_at' => isset($document['webhook_received_at']) ? 
+                    $document['webhook_received_at']->toDateTime()->format('Y-m-d H:i:s') : null,
                     'telegram_sent' => $document['telegram_sent'] ?? false,
                     'telegram_sent_at' => isset($document['telegram_sent_at']) ? 
                         $document['telegram_sent_at']->toDateTime()->format('Y-m-d H:i:s') : null,
@@ -246,7 +247,8 @@ class SePayTransactionService {
                 'gateway' => $document['gateway'],
                 'account_number' => $document['account_number'],
                 'transaction_date' => $document['transaction_date'],
-                'webhook_received_at' => $document['webhook_received_at']->toDateTime()->format('Y-m-d H:i:s'),
+                'webhook_received_at' => isset($document['webhook_received_at']) ? 
+                    $document['webhook_received_at']->toDateTime()->format('Y-m-d H:i:s') : null,
                 'telegram_sent' => $document['telegram_sent'] ?? false,
                 'telegram_sent_at' => isset($document['telegram_sent_at']) ? 
                     $document['telegram_sent_at']->toDateTime()->format('Y-m-d H:i:s') : null,
