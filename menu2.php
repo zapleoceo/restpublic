@@ -350,15 +350,7 @@ if ($menu_loaded) {
             transform: translate(-50%, -50%);
         }
         
-        /* Auth icon default state - gray */
-        .auth-icon .auth-icon-img {
-            content: url('images/icons/auth-gray.png');
-        }
-        
-        /* Cart icon default state - gray */
-        .cart-icon .cart-icon-img {
-            content: url('images/icons/cart gray.png');
-        }
+        /* Icons are now controlled by JavaScript src attribute */
         
         .auth-icon:hover,
         .cart-icon:hover {
@@ -371,20 +363,7 @@ if ($menu_loaded) {
             transform: translate(-50%, -50%) scale(1.05);
         }
         
-        /* Auth icon authenticated - change to green PNG */
-        .auth-icon.authenticated .auth-icon-img {
-            content: url('images/icons/auth-green.png');
-        }
-        
-        /* Cart icon has items - change to green PNG */
-        .cart-icon.has-items .cart-icon-img {
-            content: url('images/icons/cart green.png') !important;
-        }
-        
-        /* Cart icon hover - only green if has items, otherwise stay gray */
-        .cart-icon.has-items:hover .cart-icon-img {
-            content: url('images/icons/cart green.png') !important;
-        }
+        /* Icons are now controlled by JavaScript src attribute */
         
         /* Active states for better UX */
         .auth-icon:active,
@@ -1275,7 +1254,7 @@ if ($menu_loaded) {
                         <!-- Cart Icon -->
                         <div class="header-cart">
                             <button class="cart-icon" id="cartIcon" title="Корзина">
-                                <img alt="Корзина" class="cart-icon-img">
+                                <img src="images/icons/cart gray.png" alt="Корзина" class="cart-icon-img">
                                 <span class="cart-count" id="cartCount" style="display: none;">0</span>
                             </button>
                         </div>
@@ -1843,6 +1822,7 @@ if ($menu_loaded) {
             updateCartDisplay() {
                 const cartCount = document.getElementById('cartCount');
                 const cartIcon = document.getElementById('cartIcon');
+                const cartIconImg = document.querySelector('.cart-icon-img');
 
                 const totalItems = this.items.reduce((sum, item) => sum + item.quantity, 0);
                 
@@ -1854,8 +1834,14 @@ if ($menu_loaded) {
                 if (cartIcon) {
                     if (totalItems > 0) {
                         cartIcon.classList.add('has-items');
+                        if (cartIconImg) {
+                            cartIconImg.src = 'images/icons/cart green.png';
+                        }
                     } else {
                         cartIcon.classList.remove('has-items');
+                        if (cartIconImg) {
+                            cartIconImg.src = 'images/icons/cart gray.png';
+                        }
                     }
                 }
             }
