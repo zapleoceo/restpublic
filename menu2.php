@@ -1689,6 +1689,16 @@ if ($menu_loaded) {
                     </div>
                 </div>
 
+                <div class="cart-items-list" id="cartItemsList">
+                    <!-- Cart items will be populated here -->
+                </div>
+                <div class="cart-total">
+                    <div class="total-row">
+                        <span>Итого:</span>
+                        <span class="total-amount" id="cartTotalAmount">0 ₫</span>
+                    </div>
+                </div>
+
                 <!-- Order Fields -->
                 <div class="order-fields" id="orderFields">
                     <!-- Table Order Fields -->
@@ -1734,16 +1744,6 @@ if ($menu_loaded) {
                             <label for="takeawayComment">Комментарий</label>
                             <textarea id="takeawayComment" name="takeawayComment" rows="3" placeholder="Сюда можно написать все, что вы хотели бы, чтобы мы учли"></textarea>
                         </div>
-                    </div>
-                </div>
-
-                <div class="cart-items-list" id="cartItemsList">
-                    <!-- Cart items will be populated here -->
-                </div>
-                <div class="cart-total">
-                    <div class="total-row">
-                        <span>Итого:</span>
-                        <span class="total-amount" id="cartTotalAmount">0 ₫</span>
                     </div>
                 </div>
             </div>
@@ -2221,15 +2221,16 @@ if ($menu_loaded) {
                 try {
                     const response = await fetch('/api/poster/tables/list', {
                         headers: {
-                            'X-API-Token': 'your-api-token' // TODO: Get from config
+                            'X-API-Token': 'northrepublic-api-2024' // API token for authentication
                         }
                     });
                     
                     if (response.ok) {
                         const data = await response.json();
+                        console.log('Tables loaded from API:', data);
                         this.populateTableSelect(data.tables);
                     } else {
-                        console.warn('Failed to load tables, using fallback');
+                        console.warn('Failed to load tables from API, using fallback');
                         this.populateTableSelect([]);
                     }
                 } catch (error) {
@@ -2253,6 +2254,7 @@ if ($menu_loaded) {
                         select.appendChild(option);
                     });
                 } else {
+                    console.warn('No tables received from API, using fallback');
                     // Fallback: create some default table options
                     for (let i = 1; i <= 10; i++) {
                         const option = document.createElement('option');
@@ -2362,7 +2364,7 @@ if ($menu_loaded) {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
-                            'X-API-Token': 'your-api-token' // TODO: Get from config
+                            'X-API-Token': 'northrepublic-api-2024' // API token for authentication
                         },
                         body: JSON.stringify(orderData)
                     });
