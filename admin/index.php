@@ -93,6 +93,12 @@ $stats = [
                     </a>
                     
                     
+                    <a href="/admin/sepay/" class="action-card">
+                        <div class="action-icon">💳</div>
+                        <h3>SePay Transactions</h3>
+                        <p>Просмотр транзакций полученных через webhook</p>
+                    </a>
+                    
                     <a href="/admin/logs/" class="action-card">
                         <div class="action-icon">📊</div>
                         <h3>Логи админов</h3>
