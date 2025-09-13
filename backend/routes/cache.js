@@ -47,6 +47,30 @@ router.post('/update-menu', async (req, res) => {
             { upsert: true }
         );
         
+        // Загружаем и сохраняем список столов
+        console.log('🔄 Загрузка списка столов...');
+        try {
+            const posterService = require('../services/posterService');
+            const tables = await posterService.getTables();
+            
+            // Сохраняем столы в отдельный документ
+            const tablesResult = await collection.replaceOne(
+                { _id: 'current_tables' },
+                {
+                    _id: 'current_tables',
+                    tables: tables,
+                    updated_at: new Date(),
+                    count: tables.length
+                },
+                { upsert: true }
+            );
+            
+            console.log(`✅ Столы загружены. Количество: ${tables.length}`);
+        } catch (tablesError) {
+            console.error('❌ Ошибка загрузки столов:', tablesError.message);
+            // Не прерываем выполнение, если загрузка столов не удалась
+        }
+
         // Обновляем время последнего обновления в настройках
         const settingsCollection = db.collection('settings');
         await settingsCollection.replaceOne(
