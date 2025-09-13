@@ -56,6 +56,11 @@ class SepayService {
                 throw new Exception('Invalid API response');
             }
             
+            // Проверяем, есть ли ошибка в ответе (например, rate limit)
+            if (isset($response['error'])) {
+                return $response; // Возвращаем ответ с ошибкой как есть
+            }
+            
             // Проверяем структуру ответа API
             $transactions = [];
             if (isset($response['transactions'])) {
@@ -248,6 +253,7 @@ class SepayService {
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HEADER, true);
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
         curl_setopt($ch, CURLOPT_TIMEOUT, 60);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
@@ -257,7 +263,7 @@ class SepayService {
         $response = curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-        $headers = substr($response, 0, $headerSize);
+        $responseHeaders = substr($response, 0, $headerSize);
         $body = substr($response, $headerSize);
         $error = curl_error($ch);
         curl_close($ch);
@@ -269,7 +275,7 @@ class SepayService {
         if ($httpCode === 429) {
             // Rate limit exceeded - читаем заголовок x-sepay-userapi-retry-after
             $retryAfter = null;
-            if (preg_match('/x-sepay-userapi-retry-after:\s*(\d+)/i', $headers, $matches)) {
+            if (preg_match('/x-sepay-userapi-retry-after:\s*(\d+)/i', $responseHeaders, $matches)) {
                 $retryAfter = intval($matches[1]);
             }
             
