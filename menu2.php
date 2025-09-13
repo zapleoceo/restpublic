@@ -1854,15 +1854,21 @@ if ($menu_loaded) {
                             };
                             testImg.src = newSrc;
                             
-                            cartIconImg.src = newSrc;
-                            console.log('7. cartIconImg.src after change:', cartIconImg.src);
-                            
-                            // Проверяем через небольшую задержку
+                            // Принудительно перезагружаем изображение
+                            cartIconImg.style.display = 'none';
+                            cartIconImg.src = '';
                             setTimeout(() => {
-                                console.log('8. Final check - cartIconImg.src:', cartIconImg.src);
-                                console.log('9. Final check - cartIconImg.complete:', cartIconImg.complete);
-                                console.log('10. Final check - cartIconImg.naturalWidth:', cartIconImg.naturalWidth);
-                            }, 100);
+                                cartIconImg.src = newSrc;
+                                cartIconImg.style.display = 'block';
+                                console.log('7. cartIconImg.src after forced reload:', cartIconImg.src);
+                                
+                                // Проверяем через небольшую задержку
+                                setTimeout(() => {
+                                    console.log('8. Final check - cartIconImg.src:', cartIconImg.src);
+                                    console.log('9. Final check - cartIconImg.complete:', cartIconImg.complete);
+                                    console.log('10. Final check - cartIconImg.naturalWidth:', cartIconImg.naturalWidth);
+                                }, 100);
+                            }, 10);
                         } else {
                             console.log('5. ❌ cartIconImg not found!');
                         }
@@ -1883,8 +1889,14 @@ if ($menu_loaded) {
                             };
                             testImg.src = newSrc;
                             
-                            cartIconImg.src = newSrc;
-                            console.log('7. cartIconImg.src after change:', cartIconImg.src);
+                            // Принудительно перезагружаем изображение
+                            cartIconImg.style.display = 'none';
+                            cartIconImg.src = '';
+                            setTimeout(() => {
+                                cartIconImg.src = newSrc;
+                                cartIconImg.style.display = 'block';
+                                console.log('7. cartIconImg.src after forced reload:', cartIconImg.src);
+                            }, 10);
                         } else {
                             console.log('5. ❌ cartIconImg not found!');
                         }
