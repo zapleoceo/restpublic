@@ -915,6 +915,8 @@ if ($menu_loaded) {
             align-items: center;
             justify-content: center;
             font-size: 14px;
+            font-weight: bold;
+            color: #333;
         }
         
         .cart-item-quantity button:hover {
@@ -1824,6 +1826,7 @@ if ($menu_loaded) {
                         item.quantity = quantity;
                         this.saveCart();
                         this.updateCartDisplay();
+                        this.updateCartModal(); // Добавил обновление модального окна
                     }
                 }
             }
