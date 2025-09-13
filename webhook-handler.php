@@ -48,7 +48,8 @@ try {
     $data = json_decode($input, true);
 
     // Логируем входящий запрос (для отладки)
-    file_put_contents('logs/sepay_webhook.log', date('Y-m-d H:i:s') . " - " . $input . "\n", FILE_APPEND | LOCK_EX);
+    file_put_contents('logs/sepay_webhook.log', date('Y-m-d H:i:s') . " - RAW: " . $input . "\n", FILE_APPEND | LOCK_EX);
+    file_put_contents('logs/sepay_webhook.log', date('Y-m-d H:i:s') . " - DECODED: " . json_encode($data) . "\n", FILE_APPEND | LOCK_EX);
 
     // Обработка транзакции
     if ($data && isset($data['id'])) {
