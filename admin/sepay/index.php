@@ -4,9 +4,11 @@ require_once '../includes/auth-check.php';
 
 // Подключение к Sepay API
 require_once __DIR__ . '/../../classes/SepayService.php';
+require_once __DIR__ . '/../../classes/TelegramTransactionTracker.php';
 
 try {
     $sepayService = new SepayService();
+    $telegramTracker = new TelegramTransactionTracker();
     
     // Параметры фильтрации
     $page = max(1, intval($_GET['page'] ?? 1));
@@ -41,6 +43,13 @@ try {
     $logs = $apiResponse['transactions'] ?? [];
     $totalCount = $apiResponse['total'] ?? 0;
     $totalPages = $apiResponse['total_pages'] ?? 0;
+    
+    // Получаем статус отправки в Telegram для всех транзакций
+    $telegramStatus = [];
+    if (!empty($logs)) {
+        $transactionIds = array_column($logs, 'id');
+        $telegramStatus = $telegramTracker->getSentStatus($transactionIds);
+    }
     
     // Получаем статистику
     $statsResponse = $sepayService->getStats($filters);
@@ -233,10 +242,13 @@ logAdminAction('view_sepay_logs', 'Просмотр логов платежей 
                 </div>
             <?php endif; ?>
             
-            <!-- Кнопка обновления (всегда видна) -->
+            <!-- Кнопки управления (всегда видимы) -->
             <div class="refresh-section" style="margin: 20px 0; text-align: center;">
-                <button onclick="location.reload()" style="padding: 10px 20px; background: #007cba; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                <button onclick="location.reload()" style="padding: 10px 20px; background: #007cba; color: white; border: none; border-radius: 4px; cursor: pointer; margin-right: 10px;">
                     🔄 Обновить данные
+                </button>
+                <button onclick="sendUnsentTransactions()" style="padding: 10px 20px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                    📤 Отправить неотправленные
                 </button>
                 <p style="margin-top: 10px; color: #666; font-size: 14px;">
                     Последнее обновление: <?php echo date('H:i:s'); ?>
@@ -329,6 +341,7 @@ logAdminAction('view_sepay_logs', 'Просмотр логов платежей 
                                 <th>ID Транзакции</th>
                                 <th>Сумма</th>
                                 <th>Статус</th>
+                                <th>Telegram</th>
                                 <th>Описание</th>
                                 <th>Номер счета</th>
                                 <th>Детали</th>
@@ -337,7 +350,7 @@ logAdminAction('view_sepay_logs', 'Просмотр логов платежей 
                         <tbody>
                             <?php if (empty($logs)): ?>
                                 <tr>
-                                    <td colspan="7" style="text-align: center; padding: 2rem; color: #666;">
+                                    <td colspan="8" style="text-align: center; padding: 2rem; color: #666;">
                                         Нет данных для отображения
                                     </td>
                                 </tr>
@@ -360,6 +373,21 @@ logAdminAction('view_sepay_logs', 'Просмотр логов платежей 
                                             <span class="status-badge status-<?php echo floatval($log['amount_in'] ?? 0) > 0 ? 'success' : 'failed'; ?>">
                                                 <?php echo floatval($log['amount_in'] ?? 0) > 0 ? 'Успешно' : 'Неудачно'; ?>
                                             </span>
+                                        </td>
+                                        <td>
+                                            <?php 
+                                            $transactionId = $log['id'] ?? '';
+                                            $telegramInfo = $telegramStatus[$transactionId] ?? null;
+                                            if ($telegramInfo && $telegramInfo['sent']): 
+                                            ?>
+                                                <span class="status-badge status-success" title="Отправлено: <?php echo $telegramInfo['sent_at'] ? $telegramInfo['sent_at']->format('d.m.Y H:i:s') : 'N/A'; ?>">
+                                                    ✅ Отправлено
+                                                </span>
+                                            <?php else: ?>
+                                                <span class="status-badge status-failed">
+                                                    ❌ Не отправлено
+                                                </span>
+                                            <?php endif; ?>
                                         </td>
                                         <td><?php echo htmlspecialchars($log['transaction_content'] ?? 'N/A'); ?></td>
                                         <td>
@@ -420,6 +448,41 @@ logAdminAction('view_sepay_logs', 'Просмотр логов платежей 
             // Здесь можно добавить AJAX запрос для получения деталей транзакции
             document.getElementById('transactionDetails').innerHTML = '<p>Загрузка деталей транзакции...</p>';
             AdminPanel.openModal({ target: { closest: () => document.getElementById('transactionModal') } });
+        }
+        
+        function sendUnsentTransactions() {
+            if (!confirm('Отправить все неотправленные транзакции в Telegram?')) {
+                return;
+            }
+            
+            const button = event.target;
+            const originalText = button.textContent;
+            button.textContent = '⏳ Отправка...';
+            button.disabled = true;
+            
+            fetch('send-unsent.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(`Успешно отправлено: ${data.sent} из ${data.count} транзакций`);
+                    location.reload();
+                } else {
+                    alert('Ошибка: ' + (data.error || 'Неизвестная ошибка'));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Ошибка при отправке транзакций');
+            })
+            .finally(() => {
+                button.textContent = originalText;
+                button.disabled = false;
+            });
         }
     </script>
 </body>

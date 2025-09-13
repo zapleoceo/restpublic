@@ -2,10 +2,12 @@
 
 require_once 'SepayService.php';
 require_once 'TelegramService.php';
+require_once 'TelegramTransactionTracker.php';
 
 class SepayNotificationService {
     private $sepayService;
     private $telegramService;
+    private $tracker;
     private $lastTransactionId;
     private $isRunning;
     private $checkInterval;
@@ -13,6 +15,7 @@ class SepayNotificationService {
     public function __construct() {
         $this->sepayService = new SepayService();
         $this->telegramService = new TelegramService();
+        $this->tracker = new TelegramTransactionTracker();
         $this->lastTransactionId = null;
         $this->isRunning = false;
         $this->checkInterval = 30; // Проверка каждые 30 секунд
@@ -79,9 +82,17 @@ class SepayNotificationService {
             
             $sentCount = 0;
             foreach ($newTransactions as $transaction) {
+                // Проверяем, не была ли уже отправлена эта транзакция
+                if ($this->tracker->isSent($transaction['id'])) {
+                    error_log("SepayNotificationService: Транзакция " . $transaction['id'] . " уже отправлена, пропускаем");
+                    continue;
+                }
+                
                 $result = $this->telegramService->sendSepayTransactionNotification($transaction);
                 
                 if ($result) {
+                    // Отмечаем в MongoDB как отправленную
+                    $this->tracker->markAsSent($transaction['id'], $result['message_id'] ?? null);
                     $sentCount++;
                     error_log("SepayNotificationService: Уведомление отправлено для транзакции " . $transaction['id']);
                 } else {
@@ -212,6 +223,68 @@ class SepayNotificationService {
      */
     public function getCheckInterval() {
         return $this->checkInterval;
+    }
+    
+    /**
+     * Отправка неотправленных транзакций
+     */
+    public function sendUnsentTransactions() {
+        try {
+            // Получаем все транзакции из API
+            $response = $this->sepayService->getTransactions();
+            
+            if (empty($response) || !isset($response['transactions']) || empty($response['transactions'])) {
+                return ['count' => 0, 'sent' => 0, 'message' => 'Нет транзакций для проверки'];
+            }
+            
+            $transactions = $response['transactions'];
+            $transactionIds = array_column($transactions, 'id');
+            
+            // Получаем неотправленные транзакции
+            $unsentIds = $this->tracker->getUnsentTransactions($transactionIds);
+            
+            if (empty($unsentIds)) {
+                return ['count' => 0, 'sent' => 0, 'message' => 'Все транзакции уже отправлены'];
+            }
+            
+            // Фильтруем только входящие платежи
+            $unsentTransactions = array_filter($transactions, function($transaction) use ($unsentIds) {
+                return in_array($transaction['id'], $unsentIds) && floatval($transaction['amount_in']) > 0;
+            });
+            
+            if (empty($unsentTransactions)) {
+                return ['count' => 0, 'sent' => 0, 'message' => 'Нет неотправленных входящих платежей'];
+            }
+            
+            error_log("SepayNotificationService: Найдено " . count($unsentTransactions) . " неотправленных транзакций");
+            
+            $sentCount = 0;
+            foreach ($unsentTransactions as $transaction) {
+                $result = $this->telegramService->sendSepayTransactionNotification($transaction);
+                
+                if ($result) {
+                    // Отмечаем в MongoDB как отправленную
+                    $this->tracker->markAsSent($transaction['id'], $result['message_id'] ?? null);
+                    $sentCount++;
+                    error_log("SepayNotificationService: Неотправленная транзакция " . $transaction['id'] . " отправлена");
+                } else {
+                    error_log("SepayNotificationService: Ошибка отправки неотправленной транзакции " . $transaction['id']);
+                }
+                
+                // Небольшая задержка между отправками
+                sleep(1);
+            }
+            
+            return [
+                'count' => count($unsentTransactions), 
+                'sent' => $sentCount,
+                'message' => "Обработано " . count($unsentTransactions) . " неотправленных транзакций, отправлено: $sentCount"
+            ];
+            
+        } catch (Exception $e) {
+            error_log("SepayNotificationService: Ошибка отправки неотправленных транзакций: " . $e->getMessage());
+            return ['count' => 0, 'sent' => 0, 'error' => $e->getMessage()];
+        }
     }
     
     /**
