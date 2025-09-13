@@ -231,10 +231,13 @@
 .order-type-option {
     display: flex;
     align-items: center;
+    justify-content: flex-start;
     cursor: pointer;
     padding: 8px 12px;
     border-radius: 6px;
     transition: background-color 0.2s;
+    height: auto;
+    min-height: 40px;
 }
 
 .order-type-option:hover {
@@ -247,11 +250,16 @@
     width: 20px;
     height: 20px;
     transform: scale(1.2);
+    flex-shrink: 0;
+    align-self: center;
 }
 
 .order-type-label {
     font-size: 14px;
     color: #333;
+    line-height: 1.4;
+    align-self: center;
+    white-space: nowrap;
 }
 
 .order-fields {
