@@ -344,13 +344,12 @@ logAdminAction('view_sepay_logs', 'Просмотр логов платежей 
                                 <th>Telegram</th>
                                 <th>Описание</th>
                                 <th>Номер счета</th>
-                                <th>Детали</th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php if (empty($logs)): ?>
                                 <tr>
-                                    <td colspan="8" style="text-align: center; padding: 2rem; color: #666;">
+                                    <td colspan="7" style="text-align: center; padding: 2rem; color: #666;">
                                         Нет данных для отображения
                                     </td>
                                 </tr>
@@ -393,11 +392,6 @@ logAdminAction('view_sepay_logs', 'Просмотр логов платежей 
                                         <td>
                                             <code><?php echo htmlspecialchars($log['account_number'] ?? 'N/A'); ?></code>
                                         </td>
-                                        <td>
-                                            <button class="btn btn-secondary" onclick="showTransactionDetails('<?php echo htmlspecialchars($log['id'] ?? ''); ?>')">
-                                                Подробнее
-                                            </button>
-                                        </td>
                                     </tr>
                                 <?php endforeach; ?>
                             <?php endif; ?>
@@ -429,27 +423,9 @@ logAdminAction('view_sepay_logs', 'Просмотр логов платежей 
         </main>
     </div>
     
-    <!-- Модальное окно для деталей транзакции -->
-    <div id="transactionModal" class="modal" style="display: none;">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Детали транзакции</h3>
-                <span class="modal-close">&times;</span>
-            </div>
-            <div class="modal-body" id="transactionDetails">
-                <!-- Детали будут загружены через AJAX -->
-            </div>
-        </div>
-    </div>
     
     <script src="../assets/js/admin.js"></script>
     <script>
-        function showTransactionDetails(transactionId) {
-            // Здесь можно добавить AJAX запрос для получения деталей транзакции
-            document.getElementById('transactionDetails').innerHTML = '<p>Загрузка деталей транзакции...</p>';
-            AdminPanel.openModal({ target: { closest: () => document.getElementById('transactionModal') } });
-        }
-        
         function sendUnsentTransactions() {
             if (!confirm('Отправить все неотправленные транзакции в Telegram?')) {
                 return;
