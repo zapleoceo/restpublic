@@ -80,7 +80,7 @@
 }
 
 .modal-footer {
-    padding: 20px 24px;
+    padding: 0;
     border-top: 1px solid #e0e0e0;
     display: flex;
     gap: 12px;
@@ -433,9 +433,12 @@
     }
     
     .modal-header,
-    .modal-body,
-    .modal-footer {
+    .modal-body {
         padding: 16px;
+    }
+    
+    .modal-footer {
+        padding: 0;
     }
     
     .radio-group {
