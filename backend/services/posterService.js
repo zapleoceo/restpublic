@@ -252,7 +252,7 @@ class PosterService {
         throw new Error('Poster API token not configured');
       }
 
-      const url = `${this.baseURL}/incomingOrders.createIncomingOrder?token=${this.token}`;
+      const url = `${this.baseURL}/transactions.createOrder?token=${this.token}`;
       
       // Process order data - prices should already be in minor units from frontend
       const processedOrderData = {
