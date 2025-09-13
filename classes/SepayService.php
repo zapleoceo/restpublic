@@ -105,15 +105,16 @@ class SepayService {
         
         try {
             $params = $this->buildApiParams($filters);
-            $url = $this->apiBaseUrl . '/transactions/count?' . http_build_query($params);
+            $url = $this->apiBaseUrl . '/transactions/list?' . http_build_query($params);
             
             $response = $this->makeApiRequest($url);
             
-            if (!$response || !isset($response['transactions'])) {
+            if (!$response) {
                 throw new Exception('Invalid API response');
             }
             
-            $transactions = $response['transactions'];
+            // Для статистики используем тот же endpoint что и для транзакций
+            $transactions = $response['transactions'] ?? [];
             $total = count($transactions);
             $success = 0;
             $failed = 0;
