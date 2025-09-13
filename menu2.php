@@ -667,7 +667,7 @@ if ($menu_loaded) {
             display: flex;
             align-items: center;
             justify-content: flex-end;
-            gap: 1.5rem;
+            gap: 3rem;
             height: 100%;
             min-height: 60px;
             align-self: center;
