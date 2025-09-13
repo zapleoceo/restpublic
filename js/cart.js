@@ -260,7 +260,7 @@ class Cart {
 
     async loadTables() {
         try {
-            const response = await fetch('/api/tables/list', {
+            const response = await fetch('http://localhost:3002/api/tables/list', {
                 headers: {
                     'X-API-Token': window.API_TOKEN
                 }
@@ -402,7 +402,7 @@ class Cart {
         try {
             this.showToast('Отправляем заказ...', 'info');
             
-            const response = await fetch('/api/poster/orders/create', {
+            const response = await fetch('http://localhost:3002/api/poster/orders/create', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

@@ -252,20 +252,20 @@
 }
 
 .order-fields {
-    margin-bottom: 12px;
+    margin-bottom: 8px;
 }
 
 .order-field-group {
-    padding: 12px;
+    padding: 8px;
     background: #f8f9fa;
     border-radius: 8px;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
 }
 
 .form-row {
     display: flex;
     gap: 12px;
-    margin-bottom: 12px;
+    margin-bottom: 8px;
 }
 
 .form-row .form-group {
@@ -273,12 +273,12 @@
 }
 
 .form-group {
-    margin-bottom: 12px;
+    margin-bottom: 8px;
 }
 
 .form-group label {
     display: block;
-    margin-bottom: 6px;
+    margin-bottom: 4px;
     font-weight: 500;
     color: #333;
     font-size: 14px;
@@ -288,7 +288,7 @@
 .form-group select,
 .form-group textarea {
     width: 100%;
-    padding: 10px 12px;
+    padding: 8px 10px;
     border: 1px solid #ddd;
     border-radius: 6px;
     font-size: 14px;
@@ -306,7 +306,7 @@
 
 .form-group textarea {
     resize: vertical;
-    min-height: 80px;
+    min-height: 60px;
 }
 
 .form-group input[type="tel"] {
