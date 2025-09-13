@@ -252,6 +252,8 @@
     transform: scale(1.2);
     flex-shrink: 0;
     align-self: center;
+    position: static !important; /* Переопределяем глобальный стиль */
+    top: auto !important; /* Убираем сдвиг вниз */
 }
 
 .order-type-label {
