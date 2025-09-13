@@ -9,19 +9,9 @@ RewriteRule ^menu2$ menu2.php [L]
 # Обработка API
 RewriteRule ^api/language/change$ api/language/change.php [L]
 
-# Проксирование API запросов на Node.js backend
-RewriteCond %{REQUEST_URI} ^/api/poster/.*$
-RewriteRule ^api/poster/(.*)$ http://localhost:3002/api/poster/$1 [P,L]
-
-# Проксирование других API запросов на Node.js backend
-RewriteCond %{REQUEST_URI} ^/api/menu/.*$
-RewriteRule ^api/menu/(.*)$ http://localhost:3002/api/menu/$1 [P,L]
-
-RewriteCond %{REQUEST_URI} ^/api/cache/.*$
-RewriteRule ^api/cache/(.*)$ http://localhost:3002/api/cache/$1 [P,L]
-
-RewriteCond %{REQUEST_URI} ^/api/tables/.*$
-RewriteRule ^api/tables/(.*)$ http://localhost:3002/api/tables/$1 [P,L]
+# Универсальное проксирование API запросов на Node.js backend
+RewriteCond %{REQUEST_URI} ^/api/(poster|menu|cache|tables)/.*$
+RewriteRule ^api/(.*)$ http://localhost:3002/api/$1 [P,L]
 
 # Обработка /admin без .php
 RewriteRule ^admin$ admin/index.php [L]
