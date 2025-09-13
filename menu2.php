@@ -609,6 +609,7 @@ if ($menu_loaded) {
             margin-bottom: 1rem;
             transition: all 0.3s ease;
             cursor: pointer;
+            min-height: 80px;
         }
         
         .menu-list__item:nth-child(odd) {
@@ -675,12 +676,7 @@ if ($menu_loaded) {
         }
         
         .add-to-cart-btn {
-            width: 40px;
-            height: 40px;
-            min-width: 40px;
-            min-height: 40px;
-            border: 2px solid #366b5b;
-            border-radius: 50%;
+            border: none;
             background: transparent;
             cursor: pointer;
             display: flex;
@@ -689,17 +685,30 @@ if ($menu_loaded) {
             transition: all 0.3s ease;
             flex-shrink: 0;
             position: relative;
-            overflow: hidden;
             box-sizing: border-box;
-            font-size: 20px;
+            font-size: 18px;
             font-weight: bold;
             color: #366b5b;
+            padding: 8px 12px;
+            border-radius: 6px;
+            min-width: 40px;
+            height: 32px;
         }
         
         .add-to-cart-btn:hover {
-            transform: scale(1.1);
             color: #fff;
             background: #366b5b;
+            transform: scale(1.05);
+        }
+        
+        .add-to-cart-btn::before {
+            content: '+';
+            transition: all 0.3s ease;
+        }
+        
+        .add-to-cart-btn:hover::before {
+            content: 'в заказ';
+            font-size: 14px;
         }
         
         
@@ -1368,7 +1377,6 @@ if ($menu_loaded) {
                                                                 'image' => $product['image_url'] ?? ''
                                                             ]); ?>'
                                                             title="Добавить в корзину">
-                                                        +
                                                     </button>
                                                 </div>
                                             </li>
