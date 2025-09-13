@@ -233,6 +233,16 @@ logAdminAction('view_sepay_logs', 'Просмотр логов платежей 
                 </div>
             <?php endif; ?>
             
+            <!-- Кнопка обновления (всегда видна) -->
+            <div class="refresh-section" style="margin: 20px 0; text-align: center;">
+                <button onclick="location.reload()" style="padding: 10px 20px; background: #007cba; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                    🔄 Обновить данные
+                </button>
+                <p style="margin-top: 10px; color: #666; font-size: 14px;">
+                    Последнее обновление: <?php echo date('H:i:s'); ?>
+                </p>
+            </div>
+            
             <!-- Статистика -->
             <div class="stats-row">
                 <div class="stat-item total">
