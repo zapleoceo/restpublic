@@ -23,16 +23,18 @@ class SepayNotificationService {
      */
     public function getNewTransactions() {
         try {
-            $transactions = $this->sepayService->getTransactions();
+            $response = $this->sepayService->getTransactions();
             
-            if (empty($transactions)) {
+            if (empty($response) || !isset($response['transactions']) || empty($response['transactions'])) {
                 return [];
             }
             
+            $transactions = $response['transactions'];
+            
             // Если это первый запуск, сохраняем ID последней транзакции
             if ($this->lastTransactionId === null) {
-                $this->lastTransactionId = $transactions[0]['id'];
-                error_log("SepayNotificationService: Первый запуск, сохранен ID: " . $this->lastTransactionId);
+                $this->saveLastTransactionId($transactions[0]['id']);
+                error_log("SepayNotificationService: Первый запуск, сохранен ID: " . $transactions[0]['id']);
                 return [];
             }
             
@@ -49,9 +51,9 @@ class SepayNotificationService {
                 }
             }
             
-            // Обновляем ID последней транзакции
+            // Обновляем ID последней транзакции после отправки всех новых
             if (!empty($transactions)) {
-                $this->lastTransactionId = $transactions[0]['id'];
+                $this->saveLastTransactionId($transactions[0]['id']);
             }
             
             return $newTransactions;
@@ -210,5 +212,13 @@ class SepayNotificationService {
      */
     public function getCheckInterval() {
         return $this->checkInterval;
+    }
+    
+    /**
+     * Сохранение ID последней транзакции
+     */
+    private function saveLastTransactionId($id) {
+        file_put_contents($this->lastTransactionIdFile, $id);
+        $this->lastTransactionId = $id;
     }
 }

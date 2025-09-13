@@ -242,6 +242,9 @@ class SepayService {
         
         $response = curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+        $headers = substr($response, 0, $headerSize);
+        $body = substr($response, $headerSize);
         $error = curl_error($ch);
         curl_close($ch);
         
@@ -250,16 +253,24 @@ class SepayService {
         }
         
         if ($httpCode === 429) {
-            // Rate limit exceeded - Sepay allows 2 requests per second
-            $retryAfter = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-            throw new Exception("Rate limit exceeded. Sepay allows 2 requests per second. Please wait before retrying.");
+            // Rate limit exceeded - читаем заголовок x-sepay-userapi-retry-after
+            $retryAfter = null;
+            if (preg_match('/x-sepay-userapi-retry-after:\s*(\d+)/i', $headers, $matches)) {
+                $retryAfter = intval($matches[1]);
+            }
+            
+            $message = "Rate limit exceeded. Sepay allows 2 requests per second.";
+            if ($retryAfter) {
+                $message .= " Retry after {$retryAfter} seconds.";
+            }
+            throw new Exception($message);
         }
         
         if ($httpCode !== 200) {
-            throw new Exception("API Error: HTTP {$httpCode} - {$response}");
+            throw new Exception("API Error: HTTP {$httpCode} - {$body}");
         }
         
-        $data = json_decode($response, true);
+        $data = json_decode($body, true);
         
         if (json_last_error() !== JSON_ERROR_NONE) {
             throw new Exception("JSON Decode Error: " . json_last_error_msg());
