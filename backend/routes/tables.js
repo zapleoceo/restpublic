@@ -29,21 +29,23 @@ router.get('/list', requireAuth, async (req, res) => {
     await client.connect();
     
     const db = client.db(dbName);
-    const tablesCollection = db.collection('tables');
+    const menuCollection = db.collection('menu');
     
-    // Get all tables sorted by name
-    const tables = await tablesCollection.find({}, {
-      sort: { name: 1 }
-    }).toArray();
+    // Get tables from the current_tables document
+    const tablesDoc = await menuCollection.findOne({ _id: 'current_tables' });
     
-    // Format tables for frontend
-    const formattedTables = tables.map(table => ({
-      id: table._id.toString(),
-      table_id: table.table_id || table._id.toString(),
-      name: table.name || table.table_name || `Стол ${table.table_id || table._id}`,
-      capacity: table.capacity || null,
-      status: table.status || 'available'
-    }));
+    let formattedTables = [];
+    
+    if (tablesDoc && tablesDoc.tables) {
+      // Format tables for frontend
+      formattedTables = tablesDoc.tables.map(table => ({
+        id: table.table_id || table._id?.toString() || Math.random().toString(),
+        table_id: table.table_id || table._id?.toString() || Math.random().toString(),
+        name: table.table_title || table.name || `Стол ${table.table_num || table.table_id}`,
+        capacity: table.table_seats || table.capacity || 2,
+        status: table.is_deleted === 0 ? 'available' : 'unavailable'
+      }));
+    }
     
     await client.close();
     
