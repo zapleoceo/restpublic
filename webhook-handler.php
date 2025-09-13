@@ -89,32 +89,49 @@ try {
         file_put_contents('logs/sepay_webhook.log', date('Y-m-d H:i:s') . " - SAVE RESULT: " . ($saved ? 'SUCCESS' : 'FAILED') . "\n", FILE_APPEND | LOCK_EX);
 
         if ($saved) {
-            // Отправляем уведомление в Telegram
-            $message = "💵 **Новый платеж: " . number_format($amount, 0, ',', ' ') . " VND**\n\n";
-            $message .= "📅 Время: " . date('d.m.Y H:i', strtotime($transactionDate)) . "\n";
-            $message .= "📝 Описание: {$content}\n";
-            $message .= "🏦 Банк: {$gateway}\n";
-            $message .= "🆔 ID: `{$transactionId}`";
+            // Получаем все неотправленные транзакции (от старых к новым)
+            $unsentTransactions = $transactionService->getUnsentTransactions();
+            file_put_contents('logs/sepay_webhook.log', date('Y-m-d H:i:s') . " - FOUND " . count($unsentTransactions) . " UNSENT TRANSACTIONS\n", FILE_APPEND | LOCK_EX);
             
-            $telegramResult = $telegramService->sendToAllChats($message);
-            file_put_contents('logs/sepay_webhook.log', date('Y-m-d H:i:s') . " - TELEGRAM RESULT: " . json_encode($telegramResult) . "\n", FILE_APPEND | LOCK_EX);
-
-            // Обновляем статус отправки в Telegram
             $telegramSent = false;
             $telegramMessageId = null;
+            
+            // Отправляем все неотправленные транзакции
+            foreach ($unsentTransactions as $unsentTransaction) {
+                $message = "💵 **Новый платеж: " . number_format($unsentTransaction['amount'], 0, ',', ' ') . " VND**\n\n";
+                $message .= "📅 Время: " . date('d.m.Y H:i', strtotime($unsentTransaction['transaction_date'])) . "\n";
+                $message .= "📝 Описание: {$unsentTransaction['content']}\n";
+                $message .= "🏦 Банк: {$unsentTransaction['gateway']}\n";
+                $message .= "🆔 ID: `{$unsentTransaction['transaction_id']}`";
+                
+                $telegramResult = $telegramService->sendToAllChats($message);
+                file_put_contents('logs/sepay_webhook.log', date('Y-m-d H:i:s') . " - SENDING TRANSACTION {$unsentTransaction['transaction_id']}: " . json_encode($telegramResult) . "\n", FILE_APPEND | LOCK_EX);
 
-            foreach ($telegramResult as $chatId => $success) {
-                if ($success) {
-                    $telegramSent = true;
-                    // Получаем message_id если возможно
-                    $telegramMessageId = $success['message_id'] ?? null;
-                    break;
+                // Проверяем успешность отправки
+                $currentSent = false;
+                $currentMessageId = null;
+
+                foreach ($telegramResult as $chatId => $success) {
+                    if ($success) {
+                        $currentSent = true;
+                        $currentMessageId = $success['message_id'] ?? null;
+                        break;
+                    }
                 }
-            }
 
-            if ($telegramSent) {
-                $transactionService->markTelegramSent($transactionId, $telegramMessageId);
-                file_put_contents('logs/sepay_webhook.log', date('Y-m-d H:i:s') . " - TELEGRAM MARKED AS SENT\n", FILE_APPEND | LOCK_EX);
+                if ($currentSent) {
+                    $transactionService->markTelegramSent($unsentTransaction['transaction_id'], $currentMessageId);
+                    file_put_contents('logs/sepay_webhook.log', date('Y-m-d H:i:s') . " - MARKED AS SENT: {$unsentTransaction['transaction_id']}\n", FILE_APPEND | LOCK_EX);
+                    
+                    // Если это новая транзакция, запоминаем статус
+                    if ($unsentTransaction['transaction_id'] == $transactionId) {
+                        $telegramSent = true;
+                        $telegramMessageId = $currentMessageId;
+                    }
+                }
+                
+                // Небольшая задержка между отправками
+                usleep(500000); // 0.5 секунды
             }
             
             // ОБЯЗАТЕЛЬНО: Возвращаем успешный ответ

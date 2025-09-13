@@ -258,5 +258,43 @@ class SePayTransactionService {
             return null;
         }
     }
+    
+    /**
+     * Получить все неотправленные транзакции (от старых к новым)
+     */
+    public function getUnsentTransactions() {
+        try {
+            $cursor = $this->collection->find(
+                ['telegram_sent' => false],
+                [
+                    'sort' => ['transaction_date' => 1], // От старых к новым
+                    'limit' => 50 // Ограничиваем количество для безопасности
+                ]
+            );
+            
+            $transactions = [];
+            foreach ($cursor as $document) {
+                $transactions[] = [
+                    'transaction_id' => $document['transaction_id'],
+                    'amount' => $document['amount'],
+                    'content' => $document['content'],
+                    'code' => $document['code'],
+                    'gateway' => $document['gateway'],
+                    'account_number' => $document['account_number'],
+                    'transaction_date' => $document['transaction_date'],
+                    'telegram_sent' => $document['telegram_sent'] ?? false,
+                    'telegram_sent_at' => isset($document['telegram_sent_at']) ? 
+                        $document['telegram_sent_at']->toDateTime()->format('Y-m-d H:i:s') : null,
+                    'telegram_message_id' => $document['telegram_message_id'] ?? null
+                ];
+            }
+            
+            return $transactions;
+            
+        } catch (Exception $e) {
+            error_log("Error getting unsent transactions: " . $e->getMessage());
+            return [];
+        }
+    }
 }
 ?>
