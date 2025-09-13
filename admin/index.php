@@ -4,25 +4,8 @@ session_start();
 // Проверка авторизации
 require_once __DIR__ . '/includes/auth-check.php';
 
-// Подключение к MongoDB
-require_once __DIR__ . '/../vendor/autoload.php';
-require_once __DIR__ . '/../classes/MenuCache.php';
-
-try {
-    $menuCache = new MenuCache();
-    $menuData = $menuCache->getMenu();
-    $categoriesCount = count($menuData['categories'] ?? []);
-    $productsCount = count($menuData['products'] ?? []);
-} catch (Exception $e) {
-    $categoriesCount = 0;
-    $productsCount = 0;
-}
-
 // Статистика для дашборда
 $stats = [
-    'categories' => $categoriesCount,
-    'products' => $productsCount,
-    'last_update' => $menuData['updated_at'] ?? null,
     'admin_user' => $_SESSION['admin_username'] ?? 'Unknown'
 ];
 ?>
@@ -47,40 +30,6 @@ $stats = [
                 <p>Добро пожаловать, <?php echo htmlspecialchars($stats['admin_user']); ?>!</p>
             </div>
             
-            <!-- Статистика -->
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-icon">📊</div>
-                    <div class="stat-content">
-                        <h3><?php echo $stats['categories']; ?></h3>
-                        <p>Категорий меню</p>
-                    </div>
-                </div>
-                
-                <div class="stat-card">
-                    <div class="stat-icon">🍽️</div>
-                    <div class="stat-content">
-                        <h3><?php echo $stats['products']; ?></h3>
-                        <p>Блюд в меню</p>
-                    </div>
-                </div>
-                
-                <div class="stat-card">
-                    <div class="stat-icon">🔄</div>
-                    <div class="stat-content">
-                        <h3><?php echo $stats['last_update'] ? date('H:i', $stats['last_update']->toDateTime()->getTimestamp()) : 'N/A'; ?></h3>
-                        <p>Последнее обновление</p>
-                    </div>
-                </div>
-                
-                <div class="stat-card">
-                    <div class="stat-icon">👤</div>
-                    <div class="stat-content">
-                        <h3>1</h3>
-                        <p>Активных админов</p>
-                    </div>
-                </div>
-            </div>
             
             <!-- Компоненты -->
             <div class="quick-actions">
@@ -105,11 +54,6 @@ $stats = [
                         <p>Просмотр логов административных действий и активности</p>
                     </a>
                     
-                    <a href="/admin/images/" class="action-card">
-                        <div class="action-icon">🖼️</div>
-                        <h3>Управление изображениями</h3>
-                        <p>Загрузка, редактирование и управление изображениями сайта</p>
-                    </a>
                 </div>
             </div>
             
