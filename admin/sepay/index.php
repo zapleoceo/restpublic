@@ -1,10 +1,11 @@
 <?php
+session_start();
 require_once '../includes/auth-check.php';
 require_once '../../classes/SePayTransactionService.php';
 
 // Проверяем авторизацию
-if (!isLoggedIn()) {
-    header('Location: ../auth/login.php');
+if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
+    header('Location: /admin/auth/login.php');
     exit;
 }
 

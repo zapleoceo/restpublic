@@ -1,11 +1,12 @@
 <?php
+session_start();
 require_once '../includes/auth-check.php';
 require_once '../../classes/SePayTransactionService.php';
 
 header('Content-Type: application/json');
 
 // Проверяем авторизацию
-if (!isLoggedIn()) {
+if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
     http_response_code(401);
     echo json_encode(['error' => 'Unauthorized']);
     exit;
