@@ -469,7 +469,7 @@
 }
 
 .add-to-cart-btn:hover::after {
-    content: 'в заказ';
+    content: 'заказать';
     position: absolute;
     top: 50%;
     left: 50%;
