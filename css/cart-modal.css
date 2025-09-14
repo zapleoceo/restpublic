@@ -432,7 +432,49 @@
         max-height: 95vh;
     }
     
-    .modal-header,
+    .modal-header {
+        padding: 16px;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+    
+    .modal-header h2 {
+        text-align: center;
+        margin-bottom: 8px;
+    }
+    
+    .modal-header .order-type-options {
+        flex-direction: column;
+        gap: 8px;
+        width: 100%;
+    }
+    
+    .modal-header .order-type-option {
+        justify-content: center;
+        padding: 12px;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        background: #f8f9fa;
+    }
+    
+    .modal-header .order-type-option:hover {
+        background: #e9ecef;
+        border-color: #366b5b;
+    }
+    
+    .modal-header .order-type-option input[type="radio"]:checked + .order-type-label {
+        color: #366b5b;
+        font-weight: 600;
+    }
+    
+    .modal-header .modal-close {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        z-index: 10;
+    }
+    
     .modal-body {
         padding: 16px;
     }
@@ -470,6 +512,51 @@
     
     .btn {
         width: 100%;
+    }
+}
+
+/* Extra small screens */
+@media (max-width: 480px) {
+    .modal {
+        padding: 5px;
+    }
+    
+    .modal-content {
+        max-height: 98vh;
+        border-radius: 8px;
+    }
+    
+    .modal-header {
+        padding: 12px;
+    }
+    
+    .modal-header h2 {
+        font-size: 1.3rem;
+    }
+    
+    .modal-header .order-type-option {
+        padding: 10px;
+        font-size: 13px;
+    }
+    
+    .modal-body {
+        padding: 12px;
+    }
+    
+    .form-group label {
+        font-size: 13px;
+    }
+    
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        font-size: 13px;
+        padding: 6px 8px;
+    }
+    
+    .btn {
+        padding: 10px 16px;
+        font-size: 13px;
     }
 }
 
