@@ -584,7 +584,25 @@
 
 @media (max-width: 760px) {
     .header-actions {
-        right: 80px !important;
+        right: 100px !important;
+    }
+    
+    .auth-icon,
+    .cart-icon {
+        width: 36px;
+        height: 36px;
+    }
+    
+    .auth-icon .auth-icon-img,
+    .cart-icon .cart-icon-img {
+        width: 28px;
+        height: 28px;
+    }
+    
+    .cart-count {
+        width: 18px;
+        height: 18px;
+        font-size: 0.7rem;
     }
 }
 
@@ -625,7 +643,7 @@
     /* Mobile header actions */
     .header-actions {
         gap: 0.5rem;
-        right: 60px;
+        right: 100px;
         position: absolute;
         top: 50%;
         transform: translateY(-50%);
