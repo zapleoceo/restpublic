@@ -114,19 +114,26 @@ html {
 /* Mobile responsive for header */
 @media (max-width: 768px) {
   .header-actions {
-    flex-direction: column;
+    flex-direction: row;
     gap: 0.5rem;
-    width: 100%;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: auto;
   }
   
   .header-auth,
   .header-cart {
-    width: 100%;
+    width: auto;
   }
   
   .header-auth .btn,
-  .header-cart .btn {
-    width: 100%;
+  .header-cart .btn,
+  .header-auth .auth-icon,
+  .header-cart .cart-icon {
+    width: 36px;
+    height: 36px;
     justify-content: center;
   }
 }

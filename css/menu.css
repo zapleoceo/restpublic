@@ -583,10 +583,6 @@
 }
 
 @media (max-width: 760px) {
-    .header-actions {
-        right: 100px !important;
-    }
-    
     .auth-icon,
     .cart-icon {
         width: 36px;
@@ -640,14 +636,7 @@
         height: 12px;
     }
     
-    /* Mobile header actions */
-    .header-actions {
-        gap: 0.5rem;
-        right: 100px;
-        position: absolute;
-        top: 50%;
-        transform: translateY(-50%);
-    }
+    /* Mobile header actions - removed conflicting positioning */
     
     .auth-icon,
     .cart-icon {
