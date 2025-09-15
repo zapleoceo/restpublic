@@ -823,13 +823,26 @@ if (count($events) > 0) {
             openEventModal(eventId);
         }
 
-        let isDeleting = false; // Флаг для предотвращения двойного удаления
+        // Хранилище для отслеживания удаляемых событий
+        const deletingEvents = new Set();
         
         function deleteEvent(eventId) {
-            if (isDeleting) return; // Предотвращаем повторные вызовы
+            // Проверяем, не удаляется ли уже это событие
+            if (deletingEvents.has(eventId)) {
+                console.log('Событие уже удаляется:', eventId);
+                return;
+            }
             
             if (confirm('Вы уверены, что хотите удалить это событие?')) {
-                isDeleting = true; // Устанавливаем флаг
+                // Добавляем событие в список удаляемых
+                deletingEvents.add(eventId);
+                
+                // Отключаем кнопку удаления
+                const deleteButton = document.querySelector(`button[onclick="deleteEvent('${eventId}')"]`);
+                if (deleteButton) {
+                    deleteButton.disabled = true;
+                    deleteButton.textContent = '⏳';
+                }
                 
                 // Отправляем JSON вместо FormData
                 const requestData = {
@@ -855,14 +868,25 @@ if (count($events) > 0) {
                         location.reload(); // Перезагружаем страницу для обновления списка
                     } else {
                         alert('Ошибка: ' + data.message);
+                        // Восстанавливаем кнопку при ошибке
+                        if (deleteButton) {
+                            deleteButton.disabled = false;
+                            deleteButton.textContent = '🗑️';
+                        }
                     }
                 })
                 .catch(error => {
                     console.error('Ошибка удаления события:', error);
                     alert('Ошибка удаления события: ' + error.message);
+                    // Восстанавливаем кнопку при ошибке
+                    if (deleteButton) {
+                        deleteButton.disabled = false;
+                        deleteButton.textContent = '🗑️';
+                    }
                 })
                 .finally(() => {
-                    isDeleting = false; // Сбрасываем флаг
+                    // Удаляем событие из списка удаляемых
+                    deletingEvents.delete(eventId);
                 });
             }
         }
