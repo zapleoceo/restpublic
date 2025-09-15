@@ -2,24 +2,30 @@
 // Страница управления событиями в админке
 session_start();
 require_once __DIR__ . '/../includes/auth-check.php';
+require_once __DIR__ . '/../../vendor/autoload.php';
 
 $pageTitle = 'Управление событиями';
 $pageDescription = 'Администрирование событий ресторана';
 
 try {
-    // Загружаем события из JSON файла
-    $eventsFile = __DIR__ . '/../../data/events.json';
-    if (file_exists($eventsFile)) {
-        $events = json_decode(file_get_contents($eventsFile), true);
-        
-        // Сортируем по дате и времени
-        usort($events, function($a, $b) {
-            $dateA = strtotime($a['date'] . ' ' . $a['time']);
-            $dateB = strtotime($b['date'] . ' ' . $b['time']);
-            return $dateA - $dateB;
-        });
-    } else {
-        $events = [];
+    // Подключение к MongoDB
+    $mongodbUrl = $_ENV['MONGODB_URL'] ?? 'mongodb://localhost:27017';
+    $dbName = $_ENV['MONGODB_DB_NAME'] ?? 'northrepublic';
+    
+    $client = new MongoDB\Client($mongodbUrl);
+    $db = $client->$dbName;
+    $eventsCollection = $db->events;
+    
+    // Получаем все события, отсортированные по дате
+    $events = $eventsCollection->find(
+        [],
+        ['sort' => ['date' => 1, 'time' => 1]]
+    )->toArray();
+    
+    // Конвертируем ObjectId в строки
+    foreach ($events as &$event) {
+        $event['_id'] = (string)$event['_id'];
+        $event['id'] = (string)$event['_id']; // Добавляем поле id для совместимости
     }
     
 } catch (Exception $e) {
@@ -417,16 +423,64 @@ try {
         }
         
         function loadEventData(eventId) {
-            // Здесь будет загрузка данных события для редактирования
-            console.log('Loading event data for:', eventId);
+            // Загружаем данные события для редактирования
+            fetch('/admin/events/api.php', {
+                method: 'GET'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const event = data.data.find(e => e.id === eventId);
+                    if (event) {
+                        // Заполняем форму данными события
+                        document.getElementById('eventId').value = event.id;
+                        document.getElementById('eventTitle').value = event.title;
+                        document.getElementById('eventDate').value = event.date;
+                        document.getElementById('eventTime').value = event.time;
+                        document.getElementById('eventConditions').value = event.conditions;
+                        document.getElementById('eventDescriptionLink').value = event.description_link || '';
+                        document.getElementById('eventComment').value = event.comment || '';
+                        document.getElementById('eventIsActive').checked = event.is_active;
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Ошибка загрузки данных события:', error);
+                alert('Ошибка загрузки данных события');
+            });
         }
         
         function saveEvent() {
             const form = document.getElementById('eventForm');
             const formData = new FormData(form);
+            const eventId = document.getElementById('eventId').value;
             
-            // Здесь будет отправка данных на сервер
-            console.log('Saving event:', Object.fromEntries(formData));
+            // Определяем метод (POST для создания, PUT для обновления)
+            const method = eventId ? 'PUT' : 'POST';
+            
+            // Добавляем event_id для PUT запроса
+            if (method === 'PUT') {
+                formData.append('event_id', eventId);
+            }
+            
+            fetch('/admin/events/api.php', {
+                method: method,
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message);
+                    closeEventModal();
+                    location.reload(); // Перезагружаем страницу для обновления списка
+                } else {
+                    alert('Ошибка: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Ошибка сохранения события:', error);
+                alert('Ошибка сохранения события');
+            });
         }
         
         function editEvent(eventId) {
@@ -435,8 +489,26 @@ try {
         
         function deleteEvent(eventId) {
             if (confirm('Вы уверены, что хотите удалить это событие?')) {
-                // Здесь будет удаление события
-                console.log('Deleting event:', eventId);
+                const formData = new FormData();
+                formData.append('event_id', eventId);
+                
+                fetch('/admin/events/api.php', {
+                    method: 'DELETE',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(data.message);
+                        location.reload(); // Перезагружаем страницу для обновления списка
+                    } else {
+                        alert('Ошибка: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Ошибка удаления события:', error);
+                    alert('Ошибка удаления события');
+                });
             }
         }
         

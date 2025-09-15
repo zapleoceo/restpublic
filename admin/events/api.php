@@ -6,26 +6,34 @@ header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE');
 header('Access-Control-Allow-Headers: Content-Type, X-Requested-With');
 
 require_once __DIR__ . '/../includes/auth-check.php';
+require_once __DIR__ . '/../../vendor/autoload.php';
 
 try {
-    $eventsFile = __DIR__ . '/../../data/events.json';
+    // Подключение к MongoDB
+    $mongodbUrl = $_ENV['MONGODB_URL'] ?? 'mongodb://localhost:27017';
+    $dbName = $_ENV['MONGODB_DB_NAME'] ?? 'northrepublic';
+    
+    $client = new MongoDB\Client($mongodbUrl);
+    $db = $client->$dbName;
+    $eventsCollection = $db->events;
+    
     $method = $_SERVER['REQUEST_METHOD'];
     $input = json_decode(file_get_contents('php://input'), true);
     
     switch ($method) {
         case 'GET':
             // Получить все события
-            if (file_exists($eventsFile)) {
-                $events = json_decode(file_get_contents($eventsFile), true);
-                
-                // Сортируем по дате и времени
-                usort($events, function($a, $b) {
-                    $dateA = strtotime($a['date'] . ' ' . $a['time']);
-                    $dateB = strtotime($b['date'] . ' ' . $b['time']);
-                    return $dateA - $dateB;
-                });
-            } else {
-                $events = [];
+            $events = $eventsCollection->find(
+                [],
+                ['sort' => ['date' => 1, 'time' => 1]]
+            )->toArray();
+            
+            // Конвертируем ObjectId в строки для JSON
+            foreach ($events as &$event) {
+                $event['_id'] = (string)$event['_id'];
+                $event['id'] = (string)$event['_id']; // Добавляем поле id для совместимости
+                $event['created_at'] = $event['created_at']->toDateTime()->format('Y-m-d H:i:s');
+                $event['updated_at'] = $event['updated_at']->toDateTime()->format('Y-m-d H:i:s');
             }
             
             echo json_encode([
@@ -48,17 +56,7 @@ try {
                 }
             }
             
-            // Загружаем существующие события
-            $events = [];
-            if (file_exists($eventsFile)) {
-                $events = json_decode(file_get_contents($eventsFile), true);
-            }
-            
-            // Генерируем новый ID
-            $newId = (string)(count($events) + 1);
-            
             $eventData = [
-                'id' => $newId,
                 'title' => $input['title'],
                 'date' => $input['date'],
                 'time' => $input['time'],
@@ -67,17 +65,17 @@ try {
                 'image' => $input['image'] ?? null,
                 'comment' => $input['comment'] ?? null,
                 'is_active' => $input['is_active'] ?? true,
-                'created_at' => date('Y-m-d H:i:s'),
-                'updated_at' => date('Y-m-d H:i:s')
+                'created_at' => new MongoDB\BSON\UTCDateTime(),
+                'updated_at' => new MongoDB\BSON\UTCDateTime()
             ];
             
-            $events[] = $eventData;
+            $result = $eventsCollection->insertOne($eventData);
             
-            if (file_put_contents($eventsFile, json_encode($events, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE))) {
+            if ($result->getInsertedId()) {
                 echo json_encode([
                     'success' => true,
                     'message' => 'Событие создано успешно',
-                    'id' => $newId
+                    'id' => (string)$result->getInsertedId()
                 ]);
             } else {
                 http_response_code(500);
