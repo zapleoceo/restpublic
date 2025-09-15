@@ -3731,7 +3731,7 @@ td:last-child {
 .intro-scroll__circle-text {
     height             : 100%;
     width              : 100%;
-    background-image   : url(../images/scrolldown-circle-text.svg);
+    background-image   : url(../template/images/scrolldown-circle-text.svg);
     background-repeat  : no-repeat;
     background-position: center;
     background-size    : cover;
