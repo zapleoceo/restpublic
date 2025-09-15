@@ -197,210 +197,251 @@ try {
     </div>
     
     <script src="/admin/assets/js/admin.js"></script>
-    <style>
-        /* Стили для таблицы событий */
-        .table-container {
-            overflow-x: auto;
-            margin: 20px 0;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-        
-        .events-table {
-            width: 100%;
-            border-collapse: collapse;
-            background: white;
-            min-width: 800px;
-        }
-        
-        .events-table th {
-            background: #f8f9fa;
-            padding: 15px 12px;
-            text-align: left;
-            font-weight: 600;
-            color: #495057;
-            border-bottom: 2px solid #dee2e6;
-            font-size: 14px;
-        }
-        
-        .events-table td {
-            padding: 15px 12px;
-            border-bottom: 1px solid #dee2e6;
-            vertical-align: top;
-        }
-        
-        .events-table tr:hover {
-            background-color: #f8f9fa;
-        }
-        
-        .event-title {
-            font-weight: 500;
-            min-width: 200px;
-        }
-        
-        .event-title strong {
-            color: #212529;
-            font-size: 16px;
-        }
-        
-        .event-link {
-            color: #007bff;
-            text-decoration: none;
-            font-size: 12px;
-        }
-        
-        .event-link:hover {
-            text-decoration: underline;
-        }
-        
-        .event-date, .event-time {
-            white-space: nowrap;
-            font-family: monospace;
-            color: #6c757d;
-        }
-        
-        .event-conditions {
-            max-width: 250px;
-            word-wrap: break-word;
-            font-size: 14px;
-        }
-        
-        .status-badge {
-            display: inline-block;
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 500;
-            text-transform: uppercase;
-        }
-        
-        .status-badge.active {
-            background-color: #d4edda;
-            color: #155724;
-        }
-        
-        .status-badge.inactive {
-            background-color: #f8d7da;
-            color: #721c24;
-        }
-        
-        .event-actions {
-            white-space: nowrap;
-        }
-        
-        .event-actions .btn {
-            margin: 2px;
-            padding: 6px 12px;
-            font-size: 12px;
-            border-radius: 4px;
-            border: none;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        
-        .btn-edit {
-            background-color: #ffc107;
-            color: #212529;
-        }
-        
-        .btn-edit:hover {
-            background-color: #e0a800;
-        }
-        
-        .btn-delete {
-            background-color: #dc3545;
-            color: white;
-        }
-        
-        .btn-delete:hover {
-            background-color: #c82333;
-        }
-        
-        .event-comment-row {
-            background-color: #f8f9fa;
-        }
-        
-        .event-comment {
-            font-size: 13px;
-            color: #6c757d;
-            font-style: italic;
-            padding: 10px 12px;
-        }
-        
-        /* Адаптивность */
-        @media (max-width: 768px) {
-            .table-container {
-                margin: 10px 0;
-                border-radius: 4px;
+        <style>
+            /* Стили для календарного вида */
+            .calendar-view {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 20px;
+                margin: 20px 0;
             }
-            
-            .events-table th,
-            .events-table td {
-                padding: 10px 8px;
-                font-size: 13px;
+
+            .calendar-day {
+                background: white;
+                border-radius: 8px;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+                padding: 15px;
+                border: 2px solid transparent;
+                transition: all 0.3s ease;
             }
-            
+
+            .calendar-day:hover {
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+                transform: translateY(-2px);
+            }
+
+            .calendar-day.today {
+                border-color: #007bff;
+                background: linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%);
+            }
+
+            .calendar-day.past {
+                opacity: 0.7;
+                background: #f8f9fa;
+            }
+
+            .day-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 15px;
+                padding-bottom: 10px;
+                border-bottom: 2px solid #e9ecef;
+            }
+
+            .day-date {
+                font-size: 18px;
+                font-weight: 600;
+                color: #212529;
+            }
+
+            .day-weekday {
+                font-size: 14px;
+                color: #6c757d;
+                text-transform: uppercase;
+                font-weight: 500;
+            }
+
+            .no-events {
+                text-align: center;
+                padding: 20px 10px;
+                color: #6c757d;
+            }
+
+            .no-events p {
+                margin: 0 0 15px 0;
+                font-size: 16px;
+                font-weight: 500;
+            }
+
+            .day-events {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .event-item {
+                background: #f8f9fa;
+                border-radius: 6px;
+                padding: 12px;
+                border-left: 4px solid #007bff;
+                transition: all 0.2s ease;
+            }
+
+            .event-item:hover {
+                background: #e9ecef;
+                transform: translateX(2px);
+            }
+
+            .event-time {
+                font-size: 12px;
+                color: #007bff;
+                font-weight: 600;
+                margin-bottom: 5px;
+            }
+
             .event-title {
-                min-width: 150px;
+                font-size: 14px;
+                font-weight: 600;
+                color: #212529;
+                margin-bottom: 5px;
             }
-            
+
             .event-conditions {
-                max-width: 150px;
                 font-size: 12px;
+                color: #6c757d;
+                margin-bottom: 8px;
             }
-            
-            .event-actions .btn {
-                padding: 4px 8px;
+
+            .event-comment {
                 font-size: 11px;
-                margin: 1px;
+                color: #6c757d;
+                font-style: italic;
+                margin-top: 5px;
+                padding-top: 5px;
+                border-top: 1px solid #dee2e6;
             }
-        }
-        
-        @media (max-width: 480px) {
-            .events-table {
-                min-width: 600px;
+
+            .event-actions {
+                display: flex;
+                gap: 5px;
+                margin-top: 8px;
             }
-            
-            .events-table th,
-            .events-table td {
-                padding: 8px 6px;
+
+            .btn {
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                font-size: 12px;
+                padding: 4px 8px;
+            }
+
+            .btn-sm {
+                padding: 6px 12px;
                 font-size: 12px;
             }
-            
-            .event-actions .btn {
+
+            .btn-xs {
                 padding: 3px 6px;
                 font-size: 10px;
             }
-        }
-        
-        /* Кнопка добавления */
-        .btn-primary {
-            background-color: #007bff;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: background-color 0.2s ease;
-        }
-        
-        .btn-primary:hover {
-            background-color: #0056b3;
-        }
-        
-        /* Пустое состояние */
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: #6c757d;
-        }
-        
-        .empty-state p {
-            margin-bottom: 20px;
-            font-size: 16px;
-        }
-    </style>
+
+            .btn-primary {
+                background-color: #007bff;
+                color: white;
+            }
+
+            .btn-primary:hover {
+                background-color: #0056b3;
+            }
+
+            .btn-create, .btn-add-more {
+                background-color: #28a745;
+                color: white;
+                width: 100%;
+                margin-top: 10px;
+            }
+
+            .btn-create:hover, .btn-add-more:hover {
+                background-color: #218838;
+            }
+
+            .btn-edit {
+                background-color: #ffc107;
+                color: #212529;
+            }
+
+            .btn-edit:hover {
+                background-color: #e0a800;
+            }
+
+            .btn-delete {
+                background-color: #dc3545;
+                color: white;
+            }
+
+            .btn-delete:hover {
+                background-color: #c82333;
+            }
+
+            /* Адаптивность */
+            @media (max-width: 768px) {
+                .calendar-view {
+                    grid-template-columns: 1fr;
+                    gap: 15px;
+                    margin: 15px 0;
+                }
+
+                .calendar-day {
+                    padding: 12px;
+                }
+
+                .day-date {
+                    font-size: 16px;
+                }
+
+                .day-weekday {
+                    font-size: 12px;
+                }
+
+                .event-item {
+                    padding: 10px;
+                }
+
+                .event-title {
+                    font-size: 13px;
+                }
+
+                .event-conditions {
+                    font-size: 11px;
+                }
+            }
+
+            @media (max-width: 480px) {
+                .calendar-view {
+                    gap: 10px;
+                    margin: 10px 0;
+                }
+
+                .calendar-day {
+                    padding: 10px;
+                }
+
+                .day-header {
+                    margin-bottom: 10px;
+                    padding-bottom: 8px;
+                }
+
+                .day-date {
+                    font-size: 14px;
+                }
+
+                .event-item {
+                    padding: 8px;
+                }
+
+                .btn {
+                    font-size: 10px;
+                    padding: 2px 4px;
+                }
+
+                .btn-sm {
+                    padding: 4px 8px;
+                    font-size: 10px;
+                }
+            }
+        </style>
     <script>
         // Функции для работы с событиями
         function openEventModal(eventId = null, presetDate = null) {
