@@ -782,30 +782,21 @@ if (count($events) > 0) {
 
             // Собираем данные формы
             const formData = new FormData(form);
-            const requestData = {};
             
-            // Конвертируем FormData в обычный объект
-            for (let [key, value] of formData.entries()) {
-                requestData[key] = value;
-            }
-
             // Правильно обрабатываем checkbox is_active
-            requestData.is_active = document.getElementById('eventIsActive').checked;
+            formData.set('is_active', document.getElementById('eventIsActive').checked);
 
             // Определяем метод (POST для создания, PUT для обновления)
             const method = eventId ? 'PUT' : 'POST';
 
             // Добавляем event_id для PUT запроса
             if (method === 'PUT') {
-                requestData.event_id = eventId;
+                formData.set('event_id', eventId);
             }
 
             fetch('/admin/events/api.php', {
                 method: method,
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(requestData)
+                body: formData // Отправляем FormData для поддержки файлов
             })
             .then(response => {
                 if (!response.ok) {

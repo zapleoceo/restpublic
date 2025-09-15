@@ -28,7 +28,20 @@ try {
     $eventsCollection = $db->events;
     
     $method = $_SERVER['REQUEST_METHOD'];
-    $input = json_decode(file_get_contents('php://input'), true);
+    
+    // Обрабатываем данные в зависимости от Content-Type
+    if ($method === 'POST' || $method === 'PUT') {
+        $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
+        if (strpos($contentType, 'multipart/form-data') !== false) {
+            // FormData (для загрузки файлов)
+            $input = $_POST;
+        } else {
+            // JSON
+            $input = json_decode(file_get_contents('php://input'), true);
+        }
+    } else {
+        $input = json_decode(file_get_contents('php://input'), true);
+    }
     
     switch ($method) {
         case 'GET':
@@ -95,13 +108,35 @@ try {
             // Правильная обработка is_active (checkbox приходит как 'on' или отсутствует)
             $isActive = isset($input['is_active']) && $input['is_active'] !== false && $input['is_active'] !== 'false' && $input['is_active'] !== '0';
             
+            // Обработка загрузки изображения
+            $imagePath = null;
+            if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
+                $uploadDir = __DIR__ . '/../../images/events/';
+                $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+                $maxSize = 5 * 1024 * 1024; // 5MB
+                
+                $fileInfo = $_FILES['image'];
+                $fileType = $fileInfo['type'];
+                $fileSize = $fileInfo['size'];
+                
+                if (in_array($fileType, $allowedTypes) && $fileSize <= $maxSize) {
+                    $extension = pathinfo($fileInfo['name'], PATHINFO_EXTENSION);
+                    $fileName = 'event_' . time() . '_' . uniqid() . '.' . $extension;
+                    $filePath = $uploadDir . $fileName;
+                    
+                    if (move_uploaded_file($fileInfo['tmp_name'], $filePath)) {
+                        $imagePath = '/images/events/' . $fileName;
+                    }
+                }
+            }
+            
             $eventData = [
                 'title' => trim($input['title']),
                 'date' => $input['date'],
                 'time' => $input['time'],
                 'conditions' => trim($input['conditions']),
                 'description_link' => !empty($input['description_link']) ? trim($input['description_link']) : null,
-                'image' => null, // Пока не обрабатываем загрузку файлов
+                'image' => $imagePath,
                 'comment' => !empty($input['comment']) ? trim($input['comment']) : null,
                 'is_active' => $isActive,
                 'created_at' => new MongoDB\BSON\UTCDateTime(),
@@ -175,7 +210,7 @@ try {
                 exit;
             }
             
-            // Получаем и санитизируем данные из JSON
+            // Получаем и санитизируем данные
             $title = trim($input['title']);
             $date = $input['date'];
             $time = $input['time'];
@@ -185,6 +220,28 @@ try {
             
             // Правильная обработка is_active (checkbox приходит как 'on' или отсутствует)
             $is_active = isset($input['is_active']) && $input['is_active'] !== false && $input['is_active'] !== 'false' && $input['is_active'] !== '0';
+            
+            // Обработка загрузки изображения для редактирования
+            $imagePath = null;
+            if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
+                $uploadDir = __DIR__ . '/../../images/events/';
+                $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+                $maxSize = 5 * 1024 * 1024; // 5MB
+                
+                $fileInfo = $_FILES['image'];
+                $fileType = $fileInfo['type'];
+                $fileSize = $fileInfo['size'];
+                
+                if (in_array($fileType, $allowedTypes) && $fileSize <= $maxSize) {
+                    $extension = pathinfo($fileInfo['name'], PATHINFO_EXTENSION);
+                    $fileName = 'event_' . time() . '_' . uniqid() . '.' . $extension;
+                    $filePath = $uploadDir . $fileName;
+                    
+                    if (move_uploaded_file($fileInfo['tmp_name'], $filePath)) {
+                        $imagePath = '/images/events/' . $fileName;
+                    }
+                }
+            }
             
             // Отладочная информация
             error_log("PUT запрос - description_link: " . ($description_link ?? 'null'));
@@ -202,6 +259,11 @@ try {
                     'is_active' => $is_active,
                     'updated_at' => new MongoDB\BSON\UTCDateTime()
                 ];
+                
+                // Обновляем изображение только если загружено новое
+                if ($imagePath !== null) {
+                    $updateData['image'] = $imagePath;
+                }
                 
                 $result = $eventsCollection->updateOne(
                     ['_id' => $eventId],
