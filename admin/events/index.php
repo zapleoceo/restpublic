@@ -195,6 +195,29 @@ if (count($events) > 0) {
             opacity: 0.7;
         }
 
+        .event-status {
+            text-align: center;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+
+        .status-badge.active {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .status-badge.inactive {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
         .event-comment {
             color: #6c757d;
             font-size: 12px;
@@ -525,6 +548,7 @@ if (count($events) > 0) {
                                     <th>Условия</th>
                                     <th>Ссылка</th>
                                     <th>Миниатюра</th>
+                                    <th>Статус</th>
                                     <th>Комментарий</th>
                                     <th>Действия</th>
                                 </tr>
@@ -577,6 +601,11 @@ if (count($events) > 0) {
                                                      class="thumbnail-img default-thumbnail"
                                                      onclick="showImageModal('/images/event-default.png', 'Дефолтное изображение')">
                                             <?php endif; ?>
+                                        </td>
+                                        <td class="event-status">
+                                            <span class="status-badge <?php echo $event['is_active'] ? 'active' : 'inactive'; ?>">
+                                                <?php echo $event['is_active'] ? 'Активно' : 'Неактивно'; ?>
+                                            </span>
                                         </td>
                                         <td class="event-comment">
                                             <?php echo !empty($event['comment']) ? htmlspecialchars($event['comment']) : '-'; ?>
@@ -724,6 +753,14 @@ if (count($events) > 0) {
                 const eventConditions = eventRow.querySelector('.event-conditions').textContent;
                 const eventComment = eventRow.querySelector('.event-comment').textContent;
                 
+                // Получаем ссылку из кнопки
+                const linkElement = eventRow.querySelector('.event-link .link-btn');
+                const eventLink = linkElement ? linkElement.href : '';
+                
+                // Получаем статус из бейджа
+                const statusBadge = eventRow.querySelector('.status-badge');
+                const isActive = statusBadge && statusBadge.classList.contains('active');
+                
                 // Заполняем форму данными события
                 document.getElementById('eventId').value = eventId;
                 document.getElementById('eventTitle').value = eventTitle;
@@ -736,8 +773,8 @@ if (count($events) > 0) {
                 document.getElementById('eventTime').value = eventTime;
                 document.getElementById('eventConditions').value = eventConditions;
                 document.getElementById('eventComment').value = eventComment === '-' ? '' : eventComment;
-                document.getElementById('eventIsActive').checked = true;
-                document.getElementById('eventDescriptionLink').value = '';
+                document.getElementById('eventDescriptionLink').value = eventLink;
+                document.getElementById('eventIsActive').checked = isActive;
             }
         }
         
@@ -877,6 +914,11 @@ if (count($events) > 0) {
                 const thumbnailClass = event.image ? 'thumbnail-img' : 'thumbnail-img default-thumbnail';
                 const thumbnailHtml = `<img src="${imageSrc}" alt="${imageAlt}" class="${thumbnailClass}" onclick="showImageModal('${imageSrc}', '${imageAlt}')">`;
                 
+                // Формируем статус
+                const statusClass = event.is_active ? 'active' : 'inactive';
+                const statusText = event.is_active ? 'Активно' : 'Неактивно';
+                const statusHtml = `<span class="status-badge ${statusClass}">${statusText}</span>`;
+                
                 row.innerHTML = `
                     <td class="event-date">${new Date(event.date).toLocaleDateString('ru-RU')}</td>
                     <td class="event-time">${event.time}</td>
@@ -884,6 +926,7 @@ if (count($events) > 0) {
                     <td class="event-conditions">${event.conditions}</td>
                     <td class="event-link">${linkHtml}</td>
                     <td class="event-thumbnail">${thumbnailHtml}</td>
+                    <td class="event-status">${statusHtml}</td>
                     <td class="event-comment">${event.comment || '-'}</td>
                     <td class="event-actions">
                         <button class="btn btn-edit" onclick="editEvent('${event.id}')" title="Редактировать">✏️</button>

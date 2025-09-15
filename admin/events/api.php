@@ -79,6 +79,9 @@ try {
                 'updated_at' => new MongoDB\BSON\UTCDateTime()
             ];
             
+            // Отладочная информация
+            error_log("POST запрос - description_link: " . ($input['description_link'] ?? 'null'));
+            
             $result = $eventsCollection->insertOne($eventData);
             
             if ($result->getInsertedId()) {
@@ -118,6 +121,9 @@ try {
             $description_link = $input['description_link'] ?? null;
             $comment = $input['comment'] ?? null;
             $is_active = $input['is_active'] ?? true;
+            
+            // Отладочная информация
+            error_log("PUT запрос - description_link: " . ($description_link ?? 'null'));
             
             try {
                 $eventId = new MongoDB\BSON\ObjectId($eventId);
