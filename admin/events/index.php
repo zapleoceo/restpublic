@@ -612,20 +612,31 @@ if (count($events) > 0) {
         
         function saveEvent() {
             const form = document.getElementById('eventForm');
-            const formData = new FormData(form);
             const eventId = document.getElementById('eventId').value;
+
+            // Собираем данные формы
+            const formData = new FormData(form);
+            const requestData = {};
+            
+            // Конвертируем FormData в обычный объект
+            for (let [key, value] of formData.entries()) {
+                requestData[key] = value;
+            }
 
             // Определяем метод (POST для создания, PUT для обновления)
             const method = eventId ? 'PUT' : 'POST';
 
             // Добавляем event_id для PUT запроса
             if (method === 'PUT') {
-                formData.append('event_id', eventId);
+                requestData.event_id = eventId;
             }
 
             fetch('/admin/events/api.php', {
                 method: method,
-                body: formData
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(requestData)
             })
             .then(response => {
                 if (!response.ok) {
@@ -660,12 +671,17 @@ if (count($events) > 0) {
             if (confirm('Вы уверены, что хотите удалить это событие?')) {
                 isDeleting = true; // Устанавливаем флаг
                 
-                const formData = new FormData();
-                formData.append('event_id', eventId);
+                // Отправляем JSON вместо FormData
+                const requestData = {
+                    event_id: eventId
+                };
 
                 fetch('/admin/events/api.php', {
                     method: 'DELETE',
-                    body: formData
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(requestData)
                 })
                 .then(response => {
                     if (!response.ok) {

@@ -98,8 +98,8 @@ try {
             
         case 'PUT':
             // Обновить событие
-            // Для PUT запросов с FormData нужно получать данные из $_POST
-            $eventId = $_POST['event_id'] ?? $input['event_id'] ?? null;
+            // Получаем данные из JSON
+            $eventId = $input['event_id'] ?? null;
             
             if (empty($eventId)) {
                 http_response_code(400);
@@ -110,14 +110,14 @@ try {
                 exit;
             }
             
-            // Получаем данные из $_POST для FormData или из $input для JSON
-            $title = $_POST['title'] ?? $input['title'] ?? '';
-            $date = $_POST['date'] ?? $input['date'] ?? '';
-            $time = $_POST['time'] ?? $input['time'] ?? '';
-            $conditions = $_POST['conditions'] ?? $input['conditions'] ?? '';
-            $description_link = $_POST['description_link'] ?? $input['description_link'] ?? null;
-            $comment = $_POST['comment'] ?? $input['comment'] ?? null;
-            $is_active = isset($_POST['is_active']) ? (bool)$_POST['is_active'] : ($input['is_active'] ?? true);
+            // Получаем данные из JSON
+            $title = $input['title'] ?? '';
+            $date = $input['date'] ?? '';
+            $time = $input['time'] ?? '';
+            $conditions = $input['conditions'] ?? '';
+            $description_link = $input['description_link'] ?? null;
+            $comment = $input['comment'] ?? null;
+            $is_active = $input['is_active'] ?? true;
             
             try {
                 $eventId = new MongoDB\BSON\ObjectId($eventId);
@@ -161,12 +161,11 @@ try {
             
         case 'DELETE':
             // Удалить событие
-            // Для DELETE запросов с FormData нужно получать данные из $_POST
-            $eventId = $_POST['event_id'] ?? $input['event_id'] ?? null;
+            // Получаем данные из JSON
+            $eventId = $input['event_id'] ?? null;
             
             // Отладочная информация
             error_log("DELETE запрос - event_id: " . ($eventId ?? 'null'));
-            error_log("POST данные: " . json_encode($_POST));
             error_log("INPUT данные: " . json_encode($input));
             
             if (empty($eventId)) {
