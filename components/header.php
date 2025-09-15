@@ -27,6 +27,7 @@ if (!isset($translationService)) {
                 <li><a class="smoothscroll" href="#about"><?php echo $translationService->get('nav.about', 'О нас'); ?></a></li>
                 <li><a href="/menu.php"><?php echo $translationService->get('nav.menu', 'Меню'); ?></a></li>
                 <li><a class="smoothscroll" href="#events"><?php echo $translationService->get('nav.events', 'События'); ?></a></li>
+                <li><a class="smoothscroll" href="#contact"><?php echo $translationService->get('nav.contact', 'Контакты'); ?></a></li>
                 <li><a class="smoothscroll" href="#gallery"><?php echo $translationService->get('nav.gallery', 'Галерея'); ?></a></li>
             </ul> <!-- end header-nav__links -->  
             

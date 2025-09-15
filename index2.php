@@ -240,7 +240,9 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
             border-radius: var(--border-radius);
             overflow: hidden;
             transition: all 0.3s ease;
-            height: 100%;
+            height: 400px; /* Fixed height for all cards */
+            display: flex;
+            flex-direction: column;
         }
 
         .event-card:hover {
@@ -251,13 +253,17 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
 
         .event-card__image {
             width: 100%;
-            height: 200px;
+            height: 180px;
             object-fit: cover;
             display: block;
+            flex-shrink: 0;
         }
 
         .event-card__content {
             padding: var(--vspace-1);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
         }
 
         .event-card__title {
@@ -269,18 +275,42 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
             font-family: var(--font-1);
         }
 
+        .event-card__datetime {
+            display: flex;
+            gap: var(--vspace-0_5);
+            margin-bottom: var(--vspace-0_5);
+            font-size: var(--text-sm);
+            color: var(--color-1-600);
+        }
+
+        .event-date {
+            font-weight: 600;
+        }
+
+        .event-time {
+            color: var(--color-1-500);
+        }
+
         .event-card__description {
             font-size: var(--text-sm);
             color: var(--color-1-600);
             margin-bottom: var(--vspace-0_75);
             line-height: 1.5;
+            flex: 1;
         }
 
         .event-card__price {
             font-size: var(--text-base);
             color: var(--color-1-700);
             font-weight: 600;
+            margin-bottom: var(--vspace-0_5);
+        }
+
+        .event-card__conditions {
+            font-size: var(--text-xs);
+            color: var(--color-1-500);
             margin-bottom: var(--vspace-0_75);
+            line-height: 1.4;
         }
 
         .event-card__link {
@@ -293,11 +323,33 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
             border-radius: var(--border-radius);
             transition: all 0.3s ease;
             font-weight: 500;
+            text-align: center;
+            margin-top: auto;
         }
 
         .event-card__link:hover {
             background: var(--color-1-700);
             color: var(--color-1-100);
+        }
+
+        /* Placeholder card styles */
+        .event-card--placeholder {
+            background: var(--color-1-50);
+            border: 2px dashed var(--color-1-300);
+        }
+
+        .event-card--placeholder:hover {
+            border-color: var(--color-1-400);
+            background: var(--color-1-100);
+        }
+
+        .event-card__placeholder-image {
+            height: 180px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--color-1-100);
+            color: var(--color-1-400);
         }
 
         /* Swiper Navigation */
@@ -588,12 +640,58 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
             </div>
         </section> <!-- end s-events -->
 
+        <!-- # contact
+        ================================================== -->
+        <section id="contact" class="container s-contact target-section">
+            <div class="row s-contact__header">
+                <div class="column xl-12 section-header-wrap">
+                    <div class="section-header" data-num="04">
+                        <h2 class="text-display-title">Контакты</h2>
+                    </div>               
+                </div> <!-- end section-header-wrap -->   
+            </div> <!-- end s-contact__header -->   
+
+            <div class="row s-contact__content">
+                <div class="column xl-6 lg-6 md-12 s-contact__content-start">
+                    <div class="contact-info">
+                        <h3>Свяжитесь с нами</h3>
+                        <p>Мы всегда рады новым идеям и предложениям по мероприятиям!</p>
+                        
+                        <div class="contact-item">
+                            <strong>Телефон:</strong>
+                            <a href="tel:+84349338758">+84 349 338 758</a>
+                        </div>
+                        
+                        <div class="contact-item">
+                            <strong>Email:</strong>
+                            <a href="mailto:info@northrepublic.me">info@northrepublic.me</a>
+                        </div>
+                        
+                        <div class="contact-item">
+                            <strong>Адрес:</strong>
+                            <span>Нячанг, Вьетнам</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="column xl-6 lg-6 md-12 s-contact__content-end">
+                    <div class="contact-form">
+                        <h3>Предложить мероприятие</h3>
+                        <p>Есть идея для интересного события? Расскажите нам!</p>
+                        <a href="mailto:events@northrepublic.me?subject=Предложение мероприятия" class="btn btn--primary">
+                            Написать нам
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section> <!-- end s-contact -->
+
         <!-- # gallery
         ================================================== -->
         <section id="gallery" class="container s-gallery target-section">
             <div class="row s-gallery__header">
                 <div class="column xl-12 section-header-wrap">
-                    <div class="section-header" data-num="04">
+                    <div class="section-header" data-num="05">
                         <h2 class="text-display-title"><?php echo $pageMeta['gallery_title'] ?? ''; ?></h2>
                     </div>               
                 </div> <!-- end section-header-wrap -->   
@@ -674,122 +772,193 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
             });
 
             // Events Widget
-            const events = <?php echo json_encode($eventsService->getEventsForWidget(8), JSON_UNESCAPED_UNICODE); ?>;
+            let currentStartDate = new Date();
+            let datesSwiper, eventsSwiper;
             
-            console.log('Events loaded:', events);
-            
-            if (events && events.length > 0) {
-                // Initialize Swiper instances
-                const datesSwiper = new Swiper('#dates-slider', {
-                    slidesPerView: 'auto',
-                    spaceBetween: 12,
-                    freeMode: true,
-                    watchSlidesProgress: true,
-                    breakpoints: {
-                        320: {
-                            slidesPerView: 'auto',
-                            spaceBetween: 10
-                        },
-                        768: {
-                            slidesPerView: 'auto',
-                            spaceBetween: 12
-                        }
-                    }
-                });
-
-                const eventsSwiper = new Swiper('#events-slider', {
-                    slidesPerView: 1,
-                    spaceBetween: 20,
-                    navigation: {
-                        nextEl: '.swiper-button-next',
-                        prevEl: '.swiper-button-prev'
+            // Initialize Swiper instances
+            datesSwiper = new Swiper('#dates-slider', {
+                slidesPerView: 7,
+                spaceBetween: 12,
+                freeMode: true,
+                watchSlidesProgress: true,
+                breakpoints: {
+                    320: {
+                        slidesPerView: 4,
+                        spaceBetween: 8
                     },
-                    breakpoints: {
-                        320: {
-                            slidesPerView: 1,
-                            spaceBetween: 15
-                        },
-                        768: {
-                            slidesPerView: 2,
-                            spaceBetween: 20
-                        },
-                        1024: {
-                            slidesPerView: 4,
-                            spaceBetween: 20
-                        }
+                    768: {
+                        slidesPerView: 7,
+                        spaceBetween: 12
                     }
-                });
+                }
+            });
 
-                // Render events
-                function renderEvents() {
-                    const datesWrapper = document.querySelector('#dates-slider .swiper-wrapper');
-                    const eventsWrapper = document.querySelector('#events-slider .swiper-wrapper');
+            eventsSwiper = new Swiper('#events-slider', {
+                slidesPerView: 1,
+                spaceBetween: 20,
+                navigation: {
+                    nextEl: '.swiper-button-next',
+                    prevEl: '.swiper-button-prev'
+                },
+                breakpoints: {
+                    320: {
+                        slidesPerView: 1,
+                        spaceBetween: 15
+                    },
+                    768: {
+                        slidesPerView: 2,
+                        spaceBetween: 20
+                    },
+                    1024: {
+                        slidesPerView: 4,
+                        spaceBetween: 20
+                    }
+                }
+            });
+
+            // Load calendar and events
+            async function loadCalendarAndEvents(startDate = null) {
+                try {
+                    const response = await fetch(`/api/events-calendar.php?start_date=${startDate || ''}`);
+                    const data = await response.json();
                     
-                    // Clear existing content
-                    datesWrapper.innerHTML = '';
-                    eventsWrapper.innerHTML = '';
+                    renderCalendar(data.calendar);
+                    renderEvents(data.events);
+                } catch (error) {
+                    console.error('Error loading events:', error);
+                    // Fallback to default data
+                    loadDefaultData();
+                }
+            }
+
+            // Render calendar (7 days)
+            function renderCalendar(calendarDays) {
+                const datesWrapper = document.querySelector('#dates-slider .swiper-wrapper');
+                datesWrapper.innerHTML = '';
+                
+                calendarDays.forEach((day, index) => {
+                    const dateSlide = document.createElement('div');
+                    dateSlide.className = 'swiper-slide date-slide';
+                    dateSlide.innerHTML = `
+                        <span class="day">${day.day}</span>
+                        <span class="month">${day.month}</span>
+                    `;
+                    dateSlide.dataset.date = day.date;
+                    dateSlide.dataset.index = index;
+                    datesWrapper.appendChild(dateSlide);
+                });
+                
+                datesSwiper.update();
+                
+                // Bind date click events
+                const dateSlides = document.querySelectorAll('.date-slide');
+                dateSlides.forEach(slide => {
+                    slide.addEventListener('click', () => {
+                        // Remove active class from all dates
+                        dateSlides.forEach(d => d.classList.remove('active'));
+                        // Add active class to clicked date
+                        slide.classList.add('active');
+                        // Load events for selected date
+                        const selectedDate = slide.dataset.date;
+                        loadEventsForDate(selectedDate);
+                    });
+                });
+                
+                // Activate first date
+                if (dateSlides[0]) {
+                    dateSlides[0].classList.add('active');
+                    loadEventsForDate(dateSlides[0].dataset.date);
+                }
+            }
+
+            // Load events for specific date
+            async function loadEventsForDate(date) {
+                try {
+                    const response = await fetch(`/api/events-calendar.php?start_date=${date}&events_only=true`);
+                    const data = await response.json();
+                    renderEvents(data.events);
+                } catch (error) {
+                    console.error('Error loading events for date:', error);
+                }
+            }
+
+            // Render events (4 cards)
+            function renderEvents(events) {
+                const eventsWrapper = document.querySelector('#events-slider .swiper-wrapper');
+                eventsWrapper.innerHTML = '';
+                
+                // Always show 4 cards
+                for (let i = 0; i < 4; i++) {
+                    const eventCard = document.createElement('div');
+                    eventCard.className = 'swiper-slide';
                     
-                    events.forEach((event, index) => {
-                        // Create date slide
-                        const dateSlide = document.createElement('div');
-                        dateSlide.className = 'swiper-slide date-slide';
-                        dateSlide.innerHTML = `
-                            <span class="day">${event.day}</span>
-                            <span class="month">${event.month}</span>
-                        `;
-                        dateSlide.dataset.index = index;
-                        datesWrapper.appendChild(dateSlide);
-                        
-                        // Create event card
-                        const eventCard = document.createElement('div');
-                        eventCard.className = 'swiper-slide';
+                    if (events[i]) {
+                        // Real event card
+                        const event = events[i];
                         eventCard.innerHTML = `
                             <div class="event-card">
                                 <img src="${event.image || 'template/images/sample-image.jpg'}" alt="${event.title}" class="event-card__image">
                                 <div class="event-card__content">
                                     <h3 class="event-card__title">${event.title}</h3>
+                                    <div class="event-card__datetime">
+                                        <span class="event-date">${event.day} ${event.month}</span>
+                                        <span class="event-time">${event.time}</span>
+                                    </div>
                                     <p class="event-card__description">${event.description || ''}</p>
                                     <div class="event-card__price">${event.price}</div>
+                                    ${event.conditions ? `<div class="event-card__conditions">${event.conditions}</div>` : ''}
                                     <a href="${event.link || '#'}" class="event-card__link">Подробнее</a>
                                 </div>
                             </div>
                         `;
-                        eventsWrapper.appendChild(eventCard);
-                    });
-                    
-                    // Update swipers
-                    datesSwiper.update();
-                    eventsSwiper.update();
-                    
-                    // Bind date click events
-                    const dateSlides = document.querySelectorAll('.date-slide');
-                    dateSlides.forEach(slide => {
-                        slide.addEventListener('click', () => {
-                            // Remove active class from all dates
-                            dateSlides.forEach(d => d.classList.remove('active'));
-                            // Add active class to clicked date
-                            slide.classList.add('active');
-                            // Navigate to corresponding event
-                            const index = parseInt(slide.dataset.index);
-                            eventsSwiper.slideTo(index);
-                        });
-                    });
-                    
-                    // Activate first date
-                    if (dateSlides[0]) {
-                        dateSlides[0].classList.add('active');
+                    } else {
+                        // Placeholder card for days without events
+                        eventCard.innerHTML = `
+                            <div class="event-card event-card--placeholder">
+                                <div class="event-card__placeholder-image">
+                                    <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                                    </svg>
+                                </div>
+                                <div class="event-card__content">
+                                    <h3 class="event-card__title">Событий на эту дату еще нет</h3>
+                                    <p class="event-card__description">Мы работаем над новыми мероприятиями. Следите за обновлениями!</p>
+                                    <a href="#contact" class="event-card__link">Связаться с нами</a>
+                                </div>
+                            </div>
+                        `;
                     }
+                    
+                    eventsWrapper.appendChild(eventCard);
                 }
                 
-                renderEvents();
-            } else {
-                console.log('No events found');
-                // Hide events section if no events
-                const eventsSection = document.querySelector('#events');
-                if (eventsSection) {
-                    eventsSection.style.display = 'none';
-                }
+                eventsSwiper.update();
             }
+
+            // Load default data (fallback)
+            function loadDefaultData() {
+                const today = new Date();
+                const calendarDays = [];
+                
+                for (let i = 0; i < 7; i++) {
+                    const date = new Date(today);
+                    date.setDate(today.getDate() + i);
+                    calendarDays.push({
+                        day: date.getDate().toString().padStart(2, '0'),
+                        month: date.toLocaleDateString('ru', { month: 'short' }),
+                        date: date.toISOString().split('T')[0]
+                    });
+                }
+                
+                renderCalendar(calendarDays);
+                renderEvents([]); // Empty events array will show placeholder cards
+            }
+
+            // Initialize
+            loadCalendarAndEvents();
         });
     </script>
 

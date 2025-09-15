@@ -21,18 +21,48 @@ class EventsService {
     }
     
     /**
-     * Получить события для виджета (активные события начиная с сегодня или ближайшие)
+     * Получить календарь на 7 дней начиная с указанной даты
      */
-    public function getEventsForWidget($limit = 8) {
-        try {
-            $today = new DateTime();
-            $today->setTime(0, 0, 0);
+    public function getCalendarDays($startDate = null, $daysCount = 7) {
+        if (!$startDate) {
+            $startDate = new DateTime();
+        } else {
+            $startDate = new DateTime($startDate);
+        }
+        
+        $calendarDays = [];
+        for ($i = 0; $i < $daysCount; $i++) {
+            $currentDate = clone $startDate;
+            $currentDate->add(new DateInterval('P' . $i . 'D'));
             
-            // Сначала пытаемся получить события начиная с сегодня
+            $calendarDays[] = [
+                'date' => $currentDate->format('Y-m-d'),
+                'day' => $currentDate->format('d'),
+                'month' => $this->getMonthShort($currentDate->format('m')),
+                'full_date' => $currentDate->format('Y-m-d')
+            ];
+        }
+        
+        return $calendarDays;
+    }
+    
+    /**
+     * Получить события для виджета начиная с указанной даты (4 события)
+     */
+    public function getEventsForWidget($startDate = null, $limit = 4) {
+        try {
+            if (!$startDate) {
+                $startDate = new DateTime();
+            } else {
+                $startDate = new DateTime($startDate);
+            }
+            $startDate->setTime(0, 0, 0);
+            
+            // Получаем события начиная с указанной даты
             $events = $this->eventsCollection->find(
                 [
                     'is_active' => true,
-                    'date' => ['$gte' => $today->format('Y-m-d')]
+                    'date' => ['$gte' => $startDate->format('Y-m-d')]
                 ],
                 [
                     'sort' => ['date' => 1, 'time' => 1],
@@ -40,22 +70,24 @@ class EventsService {
                 ]
             )->toArray();
             
-            // Если событий начиная с сегодня мало, добавляем ближайшие прошлые события
+            // Если событий мало, добавляем события следующих дней
             if (count($events) < $limit) {
                 $remaining = $limit - count($events);
-                $pastEvents = $this->eventsCollection->find(
+                $nextWeek = clone $startDate;
+                $nextWeek->add(new DateInterval('P7D'));
+                
+                $additionalEvents = $this->eventsCollection->find(
                     [
                         'is_active' => true,
-                        'date' => ['$lt' => $today->format('Y-m-d')]
+                        'date' => ['$gte' => $nextWeek->format('Y-m-d')]
                     ],
                     [
-                        'sort' => ['date' => -1, 'time' => -1],
+                        'sort' => ['date' => 1, 'time' => 1],
                         'limit' => $remaining
                     ]
                 )->toArray();
                 
-                // Объединяем события (сначала будущие, потом прошлые)
-                $events = array_merge($events, $pastEvents);
+                $events = array_merge($events, $additionalEvents);
             }
             
             // Конвертируем в нужный формат для виджета
@@ -65,16 +97,24 @@ class EventsService {
                 $day = $eventDate->format('j');
                 $month = $this->getMonthShort($eventDate->format('n'));
                 
+                // Обработка условий участия
+                $conditions = $event['conditions'] ?? '';
+                if ($conditions && strpos($conditions, 'Условия участия:') !== 0) {
+                    $conditions = 'Условия участия: ' . $conditions;
+                }
+                
                 $formattedEvents[] = [
+                    'id' => (string)$event['_id'],
                     'day' => $day,
                     'month' => $month,
                     'title' => $event['title'] ?? 'Событие',
-                    'description' => $event['conditions'] ?? 'Описание события',
-                    'price' => $event['conditions'] ?? 'Уточняйте',
+                    'description' => $event['description'] ?? 'Описание события',
+                    'price' => $event['price'] ?? 'Уточняйте',
                     'image' => $event['image'] ?? 'template/images/gallery/gallery-01.jpg',
                     'link' => $event['description_link'] ?? '#',
                     'date' => $event['date'],
-                    'time' => $event['time'] ?? '19:00'
+                    'time' => $event['time'] ?? '19:00',
+                    'conditions' => $conditions
                 ];
             }
             
