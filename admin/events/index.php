@@ -423,31 +423,45 @@ try {
         }
         
         function loadEventData(eventId) {
-            // Загружаем данные события для редактирования
-            fetch('/admin/events/api.php', {
-                method: 'GET'
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    const event = data.data.find(e => e.id === eventId);
-                    if (event) {
-                        // Заполняем форму данными события
-                        document.getElementById('eventId').value = event.id;
-                        document.getElementById('eventTitle').value = event.title;
-                        document.getElementById('eventDate').value = event.date;
-                        document.getElementById('eventTime').value = event.time;
-                        document.getElementById('eventConditions').value = event.conditions;
-                        document.getElementById('eventDescriptionLink').value = event.description_link || '';
-                        document.getElementById('eventComment').value = event.comment || '';
-                        document.getElementById('eventIsActive').checked = event.is_active;
-                    }
+            // Находим событие в уже загруженных данных
+            const eventRow = document.querySelector(`tr[data-event-id="${eventId}"]`);
+            if (eventRow) {
+                const eventTitle = eventRow.querySelector('.event-title strong').textContent;
+                const eventDate = eventRow.querySelector('.event-date').textContent;
+                const eventTime = eventRow.querySelector('.event-time').textContent;
+                const eventConditions = eventRow.querySelector('.event-conditions').textContent;
+                
+                // Заполняем форму данными события
+                document.getElementById('eventId').value = eventId;
+                document.getElementById('eventTitle').value = eventTitle;
+                
+                // Конвертируем дату из формата dd.mm.yyyy в yyyy-mm-dd
+                const dateParts = eventDate.split('.');
+                const formattedDate = `${dateParts[2]}-${dateParts[1].padStart(2, '0')}-${dateParts[0].padStart(2, '0')}`;
+                document.getElementById('eventDate').value = formattedDate;
+                
+                document.getElementById('eventTime').value = eventTime;
+                document.getElementById('eventConditions').value = eventConditions;
+                
+                // Получаем дополнительные данные из атрибутов или скрытых полей
+                const eventLink = eventRow.querySelector('.event-link');
+                document.getElementById('eventDescriptionLink').value = eventLink ? eventLink.href : '';
+                
+                // Проверяем статус
+                const statusBadge = eventRow.querySelector('.status-badge');
+                const isActive = statusBadge && statusBadge.classList.contains('active');
+                document.getElementById('eventIsActive').checked = isActive;
+                
+                // Комментарий получаем из следующей строки, если есть
+                const commentRow = eventRow.nextElementSibling;
+                if (commentRow && commentRow.classList.contains('event-comment-row')) {
+                    const commentText = commentRow.querySelector('.event-comment').textContent;
+                    const comment = commentText.replace('Комментарий:', '').trim();
+                    document.getElementById('eventComment').value = comment;
+                } else {
+                    document.getElementById('eventComment').value = '';
                 }
-            })
-            .catch(error => {
-                console.error('Ошибка загрузки данных события:', error);
-                alert('Ошибка загрузки данных события');
-            });
+            }
         }
         
         function saveEvent() {
@@ -487,16 +501,27 @@ try {
             openEventModal(eventId);
         }
         
+        let isDeleting = false; // Флаг для предотвращения двойного удаления
+        
         function deleteEvent(eventId) {
+            if (isDeleting) return; // Предотвращаем повторные вызовы
+            
             if (confirm('Вы уверены, что хотите удалить это событие?')) {
+                isDeleting = true; // Устанавливаем флаг
+                
                 const formData = new FormData();
                 formData.append('event_id', eventId);
-                
+
                 fetch('/admin/events/api.php', {
                     method: 'DELETE',
                     body: formData
                 })
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
                 .then(data => {
                     if (data.success) {
                         alert(data.message);
@@ -507,7 +532,10 @@ try {
                 })
                 .catch(error => {
                     console.error('Ошибка удаления события:', error);
-                    alert('Ошибка удаления события');
+                    alert('Ошибка удаления события: ' + error.message);
+                })
+                .finally(() => {
+                    isDeleting = false; // Сбрасываем флаг
                 });
             }
         }

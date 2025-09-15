@@ -88,7 +88,10 @@ try {
             
         case 'PUT':
             // Обновить событие
-            if (empty($input['event_id'])) {
+            // Для PUT запросов с FormData нужно получать данные из $_POST
+            $eventId = $_POST['event_id'] ?? $input['event_id'] ?? null;
+            
+            if (empty($eventId)) {
                 http_response_code(400);
                 echo json_encode([
                     'success' => false,
@@ -97,42 +100,61 @@ try {
                 exit;
             }
             
-            $eventId = new MongoDB\BSON\ObjectId($input['event_id']);
+            // Получаем данные из $_POST для FormData или из $input для JSON
+            $title = $_POST['title'] ?? $input['title'] ?? '';
+            $date = $_POST['date'] ?? $input['date'] ?? '';
+            $time = $_POST['time'] ?? $input['time'] ?? '';
+            $conditions = $_POST['conditions'] ?? $input['conditions'] ?? '';
+            $description_link = $_POST['description_link'] ?? $input['description_link'] ?? null;
+            $comment = $_POST['comment'] ?? $input['comment'] ?? null;
+            $is_active = isset($_POST['is_active']) ? (bool)$_POST['is_active'] : ($input['is_active'] ?? true);
             
-            $updateData = [
-                'title' => $input['title'],
-                'date' => $input['date'],
-                'time' => $input['time'],
-                'conditions' => $input['conditions'],
-                'description_link' => $input['description_link'] ?? null,
-                'image' => $input['image'] ?? null,
-                'comment' => $input['comment'] ?? null,
-                'is_active' => $input['is_active'] ?? true,
-                'updated_at' => new MongoDB\BSON\UTCDateTime()
-            ];
-            
-            $result = $eventsCollection->updateOne(
-                ['_id' => $eventId],
-                ['$set' => $updateData]
-            );
-            
-            if ($result->getModifiedCount() > 0) {
-                echo json_encode([
-                    'success' => true,
-                    'message' => 'Событие обновлено успешно'
-                ]);
-            } else {
-                http_response_code(404);
+            try {
+                $eventId = new MongoDB\BSON\ObjectId($eventId);
+                
+                $updateData = [
+                    'title' => $title,
+                    'date' => $date,
+                    'time' => $time,
+                    'conditions' => $conditions,
+                    'description_link' => $description_link,
+                    'comment' => $comment,
+                    'is_active' => $is_active,
+                    'updated_at' => new MongoDB\BSON\UTCDateTime()
+                ];
+                
+                $result = $eventsCollection->updateOne(
+                    ['_id' => $eventId],
+                    ['$set' => $updateData]
+                );
+                
+                if ($result->getModifiedCount() > 0) {
+                    echo json_encode([
+                        'success' => true,
+                        'message' => 'Событие обновлено успешно'
+                    ]);
+                } else {
+                    http_response_code(404);
+                    echo json_encode([
+                        'success' => false,
+                        'message' => 'Событие не найдено или не было изменений'
+                    ]);
+                }
+            } catch (Exception $e) {
+                http_response_code(400);
                 echo json_encode([
                     'success' => false,
-                    'message' => 'Событие не найдено или не было изменений'
+                    'message' => 'Неверный формат ID события'
                 ]);
             }
             break;
             
         case 'DELETE':
             // Удалить событие
-            if (empty($input['event_id'])) {
+            // Для DELETE запросов с FormData нужно получать данные из $_POST
+            $eventId = $_POST['event_id'] ?? $input['event_id'] ?? null;
+            
+            if (empty($eventId)) {
                 http_response_code(400);
                 echo json_encode([
                     'success' => false,
@@ -141,20 +163,28 @@ try {
                 exit;
             }
             
-            $eventId = new MongoDB\BSON\ObjectId($input['event_id']);
-            
-            $result = $eventsCollection->deleteOne(['_id' => $eventId]);
-            
-            if ($result->getDeletedCount() > 0) {
-                echo json_encode([
-                    'success' => true,
-                    'message' => 'Событие удалено успешно'
-                ]);
-            } else {
-                http_response_code(404);
+            try {
+                $eventId = new MongoDB\BSON\ObjectId($eventId);
+                
+                $result = $eventsCollection->deleteOne(['_id' => $eventId]);
+                
+                if ($result->getDeletedCount() > 0) {
+                    echo json_encode([
+                        'success' => true,
+                        'message' => 'Событие удалено успешно'
+                    ]);
+                } else {
+                    http_response_code(404);
+                    echo json_encode([
+                        'success' => false,
+                        'message' => 'Событие не найдено'
+                    ]);
+                }
+            } catch (Exception $e) {
+                http_response_code(400);
                 echo json_encode([
                     'success' => false,
-                    'message' => 'Событие не найдено'
+                    'message' => 'Неверный формат ID события'
                 ]);
             }
             break;
