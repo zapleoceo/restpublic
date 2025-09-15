@@ -628,7 +628,14 @@ if (count($events) > 0) {
                                                 </span>
                                             </td>
                                             <td class="event-comment">
-                                                <?php echo !empty($event['comment']) ? htmlspecialchars($event['comment']) : '-'; ?>
+                                                <?php 
+                                                if (!empty($event['comment'])) {
+                                                    $comment = htmlspecialchars($event['comment']);
+                                                    echo strlen($comment) > 50 ? substr($comment, 0, 50) . '...' : $comment;
+                                                } else {
+                                                    echo '-';
+                                                }
+                                                ?>
                                             </td>
                                             <td class="event-actions">
                                                 <button class="btn btn-edit" onclick="editEvent('<?php echo $event['id']; ?>')" title="Редактировать">
@@ -984,6 +991,10 @@ if (count($events) > 0) {
                 const statusText = event.is_active ? 'Активно' : 'Неактивно';
                 const statusHtml = `<span class="status-badge ${statusClass}">${statusText}</span>`;
                 
+                // Обрезаем комментарий до 50 символов
+                const comment = event.comment || '-';
+                const truncatedComment = comment.length > 50 ? comment.substring(0, 50) + '...' : comment;
+                
                 row.innerHTML = `
                     <td class="event-date">${new Date(event.date + 'T00:00:00').toLocaleDateString('ru-RU')}</td>
                     <td class="event-time">${event.time}</td>
@@ -992,7 +1003,7 @@ if (count($events) > 0) {
                     <td class="event-link">${linkHtml}</td>
                     <td class="event-thumbnail">${thumbnailHtml}</td>
                     <td class="event-status">${statusHtml}</td>
-                    <td class="event-comment">${event.comment || '-'}</td>
+                    <td class="event-comment">${truncatedComment}</td>
                     <td class="event-actions">
                         <button class="btn btn-edit" onclick="editEvent('${event.id}')" title="Редактировать">✏️</button>
                         <button class="btn btn-delete" onclick="deleteEvent('${event.id}')" title="Удалить">🗑️</button>
