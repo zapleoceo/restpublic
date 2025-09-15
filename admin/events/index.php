@@ -23,9 +23,9 @@ try {
     )->toArray();
     
     // Конвертируем ObjectId в строки
-    foreach ($events as &$event) {
-        $event['_id'] = (string)$event['_id'];
-        $event['id'] = (string)$event['_id'];
+    foreach ($events as $index => $event) {
+        $events[$index]['_id'] = (string)$event['_id'];
+        $events[$index]['id'] = (string)$event['_id'];
     }
     
 } catch (Exception $e) {
