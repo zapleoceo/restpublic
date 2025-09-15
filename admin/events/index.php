@@ -770,8 +770,10 @@ if (count($events) > 0) {
                 
                 // Конвертируем дату из формата dd.mm.yyyy в yyyy-mm-dd
                 const dateParts = eventDate.split('.');
-                const formattedDate = `${dateParts[2]}-${dateParts[1].padStart(2, '0')}-${dateParts[0].padStart(2, '0')}`;
-                document.getElementById('eventDate').value = formattedDate;
+                if (dateParts.length === 3) {
+                    const formattedDate = `${dateParts[2]}-${dateParts[1].padStart(2, '0')}-${dateParts[0].padStart(2, '0')}`;
+                    document.getElementById('eventDate').value = formattedDate;
+                }
                 
                 document.getElementById('eventTime').value = eventTime;
                 document.getElementById('eventConditions').value = eventConditions;
@@ -923,7 +925,7 @@ if (count($events) > 0) {
                 const statusHtml = `<span class="status-badge ${statusClass}">${statusText}</span>`;
                 
                 row.innerHTML = `
-                    <td class="event-date">${new Date(event.date).toLocaleDateString('ru-RU')}</td>
+                    <td class="event-date">${new Date(event.date + 'T00:00:00').toLocaleDateString('ru-RU')}</td>
                     <td class="event-time">${event.time}</td>
                     <td class="event-title">${event.title}</td>
                     <td class="event-conditions">${event.conditions}</td>
