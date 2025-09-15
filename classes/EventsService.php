@@ -21,14 +21,14 @@ class EventsService {
     }
     
     /**
-     * Получить события для виджета (активные события начиная с сегодня)
+     * Получить события для виджета (активные события начиная с сегодня или ближайшие)
      */
     public function getEventsForWidget($limit = 8) {
         try {
             $today = new DateTime();
             $today->setTime(0, 0, 0);
             
-            // Получаем активные события начиная с сегодня
+            // Сначала пытаемся получить события начиная с сегодня
             $events = $this->eventsCollection->find(
                 [
                     'is_active' => true,
@@ -39,6 +39,24 @@ class EventsService {
                     'limit' => $limit
                 ]
             )->toArray();
+            
+            // Если событий начиная с сегодня мало, добавляем ближайшие прошлые события
+            if (count($events) < $limit) {
+                $remaining = $limit - count($events);
+                $pastEvents = $this->eventsCollection->find(
+                    [
+                        'is_active' => true,
+                        'date' => ['$lt' => $today->format('Y-m-d')]
+                    ],
+                    [
+                        'sort' => ['date' => -1, 'time' => -1],
+                        'limit' => $remaining
+                    ]
+                )->toArray();
+                
+                // Объединяем события (сначала будущие, потом прошлые)
+                $events = array_merge($events, $pastEvents);
+            }
             
             // Конвертируем в нужный формат для виджета
             $formattedEvents = [];

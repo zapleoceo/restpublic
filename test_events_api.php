@@ -1,5 +1,5 @@
 <?php
-// Тестовый скрипт для проверки API событий
+// Скрипт для тестирования API событий
 require_once 'vendor/autoload.php';
 
 // Загружаем переменные окружения
@@ -13,79 +13,153 @@ if (file_exists('.env')) {
     }
 }
 
-try {
-    $mongodbUrl = $_ENV['MONGODB_URL'] ?? 'mongodb://localhost:27017';
-    $dbName = $_ENV['MONGODB_DB_NAME'] ?? 'northrepublic';
+echo "=== ТЕСТИРОВАНИЕ API СОБЫТИЙ ===\n\n";
 
-    $client = new MongoDB\Client($mongodbUrl);
-    $db = $client->$dbName;
-    $eventsCollection = $db->events;
+// Тестовые данные
+$testEvent = [
+    'title' => 'Тестовое событие',
+    'date' => '2025-01-20',
+    'time' => '19:00',
+    'conditions' => 'Бесплатно',
+    'description_link' => 'https://example.com/test',
+    'comment' => 'Тестовый комментарий',
+    'is_active' => true
+];
 
-    echo "=== ТЕСТ API СОБЫТИЙ ===\n\n";
-
-    // 1. Тест GET - получение всех событий
-    echo "1. Тест GET запроса:\n";
-    $events = $eventsCollection->find([])->toArray();
-    echo "Найдено событий: " . count($events) . "\n";
+// Функция для отправки HTTP запросов
+function sendRequest($url, $method = 'GET', $data = null) {
+    $ch = curl_init();
     
-    foreach ($events as $event) {
-        echo "  - ID: " . $event['_id'] . " | Title: " . ($event['title'] ?? 'NULL') . " | Date: " . ($event['date'] ?? 'NULL') . "\n";
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        'Content-Type: application/json',
+        'Accept: application/json'
+    ]);
+    
+    if ($data) {
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+    }
+    
+    $response = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+    
+    return [
+        'code' => $httpCode,
+        'body' => $response
+    ];
+}
+
+// Тест 1: Получение всех событий
+echo "1. Тест получения всех событий (GET)\n";
+$response = sendRequest('http://localhost/admin/events/api.php');
+echo "HTTP код: " . $response['code'] . "\n";
+$data = json_decode($response['body'], true);
+if ($data && isset($data['success'])) {
+    echo "✅ Успешно: " . $data['message'] . "\n";
+    echo "Количество событий: " . count($data['data']) . "\n";
+} else {
+    echo "❌ Ошибка: " . $response['body'] . "\n";
+}
+echo "\n";
+
+// Тест 2: Создание нового события
+echo "2. Тест создания события (POST)\n";
+$response = sendRequest('http://localhost/admin/events/api.php', 'POST', $testEvent);
+echo "HTTP код: " . $response['code'] . "\n";
+$data = json_decode($response['body'], true);
+if ($data && $data['success']) {
+    echo "✅ Событие создано: " . $data['message'] . "\n";
+    $createdEventId = $data['id'];
+} else {
+    echo "❌ Ошибка создания: " . ($data['message'] ?? $response['body']) . "\n";
+    $createdEventId = null;
+}
+echo "\n";
+
+// Тест 3: Обновление события
+if ($createdEventId) {
+    echo "3. Тест обновления события (PUT)\n";
+    $updateData = $testEvent;
+    $updateData['event_id'] = $createdEventId;
+    $updateData['title'] = 'Обновленное тестовое событие';
+    $updateData['conditions'] = '1000 руб.';
+    
+    $response = sendRequest('http://localhost/admin/events/api.php', 'PUT', $updateData);
+    echo "HTTP код: " . $response['code'] . "\n";
+    $data = json_decode($response['body'], true);
+    if ($data && $data['success']) {
+        echo "✅ Событие обновлено: " . $data['message'] . "\n";
+    } else {
+        echo "❌ Ошибка обновления: " . ($data['message'] ?? $response['body']) . "\n";
     }
     echo "\n";
-
-    // 2. Тест POST - создание нового события
-    echo "2. Тест POST запроса (создание события):\n";
-    $testEvent = [
-        'title' => 'Тестовое событие',
-        'date' => '2025-01-20',
-        'time' => '18:00',
-        'conditions' => 'Бесплатно',
-        'description_link' => 'https://example.com/test',
-        'image' => null,
-        'comment' => 'Тестовый комментарий',
-        'is_active' => true,
-        'created_at' => new MongoDB\BSON\UTCDateTime(),
-        'updated_at' => new MongoDB\BSON\UTCDateTime()
-    ];
-
-    $result = $eventsCollection->insertOne($testEvent);
-    if ($result->getInsertedId()) {
-        $newEventId = (string)$result->getInsertedId();
-        echo "✅ Событие создано успешно. ID: " . $newEventId . "\n";
-        
-        // 3. Тест PUT - обновление события
-        echo "\n3. Тест PUT запроса (обновление события):\n";
-        $updateResult = $eventsCollection->updateOne(
-            ['_id' => new MongoDB\BSON\ObjectId($newEventId)],
-            ['$set' => [
-                'title' => 'Обновленное тестовое событие',
-                'updated_at' => new MongoDB\BSON\UTCDateTime()
-            ]]
-        );
-        
-        if ($updateResult->getModifiedCount() > 0) {
-            echo "✅ Событие обновлено успешно\n";
-        } else {
-            echo "❌ Ошибка обновления события\n";
-        }
-        
-        // 4. Тест DELETE - удаление события
-        echo "\n4. Тест DELETE запроса (удаление события):\n";
-        $deleteResult = $eventsCollection->deleteOne(['_id' => new MongoDB\BSON\ObjectId($newEventId)]);
-        
-        if ($deleteResult->getDeletedCount() > 0) {
-            echo "✅ Событие удалено успешно\n";
-        } else {
-            echo "❌ Ошибка удаления события\n";
-        }
-        
-    } else {
-        echo "❌ Ошибка создания события\n";
-    }
-
-    echo "\n=== ТЕСТ ЗАВЕРШЕН ===\n";
-
-} catch (Exception $e) {
-    echo "❌ Ошибка: " . $e->getMessage() . "\n";
 }
+
+// Тест 4: Удаление события
+if ($createdEventId) {
+    echo "4. Тест удаления события (DELETE)\n";
+    $response = sendRequest('http://localhost/admin/events/api.php', 'DELETE', ['event_id' => $createdEventId]);
+    echo "HTTP код: " . $response['code'] . "\n";
+    $data = json_decode($response['body'], true);
+    if ($data && $data['success']) {
+        echo "✅ Событие удалено: " . $data['message'] . "\n";
+    } else {
+        echo "❌ Ошибка удаления: " . ($data['message'] ?? $response['body']) . "\n";
+    }
+    echo "\n";
+}
+
+// Тест 5: Валидация данных
+echo "5. Тест валидации данных\n";
+
+// Тест с пустыми полями
+echo "5.1. Тест с пустыми полями\n";
+$invalidEvent = [
+    'title' => '',
+    'date' => '',
+    'time' => '',
+    'conditions' => ''
+];
+$response = sendRequest('http://localhost/admin/events/api.php', 'POST', $invalidEvent);
+echo "HTTP код: " . $response['code'] . "\n";
+$data = json_decode($response['body'], true);
+if ($data && !$data['success']) {
+    echo "✅ Валидация работает: " . $data['message'] . "\n";
+} else {
+    echo "❌ Валидация не работает\n";
+}
+echo "\n";
+
+// Тест с неверным форматом даты
+echo "5.2. Тест с неверным форматом даты\n";
+$invalidDateEvent = $testEvent;
+$invalidDateEvent['date'] = '20-01-2025'; // Неверный формат
+$response = sendRequest('http://localhost/admin/events/api.php', 'POST', $invalidDateEvent);
+echo "HTTP код: " . $response['code'] . "\n";
+$data = json_decode($response['body'], true);
+if ($data && !$data['success']) {
+    echo "✅ Валидация даты работает: " . $data['message'] . "\n";
+} else {
+    echo "❌ Валидация даты не работает\n";
+}
+echo "\n";
+
+// Тест с неверным форматом времени
+echo "5.3. Тест с неверным форматом времени\n";
+$invalidTimeEvent = $testEvent;
+$invalidTimeEvent['time'] = '7:00 PM'; // Неверный формат
+$response = sendRequest('http://localhost/admin/events/api.php', 'POST', $invalidTimeEvent);
+echo "HTTP код: " . $response['code'] . "\n";
+$data = json_decode($response['body'], true);
+if ($data && !$data['success']) {
+    echo "✅ Валидация времени работает: " . $data['message'] . "\n";
+} else {
+    echo "❌ Валидация времени не работает\n";
+}
+echo "\n";
+
+echo "=== ТЕСТИРОВАНИЕ ЗАВЕРШЕНО ===\n";
 ?>
