@@ -32,6 +32,10 @@ try {
     // Обрабатываем данные в зависимости от Content-Type
     if ($method === 'POST' || $method === 'PUT') {
         $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
+        error_log("Content-Type: " . $contentType);
+        error_log("_FILES: " . print_r($_FILES, true));
+        error_log("_POST: " . print_r($_POST, true));
+        
         if (strpos($contentType, 'multipart/form-data') !== false) {
             // FormData (для загрузки файлов)
             $input = $_POST;
