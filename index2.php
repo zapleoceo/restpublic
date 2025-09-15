@@ -105,6 +105,7 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
 
     <!-- CSS
     ================================================== -->
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
     <link rel="stylesheet" href="css/vendor.css">
     <link rel="stylesheet" href="css/styles.css">
     
@@ -119,6 +120,190 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
         
         .intro-header__overline {
             font-family: "Roboto Flex", sans-serif;
+        }
+        
+        /* Events Widget Styles */
+        .s-events {
+            --content-padding-top: var(--vspace-2);
+            --content-padding-bottom: var(--vspace-2);
+            
+            padding-top: var(--content-padding-top);
+            padding-bottom: var(--content-padding-bottom);
+        }
+        
+        .events-widget {
+            margin-top: var(--vspace-2);
+        }
+        
+        /* Date Slider */
+        .dates-slider {
+            margin-bottom: var(--vspace-2);
+        }
+        
+        .date-slide {
+            text-align: center;
+            font-size: var(--text-sm);
+            padding: var(--vspace-0_75) var(--vspace-0_5);
+            cursor: pointer;
+            border-radius: var(--border-radius);
+            transition: all 0.3s ease;
+            background: var(--color-2-100);
+            color: var(--color-1-800);
+            font-weight: 600;
+            border: 2px solid transparent;
+            font-family: var(--font-1);
+        }
+        
+        .date-slide:hover {
+            background: var(--color-1-100);
+            transform: translateY(-2px);
+        }
+        
+        .date-slide.active {
+            background: var(--color-1-600);
+            color: var(--color-white);
+            border-color: var(--color-1-700);
+            box-shadow: 0 4px 16px rgba(54, 107, 91, 0.3);
+        }
+        
+        .date-day {
+            display: block;
+            font-size: var(--text-lg);
+            font-weight: 700;
+            margin-bottom: var(--vspace-0_25);
+            line-height: 1;
+        }
+        
+        .date-month {
+            display: block;
+            font-size: var(--text-xs);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            line-height: 1;
+        }
+        
+        /* Events Slider */
+        .events-slider {
+            position: relative;
+        }
+        
+        .event-card {
+            background: var(--color-white);
+            border: 1px solid var(--color-2-200);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+        
+        .event-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.15);
+            border-color: var(--color-1-300);
+        }
+        
+        .event-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            background: var(--color-2-100);
+        }
+        
+        .event-info {
+            padding: var(--vspace-1_5);
+        }
+        
+        .event-title {
+            font-size: var(--text-lg);
+            font-weight: 700;
+            margin: 0 0 var(--vspace-0_5);
+            color: var(--color-1-800);
+            line-height: 1.3;
+            font-family: var(--font-1);
+        }
+        
+        .event-description {
+            font-size: var(--text-sm);
+            color: var(--color-text-light);
+            margin: 0 0 var(--vspace-1);
+            line-height: 1.5;
+        }
+        
+        .event-price {
+            color: var(--color-1-600);
+            font-weight: 700;
+            font-size: var(--text-lg);
+            margin: 0 0 var(--vspace-1);
+        }
+        
+        .event-link {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--vspace-0_5);
+            text-decoration: none;
+            color: var(--color-1-600);
+            font-weight: 600;
+            font-size: var(--text-sm);
+            transition: all 0.3s ease;
+        }
+        
+        .event-link:hover {
+            color: var(--color-1-700);
+            transform: translateX(4px);
+        }
+        
+        .event-link svg {
+            width: 16px;
+            height: 16px;
+            transition: transform 0.3s ease;
+        }
+        
+        .event-link:hover svg {
+            transform: translateX(2px);
+        }
+        
+        /* Swiper Navigation */
+        .swiper-button-next,
+        .swiper-button-prev {
+            color: var(--color-1-600);
+            background: var(--color-white);
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .swiper-button-next:hover,
+        .swiper-button-prev:hover {
+            background: var(--color-1-600);
+            color: var(--color-white);
+            transform: scale(1.1);
+        }
+        
+        .swiper-button-next:after,
+        .swiper-button-prev:after {
+            font-size: 18px;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .date-slide {
+                padding: var(--vspace-0_5) var(--vspace-0_25);
+                font-size: var(--text-xs);
+            }
+            
+            .date-day {
+                font-size: var(--text-base);
+            }
+            
+            .event-info {
+                padding: var(--vspace-1);
+            }
+            
+            .event-title {
+                font-size: var(--text-base);
+            }
         }
     </style>
 
@@ -355,6 +540,33 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
             </div> <!-- end s-menu__footer -->
         </section> <!-- end s-menu -->
 
+        <!-- # events
+        ================================================== -->
+        <section id="events" class="container s-events target-section">
+            <div class="row s-events__header">
+                <div class="column xl-12 section-header-wrap">
+                    <div class="section-header" data-num="03">
+                        <h2 class="text-display-title">События</h2>
+                    </div>               
+                </div> <!-- end section-header-wrap -->   
+            </div> <!-- end s-events__header -->   
+
+            <div class="events-widget">
+                <!-- Слайдер Дат -->
+                <div class="swiper dates-slider" id="dates-slider">
+                    <div class="swiper-wrapper"></div>
+                </div>
+
+                <!-- Слайдер Событий -->
+                <div class="swiper events-slider" id="events-slider">
+                    <div class="swiper-wrapper"></div>
+                    <!-- Навигация -->
+                    <div class="swiper-button-prev"></div>
+                    <div class="swiper-button-next"></div>
+                </div>
+            </div>
+        </section> <!-- end s-events -->
+
         <!-- # gallery
         ================================================== -->
         <section id="gallery" class="container s-gallery target-section">
@@ -416,6 +628,7 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
 
     <!-- JavaScript
     ================================================== -->
+    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
     <script src="js/plugins.js"></script>
     <script src="js/main.js"></script>
     
@@ -444,6 +657,187 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                     }
                 });
             });
+        });
+
+        // Events Widget
+        document.addEventListener('DOMContentLoaded', function() {
+            // Данные событий (встроенные в HTML)
+            const events = [
+                {
+                    day: '15',
+                    month: 'янв',
+                    title: 'Стрельба из лука',
+                    description: 'Мастер-класс по стрельбе из лука на свежем воздухе. Подходит для всех уровней подготовки.',
+                    price: 'от 150₽',
+                    image: 'template/images/gallery/gallery-01.jpg',
+                    link: '/event/archery'
+                },
+                {
+                    day: '16',
+                    month: 'янв',
+                    title: 'Кино на свежем воздухе',
+                    description: 'Просмотр фильмов под звездным небом с попкорном и горячими напитками.',
+                    price: 'от 300₽',
+                    image: 'template/images/gallery/gallery-02.jpg',
+                    link: '/event/cinema'
+                },
+                {
+                    day: '17',
+                    month: 'янв',
+                    title: 'Йога-класс',
+                    description: 'Утренняя йога на природе с профессиональным инструктором. Начните день с гармонии.',
+                    price: 'от 200₽',
+                    image: 'template/images/gallery/gallery-03.jpg',
+                    link: '/event/yoga'
+                },
+                {
+                    day: '18',
+                    month: 'янв',
+                    title: 'Кулинарный мастер-класс',
+                    description: 'Учимся готовить традиционные блюда с шеф-поваром North Republic.',
+                    price: 'от 500₽',
+                    image: 'template/images/gallery/gallery-04.jpg',
+                    link: '/event/cooking'
+                },
+                {
+                    day: '19',
+                    month: 'янв',
+                    title: 'Живая музыка',
+                    description: 'Выступление местных музыкантов с акустической программой.',
+                    price: 'от 400₽',
+                    image: 'template/images/gallery/gallery-05.jpg',
+                    link: '/event/music'
+                },
+                {
+                    day: '20',
+                    month: 'янв',
+                    title: 'Пикник с семьей',
+                    description: 'Семейный пикник с играми, конкурсами и вкусной едой.',
+                    price: 'от 250₽',
+                    image: 'template/images/gallery/gallery-06.jpg',
+                    link: '/event/family-picnic'
+                },
+                {
+                    day: '21',
+                    month: 'янв',
+                    title: 'Дегустация вин',
+                    description: 'Знакомство с лучшими винами региона в сопровождении сомелье.',
+                    price: 'от 800₽',
+                    image: 'template/images/gallery/gallery-07.jpg',
+                    link: '/event/wine-tasting'
+                },
+                {
+                    day: '22',
+                    month: 'янв',
+                    title: 'Фотосессия на природе',
+                    description: 'Профессиональная фотосессия в живописных местах North Republic.',
+                    price: 'от 1200₽',
+                    image: 'template/images/gallery/gallery-08.jpg',
+                    link: '/event/photoshoot'
+                }
+            ];
+
+            // Инициализируем Swiper для событий
+            const datesSwiper = new Swiper('#dates-slider', {
+                slidesPerView: 'auto',
+                spaceBetween: 12,
+                freeMode: true,
+                watchSlidesProgress: true,
+                breakpoints: {
+                    320: {
+                        slidesPerView: 4,
+                        spaceBetween: 8
+                    },
+                    768: {
+                        slidesPerView: 6,
+                        spaceBetween: 12
+                    },
+                    1024: {
+                        slidesPerView: 7,
+                        spaceBetween: 16
+                    }
+                }
+            });
+
+            const eventsSwiper = new Swiper('#events-slider', {
+                slidesPerView: 1,
+                spaceBetween: 20,
+                navigation: {
+                    nextEl: '.swiper-button-next',
+                    prevEl: '.swiper-button-prev'
+                },
+                breakpoints: {
+                    768: {
+                        slidesPerView: 2,
+                        spaceBetween: 24
+                    },
+                    1024: {
+                        slidesPerView: 3,
+                        spaceBetween: 32
+                    }
+                }
+            });
+
+            // Рендерим события
+            function renderEvents() {
+                const dates = [];
+                
+                events.forEach((event, index) => {
+                    // Создаем слайд даты
+                    const dateSlide = document.createElement('div');
+                    dateSlide.className = 'swiper-slide date-slide';
+                    dateSlide.innerHTML = `
+                        <span class="date-day">${event.day}</span>
+                        <span class="date-month">${event.month}</span>
+                    `;
+                    dateSlide.dataset.index = index;
+                    datesSwiper.appendSlide(dateSlide);
+                    
+                    // Создаем карточку события
+                    const eventCard = document.createElement('div');
+                    eventCard.className = 'swiper-slide';
+                    eventCard.innerHTML = `
+                        <div class="event-card">
+                            <img src="${event.image}" alt="${event.title}" class="event-image" 
+                                 onerror="this.src='template/images/sample-image.jpg'">
+                            <div class="event-info">
+                                <h3 class="event-title">${event.title}</h3>
+                                <p class="event-description">${event.description}</p>
+                                <div class="event-price">${event.price}</div>
+                                <a href="${event.link}" class="event-link">
+                                    Подробнее
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                                    </svg>
+                                </a>
+                            </div>
+                        </div>
+                    `;
+                    eventsSwiper.appendSlide(eventCard);
+                    
+                    dates.push(dateSlide);
+                });
+                
+                // Обработчики кликов по датам
+                dates.forEach(slide => {
+                    slide.addEventListener('click', () => {
+                        // Убираем активный класс со всех дат
+                        dates.forEach(d => d.classList.remove('active'));
+                        // Добавляем активный класс к выбранной дате
+                        slide.classList.add('active');
+                        // Переключаем на соответствующую карточку
+                        eventsSwiper.slideTo(slide.dataset.index);
+                    });
+                });
+                
+                // Активируем первую дату
+                if (dates[0]) {
+                    dates[0].classList.add('active');
+                }
+            }
+            
+            // Запускаем рендеринг событий
+            renderEvents();
         });
     </script>
 

@@ -569,7 +569,10 @@ if (count($events) > 0) {
                                 ?>
                                     <tr data-event-id="<?php echo $event['id']; ?>">
                                         <td class="event-date">
-                                            <?php echo date('d.m.Y', strtotime($event['date'])); ?>
+                                            <?php 
+                                            $date = new DateTime($event['date']);
+                                            echo $date->format('d.m.Y'); 
+                                            ?>
                                         </td>
                                         <td class="event-time">
                                             <?php echo htmlspecialchars($event['time']); ?>
