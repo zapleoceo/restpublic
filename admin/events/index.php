@@ -56,72 +56,75 @@ try {
                 </button>
             </div>
             
-            <div class="admin-content">
-                <?php if (empty($events)): ?>
-                    <div class="empty-state">
-                        <p>События не найдены</p>
-                        <button class="btn btn-primary" onclick="openEventModal()">
-                            Добавить первое событие
-                        </button>
+                <div class="admin-content">
+                    <div class="calendar-view">
+                        <?php
+                        // Создаем массив событий по датам для удобного поиска
+                        $eventsByDate = [];
+                        foreach ($events as $event) {
+                            $date = $event['date'];
+                            if (!isset($eventsByDate[$date])) {
+                                $eventsByDate[$date] = [];
+                            }
+                            $eventsByDate[$date][] = $event;
+                        }
+                        
+                        // Получаем диапазон дат (текущий месяц + следующий)
+                        $currentDate = new DateTime();
+                        $startDate = clone $currentDate;
+                        $startDate->modify('first day of this month');
+                        $endDate = clone $currentDate;
+                        $endDate->modify('last day of next month');
+                        
+                        // Генерируем календарь
+                        $date = clone $startDate;
+                        while ($date <= $endDate) {
+                            $dateStr = $date->format('Y-m-d');
+                            $dayEvents = $eventsByDate[$dateStr] ?? [];
+                            $isToday = $date->format('Y-m-d') === date('Y-m-d');
+                            $isPast = $date < new DateTime('today');
+                            
+                            echo '<div class="calendar-day ' . ($isToday ? 'today' : '') . ($isPast ? ' past' : '') . '">';
+                            echo '<div class="day-header">';
+                            echo '<span class="day-date">' . $date->format('d.m.Y') . '</span>';
+                            echo '<span class="day-weekday">' . $date->format('D') . '</span>';
+                            echo '</div>';
+                            
+                            if (empty($dayEvents)) {
+                                echo '<div class="no-events">';
+                                echo '<p>НЕТ ИВЕНТОВ</p>';
+                                echo '<button class="btn btn-sm btn-create" onclick="createEventForDate(\'' . $dateStr . '\')" title="Создать событие">';
+                                echo '➕ Создать';
+                                echo '</button>';
+                                echo '</div>';
+                            } else {
+                                echo '<div class="day-events">';
+                                foreach ($dayEvents as $event) {
+                                    echo '<div class="event-item" data-event-id="' . $event['id'] . '">';
+                                    echo '<div class="event-time">' . htmlspecialchars($event['time']) . '</div>';
+                                    echo '<div class="event-title">' . htmlspecialchars($event['title']) . '</div>';
+                                    echo '<div class="event-conditions">' . htmlspecialchars($event['conditions']) . '</div>';
+                                    echo '<div class="event-actions">';
+                                    echo '<button class="btn btn-xs btn-edit" onclick="editEvent(\'' . $event['id'] . '\')" title="Редактировать">✏️</button>';
+                                    echo '<button class="btn btn-xs btn-delete" onclick="deleteEvent(\'' . $event['id'] . '\')" title="Удалить">🗑️</button>';
+                                    echo '</div>';
+                                    if (!empty($event['comment'])) {
+                                        echo '<div class="event-comment">' . htmlspecialchars($event['comment']) . '</div>';
+                                    }
+                                    echo '</div>';
+                                }
+                                echo '<button class="btn btn-sm btn-add-more" onclick="createEventForDate(\'' . $dateStr . '\')" title="Добавить еще событие">';
+                                echo '➕ Добавить';
+                                echo '</button>';
+                                echo '</div>';
+                            }
+                            
+                            echo '</div>';
+                            $date->modify('+1 day');
+                        }
+                        ?>
                     </div>
-                <?php else: ?>
-                    <div class="table-container">
-                        <table class="events-table">
-                            <thead>
-                                <tr>
-                                    <th>Название</th>
-                                    <th>Дата</th>
-                                    <th>Время</th>
-                                    <th>Условия</th>
-                                    <th>Статус</th>
-                                    <th>Действия</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php foreach ($events as $event): ?>
-                                    <tr data-event-id="<?php echo $event['id']; ?>">
-                                        <td class="event-title">
-                                            <strong><?php echo htmlspecialchars($event['title']); ?></strong>
-                                            <?php if (!empty($event['description_link'])): ?>
-                                                <br><a href="<?php echo htmlspecialchars($event['description_link']); ?>" target="_blank" class="event-link">Подробнее</a>
-                                            <?php endif; ?>
-                                        </td>
-                                        <td class="event-date">
-                                            <?php echo date('d.m.Y', strtotime($event['date'])); ?>
-                                        </td>
-                                        <td class="event-time">
-                                            <?php echo htmlspecialchars($event['time']); ?>
-                                        </td>
-                                        <td class="event-conditions">
-                                            <?php echo htmlspecialchars($event['conditions']); ?>
-                                        </td>
-                                        <td class="event-status">
-                                            <span class="status-badge <?php echo $event['is_active'] ? 'active' : 'inactive'; ?>">
-                                                <?php echo $event['is_active'] ? 'Активно' : 'Неактивно'; ?>
-                                            </span>
-                                        </td>
-                                        <td class="event-actions">
-                                            <button class="btn btn-sm btn-edit" onclick="editEvent('<?php echo $event['id']; ?>')" title="Редактировать">
-                                                ✏️ Редактировать
-                                            </button>
-                                            <button class="btn btn-sm btn-delete" onclick="deleteEvent('<?php echo $event['id']; ?>')" title="Удалить">
-                                                🗑️ Удалить
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    <?php if (!empty($event['comment'])): ?>
-                                        <tr class="event-comment-row">
-                                            <td colspan="6" class="event-comment">
-                                                <strong>Комментарий:</strong> <?php echo htmlspecialchars($event['comment']); ?>
-                                            </td>
-                                        </tr>
-                                    <?php endif; ?>
-                                <?php endforeach; ?>
-                            </tbody>
-                        </table>
-                    </div>
-                <?php endif; ?>
-            </div>
+                </div>
         </main>
     </div>
     
@@ -400,11 +403,11 @@ try {
     </style>
     <script>
         // Функции для работы с событиями
-        function openEventModal(eventId = null) {
+        function openEventModal(eventId = null, presetDate = null) {
             const modal = document.getElementById('eventModal');
             const form = document.getElementById('eventForm');
             const title = document.getElementById('modalTitle');
-            
+
             if (eventId) {
                 title.textContent = 'Редактировать событие';
                 // Загружаем данные события для редактирования
@@ -413,9 +416,18 @@ try {
                 title.textContent = 'Добавить событие';
                 form.reset();
                 document.getElementById('eventIsActive').checked = true;
+                
+                // Устанавливаем предустановленную дату, если передана
+                if (presetDate) {
+                    document.getElementById('eventDate').value = presetDate;
+                }
             }
-            
+
             modal.style.display = 'block';
+        }
+        
+        function createEventForDate(dateStr) {
+            openEventModal(null, dateStr);
         }
         
         function closeEventModal() {
@@ -423,44 +435,36 @@ try {
         }
         
         function loadEventData(eventId) {
-            // Находим событие в уже загруженных данных
-            const eventRow = document.querySelector(`tr[data-event-id="${eventId}"]`);
-            if (eventRow) {
-                const eventTitle = eventRow.querySelector('.event-title strong').textContent;
-                const eventDate = eventRow.querySelector('.event-date').textContent;
-                const eventTime = eventRow.querySelector('.event-time').textContent;
-                const eventConditions = eventRow.querySelector('.event-conditions').textContent;
+            // Находим событие в календарном виде
+            const eventItem = document.querySelector(`.event-item[data-event-id="${eventId}"]`);
+            if (eventItem) {
+                const eventTitle = eventItem.querySelector('.event-title').textContent;
+                const eventTime = eventItem.querySelector('.event-time').textContent;
+                const eventConditions = eventItem.querySelector('.event-conditions').textContent;
+                
+                // Получаем дату из родительского элемента календаря
+                const calendarDay = eventItem.closest('.calendar-day');
+                const dayDate = calendarDay.querySelector('.day-date').textContent;
                 
                 // Заполняем форму данными события
                 document.getElementById('eventId').value = eventId;
                 document.getElementById('eventTitle').value = eventTitle;
                 
                 // Конвертируем дату из формата dd.mm.yyyy в yyyy-mm-dd
-                const dateParts = eventDate.split('.');
+                const dateParts = dayDate.split('.');
                 const formattedDate = `${dateParts[2]}-${dateParts[1].padStart(2, '0')}-${dateParts[0].padStart(2, '0')}`;
                 document.getElementById('eventDate').value = formattedDate;
                 
                 document.getElementById('eventTime').value = eventTime;
                 document.getElementById('eventConditions').value = eventConditions;
                 
-                // Получаем дополнительные данные из атрибутов или скрытых полей
-                const eventLink = eventRow.querySelector('.event-link');
-                document.getElementById('eventDescriptionLink').value = eventLink ? eventLink.href : '';
+                // Получаем комментарий, если есть
+                const eventComment = eventItem.querySelector('.event-comment');
+                document.getElementById('eventComment').value = eventComment ? eventComment.textContent : '';
                 
-                // Проверяем статус
-                const statusBadge = eventRow.querySelector('.status-badge');
-                const isActive = statusBadge && statusBadge.classList.contains('active');
-                document.getElementById('eventIsActive').checked = isActive;
-                
-                // Комментарий получаем из следующей строки, если есть
-                const commentRow = eventRow.nextElementSibling;
-                if (commentRow && commentRow.classList.contains('event-comment-row')) {
-                    const commentText = commentRow.querySelector('.event-comment').textContent;
-                    const comment = commentText.replace('Комментарий:', '').trim();
-                    document.getElementById('eventComment').value = comment;
-                } else {
-                    document.getElementById('eventComment').value = '';
-                }
+                // По умолчанию событие активно (в календарном виде не показываем статус)
+                document.getElementById('eventIsActive').checked = true;
+                document.getElementById('eventDescriptionLink').value = '';
             }
         }
         

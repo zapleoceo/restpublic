@@ -63,10 +63,17 @@ if ($mongoConnection && !$error) {
             'indexes' => $stats['nindexes'] ?? 0
         ];
         
-        // Получаем документы (ограничиваем до 50 для производительности)
-        $limit = min(50, $collectionStats['count']);
+        // Получаем документы (увеличиваем лимит до 100)
+        $limit = min(100, $collectionStats['count']);
         $documents = $collectionObj->find([], ['limit' => $limit, 'sort' => ['_id' => -1]]);
         $collectionData = iterator_to_array($documents);
+        
+        // Получаем структуру коллекции (все уникальные поля)
+        $structureFields = [];
+        $sampleDocuments = $collectionObj->find([], ['limit' => 10]);
+        foreach ($sampleDocuments as $doc) {
+            extractFields($doc, $structureFields);
+        }
     }
     
     } catch (Exception $e) {
@@ -93,6 +100,25 @@ function formatBytes($bytes, $precision = 2) {
 // Функция для форматирования JSON
 function formatJson($data) {
     return json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+}
+
+// Функция для извлечения полей из документа
+function extractFields($document, &$fields, $prefix = '') {
+    foreach ($document as $key => $value) {
+        $fieldName = $prefix ? $prefix . '.' . $key : $key;
+        
+        if (is_array($value) || is_object($value)) {
+            if (is_array($value) && !empty($value) && !isset($value[0])) {
+                // Ассоциативный массив - рекурсивно обрабатываем
+                extractFields($value, $fields, $fieldName);
+            } else {
+                // Обычный массив или объект
+                $fields[$fieldName] = gettype($value) . (is_array($value) ? '[' . count($value) . ']' : '');
+            }
+        } else {
+            $fields[$fieldName] = gettype($value);
+        }
+    }
 }
 ?>
 
@@ -150,9 +176,24 @@ function formatJson($data) {
                 </div>
             </div>
             
+            <!-- Структура коллекции -->
+            <?php if (!empty($structureFields)): ?>
+                <div class="collection-structure">
+                    <h4>🏗️ Структура коллекции:</h4>
+                    <div class="structure-grid">
+                        <?php foreach ($structureFields as $fieldName => $fieldType): ?>
+                            <div class="structure-item">
+                                <span class="field-name"><?php echo htmlspecialchars($fieldName); ?></span>
+                                <span class="field-type"><?php echo htmlspecialchars($fieldType); ?></span>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+            <?php endif; ?>
+            
             <!-- Документы коллекции -->
             <div class="collection-documents">
-                <h4>📄 Документы (показано до 50 последних):</h4>
+                <h4>📄 Документы (показано до 100 последних):</h4>
                 
                 <?php if (empty($collectionData)): ?>
                     <div class="alert alert-info">
@@ -337,5 +378,44 @@ function formatJson($data) {
     background: #d1ecf1;
     color: #0c5460;
     border: 1px solid #bee5eb;
+}
+
+.collection-structure {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: #f8f9fa;
+    border-radius: 5px;
+}
+
+.structure-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.structure-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0.75rem;
+    background: white;
+    border-radius: 3px;
+    border: 1px solid #e1e5e9;
+    font-size: 0.9rem;
+}
+
+.field-name {
+    font-family: monospace;
+    font-weight: 600;
+    color: #333;
+}
+
+.field-type {
+    font-size: 0.8rem;
+    color: #666;
+    background: #e9ecef;
+    padding: 0.2rem 0.4rem;
+    border-radius: 3px;
 }
 </style>
