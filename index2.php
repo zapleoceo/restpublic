@@ -640,58 +640,12 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
             </div>
         </section> <!-- end s-events -->
 
-        <!-- # contact
-        ================================================== -->
-        <section id="contact" class="container s-contact target-section">
-            <div class="row s-contact__header">
-                <div class="column xl-12 section-header-wrap">
-                    <div class="section-header" data-num="04">
-                        <h2 class="text-display-title">Контакты</h2>
-                    </div>               
-                </div> <!-- end section-header-wrap -->   
-            </div> <!-- end s-contact__header -->   
-
-            <div class="row s-contact__content">
-                <div class="column xl-6 lg-6 md-12 s-contact__content-start">
-                    <div class="contact-info">
-                        <h3>Свяжитесь с нами</h3>
-                        <p>Мы всегда рады новым идеям и предложениям по мероприятиям!</p>
-                        
-                        <div class="contact-item">
-                            <strong>Телефон:</strong>
-                            <a href="tel:+84349338758">+84 349 338 758</a>
-                        </div>
-                        
-                        <div class="contact-item">
-                            <strong>Email:</strong>
-                            <a href="mailto:info@northrepublic.me">info@northrepublic.me</a>
-                        </div>
-                        
-                        <div class="contact-item">
-                            <strong>Адрес:</strong>
-                            <span>Нячанг, Вьетнам</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="column xl-6 lg-6 md-12 s-contact__content-end">
-                    <div class="contact-form">
-                        <h3>Предложить мероприятие</h3>
-                        <p>Есть идея для интересного события? Расскажите нам!</p>
-                        <a href="mailto:events@northrepublic.me?subject=Предложение мероприятия" class="btn btn--primary">
-                            Написать нам
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </section> <!-- end s-contact -->
-
         <!-- # gallery
         ================================================== -->
         <section id="gallery" class="container s-gallery target-section">
             <div class="row s-gallery__header">
                 <div class="column xl-12 section-header-wrap">
-                    <div class="section-header" data-num="05">
+                    <div class="section-header" data-num="04">
                         <h2 class="text-display-title"><?php echo $pageMeta['gallery_title'] ?? ''; ?></h2>
                     </div>               
                 </div> <!-- end section-header-wrap -->   
@@ -926,7 +880,7 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                                 <div class="event-card__content">
                                     <h3 class="event-card__title">Событий на эту дату еще нет</h3>
                                     <p class="event-card__description">Мы работаем над новыми мероприятиями. Следите за обновлениями!</p>
-                                    <a href="#contact" class="event-card__link">Связаться с нами</a>
+                                    <a href="#footer" class="event-card__link">Связаться с нами</a>
                                 </div>
                             </div>
                         `;
