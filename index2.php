@@ -12,9 +12,61 @@ if (file_exists(__DIR__ . '/.env')) {
     $dotenv->load();
 }
 
+// Обновляем кеш меню при заходе на главную страницу (в фоновом режиме, реже)
+function updateMenuCacheAsync() {
+    $cacheUrl = 'http://localhost:3002/api/cache/update-menu';
+    
+    // Создаем контекст для асинхронного запроса
+    $context = stream_context_create([
+        'http' => [
+            'method' => 'POST',
+            'timeout' => 5, // Короткий таймаут, чтобы не блокировать загрузку страницы
+            'header' => 'Content-Type: application/json',
+            'ignore_errors' => true // Игнорируем ошибки, чтобы не влиять на отображение страницы
+        ]
+    ]);
+    
+    // Выполняем запрос в фоновом режиме
+    @file_get_contents($cacheUrl, false, $context);
+}
+
+// Инициализируем сервис настроек для работы с MongoDB
+require_once __DIR__ . '/classes/SettingsService.php';
+$settingsService = new SettingsService();
+
+// Проверяем, нужно ли проверять необходимость обновления (раз в 5 минут)
+$shouldCheckForUpdate = $settingsService->shouldCheckForUpdate(300); // 5 минут
+
+if ($shouldCheckForUpdate) {
+    // Обновляем время последней проверки
+    $settingsService->setLastUpdateCheckTime();
+    
+    // Проверяем, нужно ли обновлять кеш (раз в час)
+    $shouldUpdateCache = $settingsService->shouldUpdateMenu(3600); // 1 час
+    
+    if ($shouldUpdateCache) {
+        // Обновляем кеш асинхронно
+        updateMenuCacheAsync();
+        
+        // Записываем время последнего обновления
+        $settingsService->setLastMenuUpdateTime();
+    }
+}
+
 // Initialize page content service
 require_once __DIR__ . '/classes/PageContentService.php';
 $pageContentService = new PageContentService();
+
+// Initialize translation service for components
+require_once __DIR__ . '/classes/TranslationService.php';
+$translationService = new TranslationService();
+
+// Initialize events service
+require_once __DIR__ . '/classes/EventsService.php';
+$eventsService = new EventsService();
+
+// Load category translator
+require_once __DIR__ . '/category-translator.php';
 
 // Get current language
 $currentLanguage = $pageContentService->getLanguage();
@@ -93,10 +145,6 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
     <title><?php echo htmlspecialchars($pageTitle); ?></title>
     <meta name="description" content="<?php echo htmlspecialchars($pageDescription); ?>">
     <meta name="keywords" content="<?php echo htmlspecialchars($pageKeywords); ?>">
-    
-    <!-- DNS prefetch для внешних ресурсов -->
-    <link rel="dns-prefetch" href="//fonts.googleapis.com">
-    <link rel="dns-prefetch" href="//fonts.gstatic.com">
 
     <script>
         document.documentElement.classList.remove('no-js');
@@ -105,9 +153,9 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
 
     <!-- CSS
     ================================================== -->
-    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
     <link rel="stylesheet" href="css/vendor.css">
     <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
     
     <style>
         :root {
@@ -121,25 +169,25 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
         .intro-header__overline {
             font-family: "Roboto Flex", sans-serif;
         }
-        
+
         /* Events Widget Styles */
         .s-events {
             --content-padding-top: calc(var(--vspace-2) * 0.7);
             --content-padding-bottom: calc(var(--vspace-2) * 0.7);
-            
+
             padding-top: var(--content-padding-top);
             padding-bottom: var(--content-padding-bottom);
         }
-        
+
         .events-widget {
             margin-top: calc(var(--vspace-2) * 0.7);
         }
-        
+
         /* Date Slider */
         .dates-slider {
             margin-bottom: calc(var(--vspace-2) * 0.7);
         }
-        
+
         .date-slide {
             text-align: center;
             font-size: var(--text-sm);
@@ -152,176 +200,152 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
             font-weight: 600;
             border: 2px solid transparent;
             font-family: var(--font-1);
+            min-width: 80px;
         }
-        
+
         .date-slide:hover {
             background: var(--color-1-100);
-            transform: translateY(-2px);
+            border-color: var(--color-1-200);
         }
-        
+
         .date-slide.active {
             background: var(--color-1-600);
-            color: var(--color-white);
-            border-color: var(--color-1-700);
-            box-shadow: 0 4px 16px rgba(54, 107, 91, 0.3);
+            color: var(--color-1-100);
+            border-color: var(--color-1-600);
         }
-        
-        .date-day {
+
+        .date-slide .day {
             display: block;
             font-size: var(--text-lg);
             font-weight: 700;
-            margin-bottom: var(--vspace-0_25);
             line-height: 1;
         }
-        
-        .date-month {
+
+        .date-slide .month {
             display: block;
             font-size: var(--text-xs);
             text-transform: uppercase;
-            letter-spacing: 0.05em;
-            line-height: 1;
+            letter-spacing: 0.5px;
+            margin-top: 2px;
         }
-        
+
         /* Events Slider */
         .events-slider {
             position: relative;
         }
-        
+
         .event-card {
-            background: var(--color-white);
-            border: 1px solid var(--color-2-200);
+            background: var(--color-1-100);
+            border: 1px solid var(--color-1-200);
             border-radius: var(--border-radius);
             overflow: hidden;
             transition: all 0.3s ease;
             height: 100%;
         }
-        
+
         .event-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 32px rgba(0,0,0,0.15);
-            border-color: var(--color-1-300);
+            border-color: var(--color-1-400);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
         }
-        
-        .event-image {
+
+        .event-card__image {
             width: 100%;
             height: 200px;
             object-fit: cover;
-            background: var(--color-2-100);
+            display: block;
         }
-        
-        .event-info {
-            padding: var(--vspace-1_5);
+
+        .event-card__content {
+            padding: var(--vspace-1);
         }
-        
-        .event-title {
+
+        .event-card__title {
             font-size: var(--text-lg);
-            font-weight: 700;
-            margin: 0 0 var(--vspace-0_5);
+            font-weight: 600;
             color: var(--color-1-800);
+            margin-bottom: var(--vspace-0_5);
             line-height: 1.3;
             font-family: var(--font-1);
         }
-        
-        .event-description {
+
+        .event-card__description {
             font-size: var(--text-sm);
-            color: var(--color-text-light);
-            margin: 0 0 var(--vspace-1);
+            color: var(--color-1-600);
+            margin-bottom: var(--vspace-0_75);
             line-height: 1.5;
         }
-        
-        .event-price {
-            color: var(--color-1-600);
-            font-weight: 700;
-            font-size: var(--text-lg);
-            margin: 0 0 var(--vspace-1);
-        }
-        
-        .event-link {
-            display: inline-flex;
-            align-items: center;
-            gap: var(--vspace-0_5);
-            text-decoration: none;
-            color: var(--color-1-600);
-            font-weight: 600;
-            font-size: var(--text-sm);
-            transition: all 0.3s ease;
-        }
-        
-        .event-link:hover {
+
+        .event-card__price {
+            font-size: var(--text-base);
             color: var(--color-1-700);
-            transform: translateX(4px);
+            font-weight: 600;
+            margin-bottom: var(--vspace-0_75);
         }
-        
-        .event-link svg {
-            width: 16px;
-            height: 16px;
-            transition: transform 0.3s ease;
+
+        .event-card__link {
+            display: inline-block;
+            color: var(--color-1-100);
+            background: var(--color-1-600);
+            text-decoration: none;
+            font-size: var(--text-sm);
+            padding: var(--vspace-0_5) var(--vspace-1);
+            border-radius: var(--border-radius);
+            transition: all 0.3s ease;
+            font-weight: 500;
         }
-        
-        .event-link:hover svg {
-            transform: translateX(2px);
+
+        .event-card__link:hover {
+            background: var(--color-1-700);
+            color: var(--color-1-100);
         }
-        
+
         /* Swiper Navigation */
         .swiper-button-next,
         .swiper-button-prev {
             color: var(--color-1-600);
-            background: var(--color-white);
+            background: var(--color-1-100);
+            border: 1px solid var(--color-1-200);
+            width: 44px;
+            height: 44px;
             border-radius: 50%;
-            width: 48px;
-            height: 48px;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
             transition: all 0.3s ease;
         }
-        
+
         .swiper-button-next:hover,
         .swiper-button-prev:hover {
             background: var(--color-1-600);
-            color: var(--color-white);
-            transform: scale(1.1);
+            color: var(--color-1-100);
+            border-color: var(--color-1-600);
         }
-        
+
         .swiper-button-next:after,
         .swiper-button-prev:after {
             font-size: 18px;
+            font-weight: 600;
         }
-        
+
         /* Responsive */
         @media (max-width: 768px) {
             .date-slide {
-                padding: var(--vspace-0_5) var(--vspace-0_25);
-                font-size: var(--text-xs);
+                min-width: 70px;
+                padding: var(--vspace-0_5);
             }
-            
-            .date-day {
+
+            .date-slide .day {
                 font-size: var(--text-base);
             }
-            
-            .event-info {
-                padding: var(--vspace-1);
+
+            .event-card__image {
+                height: 160px;
             }
-            
-            .event-title {
-                font-size: var(--text-base);
+
+            .swiper-button-next,
+            .swiper-button-prev {
+                display: none;
             }
         }
     </style>
-
-    <!-- Preload критических ресурсов для ускорения загрузки
-    ================================================== -->
-    <link rel="preload" href="css/vendor.css" as="style">
-    <link rel="preload" href="css/styles.css" as="style">
-    <link rel="preload" href="js/plugins.js" as="script">
-    <link rel="preload" href="js/main.js" as="script">
-    
-    <!-- Preload шрифтов -->
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght@8..144,300;8..144,400;8..144,500;8..144,600;8..144,700&display=swap" as="style" crossorigin>
-    <link rel="preload" href="fonts/Serati.ttf" as="font" type="font/ttf" crossorigin>
-    <link rel="preload" href="fonts/SeratiItalic.ttf" as="font" type="font/ttf" crossorigin>
-    
-    <!-- Preload критических изображений -->
-    <link rel="preload" href="<?php echo $pageMeta['intro_image_primary'] ?? 'template/images/shawa.png'; ?>" as="image">
-    <link rel="preload" href="images/logo.png" as="image">
 
     <!-- favicons
     ================================================== -->
@@ -419,10 +443,7 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                     <figure class="about-pic-primary">
                         <img src="<?php echo $pageMeta['about_image_primary'] ?? 'template/images/about-pic-primary.jpg'; ?>" 
                              srcset="<?php echo $pageMeta['about_image_primary'] ?? 'template/images/about-pic-primary.jpg'; ?> 1x, 
-                             <?php echo $pageMeta['about_image_primary_2x'] ?? 'template/images/about-pic-primary@2x.jpg'; ?> 2x" 
-                             alt=""
-                             loading="lazy"
-                             decoding="async"> 
+                             <?php echo $pageMeta['about_image_primary_2x'] ?? 'template/images/about-pic-primary@2x.jpg'; ?> 2x" alt=""> 
                     </figure>
                 </div> <!-- end s-about__content-start -->
 
@@ -447,7 +468,7 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                                 <?php foreach ($categories as $index => $category): ?>
                                     <li>
                                         <a href="#tab-<?php echo htmlspecialchars($category['category_id']); ?>" class="<?php echo $index === 0 ? 'active' : ''; ?>">
-                                            <span><?php echo htmlspecialchars($category['category_name'] ?? $category['name'] ?? 'Без названия'); ?></span>
+                                            <span><?php echo htmlspecialchars(translateCategoryName($category['category_name'] ?? $category['name'] ?? 'Без названия', getCurrentLanguage())); ?></span>
                                             <svg clip-rule="evenodd" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="m14.523 18.787s4.501-4.505 6.255-6.26c.146-.146.219-.338.219-.53s-.073-.383-.219-.53c-1.753-1.754-6.255-6.258-6.255-6.258-.144-.145-.334-.217-.524-.217-.193 0-.385.074-.532.221-.293.292-.295.766-.004 1.056l4.978 4.978h-14.692c-.414 0-.75.336-.75.75s.336.75.75.75h14.692l-4.979 4.979c-.289.289-.286.762.006 1.054.148.148.341.222.533.222.19 0 .378-.072.522-.215z" fill-rule="nonzero"/></svg>
                                         </a>
                                     </li>
@@ -476,7 +497,7 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                                 $topProducts = array_slice($categoryProducts, 0, 5); // Top 5 products
                                 ?>
                                 <div id="tab-<?php echo htmlspecialchars($category['category_id']); ?>" class="menu-block__group tab-content__item <?php echo $index === 0 ? 'active' : ''; ?>">
-                                    <h6 class="menu-block__cat-name"><?php echo htmlspecialchars($category['category_name'] ?? $category['name'] ?? 'Без названия'); ?></h6>
+                                    <h6 class="menu-block__cat-name"><?php echo htmlspecialchars(translateCategoryName($category['category_name'] ?? $category['name'] ?? 'Без названия', getCurrentLanguage())); ?></h6>
                                     <ul class="menu-list">
                                         <?php if (!empty($topProducts)): ?>
                                             <?php foreach ($topProducts as $product): ?>
@@ -547,9 +568,9 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                 <div class="column xl-12 section-header-wrap">
                     <div class="section-header" data-num="03">
                         <h2 class="text-display-title">События</h2>
-                    </div>               
-                </div> <!-- end section-header-wrap -->   
-            </div> <!-- end s-events__header -->   
+                    </div>
+                </div> <!-- end section-header-wrap -->
+            </div> <!-- end s-events__header -->
 
             <div class="events-widget">
                 <!-- Слайдер Дат -->
@@ -595,10 +616,7 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                             <a href="<?php echo htmlspecialchars($large); ?>" class="gallery-items__item-thumb glightbox">
                                 <img src="<?php echo htmlspecialchars($thumb); ?>" 
                                     srcset="<?php echo htmlspecialchars($thumb); ?> 1x, 
-                                            <?php echo htmlspecialchars($thumb2x); ?> 2x" 
-                                    alt="<?php echo htmlspecialchars($alt); ?>"
-                                    loading="lazy"
-                                    decoding="async">                                
+                                            <?php echo htmlspecialchars($thumb2x); ?> 2x" alt="<?php echo htmlspecialchars($alt); ?>">                                
                             </a>
                         </div>
                         <?php
@@ -610,10 +628,7 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                             <a href="template/images/gallery/large/l-gallery-<?php echo sprintf('%02d', $i); ?>.jpg" class="gallery-items__item-thumb glightbox">
                                 <img src="template/images/gallery/gallery-<?php echo sprintf('%02d', $i); ?>.jpg" 
                                     srcset="template/images/gallery/gallery-<?php echo sprintf('%02d', $i); ?>.jpg 1x, 
-                                            template/images/gallery/gallery-<?php echo sprintf('%02d', $i); ?>@2x.jpg 2x" 
-                                    alt=""
-                                    loading="lazy"
-                                    decoding="async">                                
+                                            template/images/gallery/gallery-<?php echo sprintf('%02d', $i); ?>@2x.jpg 2x" alt="">                                
                             </a>
                         </div>
                     <?php endfor;
@@ -628,9 +643,9 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
 
     <!-- JavaScript
     ================================================== -->
-    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
     <script src="js/plugins.js"></script>
     <script src="js/main.js"></script>
+    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
     
     <script>
         // Tab switching for menu categories
@@ -657,114 +672,124 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                     }
                 });
             });
-        });
 
-        // Events Widget
-        document.addEventListener('DOMContentLoaded', function() {
-            // Данные событий из PHP (MongoDB)
+            // Events Widget
             const events = <?php echo json_encode($eventsService->getEventsForWidget(8), JSON_UNESCAPED_UNICODE); ?>;
-
-            // Инициализируем Swiper для событий
-            const datesSwiper = new Swiper('#dates-slider', {
-                slidesPerView: 'auto',
-                spaceBetween: 12,
-                freeMode: true,
-                watchSlidesProgress: true,
-                breakpoints: {
-                    320: {
-                        slidesPerView: 4,
-                        spaceBetween: 8
-                    },
-                    768: {
-                        slidesPerView: 6,
-                        spaceBetween: 12
-                    },
-                    1024: {
-                        slidesPerView: 7,
-                        spaceBetween: 16
+            
+            console.log('Events loaded:', events);
+            
+            if (events && events.length > 0) {
+                // Initialize Swiper instances
+                const datesSwiper = new Swiper('#dates-slider', {
+                    slidesPerView: 'auto',
+                    spaceBetween: 12,
+                    freeMode: true,
+                    watchSlidesProgress: true,
+                    breakpoints: {
+                        320: {
+                            slidesPerView: 'auto',
+                            spaceBetween: 10
+                        },
+                        768: {
+                            slidesPerView: 'auto',
+                            spaceBetween: 12
+                        }
                     }
-                }
-            });
+                });
 
-            const eventsSwiper = new Swiper('#events-slider', {
-                slidesPerView: 1,
-                spaceBetween: 20,
-                navigation: {
-                    nextEl: '.swiper-button-next',
-                    prevEl: '.swiper-button-prev'
-                },
-                breakpoints: {
-                    768: {
-                        slidesPerView: 2,
-                        spaceBetween: 24
+                const eventsSwiper = new Swiper('#events-slider', {
+                    slidesPerView: 1,
+                    spaceBetween: 20,
+                    navigation: {
+                        nextEl: '.swiper-button-next',
+                        prevEl: '.swiper-button-prev'
                     },
-                    1024: {
-                        slidesPerView: 4,
-                        spaceBetween: 32
+                    breakpoints: {
+                        320: {
+                            slidesPerView: 1,
+                            spaceBetween: 15
+                        },
+                        768: {
+                            slidesPerView: 2,
+                            spaceBetween: 20
+                        },
+                        1024: {
+                            slidesPerView: 4,
+                            spaceBetween: 20
+                        }
                     }
-                }
-            });
+                });
 
-            // Рендерим события
-            function renderEvents() {
-                const dates = [];
-                
-                events.forEach((event, index) => {
-                    // Создаем слайд даты
-                    const dateSlide = document.createElement('div');
-                    dateSlide.className = 'swiper-slide date-slide';
-                    dateSlide.innerHTML = `
-                        <span class="date-day">${event.day}</span>
-                        <span class="date-month">${event.month}</span>
-                    `;
-                    dateSlide.dataset.index = index;
-                    datesSwiper.appendSlide(dateSlide);
+                // Render events
+                function renderEvents() {
+                    const datesWrapper = document.querySelector('#dates-slider .swiper-wrapper');
+                    const eventsWrapper = document.querySelector('#events-slider .swiper-wrapper');
                     
-                    // Создаем карточку события
-                    const eventCard = document.createElement('div');
-                    eventCard.className = 'swiper-slide';
-                    eventCard.innerHTML = `
-                        <div class="event-card">
-                            <img src="${event.image}" alt="${event.title}" class="event-image" 
-                                 onerror="this.src='template/images/sample-image.jpg'">
-                            <div class="event-info">
-                                <h3 class="event-title">${event.title}</h3>
-                                <p class="event-description">${event.description}</p>
-                                <div class="event-price">${event.price}</div>
-                                <a href="${event.link}" class="event-link">
-                                    Подробнее
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M5 12h14M12 5l7 7-7 7"/>
-                                    </svg>
-                                </a>
+                    // Clear existing content
+                    datesWrapper.innerHTML = '';
+                    eventsWrapper.innerHTML = '';
+                    
+                    events.forEach((event, index) => {
+                        // Create date slide
+                        const dateSlide = document.createElement('div');
+                        dateSlide.className = 'swiper-slide date-slide';
+                        dateSlide.innerHTML = `
+                            <span class="day">${event.day}</span>
+                            <span class="month">${event.month}</span>
+                        `;
+                        dateSlide.dataset.index = index;
+                        datesWrapper.appendChild(dateSlide);
+                        
+                        // Create event card
+                        const eventCard = document.createElement('div');
+                        eventCard.className = 'swiper-slide';
+                        eventCard.innerHTML = `
+                            <div class="event-card">
+                                <img src="${event.image || 'template/images/sample-image.jpg'}" alt="${event.title}" class="event-card__image">
+                                <div class="event-card__content">
+                                    <h3 class="event-card__title">${event.title}</h3>
+                                    <p class="event-card__description">${event.description || ''}</p>
+                                    <div class="event-card__price">${event.price}</div>
+                                    <a href="${event.link || '#'}" class="event-card__link">Подробнее</a>
+                                </div>
                             </div>
-                        </div>
-                    `;
-                    eventsSwiper.appendSlide(eventCard);
-                    
-                    dates.push(dateSlide);
-                });
-                
-                // Обработчики кликов по датам
-                dates.forEach(slide => {
-                    slide.addEventListener('click', () => {
-                        // Убираем активный класс со всех дат
-                        dates.forEach(d => d.classList.remove('active'));
-                        // Добавляем активный класс к выбранной дате
-                        slide.classList.add('active');
-                        // Переключаем на соответствующую карточку
-                        eventsSwiper.slideTo(slide.dataset.index);
+                        `;
+                        eventsWrapper.appendChild(eventCard);
                     });
-                });
+                    
+                    // Update swipers
+                    datesSwiper.update();
+                    eventsSwiper.update();
+                    
+                    // Bind date click events
+                    const dateSlides = document.querySelectorAll('.date-slide');
+                    dateSlides.forEach(slide => {
+                        slide.addEventListener('click', () => {
+                            // Remove active class from all dates
+                            dateSlides.forEach(d => d.classList.remove('active'));
+                            // Add active class to clicked date
+                            slide.classList.add('active');
+                            // Navigate to corresponding event
+                            const index = parseInt(slide.dataset.index);
+                            eventsSwiper.slideTo(index);
+                        });
+                    });
+                    
+                    // Activate first date
+                    if (dateSlides[0]) {
+                        dateSlides[0].classList.add('active');
+                    }
+                }
                 
-                // Активируем первую дату
-                if (dates[0]) {
-                    dates[0].classList.add('active');
+                renderEvents();
+            } else {
+                console.log('No events found');
+                // Hide events section if no events
+                const eventsSection = document.querySelector('#events');
+                if (eventsSection) {
+                    eventsSection.style.display = 'none';
                 }
             }
-            
-            // Запускаем рендеринг событий
-            renderEvents();
         });
     </script>
 
