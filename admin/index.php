@@ -15,7 +15,7 @@ $stats = [
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Админка - North Republic</title>
-    <link rel="stylesheet" href="assets/css/admin.css">
+    <link rel="stylesheet" href="/admin/assets/css/admin.css">
     <link rel="icon" type="image/png" href="../template/favicon-32x32.png">
 </head>
 <body>
@@ -71,6 +71,6 @@ $stats = [
         </main>
     </div>
     
-    <script src="assets/js/admin.js"></script>
+    <script src="/admin/assets/js/admin.js"></script>
 </body>
 </html>
