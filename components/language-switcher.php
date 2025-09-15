@@ -12,7 +12,7 @@ $availableLanguages = $translationService->getAvailableLanguages();
 <!-- Language Switcher -->
 <div class="language-switcher">
     <div class="language-switcher__current" id="languageCurrent">
-        <span class="language-code"><?php echo strtoupper($currentLanguage); ?></span>
+        <span class="language-code"><?php echo strtoupper(substr($currentLanguage, 0, 2)); ?></span>
         <svg class="language-arrow" width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
             <path d="M7 10l5 5 5-5z"/>
         </svg>
@@ -23,7 +23,7 @@ $availableLanguages = $translationService->getAvailableLanguages();
             <a href="#" class="language-option <?php echo $code === $currentLanguage ? 'active' : ''; ?>" 
                data-language="<?php echo $code; ?>">
                 <span class="language-flag"><?php echo $lang['flag']; ?></span>
-                <span class="language-code"><?php echo strtoupper($code); ?></span>
+                <span class="language-code"><?php echo strtoupper(substr($code, 0, 2)); ?></span>
             </a>
         <?php endforeach; ?>
     </div>
@@ -214,7 +214,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Update current language display
             const currentCode = languageCurrent.querySelector('.language-code');
             if (currentCode) {
-                currentCode.textContent = language.toUpperCase();
+                currentCode.textContent = language.substring(0, 2).toUpperCase();
             }
             
             // Update active state
