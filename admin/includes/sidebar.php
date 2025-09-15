@@ -12,6 +12,8 @@ if ($current_page === 'index' || $current_dir === 'dashboard') {
     $current_section = 'users';
 } elseif ($current_dir === 'database') {
     $current_section = 'database';
+} elseif ($current_dir === 'events') {
+    $current_section = 'events';
 }
 ?>
 <nav class="admin-sidebar">
@@ -41,6 +43,13 @@ if ($current_page === 'index' || $current_dir === 'dashboard') {
             <a href="/admin/database/">
                 <span class="menu-icon">🗄️</span>
                 <span class="menu-text">База данных</span>
+            </a>
+        </li>
+        
+        <li class="menu-item <?php echo ($current_section === 'events') ? 'active' : ''; ?>">
+            <a href="/admin/events/">
+                <span class="menu-icon">📅</span>
+                <span class="menu-text">События</span>
             </a>
         </li>
     </ul>
