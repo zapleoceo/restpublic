@@ -226,6 +226,23 @@ if (count($events) > 0) {
             word-wrap: break-word;
         }
 
+        .no-events-row {
+            background-color: #f8f9fa;
+            border-left: 4px solid #dee2e6;
+        }
+
+        .no-events-cell {
+            text-align: center;
+            padding: 20px;
+            color: #6c757d;
+            font-style: italic;
+        }
+
+        .no-events-text {
+            font-size: 14px;
+            color: #adb5bd;
+        }
+
         .event-actions {
             white-space: nowrap;
         }
@@ -520,7 +537,7 @@ if (count($events) > 0) {
             <div class="admin-content">
                 <div class="events-container">
                     <div class="events-header">
-                        <h2>События (текущая и будущие недели)</h2>
+                        <h2>События (14 дней вперед)</h2>
                         <div class="header-buttons">
                             <button class="btn btn-primary" onclick="openEventModal()">
                                 ➕ Добавить событие
@@ -531,101 +548,116 @@ if (count($events) > 0) {
                         </div>
                     </div>
 
-                    <?php if (empty($events)): ?>
-                        <div class="empty-state">
-                            <p>События не найдены</p>
-                            <button class="btn btn-primary" onclick="openEventModal()">
-                                Добавить первое событие
-                            </button>
-                        </div>
-                    <?php else: ?>
-                        <table class="events-table">
-                            <thead>
-                                <tr>
-                                    <th>Дата</th>
-                                    <th>Время</th>
-                                    <th>Название</th>
-                                    <th>Условия</th>
-                                    <th>Ссылка</th>
-                                    <th>Миниатюра</th>
-                                    <th>Статус</th>
-                                    <th>Комментарий</th>
-                                    <th>Действия</th>
-                                </tr>
-                            </thead>
-                            <tbody id="eventsTableBody">
-                                <?php
-                                // Фильтруем события - показываем только текущую и будущие недели
-                                $today = new DateTime();
-                                $weekStart = clone $today;
-                                $weekStart->modify('monday this week');
+                    <table class="events-table">
+                        <thead>
+                            <tr>
+                                <th>Дата</th>
+                                <th>Время</th>
+                                <th>Название</th>
+                                <th>Условия</th>
+                                <th>Ссылка</th>
+                                <th>Миниатюра</th>
+                                <th>Статус</th>
+                                <th>Комментарий</th>
+                                <th>Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody id="eventsTableBody">
+                            <?php
+                            // Создаем календарь на 14 дней вперед
+                            $today = new DateTime();
+                            $eventsByDate = [];
+                            
+                            // Группируем события по датам
+                            foreach ($events as $event) {
+                                $eventDate = $event['date'];
+                                if (!isset($eventsByDate[$eventDate])) {
+                                    $eventsByDate[$eventDate] = [];
+                                }
+                                $eventsByDate[$eventDate][] = $event;
+                            }
+                            
+                            // Показываем 14 дней вперед
+                            for ($i = 0; $i < 14; $i++) {
+                                $currentDate = clone $today;
+                                $currentDate->add(new DateInterval('P' . $i . 'D'));
+                                $dateString = $currentDate->format('Y-m-d');
                                 
-                                $filteredEvents = array_filter($events, function($event) use ($weekStart) {
-                                    $eventDate = new DateTime($event['date']);
-                                    return $eventDate >= $weekStart;
-                                });
-                                
-                                foreach ($filteredEvents as $event): 
-                                ?>
-                                    <tr data-event-id="<?php echo $event['id']; ?>">
+                                if (isset($eventsByDate[$dateString])) {
+                                    // Есть события на эту дату
+                                    foreach ($eventsByDate[$dateString] as $event) {
+                                        ?>
+                                        <tr data-event-id="<?php echo $event['id']; ?>">
+                                            <td class="event-date">
+                                                <?php echo $currentDate->format('d.m.Y'); ?>
+                                            </td>
+                                            <td class="event-time">
+                                                <?php echo htmlspecialchars($event['time']); ?>
+                                            </td>
+                                            <td class="event-title">
+                                                <?php echo htmlspecialchars($event['title']); ?>
+                                            </td>
+                                            <td class="event-conditions">
+                                                <?php echo htmlspecialchars($event['conditions']); ?>
+                                            </td>
+                                            <td class="event-link">
+                                                <?php if (!empty($event['description_link'])): ?>
+                                                    <a href="<?php echo htmlspecialchars($event['description_link']); ?>" target="_blank" class="link-btn">
+                                                        🔗 Открыть
+                                                    </a>
+                                                <?php else: ?>
+                                                    <span class="no-link">-</span>
+                                                <?php endif; ?>
+                                            </td>
+                                            <td class="event-thumbnail">
+                                                <?php if (!empty($event['image'])): ?>
+                                                    <img src="<?php echo htmlspecialchars($event['image']); ?>" 
+                                                         alt="<?php echo htmlspecialchars($event['title']); ?>" 
+                                                         class="thumbnail-img" 
+                                                         onclick="showImageModal('<?php echo htmlspecialchars($event['image']); ?>', '<?php echo htmlspecialchars($event['title']); ?>')">
+                                                <?php else: ?>
+                                                    <img src="/images/event-default.png" 
+                                                         alt="Дефолтное изображение" 
+                                                         class="thumbnail-img default-thumbnail"
+                                                         onclick="showImageModal('/images/event-default.png', 'Дефолтное изображение')">
+                                                <?php endif; ?>
+                                            </td>
+                                            <td class="event-status">
+                                                <span class="status-badge <?php echo $event['is_active'] ? 'active' : 'inactive'; ?>">
+                                                    <?php echo $event['is_active'] ? 'Активно' : 'Неактивно'; ?>
+                                                </span>
+                                            </td>
+                                            <td class="event-comment">
+                                                <?php echo !empty($event['comment']) ? htmlspecialchars($event['comment']) : '-'; ?>
+                                            </td>
+                                            <td class="event-actions">
+                                                <button class="btn btn-edit" onclick="editEvent('<?php echo $event['id']; ?>')" title="Редактировать">
+                                                    ✏️
+                                                </button>
+                                                <button class="btn btn-delete" onclick="deleteEvent('<?php echo $event['id']; ?>')" title="Удалить">
+                                                    🗑️
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        <?php
+                                    }
+                                } else {
+                                    // Нет событий на эту дату
+                                    ?>
+                                    <tr class="no-events-row">
                                         <td class="event-date">
-                                            <?php 
-                                            $date = new DateTime($event['date']);
-                                            echo $date->format('d.m.Y'); 
-                                            ?>
+                                            <?php echo $currentDate->format('d.m.Y'); ?>
                                         </td>
-                                        <td class="event-time">
-                                            <?php echo htmlspecialchars($event['time']); ?>
-                                        </td>
-                                        <td class="event-title">
-                                            <?php echo htmlspecialchars($event['title']); ?>
-                                        </td>
-                                        <td class="event-conditions">
-                                            <?php echo htmlspecialchars($event['conditions']); ?>
-                                        </td>
-                                        <td class="event-link">
-                                            <?php if (!empty($event['description_link'])): ?>
-                                                <a href="<?php echo htmlspecialchars($event['description_link']); ?>" target="_blank" class="link-btn">
-                                                    🔗 Открыть
-                                                </a>
-                                            <?php else: ?>
-                                                <span class="no-link">-</span>
-                                            <?php endif; ?>
-                                        </td>
-                                        <td class="event-thumbnail">
-                                            <?php if (!empty($event['image'])): ?>
-                                                <img src="<?php echo htmlspecialchars($event['image']); ?>" 
-                                                     alt="<?php echo htmlspecialchars($event['title']); ?>" 
-                                                     class="thumbnail-img" 
-                                                     onclick="showImageModal('<?php echo htmlspecialchars($event['image']); ?>', '<?php echo htmlspecialchars($event['title']); ?>')">
-                                            <?php else: ?>
-                                                <img src="/images/event-default.png" 
-                                                     alt="Дефолтное изображение" 
-                                                     class="thumbnail-img default-thumbnail"
-                                                     onclick="showImageModal('/images/event-default.png', 'Дефолтное изображение')">
-                                            <?php endif; ?>
-                                        </td>
-                                        <td class="event-status">
-                                            <span class="status-badge <?php echo $event['is_active'] ? 'active' : 'inactive'; ?>">
-                                                <?php echo $event['is_active'] ? 'Активно' : 'Неактивно'; ?>
-                                            </span>
-                                        </td>
-                                        <td class="event-comment">
-                                            <?php echo !empty($event['comment']) ? htmlspecialchars($event['comment']) : '-'; ?>
-                                        </td>
-                                        <td class="event-actions">
-                                            <button class="btn btn-edit" onclick="editEvent('<?php echo $event['id']; ?>')" title="Редактировать">
-                                                ✏️
-                                            </button>
-                                            <button class="btn btn-delete" onclick="deleteEvent('<?php echo $event['id']; ?>')" title="Удалить">
-                                                🗑️
-                                            </button>
+                                        <td colspan="8" class="no-events-cell">
+                                            <span class="no-events-text">НЕТ СОБЫТИЙ</span>
                                         </td>
                                     </tr>
-                                <?php endforeach; ?>
-                            </tbody>
-                        </table>
-                    <?php endif; ?>
+                                    <?php
+                                }
+                            }
+                            ?>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </main>
@@ -725,14 +757,14 @@ if (count($events) > 0) {
             console.log('Первое событие:', allEvents[0]);
         }
         
-        // Инициализируем Set с уже загруженными событиями (текущая и будущие недели)
+        // Инициализируем Set с уже загруженными событиями (14 дней вперед)
         const today = new Date();
-        const weekStart = new Date(today);
-        weekStart.setDate(today.getDate() - (today.getDay() + 6) % 7); // Понедельник текущей недели
+        const futureDate = new Date(today);
+        futureDate.setDate(today.getDate() + 14); // 14 дней вперед
         
         allEvents.forEach(event => {
             const eventDate = new Date(event.date);
-            if (eventDate >= weekStart) {
+            if (eventDate >= today && eventDate <= futureDate) {
                 loadedEventIds.add(event.id);
             }
         });
@@ -909,18 +941,15 @@ if (count($events) > 0) {
         function loadPastEvents() {
             pastWeeksLoaded++;
             
-            // Вычисляем дату начала для загрузки прошлых недель
+            // Вычисляем дату начала для загрузки прошлых событий
             const today = new Date();
-            const weekStart = new Date(today);
-            weekStart.setDate(today.getDate() - (today.getDay() + 6) % 7); // Понедельник текущей недели
-            
-            // Вычитаем загруженные недели
-            weekStart.setDate(weekStart.getDate() - (pastWeeksLoaded * 7));
+            const pastDate = new Date(today);
+            pastDate.setDate(today.getDate() - (pastWeeksLoaded * 7)); // Уходим назад на N недель
             
             // Фильтруем события для показа - только те, которые еще не загружены
             const pastEvents = allEvents.filter(event => {
                 const eventDate = new Date(event.date);
-                return eventDate < weekStart && !loadedEventIds.has(event.id);
+                return eventDate < today && eventDate >= pastDate && !loadedEventIds.has(event.id);
             }).slice(0, 7); // Показываем максимум 7 событий за раз
             
             if (pastEvents.length === 0) {
