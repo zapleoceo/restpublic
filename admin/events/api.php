@@ -42,8 +42,14 @@ try {
             foreach ($events as &$event) {
                 $event['_id'] = (string)$event['_id'];
                 $event['id'] = (string)$event['_id']; // Добавляем поле id для совместимости
-                $event['created_at'] = $event['created_at']->toDateTime()->format('Y-m-d H:i:s');
-                $event['updated_at'] = $event['updated_at']->toDateTime()->format('Y-m-d H:i:s');
+                
+                // Безопасная конвертация дат
+                if (isset($event['created_at']) && $event['created_at'] instanceof MongoDB\BSON\UTCDateTime) {
+                    $event['created_at'] = $event['created_at']->toDateTime()->format('Y-m-d H:i:s');
+                }
+                if (isset($event['updated_at']) && $event['updated_at'] instanceof MongoDB\BSON\UTCDateTime) {
+                    $event['updated_at'] = $event['updated_at']->toDateTime()->format('Y-m-d H:i:s');
+                }
             }
             
             echo json_encode([
@@ -64,6 +70,26 @@ try {
                     ]);
                     exit;
                 }
+            }
+            
+            // Валидация формата даты
+            if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $input['date'])) {
+                http_response_code(400);
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'Неверный формат даты. Используйте YYYY-MM-DD'
+                ]);
+                exit;
+            }
+            
+            // Валидация формата времени
+            if (!preg_match('/^\d{2}:\d{2}$/', $input['time'])) {
+                http_response_code(400);
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'Неверный формат времени. Используйте HH:MM'
+                ]);
+                exit;
             }
             
             $eventData = [
