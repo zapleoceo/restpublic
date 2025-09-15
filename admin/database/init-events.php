@@ -14,7 +14,7 @@ if (file_exists(__DIR__ . '/../../.env')) {
 }
 
 try {
-    $mongodbUrl = $_ENV['MONGODB_URL'] ?? 'mongodb://localhost:27017';
+    $mongodbUrl = $_ENV['MONGODB_URL'] ?? 'mongodb://localhost:27018';
     $dbName = $_ENV['MONGODB_DB_NAME'] ?? 'northrepublic';
     
     $client = new MongoDB\Client($mongodbUrl);
