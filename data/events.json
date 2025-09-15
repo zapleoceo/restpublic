@@ -1,0 +1,67 @@
+[
+    {
+        "id": "1",
+        "title": "Дегустация вин",
+        "date": "2024-12-25",
+        "time": "19:00",
+        "conditions": "1500 руб. с человека",
+        "description_link": "https:\/\/example.com\/wine-tasting",
+        "image": null,
+        "comment": "Внутренний комментарий для админов",
+        "is_active": true,
+        "created_at": "2025-09-15 16:53:01",
+        "updated_at": "2025-09-15 16:53:01"
+    },
+    {
+        "id": "2",
+        "title": "Новогодний банкет",
+        "date": "2024-12-31",
+        "time": "20:00",
+        "conditions": "3000 руб. с человека, предварительная запись",
+        "description_link": "https:\/\/example.com\/new-year-banquet",
+        "image": null,
+        "comment": "Главное событие года",
+        "is_active": true,
+        "created_at": "2025-09-15 16:53:01",
+        "updated_at": "2025-09-15 16:53:01"
+    },
+    {
+        "id": "3",
+        "title": "Мастер-класс по приготовлению пасты",
+        "date": "2025-01-15",
+        "time": "18:30",
+        "conditions": "Бесплатно при заказе от 2000 руб.",
+        "description_link": "https:\/\/example.com\/pasta-masterclass",
+        "image": null,
+        "comment": "Популярное мероприятие",
+        "is_active": true,
+        "created_at": "2025-09-15 16:53:01",
+        "updated_at": "2025-09-15 16:53:01"
+    },
+    {
+        "id": "4",
+        "title": "Романтический ужин на День Святого Валентина",
+        "date": "2025-02-14",
+        "time": "19:30",
+        "conditions": "2500 руб. за пару, специальное меню",
+        "description_link": "https:\/\/example.com\/valentine-dinner",
+        "image": null,
+        "comment": "Сезонное мероприятие",
+        "is_active": true,
+        "created_at": "2025-09-15 16:53:01",
+        "updated_at": "2025-09-15 16:53:01"
+    },
+    {
+        "id": "5",
+        "title": "День рождения ресторана",
+        "date": "2025-03-20",
+        "time": "18:00",
+        "conditions": "Вход свободный, специальные предложения",
+        "description_link": "https:\/\/example.com\/restaurant-birthday",
+        "image": null,
+        "comment": "Юбилейное мероприятие",
+        "is_active": true,
+        "created_at": "2025-09-15 16:53:01",
+        "updated_at": "2025-09-15 16:53:01"
+    }
+]
