@@ -22,7 +22,6 @@ $availableLanguages = $translationService->getAvailableLanguages();
         <?php foreach ($availableLanguages as $code => $lang): ?>
             <a href="#" class="language-option <?php echo $code === $currentLanguage ? 'active' : ''; ?>" 
                data-language="<?php echo $code; ?>">
-                <span class="language-flag"><?php echo $lang['flag']; ?></span>
                 <span class="language-code"><?php echo strtoupper(substr($code, 0, 2)); ?></span>
             </a>
         <?php endforeach; ?>
@@ -101,7 +100,7 @@ $availableLanguages = $translationService->getAvailableLanguages();
 .language-option {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    justify-content: center;
     padding: 0.75rem 1rem;
     color: var(--color-text-dark, #333);
     text-decoration: none;
@@ -121,10 +120,6 @@ $availableLanguages = $translationService->getAvailableLanguages();
 .language-option.active {
     background: var(--color-bg-primary, #d4af37);
     color: var(--color-white, #fff);
-}
-
-.language-flag {
-    font-size: 1rem;
 }
 
 .language-option .language-code {
