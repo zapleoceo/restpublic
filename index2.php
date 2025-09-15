@@ -239,7 +239,7 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
             border: 1px solid #333;
             border-radius: 8px;
             overflow: hidden;
-            width: 300px;
+            width: 150px;
             height: 200px;
             display: flex;
             flex-direction: column;
@@ -269,7 +269,7 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
         .event-card__content {
             position: relative;
             z-index: 2;
-            padding: 12px;
+            padding: 8px;
             height: 100%;
             display: flex;
             flex-direction: column;
@@ -277,36 +277,36 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
         }
 
         .event-card__title {
-            font-size: 16px;
+            font-size: 12px;
             font-weight: 600;
             color: #fff;
-            margin-bottom: 6px;
-            line-height: 1.3;
+            margin-bottom: 4px;
+            line-height: 1.2;
         }
 
         .event-card__datetime {
-            font-size: 12px;
+            font-size: 10px;
             color: #4fb17d;
             font-weight: 500;
-            margin-bottom: 6px;
+            margin-bottom: 4px;
         }
 
         .event-card__conditions {
-            font-size: 11px;
+            font-size: 9px;
             color: #ccc;
-            margin-bottom: 8px;
-            line-height: 1.3;
+            margin-bottom: 6px;
+            line-height: 1.2;
             flex-grow: 1;
         }
 
         .event-card__link {
             display: inline-block;
-            font-size: 11px;
+            font-size: 9px;
             color: #fff;
             text-decoration: none;
-            padding: 4px 8px;
+            padding: 3px 6px;
             background: rgba(79, 177, 125, 0.8);
-            border-radius: 4px;
+            border-radius: 3px;
             transition: all 0.3s ease;
             align-self: flex-start;
         }
@@ -730,24 +730,25 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
             });
 
             eventsSwiper = new Swiper('#events-slider', {
-                slidesPerView: 1,
-                spaceBetween: 20,
+                slidesPerView: 'auto',
+                spaceBetween: 15,
+                freeMode: true,
                 navigation: {
                     nextEl: '.swiper-button-next',
                     prevEl: '.swiper-button-prev'
                 },
                 breakpoints: {
                     320: {
-                        slidesPerView: 1,
-                        spaceBetween: 15
+                        slidesPerView: 'auto',
+                        spaceBetween: 10
                     },
                     768: {
-                        slidesPerView: 2,
-                        spaceBetween: 20
+                        slidesPerView: 'auto',
+                        spaceBetween: 15
                     },
                     1024: {
-                        slidesPerView: 7,
-                        spaceBetween: 20
+                        slidesPerView: 'auto',
+                        spaceBetween: 15
                     }
                 }
             });
@@ -796,7 +797,7 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                         slide.classList.add('active');
                         // Smooth scroll to corresponding event card
                         const index = parseInt(slide.dataset.index);
-                        eventsSwiper.slideTo(index, 800, true); // 800ms smooth transition
+                        eventsSwiper.slideTo(index, 600); // 600ms smooth transition
                     });
                 });
                 
