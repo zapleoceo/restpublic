@@ -235,14 +235,16 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
         }
 
         .event-card {
-            background: var(--color-1-100);
-            border: 1px solid var(--color-1-200);
-            border-radius: var(--border-radius);
+            background: #1e1e1e;
+            border: 1px solid #333;
+            border-radius: 8px;
             overflow: hidden;
-            transition: all 0.3s ease;
-            height: 400px; /* Fixed height for all cards */
+            width: 300px;
+            height: 200px;
             display: flex;
             flex-direction: column;
+            flex-shrink: 0;
+            transition: all 0.3s ease;
         }
 
         .event-card:hover {
@@ -253,103 +255,76 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
 
         .event-card__image {
             width: 100%;
-            height: 180px;
+            height: 100px;
             object-fit: cover;
-            display: block;
             flex-shrink: 0;
         }
 
         .event-card__content {
-            padding: var(--vspace-1);
-            flex: 1;
+            padding: 12px;
             display: flex;
             flex-direction: column;
+            justify-content: space-between;
+            flex: 1;
         }
 
         .event-card__title {
-            font-size: var(--text-lg);
+            font-size: 16px;
             font-weight: 600;
-            color: var(--color-1-800);
-            margin-bottom: var(--vspace-0_5);
-            line-height: 1.3;
-            font-family: var(--font-1);
-        }
-
-        .event-card__datetime {
-            display: flex;
-            gap: var(--vspace-0_5);
-            margin-bottom: var(--vspace-0_5);
-            font-size: var(--text-sm);
-            color: var(--color-1-600);
-        }
-
-        .event-date {
-            font-weight: 600;
-        }
-
-        .event-time {
-            color: var(--color-1-500);
-        }
-
-        .event-card__description {
-            font-size: var(--text-sm);
-            color: var(--color-1-600);
-            margin-bottom: var(--vspace-0_75);
-            line-height: 1.5;
-            flex: 1;
+            color: #fff;
+            margin-bottom: 6px;
         }
 
         .event-card__price {
-            font-size: var(--text-base);
-            color: var(--color-1-700);
+            font-size: 14px;
+            color: #4fb17d;
             font-weight: 600;
-            margin-bottom: var(--vspace-0_5);
+            margin-bottom: 8px;
         }
 
-        .event-card__conditions {
-            font-size: var(--text-xs);
-            color: var(--color-1-500);
-            margin-bottom: var(--vspace-0_75);
+        .event-card__description {
+            font-size: 12px;
+            color: #ccc;
+            flex-grow: 1;
+            margin-bottom: 8px;
             line-height: 1.4;
         }
 
         .event-card__link {
             display: inline-block;
-            color: var(--color-1-100);
-            background: var(--color-1-600);
+            font-size: 12px;
+            color: #fff;
             text-decoration: none;
-            font-size: var(--text-sm);
-            padding: var(--vspace-0_5) var(--vspace-1);
-            border-radius: var(--border-radius);
-            transition: all 0.3s ease;
-            font-weight: 500;
-            text-align: center;
-            margin-top: auto;
+            padding: 6px 12px;
+            border: 1px solid #333;
+            border-radius: 4px;
+            transition: background 0.3s, color 0.3s, border-color 0.3s;
         }
 
         .event-card__link:hover {
-            background: var(--color-1-700);
-            color: var(--color-1-100);
+            background: #4fb17d;
+            color: #000;
+            border-color: #4fb17d;
         }
 
         /* Placeholder card styles */
         .event-card--placeholder {
-            background: var(--color-1-50);
-            border: 2px dashed var(--color-1-300);
+            background: #1e1e1e;
+            border: 2px dashed #333;
         }
 
         .event-card--placeholder:hover {
-            border-color: var(--color-1-400);
-            background: var(--color-1-100);
+            border-color: #4fb17d;
+            background: #1e1e1e;
         }
 
         .event-card__placeholder-image {
-            height: 180px;
+            height: 100px;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: var(--color-1-100);
-            color: var(--color-1-400);
+            background: #2a2a2a;
+            color: #666;
         }
 
         /* Swiper Navigation */
@@ -854,13 +829,8 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                                 <img src="${event.image || 'template/images/sample-image.jpg'}" alt="${event.title}" class="event-card__image">
                                 <div class="event-card__content">
                                     <h3 class="event-card__title">${event.title}</h3>
-                                    <div class="event-card__datetime">
-                                        <span class="event-date">${event.day} ${event.month}</span>
-                                        <span class="event-time">${event.time}</span>
-                                    </div>
-                                    <p class="event-card__description">${event.description || ''}</p>
                                     <div class="event-card__price">${event.price}</div>
-                                    ${event.conditions ? `<div class="event-card__conditions">${event.conditions}</div>` : ''}
+                                    <p class="event-card__description">${event.description || ''}</p>
                                     <a href="${event.link || '#'}" class="event-card__link">Подробнее</a>
                                 </div>
                             </div>
@@ -870,7 +840,7 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                         eventCard.innerHTML = `
                             <div class="event-card event-card--placeholder">
                                 <div class="event-card__placeholder-image">
-                                    <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                                         <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
                                         <line x1="16" y1="2" x2="16" y2="6"></line>
                                         <line x1="8" y1="2" x2="8" y2="6"></line>
