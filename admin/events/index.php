@@ -1,13 +1,6 @@
 <?php
 // Страница управления событиями в админке
 require_once __DIR__ . '/../includes/auth-check.php';
-require_once __DIR__ . '/../../vendor/autoload.php';
-
-// Загружаем переменные окружения
-if (file_exists(__DIR__ . '/../../.env')) {
-    $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../..');
-    $dotenv->load();
-}
 
 $pageTitle = 'Управление событиями';
 $pageDescription = 'Администрирование событий ресторана';
@@ -67,14 +60,14 @@ try {
                 <?php else: ?>
                     <div class="events-grid">
                         <?php foreach ($events as $event): ?>
-                            <div class="event-card" data-event-id="<?php echo $event['_id']; ?>">
+                            <div class="event-card" data-event-id="<?php echo $event['id']; ?>">
                                 <div class="event-header">
                                     <h3><?php echo htmlspecialchars($event['title']); ?></h3>
                                     <div class="event-actions">
-                                        <button class="btn btn-sm btn-edit" onclick="editEvent('<?php echo $event['_id']; ?>')">
+                                        <button class="btn btn-sm btn-edit" onclick="editEvent('<?php echo $event['id']; ?>')">
                                             <i class="icon-edit"></i>
                                         </button>
-                                        <button class="btn btn-sm btn-delete" onclick="deleteEvent('<?php echo $event['_id']; ?>')">
+                                        <button class="btn btn-sm btn-delete" onclick="deleteEvent('<?php echo $event['id']; ?>')">
                                             <i class="icon-delete"></i>
                                         </button>
                                     </div>

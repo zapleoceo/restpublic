@@ -6,13 +6,6 @@ header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE');
 header('Access-Control-Allow-Headers: Content-Type, X-Requested-With');
 
 require_once __DIR__ . '/../includes/auth-check.php';
-require_once __DIR__ . '/../../vendor/autoload.php';
-
-// Загружаем переменные окружения
-if (file_exists(__DIR__ . '/../../.env')) {
-    $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../..');
-    $dotenv->load();
-}
 
 try {
     $eventsFile = __DIR__ . '/../../data/events.json';

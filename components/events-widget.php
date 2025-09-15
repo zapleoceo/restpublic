@@ -1,12 +1,5 @@
 <?php
 // Виджет событий для отображения на сайте
-require_once __DIR__ . '/../vendor/autoload.php';
-
-// Загружаем переменные окружения
-if (file_exists(__DIR__ . '/../.env')) {
-    $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/..');
-    $dotenv->load();
-}
 
 try {
     // Загружаем события из JSON файла
