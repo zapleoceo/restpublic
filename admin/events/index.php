@@ -59,58 +59,60 @@ try {
                         </button>
                     </div>
                 <?php else: ?>
-                    <div class="events-grid">
-                        <?php foreach ($events as $event): ?>
-                            <div class="event-card" data-event-id="<?php echo $event['id']; ?>">
-                                <div class="event-header">
-                                    <h3><?php echo htmlspecialchars($event['title']); ?></h3>
-                                    <div class="event-actions">
-                                        <button class="btn btn-sm btn-edit" onclick="editEvent('<?php echo $event['id']; ?>')">
-                                            <i class="icon-edit"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-delete" onclick="deleteEvent('<?php echo $event['id']; ?>')">
-                                            <i class="icon-delete"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                                
-                                <div class="event-details">
-                                    <div class="event-date">
-                                        <i class="icon-calendar"></i>
-                                        <?php echo date('d.m.Y', strtotime($event['date'])); ?>
-                                    </div>
-                                    <div class="event-time">
-                                        <i class="icon-clock"></i>
-                                        <?php echo htmlspecialchars($event['time']); ?>
-                                    </div>
-                                    <div class="event-conditions">
-                                        <i class="icon-info"></i>
-                                        <?php echo htmlspecialchars($event['conditions']); ?>
-                                    </div>
-                                    <?php if (!empty($event['description_link'])): ?>
-                                        <div class="event-link">
-                                            <i class="icon-link"></i>
-                                            <a href="<?php echo htmlspecialchars($event['description_link']); ?>" target="_blank">
-                                                Подробнее
-                                            </a>
-                                        </div>
+                    <div class="table-container">
+                        <table class="events-table">
+                            <thead>
+                                <tr>
+                                    <th>Название</th>
+                                    <th>Дата</th>
+                                    <th>Время</th>
+                                    <th>Условия</th>
+                                    <th>Статус</th>
+                                    <th>Действия</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($events as $event): ?>
+                                    <tr data-event-id="<?php echo $event['id']; ?>">
+                                        <td class="event-title">
+                                            <strong><?php echo htmlspecialchars($event['title']); ?></strong>
+                                            <?php if (!empty($event['description_link'])): ?>
+                                                <br><a href="<?php echo htmlspecialchars($event['description_link']); ?>" target="_blank" class="event-link">Подробнее</a>
+                                            <?php endif; ?>
+                                        </td>
+                                        <td class="event-date">
+                                            <?php echo date('d.m.Y', strtotime($event['date'])); ?>
+                                        </td>
+                                        <td class="event-time">
+                                            <?php echo htmlspecialchars($event['time']); ?>
+                                        </td>
+                                        <td class="event-conditions">
+                                            <?php echo htmlspecialchars($event['conditions']); ?>
+                                        </td>
+                                        <td class="event-status">
+                                            <span class="status-badge <?php echo $event['is_active'] ? 'active' : 'inactive'; ?>">
+                                                <?php echo $event['is_active'] ? 'Активно' : 'Неактивно'; ?>
+                                            </span>
+                                        </td>
+                                        <td class="event-actions">
+                                            <button class="btn btn-sm btn-edit" onclick="editEvent('<?php echo $event['id']; ?>')" title="Редактировать">
+                                                ✏️ Редактировать
+                                            </button>
+                                            <button class="btn btn-sm btn-delete" onclick="deleteEvent('<?php echo $event['id']; ?>')" title="Удалить">
+                                                🗑️ Удалить
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <?php if (!empty($event['comment'])): ?>
+                                        <tr class="event-comment-row">
+                                            <td colspan="6" class="event-comment">
+                                                <strong>Комментарий:</strong> <?php echo htmlspecialchars($event['comment']); ?>
+                                            </td>
+                                        </tr>
                                     <?php endif; ?>
-                                </div>
-                                
-                                <div class="event-status">
-                                    <span class="status-badge <?php echo $event['is_active'] ? 'active' : 'inactive'; ?>">
-                                        <?php echo $event['is_active'] ? 'Активно' : 'Неактивно'; ?>
-                                    </span>
-                                </div>
-                                
-                                <?php if (!empty($event['comment'])): ?>
-                                    <div class="event-comment">
-                                        <strong>Комментарий:</strong>
-                                        <?php echo htmlspecialchars($event['comment']); ?>
-                                    </div>
-                                <?php endif; ?>
-                            </div>
-                        <?php endforeach; ?>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
                     </div>
                 <?php endif; ?>
             </div>
@@ -186,6 +188,210 @@ try {
     </div>
     
     <script src="/admin/assets/js/admin.js"></script>
+    <style>
+        /* Стили для таблицы событий */
+        .table-container {
+            overflow-x: auto;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .events-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            min-width: 800px;
+        }
+        
+        .events-table th {
+            background: #f8f9fa;
+            padding: 15px 12px;
+            text-align: left;
+            font-weight: 600;
+            color: #495057;
+            border-bottom: 2px solid #dee2e6;
+            font-size: 14px;
+        }
+        
+        .events-table td {
+            padding: 15px 12px;
+            border-bottom: 1px solid #dee2e6;
+            vertical-align: top;
+        }
+        
+        .events-table tr:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .event-title {
+            font-weight: 500;
+            min-width: 200px;
+        }
+        
+        .event-title strong {
+            color: #212529;
+            font-size: 16px;
+        }
+        
+        .event-link {
+            color: #007bff;
+            text-decoration: none;
+            font-size: 12px;
+        }
+        
+        .event-link:hover {
+            text-decoration: underline;
+        }
+        
+        .event-date, .event-time {
+            white-space: nowrap;
+            font-family: monospace;
+            color: #6c757d;
+        }
+        
+        .event-conditions {
+            max-width: 250px;
+            word-wrap: break-word;
+            font-size: 14px;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+        
+        .status-badge.active {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .status-badge.inactive {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .event-actions {
+            white-space: nowrap;
+        }
+        
+        .event-actions .btn {
+            margin: 2px;
+            padding: 6px 12px;
+            font-size: 12px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-edit {
+            background-color: #ffc107;
+            color: #212529;
+        }
+        
+        .btn-edit:hover {
+            background-color: #e0a800;
+        }
+        
+        .btn-delete {
+            background-color: #dc3545;
+            color: white;
+        }
+        
+        .btn-delete:hover {
+            background-color: #c82333;
+        }
+        
+        .event-comment-row {
+            background-color: #f8f9fa;
+        }
+        
+        .event-comment {
+            font-size: 13px;
+            color: #6c757d;
+            font-style: italic;
+            padding: 10px 12px;
+        }
+        
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .table-container {
+                margin: 10px 0;
+                border-radius: 4px;
+            }
+            
+            .events-table th,
+            .events-table td {
+                padding: 10px 8px;
+                font-size: 13px;
+            }
+            
+            .event-title {
+                min-width: 150px;
+            }
+            
+            .event-conditions {
+                max-width: 150px;
+                font-size: 12px;
+            }
+            
+            .event-actions .btn {
+                padding: 4px 8px;
+                font-size: 11px;
+                margin: 1px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .events-table {
+                min-width: 600px;
+            }
+            
+            .events-table th,
+            .events-table td {
+                padding: 8px 6px;
+                font-size: 12px;
+            }
+            
+            .event-actions .btn {
+                padding: 3px 6px;
+                font-size: 10px;
+            }
+        }
+        
+        /* Кнопка добавления */
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.2s ease;
+        }
+        
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+        
+        /* Пустое состояние */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #6c757d;
+        }
+        
+        .empty-state p {
+            margin-bottom: 20px;
+            font-size: 16px;
+        }
+    </style>
     <script>
         // Функции для работы с событиями
         function openEventModal(eventId = null) {
