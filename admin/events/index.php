@@ -32,6 +32,12 @@ try {
     error_log("Ошибка загрузки событий: " . $e->getMessage());
     $events = [];
 }
+
+// Отладочная информация
+error_log("Загружено событий: " . count($events));
+if (count($events) > 0) {
+    error_log("Первое событие: " . json_encode($events[0]));
+}
 ?>
 
 <!DOCTYPE html>
@@ -57,6 +63,12 @@ try {
             border-bottom: 1px solid #dee2e6;
             display: flex;
             justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-buttons {
+            display: flex;
+            gap: 10px;
             align-items: center;
         }
 
@@ -380,18 +392,20 @@ try {
         <main class="admin-main">
             <div class="admin-header">
                 <h1><?php echo htmlspecialchars($pageTitle); ?></h1>
-                <button class="btn btn-primary" onclick="openEventModal()">
-                    ➕ Добавить событие
-                </button>
             </div>
 
             <div class="admin-content">
                 <div class="events-container">
                     <div class="events-header">
                         <h2>События (текущая и будущие недели)</h2>
-                        <button class="load-past-btn" onclick="loadPastEvents()">
-                            📅 Показать прошлые
-                        </button>
+                        <div class="header-buttons">
+                            <button class="btn btn-primary" onclick="openEventModal()">
+                                ➕ Добавить событие
+                            </button>
+                            <button class="load-past-btn" onclick="loadPastEvents()">
+                                📅 Показать прошлые
+                            </button>
+                        </div>
                     </div>
 
                     <?php if (empty($events)): ?>
@@ -534,6 +548,12 @@ try {
         // Переменная для отслеживания загруженных прошлых недель
         let pastWeeksLoaded = 0;
         const allEvents = <?php echo json_encode($events); ?>;
+        
+        // Отладочная информация
+        console.log('Всего событий загружено:', allEvents.length);
+        if (allEvents.length > 0) {
+            console.log('Первое событие:', allEvents[0]);
+        }
 
         // Функции для работы с событиями
         function openEventModal(eventId = null) {
