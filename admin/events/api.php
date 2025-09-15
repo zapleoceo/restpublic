@@ -5,8 +5,18 @@ header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE');
 header('Access-Control-Allow-Headers: Content-Type, X-Requested-With');
 
-require_once __DIR__ . '/../includes/auth-check.php';
 require_once __DIR__ . '/../../vendor/autoload.php';
+
+// Проверка авторизации без редиректа
+session_start();
+if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
+    http_response_code(401);
+    echo json_encode([
+        'success' => false,
+        'message' => 'Не авторизован'
+    ]);
+    exit;
+}
 
 try {
     // Подключение к MongoDB
@@ -154,6 +164,11 @@ try {
             // Для DELETE запросов с FormData нужно получать данные из $_POST
             $eventId = $_POST['event_id'] ?? $input['event_id'] ?? null;
             
+            // Отладочная информация
+            error_log("DELETE запрос - event_id: " . ($eventId ?? 'null'));
+            error_log("POST данные: " . json_encode($_POST));
+            error_log("INPUT данные: " . json_encode($input));
+            
             if (empty($eventId)) {
                 http_response_code(400);
                 echo json_encode([
@@ -181,10 +196,11 @@ try {
                     ]);
                 }
             } catch (Exception $e) {
+                error_log("Ошибка удаления события: " . $e->getMessage());
                 http_response_code(400);
                 echo json_encode([
                     'success' => false,
-                    'message' => 'Неверный формат ID события'
+                    'message' => 'Неверный формат ID события: ' . $e->getMessage()
                 ]);
             }
             break;

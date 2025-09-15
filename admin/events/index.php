@@ -220,12 +220,15 @@ if (count($events) > 0) {
 
         .modal-content {
             background-color: white;
-            margin: 5% auto;
+            margin: 2% auto;
             padding: 0;
             border-radius: 8px;
             width: 90%;
-            max-width: 600px;
+            max-width: 500px;
+            max-height: 90vh;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
         }
 
         .modal-header {
@@ -263,11 +266,13 @@ if (count($events) > 0) {
         }
 
         .modal-body {
-            padding: 30px;
+            padding: 20px;
+            overflow-y: auto;
+            flex: 1;
         }
 
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
         .form-row {
@@ -312,11 +317,12 @@ if (count($events) > 0) {
         }
 
         .modal-footer {
-            padding: 20px 30px;
+            padding: 15px 20px;
             border-top: 1px solid #dee2e6;
             display: flex;
             justify-content: flex-end;
             gap: 10px;
+            flex-shrink: 0;
         }
 
         .btn-secondary {
