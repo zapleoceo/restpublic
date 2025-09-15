@@ -555,7 +555,6 @@ if ($menu_loaded) {
     <div id="modalOverlay" class="modal-overlay overlay-hidden"></div>
 
     <!-- JavaScript -->
-    <script src="js/plugins.js"></script>
     <script src="js/main.js"></script>
     
     <script>
