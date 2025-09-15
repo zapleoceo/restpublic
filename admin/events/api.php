@@ -92,15 +92,18 @@ try {
                 exit;
             }
             
+            // Правильная обработка is_active (checkbox приходит как 'on' или отсутствует)
+            $isActive = isset($input['is_active']) && $input['is_active'] !== false && $input['is_active'] !== 'false' && $input['is_active'] !== '0';
+            
             $eventData = [
-                'title' => $input['title'],
+                'title' => trim($input['title']),
                 'date' => $input['date'],
                 'time' => $input['time'],
-                'conditions' => $input['conditions'],
-                'description_link' => $input['description_link'] ?? null,
-                'image' => $input['image'] ?? null,
-                'comment' => $input['comment'] ?? null,
-                'is_active' => $input['is_active'] ?? true,
+                'conditions' => trim($input['conditions']),
+                'description_link' => !empty($input['description_link']) ? trim($input['description_link']) : null,
+                'image' => null, // Пока не обрабатываем загрузку файлов
+                'comment' => !empty($input['comment']) ? trim($input['comment']) : null,
+                'is_active' => $isActive,
                 'created_at' => new MongoDB\BSON\UTCDateTime(),
                 'updated_at' => new MongoDB\BSON\UTCDateTime()
             ];
@@ -139,14 +142,49 @@ try {
                 exit;
             }
             
-            // Получаем данные из JSON
-            $title = $input['title'] ?? '';
-            $date = $input['date'] ?? '';
-            $time = $input['time'] ?? '';
-            $conditions = $input['conditions'] ?? '';
-            $description_link = $input['description_link'] ?? null;
-            $comment = $input['comment'] ?? null;
-            $is_active = $input['is_active'] ?? true;
+            // Валидация обязательных полей
+            $requiredFields = ['title', 'date', 'time', 'conditions'];
+            foreach ($requiredFields as $field) {
+                if (empty($input[$field])) {
+                    http_response_code(400);
+                    echo json_encode([
+                        'success' => false,
+                        'message' => "Поле '$field' обязательно для заполнения"
+                    ]);
+                    exit;
+                }
+            }
+            
+            // Валидация формата даты
+            if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $input['date'])) {
+                http_response_code(400);
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'Неверный формат даты. Используйте YYYY-MM-DD'
+                ]);
+                exit;
+            }
+            
+            // Валидация формата времени
+            if (!preg_match('/^\d{2}:\d{2}$/', $input['time'])) {
+                http_response_code(400);
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'Неверный формат времени. Используйте HH:MM'
+                ]);
+                exit;
+            }
+            
+            // Получаем и санитизируем данные из JSON
+            $title = trim($input['title']);
+            $date = $input['date'];
+            $time = $input['time'];
+            $conditions = trim($input['conditions']);
+            $description_link = !empty($input['description_link']) ? trim($input['description_link']) : null;
+            $comment = !empty($input['comment']) ? trim($input['comment']) : null;
+            
+            // Правильная обработка is_active (checkbox приходит как 'on' или отсутствует)
+            $is_active = isset($input['is_active']) && $input['is_active'] !== false && $input['is_active'] !== 'false' && $input['is_active'] !== '0';
             
             // Отладочная информация
             error_log("PUT запрос - description_link: " . ($description_link ?? 'null'));

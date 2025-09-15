@@ -747,40 +747,33 @@ if (count($events) > 0) {
         }
         
         function loadEventData(eventId) {
-            // Находим событие в таблице
-            const eventRow = document.querySelector(`tr[data-event-id="${eventId}"]`);
-            if (eventRow) {
-                const eventDate = eventRow.querySelector('.event-date').textContent;
-                const eventTime = eventRow.querySelector('.event-time').textContent;
-                const eventTitle = eventRow.querySelector('.event-title').textContent;
-                const eventConditions = eventRow.querySelector('.event-conditions').textContent;
-                const eventComment = eventRow.querySelector('.event-comment').textContent;
-                
-                // Получаем ссылку из кнопки
-                const linkElement = eventRow.querySelector('.event-link .link-btn');
-                const eventLink = linkElement ? linkElement.href : '';
-                
-                // Получаем статус из бейджа
-                const statusBadge = eventRow.querySelector('.status-badge');
-                const isActive = statusBadge && statusBadge.classList.contains('active');
-                
-                // Заполняем форму данными события
-                document.getElementById('eventId').value = eventId;
-                document.getElementById('eventTitle').value = eventTitle;
-                
-                // Конвертируем дату из формата dd.mm.yyyy в yyyy-mm-dd
-                const dateParts = eventDate.split('.');
-                if (dateParts.length === 3) {
-                    const formattedDate = `${dateParts[2]}-${dateParts[1].padStart(2, '0')}-${dateParts[0].padStart(2, '0')}`;
-                    document.getElementById('eventDate').value = formattedDate;
-                }
-                
-                document.getElementById('eventTime').value = eventTime;
-                document.getElementById('eventConditions').value = eventConditions;
-                document.getElementById('eventComment').value = eventComment === '-' ? '' : eventComment;
-                document.getElementById('eventDescriptionLink').value = eventLink;
-                document.getElementById('eventIsActive').checked = isActive;
-            }
+            // Загружаем данные события из API вместо DOM
+            fetch('/admin/events/api.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const event = data.data.find(e => e.id === eventId);
+                        if (event) {
+                            // Заполняем форму данными события
+                            document.getElementById('eventId').value = eventId;
+                            document.getElementById('eventTitle').value = event.title || '';
+                            document.getElementById('eventDate').value = event.date || '';
+                            document.getElementById('eventTime').value = event.time || '';
+                            document.getElementById('eventConditions').value = event.conditions || '';
+                            document.getElementById('eventComment').value = event.comment || '';
+                            document.getElementById('eventDescriptionLink').value = event.description_link || '';
+                            document.getElementById('eventIsActive').checked = event.is_active !== false;
+                        } else {
+                            alert('Событие не найдено');
+                        }
+                    } else {
+                        alert('Ошибка загрузки данных: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Ошибка загрузки события:', error);
+                    alert('Ошибка загрузки события: ' + error.message);
+                });
         }
         
         function saveEvent() {
@@ -795,6 +788,9 @@ if (count($events) > 0) {
             for (let [key, value] of formData.entries()) {
                 requestData[key] = value;
             }
+
+            // Правильно обрабатываем checkbox is_active
+            requestData.is_active = document.getElementById('eventIsActive').checked;
 
             // Определяем метод (POST для создания, PUT для обновления)
             const method = eventId ? 'PUT' : 'POST';
