@@ -124,20 +124,20 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
         
         /* Events Widget Styles */
         .s-events {
-            --content-padding-top: var(--vspace-2);
-            --content-padding-bottom: var(--vspace-2);
+            --content-padding-top: calc(var(--vspace-2) * 0.7);
+            --content-padding-bottom: calc(var(--vspace-2) * 0.7);
             
             padding-top: var(--content-padding-top);
             padding-bottom: var(--content-padding-bottom);
         }
         
         .events-widget {
-            margin-top: var(--vspace-2);
+            margin-top: calc(var(--vspace-2) * 0.7);
         }
         
         /* Date Slider */
         .dates-slider {
-            margin-bottom: var(--vspace-2);
+            margin-bottom: calc(var(--vspace-2) * 0.7);
         }
         
         .date-slide {
@@ -661,81 +661,8 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
 
         // Events Widget
         document.addEventListener('DOMContentLoaded', function() {
-            // Данные событий (встроенные в HTML)
-            const events = [
-                {
-                    day: '15',
-                    month: 'янв',
-                    title: 'Стрельба из лука',
-                    description: 'Мастер-класс по стрельбе из лука на свежем воздухе. Подходит для всех уровней подготовки.',
-                    price: 'от 150₽',
-                    image: 'template/images/gallery/gallery-01.jpg',
-                    link: '/event/archery'
-                },
-                {
-                    day: '16',
-                    month: 'янв',
-                    title: 'Кино на свежем воздухе',
-                    description: 'Просмотр фильмов под звездным небом с попкорном и горячими напитками.',
-                    price: 'от 300₽',
-                    image: 'template/images/gallery/gallery-02.jpg',
-                    link: '/event/cinema'
-                },
-                {
-                    day: '17',
-                    month: 'янв',
-                    title: 'Йога-класс',
-                    description: 'Утренняя йога на природе с профессиональным инструктором. Начните день с гармонии.',
-                    price: 'от 200₽',
-                    image: 'template/images/gallery/gallery-03.jpg',
-                    link: '/event/yoga'
-                },
-                {
-                    day: '18',
-                    month: 'янв',
-                    title: 'Кулинарный мастер-класс',
-                    description: 'Учимся готовить традиционные блюда с шеф-поваром North Republic.',
-                    price: 'от 500₽',
-                    image: 'template/images/gallery/gallery-04.jpg',
-                    link: '/event/cooking'
-                },
-                {
-                    day: '19',
-                    month: 'янв',
-                    title: 'Живая музыка',
-                    description: 'Выступление местных музыкантов с акустической программой.',
-                    price: 'от 400₽',
-                    image: 'template/images/gallery/gallery-05.jpg',
-                    link: '/event/music'
-                },
-                {
-                    day: '20',
-                    month: 'янв',
-                    title: 'Пикник с семьей',
-                    description: 'Семейный пикник с играми, конкурсами и вкусной едой.',
-                    price: 'от 250₽',
-                    image: 'template/images/gallery/gallery-06.jpg',
-                    link: '/event/family-picnic'
-                },
-                {
-                    day: '21',
-                    month: 'янв',
-                    title: 'Дегустация вин',
-                    description: 'Знакомство с лучшими винами региона в сопровождении сомелье.',
-                    price: 'от 800₽',
-                    image: 'template/images/gallery/gallery-07.jpg',
-                    link: '/event/wine-tasting'
-                },
-                {
-                    day: '22',
-                    month: 'янв',
-                    title: 'Фотосессия на природе',
-                    description: 'Профессиональная фотосессия в живописных местах North Republic.',
-                    price: 'от 1200₽',
-                    image: 'template/images/gallery/gallery-08.jpg',
-                    link: '/event/photoshoot'
-                }
-            ];
+            // Данные событий из PHP (MongoDB)
+            const events = <?php echo json_encode($eventsService->getEventsForWidget(8), JSON_UNESCAPED_UNICODE); ?>;
 
             // Инициализируем Swiper для событий
             const datesSwiper = new Swiper('#dates-slider', {
@@ -772,7 +699,7 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                         spaceBetween: 24
                     },
                     1024: {
-                        slidesPerView: 3,
+                        slidesPerView: 4,
                         spaceBetween: 32
                     }
                 }
