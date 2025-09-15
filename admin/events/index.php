@@ -717,12 +717,27 @@ if (count($events) > 0) {
         // Переменная для отслеживания загруженных прошлых недель
         let pastWeeksLoaded = 0;
         const allEvents = <?php echo json_encode($events); ?>;
+        const loadedEventIds = new Set(); // Отслеживаем уже загруженные события
         
         // Отладочная информация
         console.log('Всего событий загружено:', allEvents.length);
         if (allEvents.length > 0) {
             console.log('Первое событие:', allEvents[0]);
         }
+        
+        // Инициализируем Set с уже загруженными событиями (текущая и будущие недели)
+        const today = new Date();
+        const weekStart = new Date(today);
+        weekStart.setDate(today.getDate() - (today.getDay() + 6) % 7); // Понедельник текущей недели
+        
+        allEvents.forEach(event => {
+            const eventDate = new Date(event.date);
+            if (eventDate >= weekStart) {
+                loadedEventIds.add(event.id);
+            }
+        });
+        
+        console.log('Уже загружено событий:', loadedEventIds.size);
 
         // Функции для работы с событиями
         function openEventModal(eventId = null) {
@@ -902,10 +917,10 @@ if (count($events) > 0) {
             // Вычитаем загруженные недели
             weekStart.setDate(weekStart.getDate() - (pastWeeksLoaded * 7));
             
-            // Фильтруем события для показа
+            // Фильтруем события для показа - только те, которые еще не загружены
             const pastEvents = allEvents.filter(event => {
                 const eventDate = new Date(event.date);
-                return eventDate < weekStart;
+                return eventDate < weekStart && !loadedEventIds.has(event.id);
             }).slice(0, 7); // Показываем максимум 7 событий за раз
             
             if (pastEvents.length === 0) {
@@ -913,9 +928,14 @@ if (count($events) > 0) {
                 return;
             }
             
+            console.log(`Загружаем ${pastEvents.length} прошлых событий`);
+            
             // Добавляем события в таблицу
             const tbody = document.getElementById('eventsTableBody');
             pastEvents.forEach(event => {
+                // Добавляем событие в список загруженных
+                loadedEventIds.add(event.id);
+                
                 const row = document.createElement('tr');
                 row.setAttribute('data-event-id', event.id);
                 
@@ -955,6 +975,8 @@ if (count($events) > 0) {
             // Обновляем текст кнопки
             const loadBtn = document.querySelector('.load-past-btn');
             loadBtn.textContent = `📅 Показать еще прошлые (${pastWeeksLoaded} недель назад)`;
+            
+            console.log(`Всего загружено событий: ${loadedEventIds.size}`);
         }
 
         // Закрытие модального окна при клике вне его
