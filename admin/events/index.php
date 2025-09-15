@@ -42,241 +42,156 @@ try {
     <title><?php echo htmlspecialchars($pageTitle); ?> - Админка</title>
     <link rel="stylesheet" href="/admin/assets/css/admin.css">
     <style>
-        /* Стили для календарного вида событий */
-        .calendar-view {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 20px;
-            margin: 20px 0;
-            padding: 0 10px;
-        }
-
-        .calendar-day {
+        /* Стили для таблицы событий */
+        .events-container {
             background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            border: 2px solid transparent;
-            transition: all 0.3s ease;
-            position: relative;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            margin: 20px 0;
         }
 
-        .calendar-day:hover {
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-            transform: translateY(-3px);
-        }
-
-        .calendar-day.today {
-            border-color: #007bff;
-            background: linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%);
-            box-shadow: 0 4px 20px rgba(0, 123, 255, 0.2);
-        }
-
-        .calendar-day.today::before {
-            content: "СЕГОДНЯ";
-            position: absolute;
-            top: -10px;
-            right: 15px;
-            background: #007bff;
-            color: white;
-            padding: 4px 12px;
-            border-radius: 12px;
-            font-size: 10px;
-            font-weight: 600;
-            text-transform: uppercase;
-        }
-
-        .calendar-day.past {
-            opacity: 0.6;
+        .events-header {
             background: #f8f9fa;
-        }
-
-        .calendar-day.past::after {
-            content: "ПРОШЛО";
-            position: absolute;
-            top: -10px;
-            left: 15px;
-            background: #6c757d;
-            color: white;
-            padding: 4px 12px;
-            border-radius: 12px;
-            font-size: 10px;
-            font-weight: 600;
-            text-transform: uppercase;
-        }
-
-        .day-header {
+            padding: 20px;
+            border-bottom: 1px solid #dee2e6;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #e9ecef;
         }
 
-        .day-date {
-            font-size: 20px;
-            font-weight: 700;
-            color: #212529;
-        }
-
-        .day-weekday {
-            font-size: 14px;
-            color: #6c757d;
-            text-transform: uppercase;
-            font-weight: 600;
-            letter-spacing: 1px;
-        }
-
-        .no-events {
-            text-align: center;
-            padding: 30px 20px;
-            color: #6c757d;
-            background: #f8f9fa;
-            border-radius: 8px;
-            border: 2px dashed #dee2e6;
-        }
-
-        .no-events p {
-            margin: 0 0 20px 0;
+        .events-header h2 {
+            margin: 0;
+            color: #495057;
             font-size: 18px;
+        }
+
+        .load-past-btn {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.2s ease;
+        }
+
+        .load-past-btn:hover {
+            background: #5a6268;
+        }
+
+        .events-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .events-table th {
+            background: #e9ecef;
+            padding: 15px 12px;
+            text-align: left;
             font-weight: 600;
             color: #495057;
+            border-bottom: 2px solid #dee2e6;
+            font-size: 14px;
         }
 
-        .day-events {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
+        .events-table td {
+            padding: 15px 12px;
+            border-bottom: 1px solid #dee2e6;
+            vertical-align: top;
         }
 
-        .event-item {
-            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-            border-radius: 8px;
-            padding: 15px;
-            border-left: 4px solid #007bff;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        .events-table tr:hover {
+            background-color: #f8f9fa;
         }
 
-        .event-item:hover {
-            background: linear-gradient(135deg, #e9ecef 0%, #f8f9fa 100%);
-            transform: translateX(5px);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        .event-date {
+            white-space: nowrap;
+            font-family: monospace;
+            color: #495057;
+            font-weight: 500;
         }
 
         .event-time {
-            font-size: 13px;
+            white-space: nowrap;
+            font-family: monospace;
             color: #007bff;
-            font-weight: 700;
-            margin-bottom: 8px;
-            background: rgba(0, 123, 255, 0.1);
-            padding: 4px 8px;
-            border-radius: 4px;
-            display: inline-block;
+            font-weight: 600;
         }
 
         .event-title {
-            font-size: 16px;
-            font-weight: 700;
+            font-weight: 600;
             color: #212529;
-            margin-bottom: 8px;
-            line-height: 1.3;
+            font-size: 15px;
         }
 
         .event-conditions {
-            font-size: 13px;
             color: #6c757d;
-            margin-bottom: 12px;
-            line-height: 1.4;
+            font-size: 14px;
+            max-width: 300px;
+            word-wrap: break-word;
         }
 
         .event-comment {
-            font-size: 12px;
             color: #6c757d;
+            font-size: 12px;
             font-style: italic;
-            margin-top: 8px;
-            padding-top: 8px;
-            border-top: 1px solid #dee2e6;
-            background: rgba(108, 117, 125, 0.05);
-            padding: 8px;
-            border-radius: 4px;
+            max-width: 200px;
+            word-wrap: break-word;
         }
 
         .event-actions {
-            display: flex;
-            gap: 8px;
-            margin-top: 12px;
+            white-space: nowrap;
         }
 
         .btn {
             border: none;
-            border-radius: 6px;
+            border-radius: 4px;
             cursor: pointer;
             transition: all 0.2s ease;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .btn-sm {
-            padding: 8px 16px;
             font-size: 12px;
-        }
-
-        .btn-xs {
             padding: 6px 12px;
-            font-size: 11px;
+            margin: 2px;
+            font-weight: 500;
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+            background-color: #007bff;
             color: white;
-            box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
         }
 
         .btn-primary:hover {
-            background: linear-gradient(135deg, #0056b3 0%, #004085 100%);
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(0, 123, 255, 0.4);
-        }
-
-        .btn-create, .btn-add-more {
-            background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
-            color: white;
-            width: 100%;
-            margin-top: 15px;
-            box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
-        }
-
-        .btn-create:hover, .btn-add-more:hover {
-            background: linear-gradient(135deg, #1e7e34 0%, #155724 100%);
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
+            background-color: #0056b3;
         }
 
         .btn-edit {
-            background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);
+            background-color: #ffc107;
             color: #212529;
-            box-shadow: 0 2px 8px rgba(255, 193, 7, 0.3);
         }
 
         .btn-edit:hover {
-            background: linear-gradient(135deg, #e0a800 0%, #d39e00 100%);
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(255, 193, 7, 0.4);
+            background-color: #e0a800;
         }
 
         .btn-delete {
-            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            background-color: #dc3545;
             color: white;
-            box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
         }
 
         .btn-delete:hover {
-            background: linear-gradient(135deg, #c82333 0%, #bd2130 100%);
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4);
+            background-color: #c82333;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #6c757d;
+        }
+
+        .empty-state p {
+            margin-bottom: 20px;
+            font-size: 16px;
         }
 
         /* Модальное окно */
@@ -289,36 +204,23 @@ try {
             width: 100%;
             height: 100%;
             background-color: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(5px);
         }
 
         .modal-content {
             background-color: white;
             margin: 5% auto;
             padding: 0;
-            border-radius: 12px;
+            border-radius: 8px;
             width: 90%;
             max-width: 600px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            animation: modalSlideIn 0.3s ease;
-        }
-
-        @keyframes modalSlideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-50px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
         }
 
         .modal-header {
-            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+            background: #007bff;
             color: white;
             padding: 20px;
-            border-radius: 12px 12px 0 0;
+            border-radius: 8px 8px 0 0;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -326,8 +228,7 @@ try {
 
         .modal-header h2 {
             margin: 0;
-            font-size: 20px;
-            font-weight: 700;
+            font-size: 18px;
         }
 
         .modal-close {
@@ -343,7 +244,6 @@ try {
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: background-color 0.2s ease;
         }
 
         .modal-close:hover {
@@ -374,11 +274,10 @@ try {
         .form-group input,
         .form-group textarea {
             width: 100%;
-            padding: 12px;
-            border: 2px solid #e9ecef;
-            border-radius: 6px;
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
             font-size: 14px;
-            transition: border-color 0.2s ease;
             box-sizing: border-box;
         }
 
@@ -386,7 +285,7 @@ try {
         .form-group textarea:focus {
             outline: none;
             border-color: #007bff;
-            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
         }
 
         .checkbox-label {
@@ -402,7 +301,7 @@ try {
 
         .modal-footer {
             padding: 20px 30px;
-            border-top: 1px solid #e9ecef;
+            border-top: 1px solid #dee2e6;
             display: flex;
             justify-content: flex-end;
             gap: 10px;
@@ -413,10 +312,8 @@ try {
             color: white;
             padding: 10px 20px;
             border: none;
-            border-radius: 6px;
+            border-radius: 4px;
             cursor: pointer;
-            font-weight: 600;
-            transition: background-color 0.2s ease;
         }
 
         .btn-secondary:hover {
@@ -425,35 +322,24 @@ try {
 
         /* Адаптивность */
         @media (max-width: 768px) {
-            .calendar-view {
-                grid-template-columns: 1fr;
-                gap: 15px;
-                margin: 15px 0;
-                padding: 0 5px;
+            .events-container {
+                margin: 10px 0;
             }
 
-            .calendar-day {
-                padding: 15px;
-            }
-
-            .day-date {
-                font-size: 18px;
-            }
-
-            .day-weekday {
-                font-size: 12px;
-            }
-
-            .event-item {
-                padding: 12px;
-            }
-
-            .event-title {
-                font-size: 15px;
+            .events-table th,
+            .events-table td {
+                padding: 10px 8px;
+                font-size: 13px;
             }
 
             .event-conditions {
+                max-width: 200px;
                 font-size: 12px;
+            }
+
+            .event-comment {
+                max-width: 150px;
+                font-size: 11px;
             }
 
             .form-row {
@@ -471,36 +357,16 @@ try {
         }
 
         @media (max-width: 480px) {
-            .calendar-view {
-                gap: 10px;
-                margin: 10px 0;
-            }
-
-            .calendar-day {
-                padding: 12px;
-            }
-
-            .day-header {
-                margin-bottom: 15px;
-                padding-bottom: 10px;
-            }
-
-            .day-date {
-                font-size: 16px;
-            }
-
-            .event-item {
-                padding: 10px;
+            .events-table th,
+            .events-table td {
+                padding: 8px 6px;
+                font-size: 12px;
             }
 
             .btn {
-                font-size: 10px;
                 padding: 4px 8px;
-            }
-
-            .btn-sm {
-                padding: 6px 12px;
                 font-size: 11px;
+                margin: 1px;
             }
         }
     </style>
@@ -520,72 +386,76 @@ try {
             </div>
 
             <div class="admin-content">
-                <div class="calendar-view">
-                    <?php
-                    // Создаем массив событий по датам для удобного поиска
-                    $eventsByDate = [];
-                    foreach ($events as $event) {
-                        $date = $event['date'];
-                        if (!isset($eventsByDate[$date])) {
-                            $eventsByDate[$date] = [];
-                        }
-                        $eventsByDate[$date][] = $event;
-                    }
-                    
-                    // Получаем диапазон дат (текущий месяц + следующий)
-                    $currentDate = new DateTime();
-                    $startDate = clone $currentDate;
-                    $startDate->modify('first day of this month');
-                    $endDate = clone $currentDate;
-                    $endDate->modify('last day of next month');
-                    
-                    // Генерируем календарь
-                    $date = clone $startDate;
-                    while ($date <= $endDate) {
-                        $dateStr = $date->format('Y-m-d');
-                        $dayEvents = $eventsByDate[$dateStr] ?? [];
-                        $isToday = $date->format('Y-m-d') === date('Y-m-d');
-                        $isPast = $date < new DateTime('today');
-                        
-                        echo '<div class="calendar-day ' . ($isToday ? 'today' : '') . ($isPast ? ' past' : '') . '">';
-                        echo '<div class="day-header">';
-                        echo '<span class="day-date">' . $date->format('d.m.Y') . '</span>';
-                        echo '<span class="day-weekday">' . $date->format('D') . '</span>';
-                        echo '</div>';
-                        
-                        if (empty($dayEvents)) {
-                            echo '<div class="no-events">';
-                            echo '<p>НЕТ ИВЕНТОВ</p>';
-                            echo '<button class="btn btn-sm btn-create" onclick="createEventForDate(\'' . $dateStr . '\')" title="Создать событие">';
-                            echo '➕ Создать событие';
-                            echo '</button>';
-                            echo '</div>';
-                        } else {
-                            echo '<div class="day-events">';
-                            foreach ($dayEvents as $event) {
-                                echo '<div class="event-item" data-event-id="' . $event['id'] . '">';
-                                echo '<div class="event-time">' . htmlspecialchars($event['time']) . '</div>';
-                                echo '<div class="event-title">' . htmlspecialchars($event['title']) . '</div>';
-                                echo '<div class="event-conditions">' . htmlspecialchars($event['conditions']) . '</div>';
-                                echo '<div class="event-actions">';
-                                echo '<button class="btn btn-xs btn-edit" onclick="editEvent(\'' . $event['id'] . '\')" title="Редактировать">✏️ Редактировать</button>';
-                                echo '<button class="btn btn-xs btn-delete" onclick="deleteEvent(\'' . $event['id'] . '\')" title="Удалить">🗑️ Удалить</button>';
-                                echo '</div>';
-                                if (!empty($event['comment'])) {
-                                    echo '<div class="event-comment">' . htmlspecialchars($event['comment']) . '</div>';
-                                }
-                                echo '</div>';
-                            }
-                            echo '<button class="btn btn-sm btn-add-more" onclick="createEventForDate(\'' . $dateStr . '\')" title="Добавить еще событие">';
-                            echo '➕ Добавить событие';
-                            echo '</button>';
-                            echo '</div>';
-                        }
-                        
-                        echo '</div>';
-                        $date->modify('+1 day');
-                    }
-                    ?>
+                <div class="events-container">
+                    <div class="events-header">
+                        <h2>События (текущая и будущие недели)</h2>
+                        <button class="load-past-btn" onclick="loadPastEvents()">
+                            📅 Показать прошлые
+                        </button>
+                    </div>
+
+                    <?php if (empty($events)): ?>
+                        <div class="empty-state">
+                            <p>События не найдены</p>
+                            <button class="btn btn-primary" onclick="openEventModal()">
+                                Добавить первое событие
+                            </button>
+                        </div>
+                    <?php else: ?>
+                        <table class="events-table">
+                            <thead>
+                                <tr>
+                                    <th>Дата</th>
+                                    <th>Время</th>
+                                    <th>Название</th>
+                                    <th>Условия</th>
+                                    <th>Комментарий</th>
+                                    <th>Действия</th>
+                                </tr>
+                            </thead>
+                            <tbody id="eventsTableBody">
+                                <?php
+                                // Фильтруем события - показываем только текущую и будущие недели
+                                $today = new DateTime();
+                                $weekStart = clone $today;
+                                $weekStart->modify('monday this week');
+                                
+                                $filteredEvents = array_filter($events, function($event) use ($weekStart) {
+                                    $eventDate = new DateTime($event['date']);
+                                    return $eventDate >= $weekStart;
+                                });
+                                
+                                foreach ($filteredEvents as $event): 
+                                ?>
+                                    <tr data-event-id="<?php echo $event['id']; ?>">
+                                        <td class="event-date">
+                                            <?php echo date('d.m.Y', strtotime($event['date'])); ?>
+                                        </td>
+                                        <td class="event-time">
+                                            <?php echo htmlspecialchars($event['time']); ?>
+                                        </td>
+                                        <td class="event-title">
+                                            <?php echo htmlspecialchars($event['title']); ?>
+                                        </td>
+                                        <td class="event-conditions">
+                                            <?php echo htmlspecialchars($event['conditions']); ?>
+                                        </td>
+                                        <td class="event-comment">
+                                            <?php echo !empty($event['comment']) ? htmlspecialchars($event['comment']) : '-'; ?>
+                                        </td>
+                                        <td class="event-actions">
+                                            <button class="btn btn-edit" onclick="editEvent('<?php echo $event['id']; ?>')" title="Редактировать">
+                                                ✏️
+                                            </button>
+                                            <button class="btn btn-delete" onclick="deleteEvent('<?php echo $event['id']; ?>')" title="Удалить">
+                                                🗑️
+                                            </button>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    <?php endif; ?>
                 </div>
             </div>
         </main>
@@ -661,8 +531,12 @@ try {
 
     <script src="/admin/assets/js/admin.js"></script>
     <script>
+        // Переменная для отслеживания загруженных прошлых недель
+        let pastWeeksLoaded = 0;
+        const allEvents = <?php echo json_encode($events); ?>;
+
         // Функции для работы с событиями
-        function openEventModal(eventId = null, presetDate = null) {
+        function openEventModal(eventId = null) {
             const modal = document.getElementById('eventModal');
             const form = document.getElementById('eventForm');
             const title = document.getElementById('modalTitle');
@@ -674,18 +548,9 @@ try {
                 title.textContent = 'Добавить событие';
                 form.reset();
                 document.getElementById('eventIsActive').checked = true;
-                
-                // Устанавливаем предустановленную дату, если передана
-                if (presetDate) {
-                    document.getElementById('eventDate').value = presetDate;
-                }
             }
 
             modal.style.display = 'block';
-        }
-        
-        function createEventForDate(dateStr) {
-            openEventModal(null, dateStr);
         }
         
         function closeEventModal() {
@@ -693,34 +558,27 @@ try {
         }
         
         function loadEventData(eventId) {
-            // Находим событие в календарном виде
-            const eventItem = document.querySelector(`.event-item[data-event-id="${eventId}"]`);
-            if (eventItem) {
-                const eventTitle = eventItem.querySelector('.event-title').textContent;
-                const eventTime = eventItem.querySelector('.event-time').textContent;
-                const eventConditions = eventItem.querySelector('.event-conditions').textContent;
-                
-                // Получаем дату из родительского элемента календаря
-                const calendarDay = eventItem.closest('.calendar-day');
-                const dayDate = calendarDay.querySelector('.day-date').textContent;
+            // Находим событие в таблице
+            const eventRow = document.querySelector(`tr[data-event-id="${eventId}"]`);
+            if (eventRow) {
+                const eventDate = eventRow.querySelector('.event-date').textContent;
+                const eventTime = eventRow.querySelector('.event-time').textContent;
+                const eventTitle = eventRow.querySelector('.event-title').textContent;
+                const eventConditions = eventRow.querySelector('.event-conditions').textContent;
+                const eventComment = eventRow.querySelector('.event-comment').textContent;
                 
                 // Заполняем форму данными события
                 document.getElementById('eventId').value = eventId;
                 document.getElementById('eventTitle').value = eventTitle;
                 
                 // Конвертируем дату из формата dd.mm.yyyy в yyyy-mm-dd
-                const dateParts = dayDate.split('.');
+                const dateParts = eventDate.split('.');
                 const formattedDate = `${dateParts[2]}-${dateParts[1].padStart(2, '0')}-${dateParts[0].padStart(2, '0')}`;
                 document.getElementById('eventDate').value = formattedDate;
                 
                 document.getElementById('eventTime').value = eventTime;
                 document.getElementById('eventConditions').value = eventConditions;
-                
-                // Получаем комментарий, если есть
-                const eventComment = eventItem.querySelector('.event-comment');
-                document.getElementById('eventComment').value = eventComment ? eventComment.textContent : '';
-                
-                // По умолчанию событие активно
+                document.getElementById('eventComment').value = eventComment === '-' ? '' : eventComment;
                 document.getElementById('eventIsActive').checked = true;
                 document.getElementById('eventDescriptionLink').value = '';
             }
@@ -805,6 +663,52 @@ try {
                     isDeleting = false; // Сбрасываем флаг
                 });
             }
+        }
+
+        function loadPastEvents() {
+            pastWeeksLoaded++;
+            
+            // Вычисляем дату начала для загрузки прошлых недель
+            const today = new Date();
+            const weekStart = new Date(today);
+            weekStart.setDate(today.getDate() - (today.getDay() + 6) % 7); // Понедельник текущей недели
+            
+            // Вычитаем загруженные недели
+            weekStart.setDate(weekStart.getDate() - (pastWeeksLoaded * 7));
+            
+            // Фильтруем события для показа
+            const pastEvents = allEvents.filter(event => {
+                const eventDate = new Date(event.date);
+                return eventDate < weekStart;
+            }).slice(0, 7); // Показываем максимум 7 событий за раз
+            
+            if (pastEvents.length === 0) {
+                alert('Больше прошлых событий нет');
+                return;
+            }
+            
+            // Добавляем события в таблицу
+            const tbody = document.getElementById('eventsTableBody');
+            pastEvents.forEach(event => {
+                const row = document.createElement('tr');
+                row.setAttribute('data-event-id', event.id);
+                row.innerHTML = `
+                    <td class="event-date">${new Date(event.date).toLocaleDateString('ru-RU')}</td>
+                    <td class="event-time">${event.time}</td>
+                    <td class="event-title">${event.title}</td>
+                    <td class="event-conditions">${event.conditions}</td>
+                    <td class="event-comment">${event.comment || '-'}</td>
+                    <td class="event-actions">
+                        <button class="btn btn-edit" onclick="editEvent('${event.id}')" title="Редактировать">✏️</button>
+                        <button class="btn btn-delete" onclick="deleteEvent('${event.id}')" title="Удалить">🗑️</button>
+                    </td>
+                `;
+                tbody.insertBefore(row, tbody.firstChild);
+            });
+            
+            // Обновляем текст кнопки
+            const loadBtn = document.querySelector('.load-past-btn');
+            loadBtn.textContent = `📅 Показать еще прошлые (${pastWeeksLoaded} недель назад)`;
         }
 
         // Закрытие модального окна при клике вне его
