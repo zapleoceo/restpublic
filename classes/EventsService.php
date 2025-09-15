@@ -47,9 +47,9 @@ class EventsService {
     }
     
     /**
-     * Получить события для виджета начиная с указанной даты (4 события)
+     * Получить события для виджета начиная с указанной даты (7 событий)
      */
-    public function getEventsForWidget($startDate = null, $limit = 4) {
+    public function getEventsForWidget($startDate = null, $limit = 7) {
         try {
             if (!$startDate) {
                 $startDate = new DateTime();

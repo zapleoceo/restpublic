@@ -235,7 +235,7 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
         }
 
         .event-card {
-            background: #1e1e1e;
+            position: relative;
             border: 1px solid #333;
             border-radius: 8px;
             overflow: hidden;
@@ -245,27 +245,35 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
             flex-direction: column;
             flex-shrink: 0;
             transition: all 0.3s ease;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
         }
 
         .event-card:hover {
-            border-color: var(--color-1-400);
+            border-color: #4fb17d;
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
         }
 
-        .event-card__image {
-            width: 100%;
-            height: 100px;
-            object-fit: cover;
-            flex-shrink: 0;
+        .event-card__overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(1px);
         }
 
         .event-card__content {
+            position: relative;
+            z-index: 2;
             padding: 12px;
+            height: 100%;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            flex: 1;
         }
 
         .event-card__title {
@@ -273,58 +281,56 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
             font-weight: 600;
             color: #fff;
             margin-bottom: 6px;
+            line-height: 1.3;
         }
 
-        .event-card__price {
-            font-size: 14px;
-            color: #4fb17d;
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-
-        .event-card__description {
+        .event-card__datetime {
             font-size: 12px;
+            color: #4fb17d;
+            font-weight: 500;
+            margin-bottom: 6px;
+        }
+
+        .event-card__conditions {
+            font-size: 11px;
             color: #ccc;
-            flex-grow: 1;
             margin-bottom: 8px;
-            line-height: 1.4;
+            line-height: 1.3;
+            flex-grow: 1;
         }
 
         .event-card__link {
             display: inline-block;
-            font-size: 12px;
+            font-size: 11px;
             color: #fff;
             text-decoration: none;
-            padding: 6px 12px;
-            border: 1px solid #333;
+            padding: 4px 8px;
+            background: rgba(79, 177, 125, 0.8);
             border-radius: 4px;
-            transition: background 0.3s, color 0.3s, border-color 0.3s;
+            transition: all 0.3s ease;
+            align-self: flex-start;
         }
 
         .event-card__link:hover {
             background: #4fb17d;
             color: #000;
-            border-color: #4fb17d;
         }
 
         /* Placeholder card styles */
         .event-card--placeholder {
-            background: #1e1e1e;
+            background-image: url('images/logo.png');
+            background-size: cover;
+            background-position: center;
             border: 2px dashed #333;
         }
 
         .event-card--placeholder:hover {
             border-color: #4fb17d;
-            background: #1e1e1e;
         }
 
-        .event-card__placeholder-image {
-            height: 100px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #2a2a2a;
-            color: #666;
+        .event-card--placeholder .event-card__overlay {
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(2px);
         }
 
         /* Swiper Navigation */
@@ -710,6 +716,7 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                 spaceBetween: 12,
                 freeMode: true,
                 watchSlidesProgress: true,
+                allowTouchMove: true,
                 breakpoints: {
                     320: {
                         slidesPerView: 4,
@@ -739,7 +746,7 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                         spaceBetween: 20
                     },
                     1024: {
-                        slidesPerView: 4,
+                        slidesPerView: 7,
                         spaceBetween: 20
                     }
                 }
@@ -787,9 +794,9 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                         dateSlides.forEach(d => d.classList.remove('active'));
                         // Add active class to clicked date
                         slide.classList.add('active');
-                        // Load events for selected date
-                        const selectedDate = slide.dataset.date;
-                        loadEventsForDate(selectedDate);
+                        // Smooth scroll to corresponding event card
+                        const index = parseInt(slide.dataset.index);
+                        eventsSwiper.slideTo(index, 800, true); // 800ms smooth transition
                     });
                 });
                 
@@ -816,22 +823,23 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                 const eventsWrapper = document.querySelector('#events-slider .swiper-wrapper');
                 eventsWrapper.innerHTML = '';
                 
-                // Always show 4 cards
-                for (let i = 0; i < 4; i++) {
+                // Always show 7 cards
+                for (let i = 0; i < 7; i++) {
                     const eventCard = document.createElement('div');
                     eventCard.className = 'swiper-slide';
                     
                     if (events[i]) {
                         // Real event card
                         const event = events[i];
+                        const backgroundImage = event.image || 'images/logo.png';
                         eventCard.innerHTML = `
-                            <div class="event-card">
-                                <img src="${event.image || 'template/images/sample-image.jpg'}" alt="${event.title}" class="event-card__image">
+                            <div class="event-card" style="background-image: url('${backgroundImage}')">
+                                <div class="event-card__overlay"></div>
                                 <div class="event-card__content">
                                     <h3 class="event-card__title">${event.title}</h3>
-                                    <div class="event-card__price">${event.price}</div>
-                                    <p class="event-card__description">${event.description || ''}</p>
-                                    <a href="${event.link || '#'}" class="event-card__link">Подробнее</a>
+                                    <div class="event-card__datetime">${event.day} ${event.month} ${event.time}</div>
+                                    <div class="event-card__conditions">${event.conditions || ''}</div>
+                                    <a href="${event.link || '#'}" class="event-card__link">Детали</a>
                                 </div>
                             </div>
                         `;
@@ -839,17 +847,11 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                         // Placeholder card for days without events
                         eventCard.innerHTML = `
                             <div class="event-card event-card--placeholder">
-                                <div class="event-card__placeholder-image">
-                                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                                        <line x1="16" y1="2" x2="16" y2="6"></line>
-                                        <line x1="8" y1="2" x2="8" y2="6"></line>
-                                        <line x1="3" y1="10" x2="21" y2="10"></line>
-                                    </svg>
-                                </div>
+                                <div class="event-card__overlay"></div>
                                 <div class="event-card__content">
                                     <h3 class="event-card__title">Событий на эту дату еще нет</h3>
-                                    <p class="event-card__description">Мы работаем над новыми мероприятиями. Следите за обновлениями!</p>
+                                    <div class="event-card__datetime">Следите за обновлениями</div>
+                                    <div class="event-card__conditions">Мы работаем над новыми мероприятиями</div>
                                     <a href="#footer" class="event-card__link">Связаться с нами</a>
                                 </div>
                             </div>

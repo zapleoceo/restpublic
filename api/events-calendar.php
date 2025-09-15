@@ -23,12 +23,12 @@ try {
     
     if ($eventsOnly) {
         // Return only events for specific date
-        $events = $eventsService->getEventsForWidget($startDate, 4);
+        $events = $eventsService->getEventsForWidget($startDate, 7);
         echo json_encode(['events' => $events], JSON_UNESCAPED_UNICODE);
     } else {
         // Return calendar and events
         $calendar = $eventsService->getCalendarDays($startDate, 7);
-        $events = $eventsService->getEventsForWidget($startDate, 4);
+        $events = $eventsService->getEventsForWidget($startDate, 7);
         
         echo json_encode([
             'calendar' => $calendar,
