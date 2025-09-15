@@ -1,5 +1,6 @@
 <?php
 // Страница управления событиями в админке
+session_start();
 require_once __DIR__ . '/../includes/auth-check.php';
 
 $pageTitle = 'Управление событиями';
