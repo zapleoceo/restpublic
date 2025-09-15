@@ -145,11 +145,61 @@ if (count($events) > 0) {
             word-wrap: break-word;
         }
 
+        .event-link {
+            text-align: center;
+        }
+
+        .link-btn {
+            background: #007bff;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 12px;
+            display: inline-block;
+            transition: background-color 0.2s ease;
+        }
+
+        .link-btn:hover {
+            background: #0056b3;
+            color: white;
+            text-decoration: none;
+        }
+
+        .no-link {
+            color: #6c757d;
+            font-style: italic;
+        }
+
+        .event-thumbnail {
+            text-align: center;
+            padding: 8px;
+        }
+
+        .thumbnail-img {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            border: 2px solid #dee2e6;
+        }
+
+        .thumbnail-img:hover {
+            transform: scale(1.1);
+            border-color: #007bff;
+        }
+
+        .default-thumbnail {
+            opacity: 0.7;
+        }
+
         .event-comment {
             color: #6c757d;
             font-size: 12px;
             font-style: italic;
-            max-width: 200px;
+            max-width: 150px;
             word-wrap: break-word;
         }
 
@@ -338,6 +388,50 @@ if (count($events) > 0) {
             background: #5a6268;
         }
 
+        /* Модальное окно для изображений */
+        .image-modal-content {
+            background-color: white;
+            margin: 2% auto;
+            padding: 0;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .image-modal-header {
+            background: #007bff;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px 8px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .image-modal-header h3 {
+            margin: 0;
+            font-size: 16px;
+        }
+
+        .image-modal-body {
+            padding: 20px;
+            text-align: center;
+            overflow: auto;
+            flex: 1;
+        }
+
+        .full-size-image {
+            max-width: 100%;
+            max-height: 70vh;
+            object-fit: contain;
+            border-radius: 4px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
         /* Адаптивность */
         @media (max-width: 768px) {
             .events-container {
@@ -429,6 +523,8 @@ if (count($events) > 0) {
                                     <th>Время</th>
                                     <th>Название</th>
                                     <th>Условия</th>
+                                    <th>Ссылка</th>
+                                    <th>Миниатюра</th>
                                     <th>Комментарий</th>
                                     <th>Действия</th>
                                 </tr>
@@ -459,6 +555,28 @@ if (count($events) > 0) {
                                         </td>
                                         <td class="event-conditions">
                                             <?php echo htmlspecialchars($event['conditions']); ?>
+                                        </td>
+                                        <td class="event-link">
+                                            <?php if (!empty($event['description_link'])): ?>
+                                                <a href="<?php echo htmlspecialchars($event['description_link']); ?>" target="_blank" class="link-btn">
+                                                    🔗 Открыть
+                                                </a>
+                                            <?php else: ?>
+                                                <span class="no-link">-</span>
+                                            <?php endif; ?>
+                                        </td>
+                                        <td class="event-thumbnail">
+                                            <?php if (!empty($event['image'])): ?>
+                                                <img src="<?php echo htmlspecialchars($event['image']); ?>" 
+                                                     alt="<?php echo htmlspecialchars($event['title']); ?>" 
+                                                     class="thumbnail-img" 
+                                                     onclick="showImageModal('<?php echo htmlspecialchars($event['image']); ?>', '<?php echo htmlspecialchars($event['title']); ?>')">
+                                            <?php else: ?>
+                                                <img src="/images/event-default.png" 
+                                                     alt="Дефолтное изображение" 
+                                                     class="thumbnail-img default-thumbnail"
+                                                     onclick="showImageModal('/images/event-default.png', 'Дефолтное изображение')">
+                                            <?php endif; ?>
                                         </td>
                                         <td class="event-comment">
                                             <?php echo !empty($event['comment']) ? htmlspecialchars($event['comment']) : '-'; ?>
@@ -545,6 +663,19 @@ if (count($events) > 0) {
                 <button type="button" class="btn btn-primary" onclick="saveEvent()">
                     Сохранить
                 </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно для просмотра изображений -->
+    <div id="imageModal" class="modal">
+        <div class="image-modal-content">
+            <div class="image-modal-header">
+                <h3 id="imageModalTitle">Просмотр изображения</h3>
+                <button class="modal-close" onclick="closeImageModal()">&times;</button>
+            </div>
+            <div class="image-modal-body">
+                <img id="modalImage" src="" alt="" class="full-size-image">
             </div>
         </div>
     </div>
@@ -734,11 +865,25 @@ if (count($events) > 0) {
             pastEvents.forEach(event => {
                 const row = document.createElement('tr');
                 row.setAttribute('data-event-id', event.id);
+                
+                // Формируем ссылку
+                const linkHtml = event.description_link ? 
+                    `<a href="${event.description_link}" target="_blank" class="link-btn">🔗 Открыть</a>` : 
+                    '<span class="no-link">-</span>';
+                
+                // Формируем миниатюру
+                const imageSrc = event.image || '/images/event-default.png';
+                const imageAlt = event.image ? event.title : 'Дефолтное изображение';
+                const thumbnailClass = event.image ? 'thumbnail-img' : 'thumbnail-img default-thumbnail';
+                const thumbnailHtml = `<img src="${imageSrc}" alt="${imageAlt}" class="${thumbnailClass}" onclick="showImageModal('${imageSrc}', '${imageAlt}')">`;
+                
                 row.innerHTML = `
                     <td class="event-date">${new Date(event.date).toLocaleDateString('ru-RU')}</td>
                     <td class="event-time">${event.time}</td>
                     <td class="event-title">${event.title}</td>
                     <td class="event-conditions">${event.conditions}</td>
+                    <td class="event-link">${linkHtml}</td>
+                    <td class="event-thumbnail">${thumbnailHtml}</td>
                     <td class="event-comment">${event.comment || '-'}</td>
                     <td class="event-actions">
                         <button class="btn btn-edit" onclick="editEvent('${event.id}')" title="Редактировать">✏️</button>
@@ -761,10 +906,28 @@ if (count($events) > 0) {
             }
         }
 
+        // Функции для работы с модальным окном изображений
+        function showImageModal(imageSrc, imageTitle) {
+            const modal = document.getElementById('imageModal');
+            const modalImage = document.getElementById('modalImage');
+            const modalTitle = document.getElementById('imageModalTitle');
+            
+            modalImage.src = imageSrc;
+            modalImage.alt = imageTitle;
+            modalTitle.textContent = imageTitle;
+            
+            modal.style.display = 'block';
+        }
+        
+        function closeImageModal() {
+            document.getElementById('imageModal').style.display = 'none';
+        }
+
         // Закрытие модального окна по Escape
         document.addEventListener('keydown', function(event) {
             if (event.key === 'Escape') {
                 closeEventModal();
+                closeImageModal();
             }
         });
     </script>
