@@ -1259,6 +1259,7 @@ if (count($events) > 0) {
 
         function deleteEvent(eventId) {
             console.log('deleteEvent вызвана для ID:', eventId);
+            console.log('Стек вызовов:', new Error().stack);
             
             // Проверяем, не удаляется ли уже это событие
             if (deletingEvents.has(eventId)) {
@@ -1283,6 +1284,8 @@ if (count($events) > 0) {
                 
                 // Добавляем событие в список удаляемых
                 deletingEvents.add(eventId);
+                console.log('Событие добавлено в deletingEvents:', eventId);
+                console.log('Текущий список удаляемых:', Array.from(deletingEvents));
                 
                 // Отключаем кнопку удаления - ищем в строке таблицы
                 const eventRow = document.querySelector(`tr[data-event-id="${eventId}"]`);
