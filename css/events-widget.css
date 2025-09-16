@@ -32,11 +32,11 @@
 }
 
 .dates-swiper .swiper-slide {
-    width: auto;
-    min-width: 60px;
-    max-width: 80px;
+    width: calc(100% / 14); /* Фиксированная ширина для 14 слайдов */
+    min-width: 0;
+    max-width: none;
     text-align: center;
-    padding: 8px 12px;
+    padding: 8px 4px;
     color: var(--muted-text);
     background: transparent;
     border: 1px solid var(--card-border);
@@ -48,6 +48,7 @@
     user-select: none;
     position: relative;
     flex-shrink: 0;
+    box-sizing: border-box;
 }
 
 .dates-swiper .swiper-slide:hover {
@@ -302,10 +303,11 @@
     }
     
     .dates-swiper .swiper-slide {
-        padding: 4px 6px;
+        padding: 4px 2px;
         font-size: 10px;
-        min-width: 40px;
-        max-width: 50px;
+        width: calc(100% / 14); /* Фиксированная ширина для 14 слайдов */
+        min-width: 0;
+        max-width: none;
     }
     
     .posters-swiper .swiper-slide {
@@ -331,10 +333,11 @@
     }
     
     .dates-swiper .swiper-slide {
-        padding: 2px 4px;
+        padding: 2px 1px;
         font-size: 9px;
-        min-width: 35px;
-        max-width: 40px;
+        width: calc(100% / 14); /* Фиксированная ширина для 14 слайдов */
+        min-width: 0;
+        max-width: none;
     }
     
     .posters-swiper {
@@ -370,10 +373,11 @@
     }
     
     .dates-swiper .swiper-slide {
-        padding: 1px 2px;
+        padding: 1px 0px;
         font-size: 8px;
-        min-width: 30px;
-        max-width: 35px;
+        width: calc(100% / 14); /* Фиксированная ширина для 14 слайдов */
+        min-width: 0;
+        max-width: none;
     }
     
     .posters-swiper .swiper-slide {
