@@ -238,3 +238,4 @@ class EventsWidget {
 document.addEventListener('DOMContentLoaded', () => {
     new EventsWidget();
 });
+

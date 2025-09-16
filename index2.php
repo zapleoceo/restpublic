@@ -269,58 +269,69 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
             height: 200px;
             flex-shrink: 0;
             transition: border-color 0.3s ease;
-            display: flex;
-            flex-direction: column;
+            position: relative;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
         }
 
         .event-card:hover {
             border-color: var(--accent-color);
         }
 
-        .event-card__image {
-            width: 100%;
-            height: 100px;
-            object-fit: cover;
-            display: block;
+        .event-card__overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(1px);
         }
 
         .event-card__content {
-            padding: 16px;
-            flex: 1;
+            position: relative;
+            z-index: 2;
+            padding: 12px;
+            height: 100%;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
         }
 
         .event-card__title {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 600;
             color: var(--text-color);
-            margin-bottom: 8px;
-            line-height: 1.3;
+            margin-bottom: 6px;
+            line-height: 1.2;
         }
 
         .event-card__price {
-            font-size: 16px;
+            font-size: 14px;
             color: var(--accent-color);
             font-weight: 600;
-            margin-bottom: 12px;
+            margin-bottom: 8px;
         }
 
         .event-card__description {
-            font-size: 14px;
+            font-size: 12px;
             color: var(--muted-text);
-            margin-bottom: 12px;
-            line-height: 1.4;
+            margin-bottom: 8px;
+            line-height: 1.3;
             flex-grow: 1;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
         }
 
         .event-card__link {
             display: inline-block;
             color: var(--text-color);
             text-decoration: none;
-            font-size: 14px;
-            padding: 8px 16px;
+            font-size: 12px;
+            padding: 6px 12px;
             border: 1px solid var(--card-border);
             border-radius: 4px;
             transition: all 0.3s ease;
@@ -383,24 +394,25 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
             }
             
             .event-card__content {
-                padding: 12px;
+                padding: 10px;
             }
             
             .event-card__title {
-                font-size: 16px;
-            }
-            
-            .event-card__price {
                 font-size: 14px;
             }
             
-            .event-card__description {
+            .event-card__price {
                 font-size: 12px;
             }
             
+            .event-card__description {
+                font-size: 10px;
+                -webkit-line-clamp: 2;
+            }
+            
             .event-card__link {
-                font-size: 12px;
-                padding: 6px 12px;
+                font-size: 10px;
+                padding: 4px 8px;
             }
         }
     </style>
@@ -939,9 +951,11 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                         eventCard.className = 'event-card';
                         
                         const formattedPrice = Number(event.price).toLocaleString('ru-RU') + '₽';
+                        const backgroundImage = event.image || 'images/logo.png';
                         
+                        eventCard.style.backgroundImage = `url('${backgroundImage}')`;
                         eventCard.innerHTML = `
-                            <img src="${event.image}" alt="${event.title}" class="event-card__image">
+                            <div class="event-card__overlay"></div>
                             <div class="event-card__content">
                                 <h3 class="event-card__title">${event.title}</h3>
                                 <div class="event-card__price">${formattedPrice}</div>
