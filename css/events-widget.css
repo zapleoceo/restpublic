@@ -83,7 +83,7 @@
 
 /* Слайдер постеров */
 .posters-swiper {
-    height: 317px; /* Точно на 10% больше карточек 288px (288 * 1.1 = 317px) */
+    height: 325px; /* 317px + 8px запас для hover эффекта */
     overflow: hidden;
     position: relative;
 }
@@ -127,7 +127,7 @@
 }
 
 .poster-card:hover {
-    /* Убрали translateY чтобы карточки не выходили за границы */
+    transform: translateY(-5px);
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
 }
 
@@ -291,7 +291,7 @@
 }
 
 .poster-card:not(.empty-date):hover {
-    /* Убрали translateY и scale чтобы карточки не выходили за границы */
+    transform: translateY(-8px) scale(1.02);
     box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
 }
 
@@ -340,7 +340,7 @@
     }
     
     .posters-swiper {
-        height: 242px; /* Точно на 10% больше мобильных карточек (220 * 1.1 = 242px) */
+        height: 250px; /* 242px + 8px запас для hover эффекта */
     }
     
     .posters-swiper .swiper-slide {
