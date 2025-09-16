@@ -641,15 +641,28 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                     this.calendarDays = [];
                     const today = new Date();
                     
+                    // Определяем язык для дней недели
+                    const language = document.documentElement.lang || 'ru';
+                    const dayNames = {
+                        'ru': ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'],
+                        'en': ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+                        'vi': ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7']
+                    };
+                    
                     for (let i = 0; i < 14; i++) {
                         const date = new Date(today);
                         date.setDate(today.getDate() + i);
                         const dateStr = date.toISOString().split('T')[0];
                         
+                        const day = date.getDate();
+                        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+                        const dayOfWeek = dayNames[language]?.[date.getDay()] || dayNames['ru'][date.getDay()];
+                        
                         this.calendarDays.push({
                             date: dateStr,
-                            day: date.getDate(),
-                            month: this.getMonthShort(date.getMonth() + 1),
+                            day: day,
+                            month: month,
+                            dayOfWeek: dayOfWeek,
                             hasEvents: this.eventsByDate[dateStr] && this.eventsByDate[dateStr].length > 0
                         });
                     }
@@ -683,8 +696,8 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                         }
                         
                         slideEl.innerHTML = `
-                            <div>${dayData.day}</div>
-                            <div style="font-size: 10px; margin-top: 2px;">${dayData.month}</div>
+                            <div>${dayData.day}/${dayData.month}</div>
+                            <div style="font-size: 10px; margin-top: 2px;">${dayData.dayOfWeek}</div>
                         `;
                         
                         datesWrapper.appendChild(slideEl);
@@ -743,13 +756,35 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                             const dateObj = new Date(dayData.date);
                             const formattedDate = dateObj.toLocaleDateString('ru-RU');
                             
+                            // Определяем язык для сообщения
+                            const language = document.documentElement.lang || 'ru';
+                            const messages = {
+                                'ru': {
+                                    title: 'Нет событий',
+                                    text: 'Есть идеи?',
+                                    link: 'Свяжитесь с нами!'
+                                },
+                                'en': {
+                                    title: 'No events',
+                                    text: 'Have ideas?',
+                                    link: 'Contact us!'
+                                },
+                                'vi': {
+                                    title: 'Không có sự kiện',
+                                    text: 'Có ý tưởng?',
+                                    link: 'Liên hệ với chúng tôi!'
+                                }
+                            };
+                            
+                            const msg = messages[language] || messages['ru'];
+                            
                             emptySlideEl.innerHTML = `
                                 <div class="poster-card empty-date">
                                     <div class="poster-card__overlay">
-                                        <div class="poster-card__title">${formattedDate}</div>
+                                        <div class="poster-card__title">${msg.title}</div>
                                         <div class="poster-card__description">
-                                            Мы еще не придумали что у нас тут будет.<br>
-                                            Есть идеи? <a href="#footer" class="contact-link">Свяжитесь с нами!</a>
+                                            ${msg.text}<br>
+                                            <a href="#footer" class="contact-link">${msg.link}</a>
                                         </div>
                                     </div>
                                 </div>
