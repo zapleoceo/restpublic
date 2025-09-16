@@ -61,6 +61,7 @@ try {
             // FormData (для загрузки файлов)
             $input = $_POST;
             error_log("API Events - Using FormData input: " . print_r($input, true));
+            error_log("API Events - FormData keys: " . implode(', ', array_keys($input)));
         } else {
             // JSON
             $rawInput = file_get_contents('php://input');
@@ -264,10 +265,18 @@ try {
             // Обновить событие
             error_log("API Events - PUT request started");
             error_log("API Events - Input data: " . print_r($input, true));
+            error_log("API Events - POST data: " . print_r($_POST, true));
+            error_log("API Events - FILES data: " . print_r($_FILES, true));
             
             // Получаем данные из FormData или JSON
             $eventId = $input['event_id'] ?? null;
-            error_log("API Events - Event ID: " . $eventId);
+            error_log("API Events - Event ID from input: " . $eventId);
+            
+            // Дополнительная проверка в $_POST для FormData
+            if (empty($eventId) && isset($_POST['event_id'])) {
+                $eventId = $_POST['event_id'];
+                error_log("API Events - Event ID from POST: " . $eventId);
+            }
             
             if (empty($eventId)) {
                 error_log("API Events - Missing event_id");

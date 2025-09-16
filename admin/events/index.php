@@ -475,7 +475,7 @@ if (count($events) > 0) {
             border-radius: 8px;
             width: 90%;
             max-width: 500px;
-            max-height: 45vh;
+            max-height: 90vh !important;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
             display: flex;
             flex-direction: column;
@@ -951,6 +951,8 @@ if (count($events) > 0) {
 
     <script src="/admin/assets/js/admin.js?v=<?php echo time(); ?>"></script>
     <script>
+        // Версия скрипта для избежания кэширования
+        console.log('Events script loaded, version:', <?php echo time(); ?>);
         // Переменная для отслеживания количества загруженных прошлых событий
         let pastEventsLoaded = 0;
         const allEvents = <?php echo json_encode($events); ?>;
@@ -1035,6 +1037,8 @@ if (count($events) > 0) {
                         if (event) {
                             // Заполняем форму данными события
                             document.getElementById('eventId').value = eventId;
+                            console.log('Заполняем eventId в форме:', eventId);
+                            console.log('Поле eventId после заполнения:', document.getElementById('eventId').value);
                             document.getElementById('eventTitle').value = event.title || '';
                             document.getElementById('eventDate').value = event.date || '';
                             document.getElementById('eventTime').value = event.time || '';
@@ -1093,8 +1097,12 @@ if (count($events) > 0) {
             const saveButtonText = document.getElementById('saveButtonText');
             const saveButtonSpinner = document.getElementById('saveButtonSpinner');
 
-            console.log('saveEvent вызвана, eventId:', eventId);
+            console.log('=== saveEvent вызвана ===');
+            console.log('eventId:', eventId);
+            console.log('eventId type:', typeof eventId);
+            console.log('eventId length:', eventId ? eventId.length : 'undefined');
             console.log('Форма:', form);
+            console.log('Скрытое поле eventId:', document.getElementById('eventId'));
 
             // Валидация данных перед отправкой
             const validationResult = validateEventForm();
@@ -1133,9 +1141,20 @@ if (count($events) > 0) {
                 requestBody = new FormData(form);
                 requestBody.set('is_active', document.getElementById('eventIsActive').checked);
                 
-                // Для PUT запроса добавляем event_id
+                // Для PUT запроса добавляем event_id (обязательно!)
                 if (method === 'PUT') {
-                    requestBody.set('event_id', eventId);
+                    console.log('Добавляем event_id в FormData:', eventId);
+                    console.log('Тип eventId:', typeof eventId);
+                    console.log('eventId пустой?', !eventId);
+                    
+                    if (eventId) {
+                        requestBody.set('event_id', eventId);
+                        console.log('event_id добавлен в FormData');
+                    } else {
+                        console.error('eventId пустой! Нельзя добавить в FormData');
+                        alert('Ошибка: ID события не найден. Попробуйте перезагрузить страницу.');
+                        return;
+                    }
                 }
                 
                 contentType = undefined; // FormData сам установит Content-Type
@@ -1168,6 +1187,15 @@ if (count($events) > 0) {
             console.log('Отправляем запрос на:', '/admin/events/api.php');
             console.log('Метод:', method);
             console.log('Опции запроса:', fetchOptions);
+            
+            // Отладка FormData
+            if (requestBody instanceof FormData) {
+                console.log('=== FormData содержимое ===');
+                for (let [key, value] of requestBody.entries()) {
+                    console.log(key + ':', value);
+                }
+                console.log('=== Конец FormData ===');
+            }
             
             fetch('/admin/events/api.php', fetchOptions)
             .then(response => {
