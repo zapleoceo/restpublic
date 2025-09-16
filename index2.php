@@ -991,17 +991,22 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                             // Прокручиваем слайдер дат с учетом позиционирования
                             this.isUserScrolling = true;
                             
-                            // Позиционируем так, чтобы активная дата была видна, но не прилипала к левому краю
+                            // Позиционируем так, чтобы активная дата была по центру
                             const totalSlides = this.datesSwiper.slides.length;
                             let targetSlideIndex = targetIndex;
                             
-                            // Если это не первая дата, сдвигаем на одну позицию назад
-                            if (targetIndex > 0 && targetIndex < totalSlides - 1) {
-                                targetSlideIndex = targetIndex - 1;
-                            } else if (targetIndex === totalSlides - 1) {
-                                // Для последней даты сдвигаем на две позиции назад
-                                targetSlideIndex = Math.max(0, targetIndex - 2);
+                            // Вычисляем количество видимых слайдов (примерно)
+                            const visibleSlides = Math.floor(this.datesSwiper.width / 100); // 100px на слайд примерно
+                            
+                            // Центрируем активную дату
+                            if (targetIndex > Math.floor(visibleSlides / 2)) {
+                                targetSlideIndex = targetIndex - Math.floor(visibleSlides / 2);
+                            } else {
+                                targetSlideIndex = 0;
                             }
+                            
+                            // Убеждаемся, что не выходим за границы
+                            targetSlideIndex = Math.max(0, Math.min(targetSlideIndex, totalSlides - visibleSlides));
                             
                             this.datesSwiper.slideTo(targetSlideIndex, 300);
                             
