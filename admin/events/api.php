@@ -19,6 +19,7 @@ if (file_exists($envFile)) {
 
 require_once __DIR__ . '/../../vendor/autoload.php';
 require_once __DIR__ . '/../../classes/ImageService.php';
+require_once __DIR__ . '/../../classes/Logger.php';
 
 // Проверка авторизации без редиректа - ВРЕМЕННО ОТКЛЮЧЕНО ДЛЯ ТЕСТИРОВАНИЯ
 session_start();
@@ -42,21 +43,22 @@ try {
     $db = $client->$dbName;
     $eventsCollection = $db->events;
     
+    // Инициализация логгера
+    $logger = new Logger();
+    
     $method = $_SERVER['REQUEST_METHOD'];
     
     // Обрабатываем данные в зависимости от Content-Type
     if ($method === 'POST' || $method === 'PUT') {
         $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
-        error_log("Content-Type: " . $contentType);
-        error_log("_FILES: " . print_r($_FILES, true));
-        error_log("_POST: " . print_r($_POST, true));
         
         if (strpos($contentType, 'multipart/form-data') !== false) {
             // FormData (для загрузки файлов)
             $input = $_POST;
         } else {
             // JSON
-            $input = json_decode(file_get_contents('php://input'), true);
+            $rawInput = file_get_contents('php://input');
+            $input = json_decode($rawInput, true);
         }
     } else {
         $input = json_decode(file_get_contents('php://input'), true);
@@ -92,12 +94,10 @@ try {
             
         case 'POST':
             // Создать новое событие
-            error_log("POST запрос - input: " . print_r($input, true));
             
             $requiredFields = ['title', 'date', 'time', 'conditions'];
             foreach ($requiredFields as $field) {
                 if (empty($input[$field])) {
-                    error_log("Валидация не пройдена: поле '$field' пустое. Значение: '" . ($input[$field] ?? 'null') . "'");
                     http_response_code(400);
                     echo json_encode([
                         'success' => false,
@@ -141,9 +141,6 @@ try {
                     $imageData = $imageService->saveImage($fileData, $_FILES['image']['name'], [
                         'event_type' => 'new_event'
                     ]);
-                    error_log("POST - Image saved to GridFS: " . $imageData['file_id']);
-                } else {
-                    error_log("POST - Image validation failed: " . $validation['error']);
                 }
             }
             
@@ -159,9 +156,6 @@ try {
                 'created_at' => new MongoDB\BSON\UTCDateTime(),
                 'updated_at' => new MongoDB\BSON\UTCDateTime()
             ];
-            
-            // Отладочная информация
-            error_log("POST запрос - description_link: " . ($input['description_link'] ?? 'null'));
             
             $result = $eventsCollection->insertOne($eventData);
             
@@ -198,7 +192,6 @@ try {
             $requiredFields = ['title', 'date', 'time', 'conditions'];
             foreach ($requiredFields as $field) {
                 if (empty($input[$field])) {
-                    error_log("Валидация не пройдена: поле '$field' пустое. Значение: '" . ($input[$field] ?? 'null') . "'");
                     http_response_code(400);
                     echo json_encode([
                         'success' => false,
@@ -251,16 +244,8 @@ try {
                         'event_type' => 'updated_event',
                         'original_event_id' => $eventId
                     ]);
-                    error_log("PUT - Image saved to GridFS: " . $imageData['file_id']);
-                } else {
-                    error_log("PUT - Image validation failed: " . $validation['error']);
                 }
-            } else {
-                error_log("PUT - No image file or upload error: " . ($_FILES['image']['error'] ?? 'no file'));
             }
-            
-            // Отладочная информация
-            error_log("PUT запрос - description_link: " . ($description_link ?? 'null'));
             
             try {
                 $eventId = new MongoDB\BSON\ObjectId($eventId);
@@ -279,16 +264,13 @@ try {
                 // Обновляем изображение только если загружено новое
                 if ($imageData !== null) {
                     $updateData['image'] = $imageData['file_id'];
-                    error_log("PUT - Updating with new image: " . $imageData['file_id']);
                 } else {
                     // Если изображение не загружено, оставляем существующее
                     $existingEvent = $eventsCollection->findOne(['_id' => $eventId]);
                     if ($existingEvent && isset($existingEvent['image'])) {
                         $updateData['image'] = $existingEvent['image'];
-                        error_log("PUT - Keeping existing image: " . $existingEvent['image']);
                     } else {
                         $updateData['image'] = null;
-                        error_log("PUT - No image");
                     }
                 }
                 
@@ -323,10 +305,6 @@ try {
             // Получаем данные из JSON
             $eventId = $input['event_id'] ?? null;
             
-            // Отладочная информация
-            error_log("DELETE запрос - event_id: " . ($eventId ?? 'null'));
-            error_log("INPUT данные: " . json_encode($input));
-            
             if (empty($eventId)) {
                 http_response_code(400);
                 echo json_encode([
@@ -354,7 +332,6 @@ try {
                     ]);
                 }
             } catch (Exception $e) {
-                error_log("Ошибка удаления события: " . $e->getMessage());
                 http_response_code(400);
                 echo json_encode([
                     'success' => false,
@@ -373,7 +350,6 @@ try {
     }
     
 } catch (Exception $e) {
-    error_log("Ошибка API событий: " . $e->getMessage());
     http_response_code(500);
     echo json_encode([
         'success' => false,
