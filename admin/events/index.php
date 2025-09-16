@@ -340,8 +340,8 @@ if (count($events) > 0) {
         }
 
         .form-section {
-            margin-bottom: 2rem;
-            padding: 1.5rem;
+            margin-bottom: 1rem;
+            padding: 1rem;
             background: #f8f9fa;
             border-radius: 8px;
             border-left: 4px solid #007bff;
@@ -475,7 +475,7 @@ if (count($events) > 0) {
             border-radius: 8px;
             width: 90%;
             max-width: 500px;
-            max-height: 90vh;
+            max-height: 45vh;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
             display: flex;
             flex-direction: column;
@@ -516,13 +516,13 @@ if (count($events) > 0) {
         }
 
         .modal-body {
-            padding: 20px;
+            padding: 15px;
             overflow-y: auto;
             flex: 1;
         }
 
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 10px;
         }
 
         .form-row {
@@ -567,7 +567,7 @@ if (count($events) > 0) {
         }
 
         .modal-footer {
-            padding: 15px 20px;
+            padding: 10px 15px;
             border-top: 1px solid #dee2e6;
             display: flex;
             justify-content: flex-end;
@@ -835,7 +835,6 @@ if (count($events) > 0) {
 
                 <!-- Основная информация -->
                 <div class="form-section">
-                    <h3>📝 Основная информация</h3>
                     
                     <div class="form-group">
                         <label for="eventTitle">Название события *</label>
@@ -865,7 +864,6 @@ if (count($events) > 0) {
 
                 <!-- Дополнительная информация -->
                 <div class="form-section">
-                    <h3>🔗 Дополнительная информация</h3>
                     
                     <div class="form-group">
                         <label for="eventDescriptionLink">Ссылка на подробное описание</label>
@@ -883,7 +881,6 @@ if (count($events) > 0) {
 
                 <!-- Изображение -->
                 <div class="form-section">
-                    <h3>🖼️ Изображение события</h3>
                     
                     <div class="form-group">
                         <label for="eventImage">Загрузить изображение</label>
@@ -915,7 +912,6 @@ if (count($events) > 0) {
 
                 <!-- Настройки -->
                 <div class="form-section">
-                    <h3>⚙️ Настройки</h3>
                     
                     <div class="form-group">
                         <label class="checkbox-label">
