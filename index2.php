@@ -226,9 +226,9 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
         }
 
         .dates-swiper .swiper-slide.active {
-            background: #28a745;
+            background: #366b5b;
             color: white;
-            border-color: #28a745;
+            border-color: #366b5b;
             font-weight: 600;
             font-size: 15px;
             transform: scale(1.05);
@@ -990,12 +990,19 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                             // Прокручиваем слайдер дат с учетом позиционирования
                             this.isUserScrolling = true;
                             
-                            // Если это не первая дата, сдвигаем так, чтобы слева оставалась одна дата
-                            if (targetIndex > 0) {
-                                this.datesSwiper.slideTo(targetIndex - 1, 300);
-                            } else {
-                                this.datesSwiper.slideTo(0, 300);
+                            // Позиционируем так, чтобы активная дата была видна, но не прилипала к левому краю
+                            const totalSlides = this.datesSwiper.slides.length;
+                            let targetSlideIndex = targetIndex;
+                            
+                            // Если это не первая дата, сдвигаем на одну позицию назад
+                            if (targetIndex > 0 && targetIndex < totalSlides - 1) {
+                                targetSlideIndex = targetIndex - 1;
+                            } else if (targetIndex === totalSlides - 1) {
+                                // Для последней даты сдвигаем на две позиции назад
+                                targetSlideIndex = Math.max(0, targetIndex - 2);
                             }
+                            
+                            this.datesSwiper.slideTo(targetSlideIndex, 300);
                             
                             // Находим первый постер для этой даты
                             const selectedDate = slide.dataset.date;
