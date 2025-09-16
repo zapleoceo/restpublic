@@ -539,9 +539,9 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                         },
                         speed: 300,
                         breakpoints: {
-                            320: { slidesPerView: 14, spaceBetween: 2 },
-                            480: { slidesPerView: 14, spaceBetween: 3 },
-                            768: { slidesPerView: 14, spaceBetween: 4 },
+                            320: { slidesPerView: 7, spaceBetween: 2 },
+                            480: { slidesPerView: 7, spaceBetween: 3 },
+                            800: { slidesPerView: 7, spaceBetween: 4 },
                             1024: { slidesPerView: 14, spaceBetween: 6 },
                             1200: { slidesPerView: 14, spaceBetween: 8 }
                         },

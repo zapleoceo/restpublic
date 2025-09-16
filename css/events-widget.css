@@ -296,6 +296,30 @@
 }
 
 /* Адаптивность */
+@media (max-width: 800px) {
+    .dates-swiper {
+        height: 80px; /* Высота для двух строк по 7 дней */
+    }
+    
+    .dates-swiper .swiper-wrapper {
+        height: 80px; /* Фиксированная высота для двух строк */
+        display: flex;
+        flex-wrap: wrap;
+        align-content: flex-start;
+    }
+    
+    .dates-swiper .swiper-slide {
+        width: calc(100% / 7); /* 7 дней в строке */
+        height: 36px; /* Высота одной карточки даты */
+        padding: 6px 4px;
+        font-size: 11px;
+        min-width: 0;
+        max-width: none;
+        margin-bottom: 4px; /* Отступ между строками */
+        flex-shrink: 0;
+    }
+}
+
 @media (max-width: 768px) {
     .events-widget__title {
         font-size: 2rem;
