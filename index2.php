@@ -195,16 +195,17 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
 
         /* Слайдер дат */
         .dates-swiper {
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             overflow: hidden;
         }
 
         .dates-swiper .swiper-wrapper {
-            transition-timing-function: linear;
+            transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
 
         .dates-swiper .swiper-slide {
             width: auto;
+            min-width: 80px;
             text-align: center;
             padding: 12px 20px;
             color: var(--muted-text);
@@ -217,7 +218,6 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
             transition: all 0.3s ease;
             user-select: none;
             position: relative;
-            min-width: 60px;
         }
 
         .dates-swiper .swiper-slide:hover {
@@ -247,101 +247,87 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
             background: var(--bg-color);
         }
 
-        /* Контейнер событий */
-        .events-container {
+        /* Слайдер постеров */
+        .posters-swiper {
+            height: 250px;
+            overflow: hidden;
             position: relative;
         }
 
-        #events-display {
-            display: flex;
-            gap: 20px;
-            flex-wrap: wrap;
-            justify-content: flex-start;
+        .posters-swiper .swiper-wrapper {
+            transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
 
-        /* Карточка события */
-        .event-card {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 8px;
-            overflow: hidden;
+        .posters-swiper .swiper-slide {
             width: 300px;
             height: 200px;
             flex-shrink: 0;
-            transition: border-color 0.3s ease;
-            position: relative;
+        }
+
+        /* Постер карточка */
+        .poster-card {
+            width: 100%;
+            height: 100%;
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid var(--card-border);
         }
 
-        .event-card:hover {
-            border-color: var(--accent-color);
+        .poster-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
         }
 
-        .event-card__overlay {
+        .poster-card__overlay {
             position: absolute;
-            top: 0;
+            bottom: 0;
             left: 0;
             right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(1px);
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+            padding: 15px;
+            color: white;
         }
 
-        .event-card__content {
-            position: relative;
-            z-index: 2;
-            padding: 12px;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .event-card__title {
+        .poster-card__title {
             font-size: 16px;
             font-weight: 600;
-            color: var(--text-color);
-            margin-bottom: 6px;
+            margin-bottom: 5px;
             line-height: 1.2;
         }
 
-        .event-card__price {
-            font-size: 14px;
-            color: var(--accent-color);
-            font-weight: 600;
-            margin-bottom: 8px;
+        .poster-card__date {
+            font-size: 12px;
+            opacity: 0.9;
         }
 
-        .event-card__description {
-            font-size: 12px;
-            color: var(--muted-text);
-            margin-bottom: 8px;
+        .poster-card__description {
+            font-size: 11px;
+            opacity: 0.8;
+            margin-top: 5px;
             line-height: 1.3;
-            flex-grow: 1;
-            overflow: hidden;
             display: -webkit-box;
-            -webkit-line-clamp: 3;
+            -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
+            overflow: hidden;
         }
 
-        .event-card__link {
-            display: inline-block;
-            color: var(--text-color);
-            text-decoration: none;
-            font-size: 12px;
-            padding: 6px 12px;
-            border: 1px solid var(--card-border);
-            border-radius: 4px;
-            transition: all 0.3s ease;
-            align-self: flex-start;
-        }
-
-        .event-card__link:hover {
-            background: var(--accent-color);
-            color: var(--bg-color);
-            border-color: var(--accent-color);
+        /* Индикатор прокрутки */
+        .posters-swiper::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            width: 30px;
+            background: linear-gradient(to left, rgba(255, 255, 255, 0.8), transparent);
+            pointer-events: none;
+            z-index: 10;
         }
 
         /* Сообщение об отсутствии событий */
@@ -362,15 +348,23 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
             .dates-swiper .swiper-slide {
                 padding: 10px 16px;
                 font-size: 13px;
-                min-width: 50px;
+                min-width: 60px;
             }
             
-            .event-card {
-                width: 280px;
+            .posters-swiper .swiper-slide {
+                width: 250px;
             }
             
-            #events-display {
-                gap: 15px;
+            .poster-card__overlay {
+                padding: 12px;
+            }
+            
+            .poster-card__title {
+                font-size: 14px;
+            }
+            
+            .poster-card__date {
+                font-size: 11px;
             }
         }
 
@@ -382,37 +376,33 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
             .dates-swiper .swiper-slide {
                 padding: 8px 12px;
                 font-size: 12px;
-                min-width: 45px;
+                min-width: 50px;
             }
             
-            .event-card {
-                width: 260px;
+            .posters-swiper {
+                height: 220px;
             }
             
-            #events-display {
-                gap: 10px;
+            .posters-swiper .swiper-slide {
+                width: 220px;
+                height: 180px;
             }
             
-            .event-card__content {
+            .poster-card__overlay {
                 padding: 10px;
             }
             
-            .event-card__title {
-                font-size: 14px;
+            .poster-card__title {
+                font-size: 13px;
             }
             
-            .event-card__price {
-                font-size: 12px;
-            }
-            
-            .event-card__description {
+            .poster-card__date {
                 font-size: 10px;
-                -webkit-line-clamp: 2;
             }
             
-            .event-card__link {
+            .poster-card__description {
                 font-size: 10px;
-                padding: 4px 8px;
+                -webkit-line-clamp: 1;
             }
         }
     </style>
@@ -652,10 +642,10 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                     </div>
                 </div>
 
-                <!-- Контейнер отображения событий -->
-                <div class="events-container">
-                    <div id="events-display">
-                        <!-- События будут добавлены динамически -->
+                <!-- Слайдер постеров -->
+                <div class="swiper posters-swiper">
+                    <div class="swiper-wrapper" id="posters-wrapper">
+                        <!-- Постеры будут добавлены динамически -->
                     </div>
                 </div>
             </div>
@@ -746,22 +736,24 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                 });
             });
 
-            // Events Widget JavaScript
+            // Events Widget JavaScript - Double Slider
             class EventsWidget {
                 constructor() {
                     this.datesSwiper = null;
+                    this.postersSwiper = null;
                     this.events = [];
-                    this.calendarDays = [];
                     this.eventsByDate = {};
+                    this.allPosters = [];
+                    this.isUserScrolling = false;
                     this.init();
                 }
 
                 init() {
-                    this.initSwiper();
+                    this.initSwipers();
                     this.loadEvents();
                 }
 
-                initSwiper() {
+                initSwipers() {
                     // Инициализация слайдера дат
                     this.datesSwiper = new Swiper('.dates-swiper', {
                         slidesPerView: 'auto',
@@ -771,14 +763,27 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                             enabled: true
                         },
                         speed: 300,
-                        breakpoints: {
-                            320: {
-                                slidesPerView: 'auto',
-                                spaceBetween: 10
-                            },
-                            768: {
-                                slidesPerView: 'auto',
-                                spaceBetween: 12
+                        on: {
+                            slideChange: () => {
+                                if (!this.isUserScrolling) return;
+                                this.onDateSlideChange();
+                            }
+                        }
+                    });
+
+                    // Инициализация слайдера постеров
+                    this.postersSwiper = new Swiper('.posters-swiper', {
+                        slidesPerView: 'auto',
+                        spaceBetween: 20,
+                        freeMode: true,
+                        mousewheel: {
+                            enabled: true
+                        },
+                        speed: 300,
+                        on: {
+                            slideChange: () => {
+                                if (!this.isUserScrolling) return;
+                                this.onPosterSlideChange();
                             }
                         }
                     });
@@ -791,31 +796,22 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                         const events = await response.json();
                         this.events = events;
                         this.processEvents();
-                        this.generateCalendar();
                         this.renderDates();
-                        this.renderEvents();
+                        this.renderPosters();
                         this.bindEvents();
                     } catch (error) {
                         console.error('Ошибка загрузки событий:', error);
-                        // Загружаем тестовые данные
                         this.loadTestData();
                     }
                 }
 
                 loadTestData() {
-                    // Если нет данных из API, показываем пустой календарь
+                    // Если нет данных из API, показываем пустые слайдеры
                     this.events = [];
                     this.processEvents();
-                    this.generateCalendar();
                     this.renderDates();
-                    this.renderEvents();
+                    this.renderPosters();
                     this.bindEvents();
-                }
-
-                getDateString(daysFromToday) {
-                    const date = new Date();
-                    date.setDate(date.getDate() + daysFromToday);
-                    return date.toISOString().split('T')[0];
                 }
 
                 processEvents() {
@@ -828,29 +824,17 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                         }
                         this.eventsByDate[date].push(event);
                     });
-                }
 
-                generateCalendar() {
-                    // Генерируем массив из 14 дней, начиная с сегодня
-                    this.calendarDays = [];
-                    const today = new Date();
-                    
-                    for (let i = 0; i < 14; i++) {
-                        const date = new Date(today);
-                        date.setDate(today.getDate() + i);
-                        
-                        const day = date.getDate();
-                        const month = this.getMonthShort(date.getMonth());
-                        const dateString = date.toISOString().split('T')[0];
-                        const hasEvent = this.eventsByDate[dateString] && this.eventsByDate[dateString].length > 0;
-                        
-                        this.calendarDays.push({
-                            day: day,
-                            month: month,
-                            date: dateString,
-                            hasEvent: hasEvent
+                    // Создаем плоский массив всех событий для постеров
+                    this.allPosters = [];
+                    Object.keys(this.eventsByDate).sort().forEach(date => {
+                        this.eventsByDate[date].forEach(event => {
+                            this.allPosters.push({
+                                ...event,
+                                date: date
+                            });
                         });
-                    }
+                    });
                 }
 
                 getMonthShort(monthIndex) {
@@ -863,23 +847,25 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                     const datesWrapper = document.getElementById('dates-wrapper');
                     datesWrapper.innerHTML = '';
                     
-                    this.calendarDays.forEach((day, index) => {
+                    const dates = Object.keys(this.eventsByDate).sort();
+                    
+                    dates.forEach((date, index) => {
                         const slideEl = document.createElement('div');
                         slideEl.className = 'swiper-slide';
-                        slideEl.dataset.date = day.date;
+                        slideEl.dataset.date = date;
                         slideEl.dataset.index = index;
-                        
-                        if (day.hasEvent) {
-                            slideEl.classList.add('has-event');
-                        }
                         
                         if (index === 0) {
                             slideEl.classList.add('active');
                         }
                         
+                        const dateObj = new Date(date);
+                        const day = dateObj.getDate();
+                        const month = this.getMonthShort(dateObj.getMonth());
+                        
                         slideEl.innerHTML = `
-                            <div>${day.day}</div>
-                            <div style="font-size: 10px; margin-top: 2px;">${day.month}</div>
+                            <div>${day}</div>
+                            <div style="font-size: 10px; margin-top: 2px;">${month}</div>
                         `;
                         
                         datesWrapper.appendChild(slideEl);
@@ -888,55 +874,100 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                     this.datesSwiper.update();
                 }
 
-                renderEvents() {
-                    const eventsDisplay = document.getElementById('events-display');
-                    const activeDate = document.querySelector('.dates-swiper .swiper-slide.active');
+                renderPosters() {
+                    const postersWrapper = document.getElementById('posters-wrapper');
+                    postersWrapper.innerHTML = '';
                     
-                    if (!activeDate) return;
-                    
-                    const selectedDate = activeDate.dataset.date;
-                    const eventsForDate = this.eventsByDate[selectedDate] || [];
-                    
-                    eventsDisplay.innerHTML = '';
-                    
-                    if (eventsForDate.length === 0) {
-                        eventsDisplay.innerHTML = '<div class="no-events">На эту дату событий нет</div>';
+                    if (this.allPosters.length === 0) {
+                        postersWrapper.innerHTML = '<div class="no-events">Событий не найдено</div>';
                         return;
                     }
                     
-                    eventsForDate.forEach(event => {
-                        const eventCard = document.createElement('div');
-                        eventCard.className = 'event-card';
+                    this.allPosters.forEach((event, index) => {
+                        const slideEl = document.createElement('div');
+                        slideEl.className = 'swiper-slide';
+                        slideEl.dataset.eventId = event.id;
+                        slideEl.dataset.date = event.date;
                         
-                        const formattedPrice = Number(event.price).toLocaleString('ru-RU') + '₽';
-                        const backgroundImage = event.image || 'images/logo.png';
+                        const backgroundImage = event.image || 'images/event-default.png';
+                        const dateObj = new Date(event.date);
+                        const formattedDate = dateObj.toLocaleDateString('ru-RU');
                         
-                        eventCard.style.backgroundImage = `url('${backgroundImage}')`;
-                        eventCard.innerHTML = `
-                            <div class="event-card__overlay"></div>
-                            <div class="event-card__content">
-                                <h3 class="event-card__title">${event.title}</h3>
-                                <div class="event-card__price">${formattedPrice}</div>
-                                <p class="event-card__description">${event.description}</p>
-                                <a href="/events/${event.id}" class="event-card__link">Подробнее</a>
+                        slideEl.innerHTML = `
+                            <div class="poster-card" style="background-image: url('${backgroundImage}')">
+                                <div class="poster-card__overlay">
+                                    <div class="poster-card__title">${event.title}</div>
+                                    <div class="poster-card__date">${formattedDate} ${event.time || '19:00'}</div>
+                                    <div class="poster-card__description">${event.description || event.conditions || ''}</div>
+                                </div>
                             </div>
                         `;
                         
-                        eventsDisplay.appendChild(eventCard);
+                        postersWrapper.appendChild(slideEl);
                     });
+                    
+                    this.postersSwiper.update();
+                }
+
+                onDateSlideChange() {
+                    const activeSlide = this.datesSwiper.slides[this.datesSwiper.activeIndex];
+                    if (!activeSlide) return;
+                    
+                    const selectedDate = activeSlide.dataset.date;
+                    
+                    // Находим первый постер для этой даты
+                    const firstPosterIndex = this.allPosters.findIndex(poster => poster.date === selectedDate);
+                    
+                    if (firstPosterIndex !== -1) {
+                        this.isUserScrolling = true;
+                        this.postersSwiper.slideTo(firstPosterIndex);
+                        this.isUserScrolling = false;
+                    }
+                }
+
+                onPosterSlideChange() {
+                    const activeSlide = this.postersSwiper.slides[this.postersSwiper.activeIndex];
+                    if (!activeSlide) return;
+                    
+                    const selectedDate = activeSlide.dataset.date;
+                    
+                    // Обновляем активную дату
+                    const dateSlide = document.querySelector(`.dates-swiper .swiper-slide[data-date="${selectedDate}"]`);
+                    if (dateSlide) {
+                        // Убираем активный класс у всех дат
+                        document.querySelectorAll('.dates-swiper .swiper-slide').forEach(slide => {
+                            slide.classList.remove('active');
+                        });
+                        
+                        // Добавляем активный класс к текущей дате
+                        dateSlide.classList.add('active');
+                        
+                        // Прокручиваем слайдер дат к активной дате
+                        const dateIndex = parseInt(dateSlide.dataset.index);
+                        this.isUserScrolling = true;
+                        this.datesSwiper.slideTo(dateIndex);
+                        this.isUserScrolling = false;
+                    }
                 }
 
                 bindEvents() {
                     // Обработка кликов по датам
-                    const dateSlides = document.querySelectorAll('.dates-swiper .swiper-slide');
-                    dateSlides.forEach(slide => {
-                        slide.addEventListener('click', (e) => {
-                            // Убираем активный класс у всех дат
-                            dateSlides.forEach(s => s.classList.remove('active'));
-                            // Добавляем активный класс выбранной дате
-                            e.currentTarget.classList.add('active');
-                            // Отрисовываем события для выбранной даты
-                            this.renderEvents();
+                    document.querySelectorAll('.dates-swiper .swiper-slide').forEach(slide => {
+                        slide.addEventListener('click', () => {
+                            this.isUserScrolling = true;
+                            this.datesSwiper.slideTo(parseInt(slide.dataset.index));
+                            this.isUserScrolling = false;
+                        });
+                    });
+
+                    // Обработка кликов по постерам
+                    document.querySelectorAll('.posters-swiper .swiper-slide').forEach(slide => {
+                        slide.addEventListener('click', () => {
+                            const eventId = slide.dataset.eventId;
+                            // Переход к детальной странице события
+                            if (eventId) {
+                                window.location.href = `/events/${eventId}`;
+                            }
                         });
                     });
                 }
