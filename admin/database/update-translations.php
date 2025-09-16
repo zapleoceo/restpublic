@@ -68,7 +68,7 @@ try {
             $existingMeta = $existingContent['meta'] ?? [];
             // Преобразуем BSONDocument в массив если необходимо
             if ($existingMeta instanceof MongoDB\Model\BSONDocument) {
-                $existingMeta = $existingMeta->toArray();
+                $existingMeta = iterator_to_array($existingMeta);
             }
             $updatedMeta = array_merge($existingMeta, $translations);
             
