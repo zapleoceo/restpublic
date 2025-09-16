@@ -896,6 +896,7 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                         slideEl.className = 'swiper-slide';
                         slideEl.dataset.eventId = event.id;
                         slideEl.dataset.date = event.date;
+                        slideEl.dataset.eventLink = event.link || '#';
                         
                         const backgroundImage = event.image || 'images/event-default.png';
                         const dateObj = new Date(event.date);
@@ -915,6 +916,9 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                     });
                     
                     this.postersSwiper.update();
+                    
+                    // Привязываем события к новым элементам
+                    this.bindPosterEvents();
                 }
 
                 onDateSlideChange() {
@@ -995,15 +999,29 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                     });
 
                     // Обработка кликов по постерам
+                    this.bindPosterEvents();
+                }
+
+                bindPosterEvents() {
+                    // Удаляем старые обработчики событий
                     document.querySelectorAll('.posters-swiper .swiper-slide').forEach(slide => {
-                        slide.addEventListener('click', () => {
-                            const eventId = slide.dataset.eventId;
-                            // Переход к детальной странице события
-                            if (eventId) {
-                                window.location.href = `/events/${eventId}`;
-                            }
-                        });
+                        slide.removeEventListener('click', this.handlePosterClick);
                     });
+
+                    // Добавляем новые обработчики
+                    document.querySelectorAll('.posters-swiper .swiper-slide').forEach(slide => {
+                        slide.addEventListener('click', this.handlePosterClick.bind(this));
+                    });
+                }
+
+                handlePosterClick(event) {
+                    const slide = event.currentTarget;
+                    const eventLink = slide.dataset.eventLink;
+                    
+                    // Переход по ссылке из MongoDB
+                    if (eventLink && eventLink !== '#') {
+                        window.open(eventLink, '_blank');
+                    }
                 }
             }
 
