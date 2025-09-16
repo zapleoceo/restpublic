@@ -74,6 +74,51 @@ try {
     
     switch ($method) {
         case 'GET':
+            // Проверяем, запрашиваются ли только картинки
+            if (isset($_GET['action']) && $_GET['action'] === 'get_images') {
+                // Получить все уникальные картинки из событий
+                $pipeline = [
+                    [
+                        '$match' => [
+                            'image' => ['$exists' => true, '$ne' => null]
+                        ]
+                    ],
+                    [
+                        '$group' => [
+                            '_id' => '$image',
+                            'count' => ['$sum' => 1],
+                            'first_event' => ['$first' => [
+                                'title' => '$title',
+                                'date' => '$date',
+                                'time' => '$time'
+                            ]]
+                        ]
+                    ],
+                    [
+                        '$sort' => ['count' => -1, 'first_event.date' => 1]
+                    ]
+                ];
+                
+                $images = $eventsCollection->aggregate($pipeline)->toArray();
+                
+                // Формируем результат
+                $result = [];
+                foreach ($images as $image) {
+                    $result[] = [
+                        'image_id' => $image['_id'],
+                        'usage_count' => $image['count'],
+                        'first_used_in' => $image['first_event']['title'],
+                        'first_used_date' => $image['first_event']['date'] . ' ' . $image['first_event']['time']
+                    ];
+                }
+                
+                echo json_encode([
+                    'success' => true,
+                    'data' => $result
+                ]);
+                exit;
+            }
+            
             // Получить все события
             $events = $eventsCollection->find(
                 [],
@@ -167,7 +212,12 @@ try {
                 
                 // Обработка загрузки изображения для редактирования в GridFS
                 $imageData = null;
-                if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
+                
+                // Проверяем, выбрано ли существующее изображение
+                if (isset($input['existing_image_id']) && !empty($input['existing_image_id'])) {
+                    $imageData = ['file_id' => $input['existing_image_id']];
+                    error_log("API Events - Using existing image ID: " . $input['existing_image_id']);
+                } elseif (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
                     $imageService = new ImageService();
                     $validation = $imageService->validateImage($_FILES['image']);
                     
@@ -298,7 +348,12 @@ try {
             
             // Обработка загрузки изображения в GridFS
             $imageData = null;
-            if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
+            
+            // Проверяем, выбрано ли существующее изображение
+            if (isset($input['existing_image_id']) && !empty($input['existing_image_id'])) {
+                $imageData = ['file_id' => $input['existing_image_id']];
+                error_log("API Events - Using existing image ID for new event: " . $input['existing_image_id']);
+            } elseif (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
                 $imageService = new ImageService();
                 $validation = $imageService->validateImage($_FILES['image']);
                 

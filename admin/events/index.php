@@ -445,6 +445,81 @@ if (count($events) > 0) {
             background-color: #c82333;
         }
 
+        /* Стили для выбора существующих изображений */
+        .existing-images-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 10px;
+            background: #f8f9fa;
+        }
+
+        .image-option {
+            position: relative;
+            cursor: pointer;
+            border: 2px solid #dee2e6;
+            border-radius: 4px;
+            overflow: hidden;
+            transition: all 0.2s ease;
+        }
+
+        .image-option:hover {
+            border-color: #007bff;
+            transform: scale(1.05);
+        }
+
+        .image-option.selected {
+            border-color: #28a745;
+            box-shadow: 0 0 0 2px rgba(40, 167, 69, 0.25);
+        }
+
+        .image-option img {
+            width: 100%;
+            height: 80px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .image-option-info {
+            padding: 5px;
+            background: white;
+            font-size: 10px;
+            color: #6c757d;
+            text-align: center;
+            border-top: 1px solid #dee2e6;
+        }
+
+        .image-option-count {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            background: rgba(0, 123, 255, 0.8);
+            color: white;
+            font-size: 10px;
+            padding: 2px 4px;
+            border-radius: 2px;
+            font-weight: bold;
+        }
+
+        .loading-images {
+            text-align: center;
+            color: #6c757d;
+            font-style: italic;
+            padding: 20px;
+        }
+
+        .no-images {
+            text-align: center;
+            color: #6c757d;
+            font-style: italic;
+            padding: 20px;
+        }
+
         .empty-state {
             text-align: center;
             padding: 40px 20px;
@@ -881,9 +956,28 @@ if (count($events) > 0) {
 
                 <!-- Изображение -->
                 <div class="form-section">
+                    <h3>Выбор изображения</h3>
+                    
+                    <!-- Выбор существующих изображений -->
+                    <div class="form-group">
+                        <label>Использовать существующее изображение</label>
+                        <div id="existingImages" class="existing-images-grid">
+                            <div class="loading-images">Загрузка изображений...</div>
+                        </div>
+                        <small>Выберите одно из уже использованных изображений</small>
+                    </div>
                     
                     <div class="form-group">
-                        <label for="eventImage">Загрузить изображение</label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="useExistingImage" onchange="toggleImageUpload()">
+                            <span class="checkmark"></span>
+                            Использовать существующее изображение
+                        </label>
+                    </div>
+                    
+                    <!-- Загрузка нового изображения -->
+                    <div id="newImageUpload" class="form-group">
+                        <label for="eventImage">Загрузить новое изображение</label>
                         <input type="file" id="eventImage" name="image" accept="image/jpeg,image/png,image/gif,image/webp">
                         <small>Поддерживаемые форматы: JPEG, PNG, GIF, WebP. Максимальный размер: 5MB</small>
                         <div class="error-message">Поддерживаются только изображения: JPEG, PNG, GIF, WebP. Максимальный размер: 5MB</div>
@@ -987,6 +1081,10 @@ if (count($events) > 0) {
         
         console.log('Уже загружено событий:', loadedEventIds.size);
 
+        // Переменные для работы с изображениями
+        let existingImages = [];
+        let selectedImageId = null;
+
         // Функции для работы с событиями
         function openEventModal(eventId = null) {
             const modal = document.getElementById('eventModal');
@@ -999,6 +1097,14 @@ if (count($events) > 0) {
             // Скрываем все превью изображений
             hideImagePreview();
             document.getElementById('currentImage').style.display = 'none';
+            
+            // Загружаем существующие изображения
+            loadExistingImages();
+            
+            // Сбрасываем выбор изображения
+            selectedImageId = null;
+            document.getElementById('useExistingImage').checked = false;
+            toggleImageUpload();
 
             if (eventId) {
                 title.textContent = 'Редактировать событие v2';
@@ -1121,10 +1227,17 @@ if (count($events) > 0) {
 
             console.log('Валидация пройдена, отправляем данные...');
 
-            // Проверяем, есть ли файл для загрузки
+            // Проверяем, есть ли файл для загрузки или выбрано существующее изображение
             const imageInput = document.getElementById('eventImage');
             const hasImageFile = imageInput.files.length > 0;
+            const useExistingImage = document.getElementById('useExistingImage').checked;
+            const hasSelectedImage = selectedImageId !== null;
+            
             console.log('Есть файл для загрузки:', hasImageFile);
+            console.log('Использовать существующее изображение:', useExistingImage);
+            console.log('Выбрано существующее изображение:', hasSelectedImage);
+            console.log('ID выбранного изображения:', selectedImageId);
+            
             if (hasImageFile) {
                 console.log('Файл:', imageInput.files[0]);
             }
@@ -1133,8 +1246,8 @@ if (count($events) > 0) {
             let method;
             if (!eventId) {
                 method = 'POST'; // Создание нового события
-            } else if (hasImageFile) {
-                method = 'POST'; // Обновление с файлом - используем POST
+            } else if (hasImageFile || (useExistingImage && hasSelectedImage)) {
+                method = 'POST'; // Обновление с файлом или существующим изображением - используем POST
             } else {
                 method = 'PUT'; // Обновление без файла - используем PUT
             }
@@ -1143,10 +1256,16 @@ if (count($events) > 0) {
             let requestBody;
             let contentType;
             
-            if (method === 'POST' || hasImageFile) {
-                // Для создания или обновления с файлом используем FormData
+            if (method === 'POST' || hasImageFile || (useExistingImage && hasSelectedImage)) {
+                // Для создания или обновления с файлом/изображением используем FormData
                 requestBody = new FormData(form);
                 requestBody.set('is_active', document.getElementById('eventIsActive').checked);
+                
+                // Добавляем выбранное существующее изображение
+                if (useExistingImage && hasSelectedImage) {
+                    requestBody.set('existing_image_id', selectedImageId);
+                    console.log('Добавляем existing_image_id в FormData:', selectedImageId);
+                }
                 
                 // Для PUT запроса добавляем event_id (обязательно!)
                 if (method === 'PUT') {
@@ -1595,6 +1714,91 @@ if (count($events) > 0) {
                 closeImageModal();
             }
         });
+
+        // Функции для работы с существующими изображениями
+        function loadExistingImages() {
+            const container = document.getElementById('existingImages');
+            container.innerHTML = '<div class="loading-images">Загрузка изображений...</div>';
+            
+            fetch('/admin/events/api.php?action=get_images')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        existingImages = data.data;
+                        displayExistingImages();
+                    } else {
+                        container.innerHTML = '<div class="no-images">Ошибка загрузки изображений</div>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Ошибка загрузки изображений:', error);
+                    container.innerHTML = '<div class="no-images">Ошибка загрузки изображений</div>';
+                });
+        }
+
+        function displayExistingImages() {
+            const container = document.getElementById('existingImages');
+            
+            if (existingImages.length === 0) {
+                container.innerHTML = '<div class="no-images">Нет доступных изображений</div>';
+                return;
+            }
+            
+            let html = '';
+            existingImages.forEach(image => {
+                const imageUrl = `/api/image.php?id=${image.image_id}`;
+                html += `
+                    <div class="image-option" onclick="selectExistingImage('${image.image_id}')" data-image-id="${image.image_id}">
+                        <img src="${imageUrl}" alt="Изображение" onerror="this.src='/images/logo.png'">
+                        <div class="image-option-count">${image.usage_count}</div>
+                        <div class="image-option-info">
+                            ${image.first_used_in}<br>
+                            ${image.first_used_date}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        function selectExistingImage(imageId) {
+            // Убираем выделение с предыдущего изображения
+            document.querySelectorAll('.image-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            
+            // Выделяем выбранное изображение
+            const selectedOption = document.querySelector(`[data-image-id="${imageId}"]`);
+            if (selectedOption) {
+                selectedOption.classList.add('selected');
+            }
+            
+            selectedImageId = imageId;
+            console.log('Выбрано изображение:', imageId);
+        }
+
+        function toggleImageUpload() {
+            const useExisting = document.getElementById('useExistingImage').checked;
+            const newImageUpload = document.getElementById('newImageUpload');
+            const existingImagesContainer = document.getElementById('existingImages');
+            
+            if (useExisting) {
+                newImageUpload.style.display = 'none';
+                existingImagesContainer.style.display = 'block';
+                // Очищаем поле загрузки файла
+                document.getElementById('eventImage').value = '';
+                hideImagePreview();
+            } else {
+                newImageUpload.style.display = 'block';
+                existingImagesContainer.style.display = 'none';
+                // Сбрасываем выбор существующего изображения
+                selectedImageId = null;
+                document.querySelectorAll('.image-option').forEach(option => {
+                    option.classList.remove('selected');
+                });
+            }
+        }
     </script>
 </body>
 </html>
