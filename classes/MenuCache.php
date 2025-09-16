@@ -284,11 +284,12 @@ class MenuCache {
         
         $translatedProduct = $product;
         
-        // Переводим название продукта
-        if (isset($product['name'])) {
-            $translatedName = $this->autoTranslateProductName($product['name'], $language);
-            if ($translatedName && $translatedName !== $product['name']) {
-                $translatedProduct['name'] = $translatedName;
+        // Переводим название продукта (поддерживаем оба поля)
+        $nameField = isset($product['product_name']) ? 'product_name' : 'name';
+        if (isset($product[$nameField])) {
+            $translatedName = $this->autoTranslateProductName($product[$nameField], $language);
+            if ($translatedName && $translatedName !== $product[$nameField]) {
+                $translatedProduct[$nameField] = $translatedName;
             }
         }
         
