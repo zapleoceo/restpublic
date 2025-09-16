@@ -942,7 +942,7 @@ if (count($events) > 0) {
                     
                     <div class="form-group">
                         <label for="eventDescriptionLink">Ссылка на подробное описание</label>
-                        <input type="url" id="eventDescriptionLink" name="description_link" placeholder="https://example.com/event-details">
+                        <input type="url" id="eventDescriptionLink" name="description_link" placeholder="https://t.me/gamezone_vietnam/2117" value="https://t.me/gamezone_vietnam/2117">
                         <small>Ссылка на страницу с подробным описанием события</small>
                         <div class="error-message">Неверный формат ссылки</div>
                     </div>
@@ -1113,6 +1113,9 @@ if (count($events) > 0) {
                 title.textContent = 'Добавить событие v2';
                 form.reset();
                 document.getElementById('eventIsActive').checked = true;
+                
+                // Устанавливаем ссылку по умолчанию для новых событий
+                document.getElementById('eventDescriptionLink').value = 'https://t.me/gamezone_vietnam/2117';
                 
                 // Для нового события показываем логотип как дефолтное изображение
                 showDefaultImage();
