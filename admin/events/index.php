@@ -816,9 +816,14 @@ if (count($events) > 0) {
             const modal = document.getElementById('eventModal');
             const form = document.getElementById('eventForm');
             const title = document.getElementById('modalTitle');
+            const imagePreview = document.getElementById('imagePreview');
 
             // Очищаем ошибки при открытии модального окна
             clearFormErrors();
+            
+            // Очищаем превью изображения
+            imagePreview.style.display = 'none';
+            imagePreview.innerHTML = '';
 
             if (eventId) {
                 title.textContent = 'Редактировать событие';
@@ -853,6 +858,35 @@ if (count($events) > 0) {
                             document.getElementById('eventComment').value = event.comment || '';
                             document.getElementById('eventDescriptionLink').value = event.description_link || '';
                             document.getElementById('eventIsActive').checked = event.is_active !== false;
+                            
+                            // Обрабатываем изображение
+                            const imagePreview = document.getElementById('imagePreview');
+                            const imageInput = document.getElementById('eventImage');
+                            
+                            if (event.image) {
+                                // Определяем URL изображения
+                                let imageUrl = '/images/event-default.png';
+                                if (event.image) {
+                                    // Проверяем, является ли это GridFS file_id
+                                    if (/^[a-f\d]{24}$/i.test(event.image)) {
+                                        imageUrl = "/api/image.php?id=" + event.image;
+                                    } else {
+                                        imageUrl = event.image;
+                                    }
+                                }
+                                
+                                imagePreview.innerHTML = `
+                                    <img src="${imageUrl}" alt="Текущее изображение" style="max-width: 200px; max-height: 200px; object-fit: cover; border-radius: 4px;">
+                                    <p style="margin-top: 10px; font-size: 12px; color: #666;">Текущее изображение</p>
+                                `;
+                                imagePreview.style.display = 'block';
+                            } else {
+                                imagePreview.innerHTML = '<p style="color: #666;">Нет изображения</p>';
+                                imagePreview.style.display = 'block';
+                            }
+                            
+                            // Очищаем поле выбора файла
+                            imageInput.value = '';
                         } else {
                             alert('Событие не найдено');
                         }
@@ -1163,8 +1197,16 @@ if (count($events) > 0) {
                     `<a href="${event.description_link}" target="_blank" class="link-btn">🔗 Открыть</a>` : 
                     '<span class="no-link">-</span>';
                 
-                // Формируем миниатюру
-                const imageSrc = event.image || '/images/event-default.png';
+                // Формируем миниатюру с учетом GridFS
+                let imageSrc = '/images/event-default.png';
+                if (event.image) {
+                    // Проверяем, является ли это GridFS file_id
+                    if (/^[a-f\d]{24}$/i.test(event.image)) {
+                        imageSrc = "/api/image.php?id=" + event.image;
+                    } else {
+                        imageSrc = event.image;
+                    }
+                }
                 const imageAlt = event.image ? event.title : 'Дефолтное изображение';
                 const thumbnailClass = event.image ? 'thumbnail-img' : 'thumbnail-img default-thumbnail';
                 const thumbnailHtml = `<img src="${imageSrc}" alt="${imageAlt}" class="${thumbnailClass}" onclick="showImageModal('${imageSrc}', '${imageAlt}')">`;
@@ -1230,6 +1272,26 @@ if (count($events) > 0) {
         function closeImageModal() {
             document.getElementById('imageModal').style.display = 'none';
         }
+
+        // Обработчик изменения изображения
+        document.getElementById('eventImage').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            const imagePreview = document.getElementById('imagePreview');
+            
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    imagePreview.innerHTML = `
+                        <img src="${e.target.result}" alt="Новое изображение" style="max-width: 200px; max-height: 200px; object-fit: cover; border-radius: 4px;">
+                        <p style="margin-top: 10px; font-size: 12px; color: #666;">Новое изображение</p>
+                    `;
+                    imagePreview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            } else {
+                imagePreview.style.display = 'none';
+            }
+        });
 
         // Закрытие модального окна по Escape
         document.addEventListener('keydown', function(event) {
