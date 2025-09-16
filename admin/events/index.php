@@ -179,17 +179,22 @@ if (count($events) > 0) {
         }
 
         .event-date {
-            white-space: nowrap;
             font-family: monospace;
             color: #495057;
+            font-weight: 500;
+            line-height: 1.2;
+        }
+
+        .date-line {
+            font-size: 14px;
             font-weight: 500;
         }
 
         .weekday {
             color: #6c757d;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: normal;
-            margin-left: 5px;
+            margin-top: 2px;
         }
 
         .event-time {
@@ -724,7 +729,10 @@ if (count($events) > 0) {
                                 <?php if (empty($day['events'])): ?>
                                     <!-- День без событий -->
                                     <tr class="no-events-row">
-                                        <td class="event-date"><?= $day['day'] ?>.<?= $day['month'] ?>.<?= $day['year'] ?> <span class="weekday"><?= $day['weekday_ru'] ?></span></td>
+                                        <td class="event-date">
+                                            <div class="date-line"><?= $day['day'] ?>.<?= $day['month'] ?>.<?= $day['year'] ?></div>
+                                            <div class="weekday"><?= $day['weekday_ru'] ?></div>
+                                        </td>
                                         <td colspan="10" class="no-events-cell">
                                             <span class="no-events-text">Событий не запланировано</span>
                                             <button class="add-event-btn" onclick="openEventModal()" title="Добавить событие">+</button>
@@ -734,7 +742,10 @@ if (count($events) > 0) {
                                     <!-- События на этот день -->
                                     <?php foreach ($day['events'] as $event): ?>
                                         <tr data-event-id="<?= htmlspecialchars($event['id']) ?>">
-                                            <td class="event-date"><?= htmlspecialchars($event['date']) ?> <span class="weekday"><?= $day['weekday_ru'] ?></span></td>
+                                            <td class="event-date">
+                                                <div class="date-line"><?= htmlspecialchars($event['date']) ?></div>
+                                                <div class="weekday"><?= $day['weekday_ru'] ?></div>
+                                            </td>
                                             <td class="event-time"><?= htmlspecialchars($event['time']) ?></td>
                                             <td class="event-title"><?= htmlspecialchars($event['title']) ?></td>
                                             <td class="event-conditions"><?= htmlspecialchars($event['conditions']) ?></td>
@@ -1455,7 +1466,10 @@ if (count($events) > 0) {
                 const weekday = weekdays[eventDate.getDay()];
                 
                 row.innerHTML = `
-                    <td class="event-date">${eventDate.toLocaleDateString('ru-RU')} <span class="weekday">${weekday}</span></td>
+                    <td class="event-date">
+                        <div class="date-line">${eventDate.toLocaleDateString('ru-RU')}</div>
+                        <div class="weekday">${weekday}</div>
+                    </td>
                     <td class="event-time">${event.time}</td>
                     <td class="event-title">${event.title}</td>
                     <td class="event-conditions">${event.conditions}</td>
