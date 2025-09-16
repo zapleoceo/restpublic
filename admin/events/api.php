@@ -118,7 +118,11 @@ try {
             // Обработка загрузки изображения
             $imagePath = null;
             if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
-                $uploadDir = __DIR__ . '/../../images/events/';
+                $uploadDir = dirname(__DIR__, 2) . '/images/events/';
+                error_log("POST - Upload directory: " . $uploadDir);
+                error_log("POST - Directory exists: " . (is_dir($uploadDir) ? 'YES' : 'NO'));
+                error_log("POST - Directory writable: " . (is_writable($uploadDir) ? 'YES' : 'NO'));
+                
                 $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
                 $maxSize = 5 * 1024 * 1024; // 5MB
                 
@@ -232,7 +236,11 @@ try {
             // Обработка загрузки изображения для редактирования
             $imagePath = null;
             if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
-                $uploadDir = __DIR__ . '/../../images/events/';
+                $uploadDir = dirname(__DIR__, 2) . '/images/events/';
+                error_log("PUT - Upload directory: " . $uploadDir);
+                error_log("PUT - Directory exists: " . (is_dir($uploadDir) ? 'YES' : 'NO'));
+                error_log("PUT - Directory writable: " . (is_writable($uploadDir) ? 'YES' : 'NO'));
+                
                 $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
                 $maxSize = 5 * 1024 * 1024; // 5MB
                 
