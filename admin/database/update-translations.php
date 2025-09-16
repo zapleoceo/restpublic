@@ -66,6 +66,10 @@ try {
         if ($existingContent) {
             // Обновляем мета-данные с новыми переводами
             $existingMeta = $existingContent['meta'] ?? [];
+            // Преобразуем BSONDocument в массив если необходимо
+            if ($existingMeta instanceof MongoDB\Model\BSONDocument) {
+                $existingMeta = $existingMeta->toArray();
+            }
             $updatedMeta = array_merge($existingMeta, $translations);
             
             // Сохраняем обновленный контент
