@@ -243,6 +243,27 @@ if (count($events) > 0) {
             color: #adb5bd;
         }
 
+        .form-group.error input,
+        .form-group.error textarea {
+            border-color: #dc3545;
+            box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+        }
+
+        .form-group.error label {
+            color: #dc3545;
+        }
+
+        .error-message {
+            color: #dc3545;
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .form-group.error .error-message {
+            display: block;
+        }
+
         .event-actions {
             white-space: nowrap;
         }
@@ -684,33 +705,39 @@ if (count($events) > 0) {
                 <div class="form-group">
                     <label for="eventTitle">Название события *</label>
                     <input type="text" id="eventTitle" name="title" required>
+                    <div class="error-message">Название события обязательно для заполнения</div>
                 </div>
 
                 <div class="form-row">
                     <div class="form-group">
                         <label for="eventDate">Дата *</label>
                         <input type="date" id="eventDate" name="date" required>
+                        <div class="error-message">Дата обязательна для заполнения</div>
                     </div>
                     <div class="form-group">
                         <label for="eventTime">Время *</label>
                         <input type="time" id="eventTime" name="time" required>
+                        <div class="error-message">Время обязательно для заполнения</div>
                     </div>
                 </div>
 
                 <div class="form-group">
                     <label for="eventConditions">Условия участия *</label>
                     <input type="text" id="eventConditions" name="conditions" required>
+                    <div class="error-message">Условия участия обязательны для заполнения</div>
                 </div>
 
                 <div class="form-group">
                     <label for="eventDescriptionLink">Ссылка на описание</label>
                     <input type="url" id="eventDescriptionLink" name="description_link">
+                    <div class="error-message">Неверный формат ссылки</div>
                 </div>
 
                 <div class="form-group">
                     <label for="eventImage">Картинка</label>
                     <input type="file" id="eventImage" name="image" accept="image/*">
                     <small>Если не выбрана, будет использована дефолтная картинка</small>
+                    <div class="error-message">Поддерживаются только изображения: JPEG, PNG, GIF, WebP. Максимальный размер: 5MB</div>
                 </div>
 
                 <div class="form-group">
@@ -784,6 +811,9 @@ if (count($events) > 0) {
             const form = document.getElementById('eventForm');
             const title = document.getElementById('modalTitle');
 
+            // Очищаем ошибки при открытии модального окна
+            clearFormErrors();
+
             if (eventId) {
                 title.textContent = 'Редактировать событие';
                 loadEventData(eventId);
@@ -834,6 +864,13 @@ if (count($events) > 0) {
             const form = document.getElementById('eventForm');
             const eventId = document.getElementById('eventId').value;
 
+            // Валидация данных перед отправкой
+            const validationResult = validateEventForm();
+            if (!validationResult.isValid) {
+                alert('Ошибки в форме:\n' + validationResult.errors.join('\n'));
+                return;
+            }
+
             // Собираем данные формы
             const formData = new FormData(form);
             
@@ -870,6 +907,100 @@ if (count($events) > 0) {
             .catch(error => {
                 console.error('Ошибка сохранения события:', error);
                 alert('Ошибка сохранения события: ' + error.message);
+            });
+        }
+
+        function validateEventForm() {
+            const errors = [];
+            
+            // Очищаем предыдущие ошибки
+            clearFormErrors();
+            
+            // Проверяем обязательные поля
+            const title = document.getElementById('eventTitle').value.trim();
+            const date = document.getElementById('eventDate').value.trim();
+            const time = document.getElementById('eventTime').value.trim();
+            const conditions = document.getElementById('eventConditions').value.trim();
+            
+            if (!title) {
+                errors.push('• Название события обязательно для заполнения');
+                showFieldError('eventTitle');
+            }
+            
+            if (!date) {
+                errors.push('• Дата обязательна для заполнения');
+                showFieldError('eventDate');
+            } else {
+                // Проверяем формат даты
+                const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+                if (!dateRegex.test(date)) {
+                    errors.push('• Неверный формат даты. Используйте YYYY-MM-DD');
+                    showFieldError('eventDate');
+                }
+            }
+            
+            if (!time) {
+                errors.push('• Время обязательно для заполнения');
+                showFieldError('eventTime');
+            } else {
+                // Проверяем формат времени
+                const timeRegex = /^\d{2}:\d{2}$/;
+                if (!timeRegex.test(time)) {
+                    errors.push('• Неверный формат времени. Используйте HH:MM');
+                    showFieldError('eventTime');
+                }
+            }
+            
+            if (!conditions) {
+                errors.push('• Условия участия обязательны для заполнения');
+                showFieldError('eventConditions');
+            }
+            
+            // Проверяем ссылку (если заполнена)
+            const descriptionLink = document.getElementById('eventDescriptionLink').value.trim();
+            if (descriptionLink) {
+                try {
+                    new URL(descriptionLink);
+                } catch (e) {
+                    errors.push('• Неверный формат ссылки');
+                    showFieldError('eventDescriptionLink');
+                }
+            }
+            
+            // Проверяем размер файла (если загружен)
+            const imageInput = document.getElementById('eventImage');
+            if (imageInput.files.length > 0) {
+                const file = imageInput.files[0];
+                const maxSize = 5 * 1024 * 1024; // 5MB
+                if (file.size > maxSize) {
+                    errors.push('• Размер изображения не должен превышать 5MB');
+                    showFieldError('eventImage');
+                }
+                
+                // Проверяем тип файла
+                const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+                if (!allowedTypes.includes(file.type)) {
+                    errors.push('• Поддерживаются только изображения: JPEG, PNG, GIF, WebP');
+                    showFieldError('eventImage');
+                }
+            }
+            
+            return {
+                isValid: errors.length === 0,
+                errors: errors
+            };
+        }
+
+        function showFieldError(fieldId) {
+            const field = document.getElementById(fieldId);
+            const formGroup = field.closest('.form-group');
+            formGroup.classList.add('error');
+        }
+
+        function clearFormErrors() {
+            const formGroups = document.querySelectorAll('.form-group');
+            formGroups.forEach(group => {
+                group.classList.remove('error');
             });
         }
 
