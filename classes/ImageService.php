@@ -40,10 +40,18 @@ class ImageService {
                 'content_type' => $this->getContentType($extension)
             ]);
             
+            // Создаем временный поток для данных
+            $stream = fopen('php://temp', 'r+');
+            fwrite($stream, $fileData);
+            rewind($stream);
+            
             // Сохраняем в GridFS
-            $fileId = $this->bucket->uploadFromStream($uniqueFilename, $fileData, [
+            $fileId = $this->bucket->uploadFromStream($uniqueFilename, $stream, [
                 'metadata' => $metadata
             ]);
+            
+            // Закрываем поток
+            fclose($stream);
             
             return [
                 'file_id' => (string)$fileId,
