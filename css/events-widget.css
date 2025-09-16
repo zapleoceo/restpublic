@@ -151,18 +151,43 @@
 
 /* Стили для пустых дат */
 .poster-card.empty-date {
-    background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
-    border: 2px dashed #ccc;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border: 2px dashed #dee2e6;
+    position: relative;
+}
+
+.poster-card.empty-date::before {
+    content: '📅';
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 48px;
+    opacity: 0.3;
 }
 
 .poster-card.empty-date .poster-card__overlay {
-    background: linear-gradient(transparent, rgba(0, 0, 0, 0.6));
-    color: #666;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+    color: #495057;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 20px;
 }
 
 .poster-card.empty-date .poster-card__title {
-    color: #333;
+    color: #212529;
     font-weight: 700;
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.poster-card.empty-date .poster-card__description {
+    font-size: 14px;
+    line-height: 1.4;
+    opacity: 0.9;
 }
 
 .contact-link {
@@ -170,11 +195,12 @@
     text-decoration: none;
     font-weight: 600;
     transition: color 0.3s ease;
+    border-bottom: 1px solid transparent;
 }
 
 .contact-link:hover {
     color: #2a5a4a;
-    text-decoration: underline;
+    border-bottom-color: #2a5a4a;
 }
 
 /* Индикатор прокрутки */
@@ -197,6 +223,43 @@
     font-size: 16px;
     padding: 40px;
     width: 100%;
+}
+
+/* Анимации загрузки */
+.events-widget.loading .dates-swiper,
+.events-widget.loading .posters-swiper {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.events-widget.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 40px;
+    height: 40px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #366b5b;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* Улучшенные hover эффекты */
+.dates-swiper .swiper-slide:not(.active):hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(54, 107, 91, 0.2);
+}
+
+.poster-card:not(.empty-date):hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
 }
 
 /* Адаптивность */

@@ -105,7 +105,7 @@ class EventsService {
                     'date' => $event['date'],
                     'time' => $event['time'] ?? '19:00',
                     'image' => $imageUrl,
-                    'link' => $event['description_link'] ?? '#',
+                    'link' => $event['link'] ?? '#',
                     'category' => $event['category'] ?? 'general'
                 ];
             }

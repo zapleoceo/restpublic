@@ -166,7 +166,7 @@ try {
                 error_log("API Events - POST UPDATE request for event_id: " . $eventId);
                 
                 // Валидация обязательных полей для обновления
-                $requiredFields = ['title', 'date', 'time', 'conditions'];
+                $requiredFields = ['title_ru', 'date', 'time', 'conditions_ru'];
                 foreach ($requiredFields as $field) {
                     if (empty($input[$field])) {
                         error_log("API Events - Validation error: missing field '$field'");
@@ -200,12 +200,19 @@ try {
                 }
                 
                 // Получаем и санитизируем данные
-                $title = trim($input['title']);
+                $title_ru = trim($input['title_ru']);
+                $title_en = !empty($input['title_en']) ? trim($input['title_en']) : $title_ru;
+                $title_vi = !empty($input['title_vi']) ? trim($input['title_vi']) : $title_ru;
+                $description_ru = !empty($input['description_ru']) ? trim($input['description_ru']) : '';
+                $description_en = !empty($input['description_en']) ? trim($input['description_en']) : $description_ru;
+                $description_vi = !empty($input['description_vi']) ? trim($input['description_vi']) : $description_ru;
+                $conditions_ru = trim($input['conditions_ru']);
+                $conditions_en = !empty($input['conditions_en']) ? trim($input['conditions_en']) : $conditions_ru;
+                $conditions_vi = !empty($input['conditions_vi']) ? trim($input['conditions_vi']) : $conditions_ru;
                 $date = $input['date'];
                 $time = $input['time'];
-                $conditions = trim($input['conditions']);
-                $description_link = !empty($input['description_link']) ? trim($input['description_link']) : null;
-                $comment = !empty($input['comment']) ? trim($input['comment']) : null;
+                $link = !empty($input['link']) ? trim($input['link']) : null;
+                $category = !empty($input['category']) ? trim($input['category']) : 'general';
                 
                 // Правильная обработка is_active
                 $is_active = isset($input['is_active']) && $input['is_active'] !== false && $input['is_active'] !== 'false' && $input['is_active'] !== '0';
@@ -250,12 +257,19 @@ try {
                     $eventId = new MongoDB\BSON\ObjectId($eventId);
                     
                     $updateData = [
-                        'title' => $title,
+                        'title_ru' => $title_ru,
+                        'title_en' => $title_en,
+                        'title_vi' => $title_vi,
+                        'description_ru' => $description_ru,
+                        'description_en' => $description_en,
+                        'description_vi' => $description_vi,
+                        'conditions_ru' => $conditions_ru,
+                        'conditions_en' => $conditions_en,
+                        'conditions_vi' => $conditions_vi,
                         'date' => $date,
                         'time' => $time,
-                        'conditions' => $conditions,
-                        'description_link' => $description_link,
-                        'comment' => $comment,
+                        'link' => $link,
+                        'category' => $category,
                         'is_active' => $is_active,
                         'updated_at' => new MongoDB\BSON\UTCDateTime()
                     ];
@@ -301,7 +315,7 @@ try {
             }
             
             // Это создание нового события
-            $requiredFields = ['title', 'date', 'time', 'conditions'];
+            $requiredFields = ['title_ru', 'date', 'time', 'conditions_ru'];
             foreach ($requiredFields as $field) {
                 if (empty($input[$field])) {
                     // Логируем ошибку валидации
@@ -402,16 +416,22 @@ try {
             }
             
             $eventData = [
-                'title' => trim($input['title']),
+                'title_ru' => trim($input['title_ru']),
+                'title_en' => !empty($input['title_en']) ? trim($input['title_en']) : trim($input['title_ru']),
+                'title_vi' => !empty($input['title_vi']) ? trim($input['title_vi']) : trim($input['title_ru']),
+                'description_ru' => !empty($input['description_ru']) ? trim($input['description_ru']) : '',
+                'description_en' => !empty($input['description_en']) ? trim($input['description_en']) : (!empty($input['description_ru']) ? trim($input['description_ru']) : ''),
+                'description_vi' => !empty($input['description_vi']) ? trim($input['description_vi']) : (!empty($input['description_ru']) ? trim($input['description_ru']) : ''),
+                'conditions_ru' => trim($input['conditions_ru']),
+                'conditions_en' => !empty($input['conditions_en']) ? trim($input['conditions_en']) : trim($input['conditions_ru']),
+                'conditions_vi' => !empty($input['conditions_vi']) ? trim($input['conditions_vi']) : trim($input['conditions_ru']),
                 'date' => $input['date'],
                 'time' => $input['time'],
-                'conditions' => trim($input['conditions']),
-                'description_link' => !empty($input['description_link']) ? trim($input['description_link']) : null,
                 'image' => $imageData ? $imageData['file_id'] : null,
-                'comment' => !empty($input['comment']) ? trim($input['comment']) : null,
+                'link' => !empty($input['link']) ? trim($input['link']) : null,
+                'category' => !empty($input['category']) ? trim($input['category']) : 'general',
                 'is_active' => $isActive,
-                'created_at' => new MongoDB\BSON\UTCDateTime(),
-                'updated_at' => new MongoDB\BSON\UTCDateTime()
+                'created_at' => new MongoDB\BSON\UTCDateTime()
             ];
             
             $result = $eventsCollection->insertOne($eventData);
@@ -498,7 +518,7 @@ try {
             }
             
             // Валидация обязательных полей
-            $requiredFields = ['title', 'date', 'time', 'conditions'];
+            $requiredFields = ['title_ru', 'date', 'time', 'conditions_ru'];
             foreach ($requiredFields as $field) {
                 if (empty($input[$field])) {
                     error_log("API Events - Validation error: missing field '$field'");
@@ -532,12 +552,19 @@ try {
             }
             
             // Получаем и санитизируем данные
-            $title = trim($input['title']);
+            $title_ru = trim($input['title_ru']);
+            $title_en = !empty($input['title_en']) ? trim($input['title_en']) : $title_ru;
+            $title_vi = !empty($input['title_vi']) ? trim($input['title_vi']) : $title_ru;
+            $description_ru = !empty($input['description_ru']) ? trim($input['description_ru']) : '';
+            $description_en = !empty($input['description_en']) ? trim($input['description_en']) : $description_ru;
+            $description_vi = !empty($input['description_vi']) ? trim($input['description_vi']) : $description_ru;
+            $conditions_ru = trim($input['conditions_ru']);
+            $conditions_en = !empty($input['conditions_en']) ? trim($input['conditions_en']) : $conditions_ru;
+            $conditions_vi = !empty($input['conditions_vi']) ? trim($input['conditions_vi']) : $conditions_ru;
             $date = $input['date'];
             $time = $input['time'];
-            $conditions = trim($input['conditions']);
-            $description_link = !empty($input['description_link']) ? trim($input['description_link']) : null;
-            $comment = !empty($input['comment']) ? trim($input['comment']) : null;
+            $link = !empty($input['link']) ? trim($input['link']) : null;
+            $category = !empty($input['category']) ? trim($input['category']) : 'general';
             
             // Правильная обработка is_active (checkbox приходит как 'on' или отсутствует)
             $is_active = isset($input['is_active']) && $input['is_active'] !== false && $input['is_active'] !== 'false' && $input['is_active'] !== '0';
@@ -599,12 +626,19 @@ try {
                 $eventId = new MongoDB\BSON\ObjectId($eventId);
                 
                 $updateData = [
-                    'title' => $title,
+                    'title_ru' => $title_ru,
+                    'title_en' => $title_en,
+                    'title_vi' => $title_vi,
+                    'description_ru' => $description_ru,
+                    'description_en' => $description_en,
+                    'description_vi' => $description_vi,
+                    'conditions_ru' => $conditions_ru,
+                    'conditions_en' => $conditions_en,
+                    'conditions_vi' => $conditions_vi,
                     'date' => $date,
                     'time' => $time,
-                    'conditions' => $conditions,
-                    'description_link' => $description_link,
-                    'comment' => $comment,
+                    'link' => $link,
+                    'category' => $category,
                     'is_active' => $is_active,
                     'updated_at' => new MongoDB\BSON\UTCDateTime()
                 ];

@@ -510,12 +510,21 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                     this.eventsByDate = {};
                     this.allPosters = [];
                     this.isUserScrolling = false;
+                    this.debounceTimer = null;
                     this.init();
                 }
 
                 init() {
                     this.initSwipers();
                     this.loadEvents();
+                }
+
+                // Debounce функция для оптимизации производительности
+                debounce(func, wait) {
+                    return (...args) => {
+                        clearTimeout(this.debounceTimer);
+                        this.debounceTimer = setTimeout(() => func.apply(this, args), wait);
+                    };
                 }
 
                 initSwipers() {
@@ -565,9 +574,18 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
 
                 async loadEvents() {
                     try {
+                        // Показываем индикатор загрузки
+                        const eventsWidget = document.querySelector('.events-widget');
+                        if (eventsWidget) {
+                            eventsWidget.classList.add('loading');
+                        }
+                        
+                        // Определяем язык из HTML или используем русский по умолчанию
+                        const language = document.documentElement.lang || 'ru';
+                        
                         // Загружаем события из API на 14 дней вперед
                         const today = new Date().toISOString().split('T')[0];
-                        const response = await fetch(`/api/events.php?start_date=${today}&days=14&language=ru`);
+                        const response = await fetch(`/api/events.php?start_date=${today}&days=14&language=${language}`);
                         const events = await response.json();
                         this.events = events;
                         this.processEvents();
@@ -575,16 +593,30 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                         this.renderDates();
                         this.renderPosters();
                         this.bindEvents();
+                        
+                        // Убираем индикатор загрузки
+                        if (eventsWidget) {
+                            eventsWidget.classList.remove('loading');
+                        }
                     } catch (error) {
                         console.error('Ошибка загрузки событий:', error);
+                        
+                        // Убираем индикатор загрузки
+                        const eventsWidget = document.querySelector('.events-widget');
+                        if (eventsWidget) {
+                            eventsWidget.classList.remove('loading');
+                        }
+                        
                         this.loadTestData();
                     }
                 }
 
                 loadTestData() {
                     // Если нет данных из API, показываем пустые слайдеры
+                    console.log('Загружаем тестовые данные для виджета событий');
                     this.events = [];
                     this.processEvents();
+                    this.generateCalendarDays();
                     this.renderDates();
                     this.renderPosters();
                     this.bindEvents();
@@ -768,14 +800,21 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                     const selectedDate = activeSlide.dataset.date;
                     
                     // Находим первый постер для этой даты
-                    const firstPosterIndex = this.allPosters.findIndex(poster => poster.date === selectedDate);
+                    const posterSlides = document.querySelectorAll('.posters-swiper .swiper-slide');
+                    let targetPosterIndex = -1;
                     
-                    if (firstPosterIndex !== -1) {
+                    posterSlides.forEach((posterSlide, index) => {
+                        if (posterSlide.dataset.date === selectedDate && targetPosterIndex === -1) {
+                            targetPosterIndex = index;
+                        }
+                    });
+                    
+                    if (targetPosterIndex !== -1) {
                         this.isUserScrolling = true;
                         
                         // Центрируем постеры для выбранной даты
-                        const targetPosterIndex = this.centerSlide(this.postersSwiper, firstPosterIndex, 320);
-                        this.postersSwiper.slideTo(targetPosterIndex, 300);
+                        const centeredPosterIndex = this.centerSlide(this.postersSwiper, targetPosterIndex, 320);
+                        this.postersSwiper.slideTo(centeredPosterIndex, 300);
                         setTimeout(() => {
                             this.isUserScrolling = false;
                         }, 350);
@@ -833,14 +872,22 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                             const targetSlideIndex = this.centerSlide(this.datesSwiper, targetIndex, 100);
                             this.datesSwiper.slideTo(targetSlideIndex, 300);
                             
-                            // Находим первый постер для этой даты и центрируем его
+                            // Находим постеры для выбранной даты
                             const selectedDate = slide.dataset.date;
-                            const firstPosterIndex = this.allPosters.findIndex(poster => poster.date === selectedDate);
+                            const posterSlides = document.querySelectorAll('.posters-swiper .swiper-slide');
+                            let targetPosterIndex = -1;
                             
-                            if (firstPosterIndex !== -1) {
+                            // Ищем первый постер для этой даты
+                            posterSlides.forEach((posterSlide, index) => {
+                                if (posterSlide.dataset.date === selectedDate && targetPosterIndex === -1) {
+                                    targetPosterIndex = index;
+                                }
+                            });
+                            
+                            if (targetPosterIndex !== -1) {
                                 // Центрируем постеры для выбранной даты
-                                const targetPosterIndex = this.centerSlide(this.postersSwiper, firstPosterIndex, 320);
-                                this.postersSwiper.slideTo(targetPosterIndex, 300);
+                                const centeredPosterIndex = this.centerSlide(this.postersSwiper, targetPosterIndex, 320);
+                                this.postersSwiper.slideTo(centeredPosterIndex, 300);
                             }
                             
                             setTimeout(() => {
@@ -869,6 +916,15 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                     const slide = event.currentTarget;
                     const eventLink = slide.dataset.eventLink;
                     
+                    // Если это пустая дата - прокручиваем к футеру
+                    if (slide.querySelector('.empty-date')) {
+                        const footer = document.querySelector('#footer');
+                        if (footer) {
+                            footer.scrollIntoView({ behavior: 'smooth' });
+                        }
+                        return;
+                    }
+                    
                     // Переход по ссылке из MongoDB
                     if (eventLink && eventLink !== '#') {
                         window.open(eventLink, '_blank');
@@ -881,8 +937,22 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
             
             function initEventsWidget() {
                 if (!eventsWidgetInitialized) {
-                    new EventsWidget();
-                    eventsWidgetInitialized = true;
+                    try {
+                        // Проверяем, что элементы виджета существуют
+                        const eventsSection = document.querySelector('#events');
+                        const datesWrapper = document.getElementById('dates-wrapper');
+                        const postersWrapper = document.getElementById('posters-wrapper');
+                        
+                        if (eventsSection && datesWrapper && postersWrapper) {
+                            new EventsWidget();
+                            eventsWidgetInitialized = true;
+                            console.log('Виджет событий успешно инициализирован');
+                        } else {
+                            console.warn('Элементы виджета событий не найдены');
+                        }
+                    } catch (error) {
+                        console.error('Ошибка инициализации виджета событий:', error);
+                    }
                 }
             }
             

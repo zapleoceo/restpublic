@@ -788,8 +788,8 @@ if (count($events) > 0) {
                             <tr>
                                 <th>Дата</th>
                                 <th>Время</th>
-                                <th>Название</th>
-                                <th>Условия участия</th>
+                                <th>Название (RU)</th>
+                                <th>Условия участия (RU)</th>
                                 <th>Ссылка</th>
                                 <th>Изображение</th>
                                 <th>Комментарий</th>
@@ -822,11 +822,11 @@ if (count($events) > 0) {
                                                 <div class="weekday"><?= $day['weekday_ru'] ?></div>
                                             </td>
                                             <td class="event-time"><?= htmlspecialchars($event['time']) ?></td>
-                                            <td class="event-title"><?= htmlspecialchars($event['title']) ?></td>
-                                            <td class="event-conditions"><?= htmlspecialchars($event['conditions']) ?></td>
+                                            <td class="event-title"><?= htmlspecialchars($event['title_ru'] ?? $event['title'] ?? '') ?></td>
+                                            <td class="event-conditions"><?= htmlspecialchars($event['conditions_ru'] ?? $event['conditions'] ?? '') ?></td>
                                             <td class="event-link">
-                                                <?php if (!empty($event['description_link'])): ?>
-                                                    <a href="<?= htmlspecialchars($event['description_link']) ?>" target="_blank" class="link-btn">🔗</a>
+                                                <?php if (!empty($event['link'] ?? $event['description_link'])): ?>
+                                                    <a href="<?= htmlspecialchars($event['link'] ?? $event['description_link']) ?>" target="_blank" class="link-btn">🔗</a>
                                                 <?php else: ?>
                                                     <span class="no-link">-</span>
                                                 <?php endif; ?>
@@ -845,9 +845,9 @@ if (count($events) > 0) {
                                                 }
                                                 ?>
                                                 <img src="<?= htmlspecialchars($imageUrl) ?>" 
-                                                     alt="<?= htmlspecialchars($event['title']) ?>" 
+                                                     alt="<?= htmlspecialchars($event['title_ru'] ?? $event['title'] ?? '') ?>" 
                                                      class="thumbnail-img <?= $imageUrl === '/images/logo.png' ? 'default-thumbnail' : '' ?>" 
-                                                     onclick="showImageModal('<?= htmlspecialchars($imageUrl) ?>', '<?= htmlspecialchars($event['title']) ?>')">
+                                                     onclick="showImageModal('<?= htmlspecialchars($imageUrl) ?>', '<?= htmlspecialchars($event['title_ru'] ?? $event['title'] ?? '') ?>')">
                                             </td>
                                             <td class="event-comment">
                                                 <?php if (!empty($event['comment'])): ?>
@@ -884,6 +884,7 @@ if (count($events) > 0) {
                                             </td>
                                             <td class="event-actions">
                                                 <button class="btn btn-edit" onclick="editEvent('<?= $event['id'] ?>')" title="Редактировать">✏️</button>
+                                                <button class="btn btn-primary" onclick="copyEvent('<?= $event['id'] ?>')" title="Копировать">📋</button>
                                                 <button class="btn btn-danger" onclick="deleteEvent('<?= $event['id'] ?>')" title="Удалить">🗑️</button>
                                             </td>
                                         </tr>
@@ -901,7 +902,7 @@ if (count($events) > 0) {
     <div id="eventModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 id="modalTitle">Добавить событие v2</h2>
+                <h2 id="modalTitle">Добавить событие</h2>
                 <button class="modal-close" onclick="closeEventModal()">&times;</button>
             </div>
 
@@ -910,11 +911,24 @@ if (count($events) > 0) {
 
                 <!-- Основная информация -->
                 <div class="form-section">
+                    <h3>Название события</h3>
                     
                     <div class="form-group">
-                        <label for="eventTitle">Название события *</label>
-                        <input type="text" id="eventTitle" name="title" required maxlength="200" placeholder="Введите название события">
-                        <div class="error-message">Название события обязательно для заполнения</div>
+                        <label for="eventTitleRu">Название (русский) *</label>
+                        <input type="text" id="eventTitleRu" name="title_ru" required maxlength="200" placeholder="Введите название события на русском">
+                        <div class="error-message">Название события на русском обязательно для заполнения</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="eventTitleEn">Название (английский)</label>
+                        <input type="text" id="eventTitleEn" name="title_en" maxlength="200" placeholder="Введите название события на английском">
+                        <small>Если не заполнено, будет использовано русское название</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="eventTitleVi">Название (вьетнамский)</label>
+                        <input type="text" id="eventTitleVi" name="title_vi" maxlength="200" placeholder="Введите название события на вьетнамском">
+                        <small>Если не заполнено, будет использовано русское название</small>
                     </div>
 
                     <div class="form-row">
@@ -931,20 +945,63 @@ if (count($events) > 0) {
                     </div>
 
                     <div class="form-group">
-                        <label for="eventConditions">Условия участия *</label>
-                        <textarea id="eventConditions" name="conditions" required rows="3" maxlength="500" placeholder="Опишите условия участия (цена, требования, ограничения)"></textarea>
-                        <div class="error-message">Условия участия обязательны для заполнения</div>
+                        <label for="eventConditionsRu">Условия участия (русский) *</label>
+                        <textarea id="eventConditionsRu" name="conditions_ru" required rows="3" maxlength="500" placeholder="Опишите условия участия на русском (цена, требования, ограничения)"></textarea>
+                        <div class="error-message">Условия участия на русском обязательны для заполнения</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="eventConditionsEn">Условия участия (английский)</label>
+                        <textarea id="eventConditionsEn" name="conditions_en" rows="3" maxlength="500" placeholder="Опишите условия участия на английском"></textarea>
+                        <small>Если не заполнено, будет использован русский текст</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="eventConditionsVi">Условия участия (вьетнамский)</label>
+                        <textarea id="eventConditionsVi" name="conditions_vi" rows="3" maxlength="500" placeholder="Опишите условия участия на вьетнамском"></textarea>
+                        <small>Если не заполнено, будет использован русский текст</small>
                     </div>
                 </div>
 
                 <!-- Дополнительная информация -->
                 <div class="form-section">
+                    <h3>Описание события</h3>
                     
                     <div class="form-group">
-                        <label for="eventDescriptionLink">Ссылка на подробное описание</label>
-                        <input type="url" id="eventDescriptionLink" name="description_link" placeholder="https://t.me/gamezone_vietnam/2117" value="https://t.me/gamezone_vietnam/2117">
+                        <label for="eventDescriptionRu">Описание (русский)</label>
+                        <textarea id="eventDescriptionRu" name="description_ru" rows="3" maxlength="1000" placeholder="Краткое описание события на русском"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="eventDescriptionEn">Описание (английский)</label>
+                        <textarea id="eventDescriptionEn" name="description_en" rows="3" maxlength="1000" placeholder="Краткое описание события на английском"></textarea>
+                        <small>Если не заполнено, будет использован русский текст</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="eventDescriptionVi">Описание (вьетнамский)</label>
+                        <textarea id="eventDescriptionVi" name="description_vi" rows="3" maxlength="1000" placeholder="Краткое описание события на вьетнамском"></textarea>
+                        <small>Если не заполнено, будет использован русский текст</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="eventLink">Ссылка на подробное описание</label>
+                        <input type="url" id="eventLink" name="link" placeholder="https://t.me/gamezone_vietnam/2117" value="https://t.me/gamezone_vietnam/2117">
                         <small>Ссылка на страницу с подробным описанием события</small>
                         <div class="error-message">Неверный формат ссылки</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="eventCategory">Категория события</label>
+                        <select id="eventCategory" name="category">
+                            <option value="general">Общее</option>
+                            <option value="entertainment">Развлечения</option>
+                            <option value="food">Еда и напитки</option>
+                            <option value="music">Музыка</option>
+                            <option value="sports">Спорт</option>
+                            <option value="cultural">Культурные мероприятия</option>
+                        </select>
+                        <small>Категория для группировки событий</small>
                     </div>
 
                     <div class="form-group">
@@ -1107,15 +1164,15 @@ if (count($events) > 0) {
             toggleImageUpload();
 
             if (eventId) {
-                title.textContent = 'Редактировать событие v2';
+                title.textContent = 'Редактировать событие';
                 loadEventData(eventId);
             } else {
-                title.textContent = 'Добавить событие v2';
+                title.textContent = 'Добавить событие';
                 form.reset();
                 document.getElementById('eventIsActive').checked = true;
                 
                 // Устанавливаем ссылку по умолчанию для новых событий
-                document.getElementById('eventDescriptionLink').value = 'https://t.me/gamezone_vietnam/2117';
+                document.getElementById('eventLink').value = 'https://t.me/gamezone_vietnam/2117';
                 
                 // Для нового события показываем логотип как дефолтное изображение
                 showDefaultImage();
@@ -1148,12 +1205,28 @@ if (count($events) > 0) {
                             document.getElementById('eventId').value = eventId;
                             console.log('Заполняем eventId в форме:', eventId);
                             console.log('Поле eventId после заполнения:', document.getElementById('eventId').value);
-                            document.getElementById('eventTitle').value = event.title || '';
+                            
+                            // Заполняем поля названий
+                            document.getElementById('eventTitleRu').value = event.title_ru || event.title || '';
+                            document.getElementById('eventTitleEn').value = event.title_en || '';
+                            document.getElementById('eventTitleVi').value = event.title_vi || '';
+                            
+                            // Заполняем поля описаний
+                            document.getElementById('eventDescriptionRu').value = event.description_ru || '';
+                            document.getElementById('eventDescriptionEn').value = event.description_en || '';
+                            document.getElementById('eventDescriptionVi').value = event.description_vi || '';
+                            
+                            // Заполняем поля условий
+                            document.getElementById('eventConditionsRu').value = event.conditions_ru || event.conditions || '';
+                            document.getElementById('eventConditionsEn').value = event.conditions_en || '';
+                            document.getElementById('eventConditionsVi').value = event.conditions_vi || '';
+                            
+                            // Заполняем остальные поля
                             document.getElementById('eventDate').value = event.date || '';
                             document.getElementById('eventTime').value = event.time || '';
-                            document.getElementById('eventConditions').value = event.conditions || '';
+                            document.getElementById('eventLink').value = event.link || event.description_link || '';
+                            document.getElementById('eventCategory').value = event.category || 'general';
                             document.getElementById('eventComment').value = event.comment || '';
-                            document.getElementById('eventDescriptionLink').value = event.description_link || '';
                             document.getElementById('eventIsActive').checked = event.is_active !== false;
                             
                             // Обрабатываем изображение
@@ -1372,16 +1445,16 @@ if (count($events) > 0) {
             clearFormErrors();
             
             // Проверяем обязательные поля
-            const title = document.getElementById('eventTitle').value.trim();
+            const titleRu = document.getElementById('eventTitleRu').value.trim();
             const date = document.getElementById('eventDate').value.trim();
             const time = document.getElementById('eventTime').value.trim();
-            const conditions = document.getElementById('eventConditions').value.trim();
+            const conditionsRu = document.getElementById('eventConditionsRu').value.trim();
             
-            console.log('Поля формы:', { title, date, time, conditions });
+            console.log('Поля формы:', { titleRu, date, time, conditionsRu });
             
-            if (!title) {
-                errors.push('• Название события обязательно для заполнения');
-                showFieldError('eventTitle');
+            if (!titleRu) {
+                errors.push('• Название события на русском обязательно для заполнения');
+                showFieldError('eventTitleRu');
             }
             
             if (!date) {
@@ -1408,19 +1481,19 @@ if (count($events) > 0) {
                 }
             }
             
-            if (!conditions) {
-                errors.push('• Условия участия обязательны для заполнения');
-                showFieldError('eventConditions');
+            if (!conditionsRu) {
+                errors.push('• Условия участия на русском обязательны для заполнения');
+                showFieldError('eventConditionsRu');
             }
             
             // Проверяем ссылку (если заполнена)
-            const descriptionLink = document.getElementById('eventDescriptionLink').value.trim();
-            if (descriptionLink) {
+            const link = document.getElementById('eventLink').value.trim();
+            if (link) {
                 try {
-                    new URL(descriptionLink);
+                    new URL(link);
                 } catch (e) {
                     errors.push('• Неверный формат ссылки');
-                    showFieldError('eventDescriptionLink');
+                    showFieldError('eventLink');
                 }
             }
             
@@ -1463,6 +1536,61 @@ if (count($events) > 0) {
 
         function editEvent(eventId) {
             openEventModal(eventId);
+        }
+
+        function copyEvent(eventId) {
+            // Загружаем данные события из API
+            fetch('/admin/events/api.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const event = data.data.find(e => e.id === eventId);
+                        if (event) {
+                            // Открываем модалку для создания нового события
+                            openEventModal();
+                            
+                            // Заполняем форму данными копируемого события
+                            document.getElementById('eventId').value = ''; // Очищаем ID для создания нового
+                            
+                            // Заполняем поля названий
+                            document.getElementById('eventTitleRu').value = event.title_ru || event.title || '';
+                            document.getElementById('eventTitleEn').value = event.title_en || '';
+                            document.getElementById('eventTitleVi').value = event.title_vi || '';
+                            
+                            // Заполняем поля описаний
+                            document.getElementById('eventDescriptionRu').value = event.description_ru || '';
+                            document.getElementById('eventDescriptionEn').value = event.description_en || '';
+                            document.getElementById('eventDescriptionVi').value = event.description_vi || '';
+                            
+                            // Заполняем поля условий
+                            document.getElementById('eventConditionsRu').value = event.conditions_ru || event.conditions || '';
+                            document.getElementById('eventConditionsEn').value = event.conditions_en || '';
+                            document.getElementById('eventConditionsVi').value = event.conditions_vi || '';
+                            
+                            // Заполняем остальные поля
+                            document.getElementById('eventDate').value = event.date || '';
+                            document.getElementById('eventTime').value = event.time || '';
+                            document.getElementById('eventLink').value = event.link || event.description_link || '';
+                            document.getElementById('eventCategory').value = event.category || 'general';
+                            document.getElementById('eventComment').value = event.comment || '';
+                            document.getElementById('eventIsActive').checked = event.is_active !== false;
+                            
+                            // Показываем текущее изображение
+                            showCurrentImage(event);
+                            
+                            // Обновляем заголовок модалки
+                            document.getElementById('modalTitle').textContent = 'Копировать событие';
+                        } else {
+                            alert('Событие не найдено');
+                        }
+                    } else {
+                        alert('Ошибка загрузки данных: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Ошибка загрузки события для копирования:', error);
+                    alert('Ошибка загрузки события: ' + error.message);
+                });
         }
 
         function deleteEvent(eventId) {
@@ -1585,8 +1713,8 @@ if (count($events) > 0) {
                 row.setAttribute('data-event-id', event.id);
                 
                 // Формируем ссылку
-                const linkHtml = event.description_link ? 
-                    `<a href="${event.description_link}" target="_blank" class="link-btn">🔗</a>` : 
+                const linkHtml = (event.link || event.description_link) ? 
+                    `<a href="${event.link || event.description_link}" target="_blank" class="link-btn">🔗</a>` : 
                     '<span class="no-link">-</span>';
                 
                 // Формируем миниатюру - только из GridFS
@@ -1600,7 +1728,7 @@ if (count($events) > 0) {
                         imageSrc = '/images/logo.png';
                     }
                 }
-                const imageAlt = event.image ? event.title : 'Дефолтное изображение';
+                const imageAlt = event.image ? (event.title_ru || event.title || '') : 'Дефолтное изображение';
                 const thumbnailClass = event.image ? 'thumbnail-img' : 'thumbnail-img default-thumbnail';
                 const thumbnailHtml = `<img src="${imageSrc}" alt="${imageAlt}" class="${thumbnailClass}" onclick="showImageModal('${imageSrc}', '${imageAlt}')">`;
                 
@@ -1624,14 +1752,15 @@ if (count($events) > 0) {
                         <div class="weekday">${weekday}</div>
                     </td>
                     <td class="event-time">${event.time}</td>
-                    <td class="event-title">${event.title}</td>
-                    <td class="event-conditions">${event.conditions}</td>
+                    <td class="event-title">${event.title_ru || event.title || ''}</td>
+                    <td class="event-conditions">${event.conditions_ru || event.conditions || ''}</td>
                     <td class="event-link">${linkHtml}</td>
                     <td class="event-thumbnail">${thumbnailHtml}</td>
                     <td class="event-status">${statusHtml}</td>
                     <td class="event-comment">${truncatedComment}</td>
                     <td class="event-actions">
                         <button class="btn btn-edit" onclick="editEvent('${event.id}')" title="Редактировать">✏️</button>
+                        <button class="btn btn-primary" onclick="copyEvent('${event.id}')" title="Копировать">📋</button>
                         <button class="btn btn-danger" onclick="deleteEvent('${event.id}')" title="Удалить">🗑️</button>
                     </td>
                 `;
