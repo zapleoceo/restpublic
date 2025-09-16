@@ -25,10 +25,20 @@ class TranslationService {
     }
     
     /**
-     * Получить текущий язык из сессии или cookie
+     * Получить текущий язык из URL, сессии или cookie
      */
     public function getCurrentLanguage() {
-        // Проверяем сессию
+        // 1. Проверяем параметр lang в URL (приоритет)
+        if (isset($_GET['lang']) && in_array($_GET['lang'], ['ru', 'en', 'vi'])) {
+            // Сохраняем в сессию для последующих запросов
+            if (session_status() === PHP_SESSION_NONE) {
+                session_start();
+            }
+            $_SESSION['language'] = $_GET['lang'];
+            return $_GET['lang'];
+        }
+        
+        // 2. Проверяем сессию
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
@@ -37,7 +47,7 @@ class TranslationService {
             return $_SESSION['language'];
         }
         
-        // Проверяем cookie
+        // 3. Проверяем cookie
         if (isset($_COOKIE['language'])) {
             $lang = $_COOKIE['language'];
             if (in_array($lang, ['ru', 'en', 'vi'])) {
@@ -46,7 +56,7 @@ class TranslationService {
             }
         }
         
-        // Проверяем Accept-Language заголовок браузера
+        // 4. Проверяем Accept-Language заголовок браузера
         if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
             $acceptLang = $_SERVER['HTTP_ACCEPT_LANGUAGE'];
             

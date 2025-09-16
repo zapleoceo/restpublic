@@ -35,7 +35,17 @@ class PageContentService {
      * Определение языка пользователя
      */
     private function detectLanguage() {
-        // 1. Проверяем сессию
+        // 1. Проверяем параметр lang в URL (приоритет)
+        if (isset($_GET['lang']) && in_array($_GET['lang'], $this->availableLanguages)) {
+            // Сохраняем в сессию для последующих запросов
+            if (session_status() === PHP_SESSION_NONE) {
+                session_start();
+            }
+            $_SESSION['language'] = $_GET['lang'];
+            return $_GET['lang'];
+        }
+        
+        // 2. Проверяем сессию
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
@@ -44,12 +54,12 @@ class PageContentService {
             return $_SESSION['language'];
         }
         
-        // 2. Проверяем cookie
+        // 3. Проверяем cookie
         if (isset($_COOKIE['language']) && in_array($_COOKIE['language'], $this->availableLanguages)) {
             return $_COOKIE['language'];
         }
         
-        // 3. Проверяем Accept-Language заголовок браузера
+        // 4. Проверяем Accept-Language заголовок браузера
         if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
             $acceptLang = $_SERVER['HTTP_ACCEPT_LANGUAGE'];
             
