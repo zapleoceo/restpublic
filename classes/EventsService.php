@@ -109,7 +109,7 @@ class EventsService {
                     'month' => $month,
                     'title' => $event['title'] ?? 'Событие',
                     'description' => $event['conditions'] ?? 'Описание события',
-                    'price' => $event['price'] ?? 0,
+                    'price' => 0, // Всегда 0, так как у нас нет цены
                     'image' => $event['image'] ?? '/images/event-default.png',
                     'link' => $event['description_link'] ?? '#',
                     'date' => $event['date'],
@@ -183,7 +183,7 @@ class EventsService {
                 'month' => $month,
                 'title' => $eventTitles[$i] ?? 'Событие',
                 'description' => $eventDescriptions[$i] ?? 'Описание события',
-                'price' => (int)str_replace(['от ', '₽'], '', $prices[$i] ?? '0'),
+                'price' => 0, // Всегда 0, так как у нас нет цены
                 'image' => $images[$i] ?? '/images/event-default.png',
                 'link' => '/event/' . strtolower(str_replace([' ', '-'], ['-', '-'], $eventTitles[$i] ?? 'event')),
                 'date' => $eventDate->format('Y-m-d'),

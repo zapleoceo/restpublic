@@ -145,12 +145,6 @@ if (count($events) > 0) {
             word-wrap: break-word;
         }
 
-        .event-price {
-            text-align: center;
-            font-weight: 600;
-            color: #28a745;
-            white-space: nowrap;
-        }
 
         .event-link {
             text-align: center;
@@ -583,7 +577,6 @@ if (count($events) > 0) {
                                 <th>Время</th>
                                 <th>Название</th>
                                 <th>Условия</th>
-                                <th>Цена</th>
                                 <th>Ссылка</th>
                                 <th>Миниатюра</th>
                                 <th>Статус</th>
@@ -628,16 +621,6 @@ if (count($events) > 0) {
                                             </td>
                                             <td class="event-conditions">
                                                 <?php echo htmlspecialchars($event['conditions']); ?>
-                                            </td>
-                                            <td class="event-price">
-                                                <?php 
-                                                $price = $event['price'] ?? 0;
-                                                if ($price > 0) {
-                                                    echo number_format($price, 0, ',', ' ') . ' ₽';
-                                                } else {
-                                                    echo '<span style="color: #28a745;">Бесплатно</span>';
-                                                }
-                                                ?>
                                             </td>
                                             <td class="event-link">
                                                 <?php if (!empty($event['description_link'])): ?>
@@ -694,7 +677,7 @@ if (count($events) > 0) {
                                         <td class="event-date">
                                             <?php echo $currentDate->format('d.m.Y'); ?>
                                         </td>
-                                        <td colspan="9" class="no-events-cell">
+                                        <td colspan="8" class="no-events-cell">
                                             <span class="no-events-text">НЕТ СОБЫТИЙ</span>
                                         </td>
                                     </tr>
@@ -745,12 +728,6 @@ if (count($events) > 0) {
                     <div class="error-message">Условия участия обязательны для заполнения</div>
                 </div>
 
-                <div class="form-group">
-                    <label for="eventPrice">Цена (в рублях)</label>
-                    <input type="number" id="eventPrice" name="price" min="0" step="1" placeholder="0">
-                    <small>Оставьте 0 или пустым для бесплатного события</small>
-                    <div class="error-message">Цена должна быть положительным числом</div>
-                </div>
 
                 <div class="form-group">
                     <label for="eventDescriptionLink">Ссылка на описание</label>
@@ -869,7 +846,6 @@ if (count($events) > 0) {
                             document.getElementById('eventDate').value = event.date || '';
                             document.getElementById('eventTime').value = event.time || '';
                             document.getElementById('eventConditions').value = event.conditions || '';
-                            document.getElementById('eventPrice').value = event.price || 0;
                             document.getElementById('eventComment').value = event.comment || '';
                             document.getElementById('eventDescriptionLink').value = event.description_link || '';
                             document.getElementById('eventIsActive').checked = event.is_active !== false;
@@ -927,7 +903,6 @@ if (count($events) > 0) {
                     date: document.getElementById('eventDate').value,
                     time: document.getElementById('eventTime').value,
                     conditions: document.getElementById('eventConditions').value,
-                    price: document.getElementById('eventPrice').value || 0,
                     description_link: document.getElementById('eventDescriptionLink').value,
                     comment: document.getElementById('eventComment').value,
                     is_active: document.getElementById('eventIsActive').checked
@@ -1016,13 +991,6 @@ if (count($events) > 0) {
             if (!conditions) {
                 errors.push('• Условия участия обязательны для заполнения');
                 showFieldError('eventConditions');
-            }
-            
-            // Проверяем цену (если заполнена)
-            const price = document.getElementById('eventPrice').value.trim();
-            if (price && (isNaN(price) || parseFloat(price) < 0)) {
-                errors.push('• Цена должна быть положительным числом');
-                showFieldError('eventPrice');
             }
             
             // Проверяем ссылку (если заполнена)
@@ -1199,18 +1167,11 @@ if (count($events) > 0) {
                 const comment = event.comment || '-';
                 const truncatedComment = comment.length > 50 ? comment.substring(0, 50) + '...' : comment;
                 
-                // Формируем цену
-                const price = event.price || 0;
-                const priceHtml = price > 0 ? 
-                    `${Number(price).toLocaleString('ru-RU')} ₽` : 
-                    '<span style="color: #28a745;">Бесплатно</span>';
-                
                 row.innerHTML = `
                     <td class="event-date">${new Date(event.date + 'T00:00:00').toLocaleDateString('ru-RU')}</td>
                     <td class="event-time">${event.time}</td>
                     <td class="event-title">${event.title}</td>
                     <td class="event-conditions">${event.conditions}</td>
-                    <td class="event-price">${priceHtml}</td>
                     <td class="event-link">${linkHtml}</td>
                     <td class="event-thumbnail">${thumbnailHtml}</td>
                     <td class="event-status">${statusHtml}</td>
