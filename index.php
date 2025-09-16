@@ -14,20 +14,28 @@ if (file_exists(__DIR__ . '/.env')) {
 
 // Обновляем кеш меню при заходе на главную страницу (в фоновом режиме, реже)
 function updateMenuCacheAsync() {
-    $cacheUrl = 'http://localhost:3002/api/cache/update-menu';
-    
-    // Создаем контекст для асинхронного запроса
-    $context = stream_context_create([
-        'http' => [
-            'method' => 'POST',
-            'timeout' => 5, // Короткий таймаут, чтобы не блокировать загрузку страницы
-            'header' => 'Content-Type: application/json',
-            'ignore_errors' => true // Игнорируем ошибки, чтобы не влиять на отображение страницы
-        ]
-    ]);
-    
-    // Выполняем запрос в фоновом режиме
-    @file_get_contents($cacheUrl, false, $context);
+    try {
+        $cacheUrl = ($_ENV['BACKEND_URL'] ?? 'http://localhost:3002') . '/api/cache/update-menu';
+        
+        // Создаем контекст для асинхронного запроса
+        $context = stream_context_create([
+            'http' => [
+                'method' => 'POST',
+                'timeout' => 5, // Короткий таймаут, чтобы не блокировать загрузку страницы
+                'header' => 'Content-Type: application/json',
+                'ignore_errors' => true // Игнорируем ошибки, чтобы не влиять на отображение страницы
+            ]
+        ]);
+        
+        // Выполняем запрос в фоновом режиме
+        $result = @file_get_contents($cacheUrl, false, $context);
+        
+        if ($result === false) {
+            error_log("Failed to update menu cache: " . error_get_last()['message'] ?? 'Unknown error');
+        }
+    } catch (Exception $e) {
+        error_log("Menu cache update error: " . $e->getMessage());
+    }
 }
 
 // Инициализируем сервис настроек для работы с MongoDB
@@ -61,6 +69,10 @@ $pageContentService = new PageContentService();
 require_once __DIR__ . '/classes/TranslationService.php';
 $translationService = new TranslationService();
 
+// Initialize events service
+require_once __DIR__ . '/classes/EventsService.php';
+$eventsService = new EventsService();
+
 // Load category translator
 require_once __DIR__ . '/category-translator.php';
 
@@ -70,6 +82,17 @@ $currentLanguage = $pageContentService->getLanguage();
 // Get full page content from database
 $pageContent = $pageContentService->getPageContent('index', $currentLanguage);
 $pageMeta = $pageContent['meta'] ?? [];
+
+// Helper function for safe HTML output
+function safeHtml($value, $default = '') {
+    return htmlspecialchars($value ?? $default, ENT_QUOTES, 'UTF-8');
+}
+
+// Helper function for image alt text
+function getImageAlt($metaKey, $default) {
+    global $pageMeta;
+    return safeHtml($pageMeta[$metaKey] ?? $default);
+}
 
 // No fallback - only database content
 
@@ -87,7 +110,7 @@ try {
         $products = $menuData ? $menuData['products'] : [];
         
         // API configuration for popular products
-        $api_base_url = 'http://localhost:3002/api';
+        $api_base_url = ($_ENV['BACKEND_URL'] ?? 'http://localhost:3002') . '/api';
         $context = stream_context_create([
             'http' => [
                 'timeout' => 10,
@@ -104,7 +127,7 @@ try {
                 
                 // Try to get popular products from API
                 try {
-                    $authToken = 'nr_api_2024_7f8a9b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0u1v2w3x4y5z6';
+                    $authToken = $_ENV['API_AUTH_TOKEN'] ?? 'nr_api_2024_7f8a9b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0u1v2w3x4y5z6';
                     $popularUrl = $api_base_url . '/menu/categories/' . $categoryId . '/popular?limit=5&token=' . urlencode($authToken);
                     $popularResponse = @file_get_contents($popularUrl, false, $context);
                     
@@ -112,9 +135,16 @@ try {
                         $popularData = json_decode($popularResponse, true);
                         if ($popularData && isset($popularData['popular_products'])) {
                             $productsByCategory[$categoryId] = $popularData['popular_products'];
+                        } else {
+                            error_log("Invalid API response for category {$categoryId}: " . substr($popularResponse, 0, 200));
+                            $productsByCategory[$categoryId] = [];
                         }
+                    } else {
+                        error_log("Failed to fetch popular products for category {$categoryId}");
+                        $productsByCategory[$categoryId] = [];
                     }
                 } catch (Exception $e) {
+                    error_log("API error for category {$categoryId}: " . $e->getMessage());
                     // Fallback to empty array if API fails
                     $productsByCategory[$categoryId] = [];
                 }
@@ -123,6 +153,10 @@ try {
     }
 } catch (Exception $e) {
     error_log("Menu loading error: " . $e->getMessage());
+    // Fallback: ensure we have empty arrays to prevent errors
+    $categories = [];
+    $products = [];
+    $productsByCategory = [];
 }
 
 // Set page title and meta tags from database only
@@ -138,9 +172,11 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
     ================================================== -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title><?php echo htmlspecialchars($pageTitle); ?></title>
-    <meta name="description" content="<?php echo htmlspecialchars($pageDescription); ?>">
-    <meta name="keywords" content="<?php echo htmlspecialchars($pageKeywords); ?>">
+    <title><?php echo safeHtml($pageTitle); ?></title>
+    <meta name="description" content="<?php echo safeHtml($pageDescription); ?>">
+    <meta name="keywords" content="<?php echo safeHtml($pageKeywords); ?>">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://northrepublic.me/">
 
     <script>
         document.documentElement.classList.remove('no-js');
@@ -151,6 +187,12 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
     ================================================== -->
     <link rel="stylesheet" href="css/vendor.css">
     <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/events-widget.css">
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" href="fonts/Serati.ttf" as="font" type="font/ttf" crossorigin>
+    <link rel="preload" href="js/main.js" as="script">
     
     <style>
         :root {
@@ -176,15 +218,15 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://northrepublic.me/">
-    <meta property="og:title" content="<?php echo htmlspecialchars($pageTitle); ?>">
-    <meta property="og:description" content="<?php echo htmlspecialchars($pageDescription); ?>">
+    <meta property="og:title" content="<?php echo safeHtml($pageTitle); ?>">
+    <meta property="og:description" content="<?php echo safeHtml($pageDescription); ?>">
     <meta property="og:image" content="https://northrepublic.me/images/logo.png">
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="https://northrepublic.me/">
-    <meta property="twitter:title" content="<?php echo htmlspecialchars($pageTitle); ?>">
-    <meta property="twitter:description" content="<?php echo htmlspecialchars($pageDescription); ?>">
+    <meta property="twitter:title" content="<?php echo safeHtml($pageTitle); ?>">
+    <meta property="twitter:description" content="<?php echo safeHtml($pageDescription); ?>">
     <meta property="twitter:image" content="https://northrepublic.me/images/logo.png">
 </head>
 
@@ -221,14 +263,16 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                 <figure class="intro-pic-primary">
                     <img src="<?php echo $pageMeta['intro_image_primary'] ?? 'template/images/shawa.png'; ?>" 
                          srcset="<?php echo $pageMeta['intro_image_primary'] ?? 'template/images/shawa.png'; ?> 1x, 
-                         <?php echo $pageMeta['intro_image_primary'] ?? 'template/images/shawa.png'; ?> 2x" alt="">  
+                         <?php echo $pageMeta['intro_image_primary'] ?? 'template/images/shawa.png'; ?> 2x" 
+                         alt="<?php echo getImageAlt('intro_image_primary_alt', 'Главное изображение ресторана North Republic'); ?>">  
                 </figure> <!-- end intro-pic-primary -->    
                     
                 <div class="intro-block-content">
                     <figure class="intro-block-content__pic">
                         <img src="<?php echo $pageMeta['intro_image_secondary'] ?? 'template/images/intro-pic-secondary.jpg'; ?>" 
                              srcset="<?php echo $pageMeta['intro_image_secondary'] ?? 'template/images/intro-pic-secondary.jpg'; ?> 1x, 
-                             <?php echo $pageMeta['intro_image_secondary_2x'] ?? 'template/images/intro-pic-secondary@2x.jpg'; ?> 2x" alt=""> 
+                             <?php echo $pageMeta['intro_image_secondary_2x'] ?? 'template/images/intro-pic-secondary@2x.jpg'; ?> 2x" 
+                             alt="<?php echo getImageAlt('intro_image_secondary_alt', 'Дополнительное изображение интерьера ресторана'); ?>"> 
                     </figure>
                     <div class="intro-block-content__text">
                         <p class="lead">
@@ -262,7 +306,8 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                     <figure class="about-pic-primary">
                         <img src="<?php echo $pageMeta['about_image_primary'] ?? 'template/images/about-pic-primary.jpg'; ?>" 
                              srcset="<?php echo $pageMeta['about_image_primary'] ?? 'template/images/about-pic-primary.jpg'; ?> 1x, 
-                             <?php echo $pageMeta['about_image_primary_2x'] ?? 'template/images/about-pic-primary@2x.jpg'; ?> 2x" alt=""> 
+                             <?php echo $pageMeta['about_image_primary_2x'] ?? 'template/images/about-pic-primary@2x.jpg'; ?> 2x" 
+                             alt="<?php echo getImageAlt('about_image_primary_alt', 'Фотография интерьера ресторана North Republic'); ?>"> 
                     </figure>
                 </div> <!-- end s-about__content-start -->
 
@@ -281,12 +326,17 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                         <h2 class="text-display-title"><?php echo $pageMeta['menu_title'] ?? ''; ?></h2>
                     </div>  
 
-                    <nav class="tab-nav">
-                        <ul class="tab-nav__list" id="menu-categories">
+                    <nav class="tab-nav" role="tablist" aria-label="<?php echo safeHtml($pageMeta['menu_categories_aria'] ?? 'Категории меню'); ?>">
+                        <ul class="tab-nav__list" id="menu-categories" role="tablist">
                             <?php if (!empty($categories)): ?>
                                 <?php foreach ($categories as $index => $category): ?>
-                                    <li>
-                                        <a href="#tab-<?php echo htmlspecialchars($category['category_id']); ?>" class="<?php echo $index === 0 ? 'active' : ''; ?>">
+                                    <li role="presentation">
+                                        <a href="#tab-<?php echo htmlspecialchars($category['category_id']); ?>" 
+                                           class="<?php echo $index === 0 ? 'active' : ''; ?>"
+                                           role="tab"
+                                           aria-controls="tab-<?php echo htmlspecialchars($category['category_id']); ?>"
+                                           aria-selected="<?php echo $index === 0 ? 'true' : 'false'; ?>"
+                                           tabindex="<?php echo $index === 0 ? '0' : '-1'; ?>">
                                             <span><?php echo htmlspecialchars(translateCategoryName($category['category_name'] ?? $category['name'] ?? 'Без названия', getCurrentLanguage())); ?></span>
                                             <svg clip-rule="evenodd" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="m14.523 18.787s4.501-4.505 6.255-6.26c.146-.146.219-.338.219-.53s-.073-.383-.219-.53c-1.753-1.754-6.255-6.258-6.255-6.258-.144-.145-.334-.217-.524-.217-.193 0-.385.074-.532.221-.293.292-.295.766-.004 1.056l4.978 4.978h-14.692c-.414 0-.75.336-.75.75s.336.75.75.75h14.692l-4.979 4.979c-.289.289-.286.762.006 1.054.148.148.341.222.533.222.19 0 .378-.072.522-.215z" fill-rule="nonzero"/></svg>
                                         </a>
@@ -304,18 +354,28 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                 </div> <!-- end s-menu__content-start -->
 
                 <div class="column xl-6 lg-6 md-12 s-menu__content-end">
-                    <div class="section-header" data-num="Top 5 позиций">
+                    <div class="section-header" data-num="<?php echo safeHtml($pageMeta['menu_top_5'] ?? 'Top 5 позиций'); ?>">
                     </div>
                     
-                    <div class="tab-content menu-block" id="menu-content">
+                    <div class="tab-content menu-block" id="menu-content" role="tabpanel" aria-label="<?php echo safeHtml($pageMeta['menu_content_aria'] ?? 'Содержимое меню'); ?>">
                         <?php if (!empty($categories)): ?>
                             <?php foreach ($categories as $index => $category): ?>
                                 <?php 
                                 $categoryId = (string)($category['category_id']);
                                 $categoryProducts = $productsByCategory[$categoryId] ?? [];
-                                $topProducts = array_slice($categoryProducts, 0, 5); // Top 5 products
+                                
+                                // Применяем автоматический перевод для продуктов
+                                $translatedProducts = [];
+                                foreach (array_slice($categoryProducts, 0, 5) as $product) {
+                                    $translatedProducts[] = $menuCache->translateProduct($product, $currentLanguage);
+                                }
+                                $topProducts = $translatedProducts;
                                 ?>
-                                <div id="tab-<?php echo htmlspecialchars($category['category_id']); ?>" class="menu-block__group tab-content__item <?php echo $index === 0 ? 'active' : ''; ?>">
+                                <div id="tab-<?php echo htmlspecialchars($category['category_id']); ?>" 
+                                     class="menu-block__group tab-content__item <?php echo $index === 0 ? 'active' : ''; ?>"
+                                     role="tabpanel"
+                                     aria-labelledby="tab-<?php echo htmlspecialchars($category['category_id']); ?>"
+                                     <?php echo $index === 0 ? '' : 'aria-hidden="true"'; ?>>
                                     <h6 class="menu-block__cat-name"><?php echo htmlspecialchars(translateCategoryName($category['category_name'] ?? $category['name'] ?? 'Без названия', getCurrentLanguage())); ?></h6>
                                     <ul class="menu-list">
                                         <?php if (!empty($topProducts)): ?>
@@ -372,13 +432,43 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                     ?>
                     <div class="menu-update-time">
                         <small style="color: #1e1e1e; font-size: 0.75rem; margin-top: 0.5rem; display: block;">
-                            Обновлено: <?php echo htmlspecialchars($lastUpdateTime); ?> (Нячанг)
+                            <?php echo safeHtml($pageMeta['menu_updated'] ?? 'Обновлено'); ?>: <?php echo htmlspecialchars($lastUpdateTime); ?> (<?php echo safeHtml($pageMeta['location_nha_trang'] ?? 'Нячанг'); ?>)
                         </small>
                     </div>
                     <?php endif; ?>
                 </div>
             </div> <!-- end s-menu__footer -->
         </section> <!-- end s-menu -->
+
+        <!-- # events
+        ================================================== -->
+        <section id="events" class="container s-events target-section">
+            <div class="row s-events__header">
+                <div class="column xl-12 section-header-wrap">
+                    <div class="section-header" data-num="03">
+                        <h2 class="text-display-title"><?php echo safeHtml($pageMeta['events_title'] ?? 'События'); ?></h2>
+                    </div>
+                </div> <!-- end section-header-wrap -->
+            </div> <!-- end s-events__header -->
+
+            <div class="events-widget" role="region" aria-label="<?php echo safeHtml($pageMeta['events_widget_title'] ?? 'Афиша событий'); ?>">
+                <h2 class="events-widget__title"><?php echo safeHtml($pageMeta['events_widget_title'] ?? 'Афиша событий'); ?></h2>
+                
+                <!-- Слайдер дат -->
+                <div class="swiper dates-swiper" role="tablist" aria-label="<?php echo safeHtml($pageMeta['events_dates_aria'] ?? 'Выбор даты события'); ?>">
+                    <div class="swiper-wrapper" id="dates-wrapper" role="tablist">
+                        <!-- Даты будут добавлены динамически -->
+                    </div>
+                </div>
+
+                <!-- Слайдер постеров -->
+                <div class="swiper posters-swiper" role="tabpanel" aria-label="<?php echo safeHtml($pageMeta['events_posters_aria'] ?? 'Постеры событий'); ?>">
+                    <div class="swiper-wrapper" id="posters-wrapper">
+                        <!-- Постеры будут добавлены динамически -->
+                    </div>
+                </div>
+            </div>
+        </section> <!-- end s-events -->
 
         <!-- # gallery
         ================================================== -->
@@ -435,8 +525,9 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
 
     <!-- JavaScript
     ================================================== -->
-    <script src="js/plugins.js"></script>
-    <script src="js/main.js"></script>
+    <script src="js/plugins.js" defer></script>
+    <script src="js/main.js" defer></script>
+    <script src="https://unpkg.com/swiper/swiper-bundle.min.js" defer></script>
     
     <script>
         // Tab switching for menu categories
@@ -463,6 +554,499 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                     }
                 });
             });
+
+            // Events Widget JavaScript - Double Slider
+            class EventsWidget {
+                constructor() {
+                    this.datesSwiper = null;
+                    this.postersSwiper = null;
+                    this.events = [];
+                    this.eventsByDate = {};
+                    this.allPosters = [];
+                    this.isUserScrolling = false;
+                    this.debounceTimer = null;
+                    this.init();
+                }
+
+                init() {
+                    this.initSwipers();
+                    this.loadEvents();
+                }
+
+                // Debounce функция для оптимизации производительности
+                debounce(func, wait) {
+                    return (...args) => {
+                        clearTimeout(this.debounceTimer);
+                        this.debounceTimer = setTimeout(() => func.apply(this, args), wait);
+                    };
+                }
+
+                initSwipers() {
+                    // Инициализация слайдера дат - показываем все 14 дней сразу
+                    this.datesSwiper = new Swiper('.dates-swiper', {
+                        slidesPerView: 14, // Показываем все 14 дней
+                        spaceBetween: 8,
+                        freeMode: false,
+                        centeredSlides: false,
+                        mousewheel: {
+                            enabled: false // Отключаем прокрутку
+                        },
+                        speed: 300,
+                        breakpoints: {
+                            320: { slidesPerView: 7, spaceBetween: 2 },
+                            480: { slidesPerView: 7, spaceBetween: 3 },
+                            800: { slidesPerView: 7, spaceBetween: 4 },
+                            1024: { slidesPerView: 14, spaceBetween: 6 },
+                            1200: { slidesPerView: 14, spaceBetween: 8 }
+                        },
+                        on: {
+                            // Убрали обработчики slideChange, так как теперь все даты видны сразу
+                        }
+                    });
+
+                    // Инициализация слайдера постеров
+                    this.postersSwiper = new Swiper('.posters-swiper', {
+                        slidesPerView: 'auto',
+                        spaceBetween: 20,
+                        freeMode: true,
+                        mousewheel: {
+                            enabled: true
+                        },
+                        speed: 300,
+                        on: {
+                            // Убрали обработчики slideChange для постеров
+                        }
+                    });
+                }
+
+                async loadEvents() {
+                    try {
+                        // Показываем индикатор загрузки
+                        const eventsWidget = document.querySelector('.events-widget');
+                        if (eventsWidget) {
+                            eventsWidget.classList.add('loading');
+                        }
+                        
+                        // Определяем язык из HTML или используем русский по умолчанию
+                        const language = document.documentElement.lang || 'ru';
+                        
+                        // Загружаем события из API на 14 дней вперед
+                        const today = new Date().toISOString().split('T')[0];
+                        const response = await fetch(`/api/events.php?start_date=${today}&days=14&language=${language}`);
+                        const events = await response.json();
+                        this.events = events;
+                        this.processEvents();
+                        this.generateCalendarDays();
+                        this.renderDates();
+                        this.renderPosters();
+                        this.bindEvents();
+                        
+                        // Убираем индикатор загрузки
+                        if (eventsWidget) {
+                            eventsWidget.classList.remove('loading');
+                        }
+                    } catch (error) {
+                        console.error('Ошибка загрузки событий:', error);
+                        
+                        // Убираем индикатор загрузки
+                        const eventsWidget = document.querySelector('.events-widget');
+                        if (eventsWidget) {
+                            eventsWidget.classList.remove('loading');
+                        }
+                        
+                        this.loadTestData();
+                    }
+                }
+
+                loadTestData() {
+                    // Если нет данных из API, показываем пустые слайдеры
+                    console.log('Загружаем тестовые данные для виджета событий');
+                    this.events = [];
+                    this.processEvents();
+                    this.generateCalendarDays();
+                    this.renderDates();
+                    this.renderPosters();
+                    this.bindEvents();
+                }
+
+                processEvents() {
+                    // Группируем события по дате
+                    this.eventsByDate = {};
+                    this.events.forEach(event => {
+                        const date = event.date; // Используем новое поле 'date'
+                        if (!this.eventsByDate[date]) {
+                            this.eventsByDate[date] = [];
+                        }
+                        this.eventsByDate[date].push(event);
+                    });
+
+                    // Создаем плоский массив всех событий для постеров
+                    this.allPosters = [];
+                    Object.keys(this.eventsByDate).sort().forEach(date => {
+                        this.eventsByDate[date].forEach(event => {
+                            this.allPosters.push({
+                                ...event,
+                                date: date
+                            });
+                        });
+                    });
+                }
+
+                generateCalendarDays() {
+                    // Генерируем календарь на 14 дней начиная с сегодня
+                    this.calendarDays = [];
+                    const today = new Date();
+                    
+                    // Определяем язык для дней недели
+                    const language = document.documentElement.lang || 'ru';
+                    const dayNames = {
+                        'ru': ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'],
+                        'en': ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+                        'vi': ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7']
+                    };
+                    
+                    for (let i = 0; i < 14; i++) {
+                        const date = new Date(today);
+                        date.setDate(today.getDate() + i);
+                        const dateStr = date.toISOString().split('T')[0];
+                        
+                        const day = date.getDate();
+                        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+                        const dayOfWeek = dayNames[language]?.[date.getDay()] || dayNames['ru'][date.getDay()];
+                        
+                        this.calendarDays.push({
+                            date: dateStr,
+                            day: day,
+                            month: month,
+                            dayOfWeek: dayOfWeek,
+                            hasEvents: this.eventsByDate[dateStr] && this.eventsByDate[dateStr].length > 0
+                        });
+                    }
+                }
+
+                getMonthShort(monthIndex) {
+                    const months = ['янв', 'фев', 'мар', 'апр', 'май', 'июн', 
+                                   'июл', 'авг', 'сен', 'окт', 'ноя', 'дек'];
+                    return months[monthIndex - 1]; // Исправляем индекс (месяцы с 1)
+                }
+
+                renderDates() {
+                    const datesWrapper = document.getElementById('dates-wrapper');
+                    datesWrapper.innerHTML = '';
+                    
+                    // Используем сгенерированный календарь на 14 дней
+                    this.calendarDays.forEach((dayData, index) => {
+                        const slideEl = document.createElement('div');
+                        slideEl.className = 'swiper-slide';
+                        slideEl.dataset.date = dayData.date;
+                        slideEl.dataset.index = index;
+                        
+                        // Первый день (сегодня) активен по умолчанию
+                        if (index === 0) {
+                            slideEl.classList.add('active');
+                        }
+                        
+                        // Добавляем класс для дат с событиями
+                        if (dayData.hasEvents) {
+                            slideEl.classList.add('has-event');
+                        }
+                        
+                        slideEl.innerHTML = `
+                            <div>${dayData.day}/${dayData.month}</div>
+                            <div style="font-size: 10px; margin-top: 2px;">${dayData.dayOfWeek}</div>
+                        `;
+                        
+                        // Add ARIA attributes for accessibility
+                        slideEl.setAttribute('role', 'tab');
+                        slideEl.setAttribute('aria-selected', index === 0 ? 'true' : 'false');
+                        slideEl.setAttribute('tabindex', index === 0 ? '0' : '-1');
+                        
+                        datesWrapper.appendChild(slideEl);
+                    });
+                    
+                    this.datesSwiper.update();
+                }
+
+                renderPosters() {
+                    const postersWrapper = document.getElementById('posters-wrapper');
+                    postersWrapper.innerHTML = '';
+                    
+                    // Показываем постеры для всех дней календаря
+                    this.calendarDays.forEach((dayData, index) => {
+                        const slideEl = document.createElement('div');
+                        slideEl.className = 'swiper-slide';
+                        slideEl.dataset.date = dayData.date;
+                        slideEl.dataset.index = index;
+                        
+                        if (dayData.hasEvents) {
+                            // Показываем события для этого дня
+                            const dayEvents = this.eventsByDate[dayData.date] || [];
+                            dayEvents.forEach(event => {
+                                const eventSlideEl = document.createElement('div');
+                                eventSlideEl.className = 'swiper-slide';
+                                eventSlideEl.dataset.eventId = event.id;
+                                eventSlideEl.dataset.date = event.date;
+                                eventSlideEl.dataset.eventLink = event.link || '#';
+                                
+                                const backgroundImage = event.image || 'images/event-default.png';
+                                const dateObj = new Date(event.date);
+                                const formattedDate = dateObj.toLocaleDateString('ru-RU');
+                                
+                                // Определяем язык для перевода лейбла
+                                const language = document.documentElement.lang || 'ru';
+                                const conditionsLabels = {
+                                    'ru': 'Условия участия:',
+                                    'en': 'Participation conditions:',
+                                    'vi': 'Điều kiện tham gia:'
+                                };
+                                const conditionsLabel = conditionsLabels[language] || conditionsLabels['ru'];
+                                
+                                eventSlideEl.innerHTML = `
+                                    <div class="poster-card">
+                                        <img class="poster-card__image" 
+                                             data-src="${backgroundImage}" 
+                                             alt="${event.title}"
+                                             loading="lazy">
+                                        <div class="poster-card__overlay">
+                                            <div class="poster-card__title">${event.title}</div>
+                                            <div class="poster-card__date">${formattedDate} ${event.time || '19:00'}</div>
+                                            <div class="poster-card__description">
+                                                <strong>${conditionsLabel}</strong><br>
+                                                ${event.conditions || ''}
+                                            </div>
+                                        </div>
+                                    </div>
+                                `;
+                                
+                                postersWrapper.appendChild(eventSlideEl);
+                            });
+                        } else {
+                            // Показываем сообщение для пустых дат
+                            const emptySlideEl = document.createElement('div');
+                            emptySlideEl.className = 'swiper-slide';
+                            emptySlideEl.dataset.date = dayData.date;
+                            emptySlideEl.dataset.index = index;
+                            
+                            const dateObj = new Date(dayData.date);
+                            const formattedDate = dateObj.toLocaleDateString('ru-RU');
+                            
+                            // Определяем язык для сообщения
+                            const language = document.documentElement.lang || 'ru';
+                            const messages = {
+                                'ru': {
+                                    title: '<?php echo addslashes($pageMeta['events_empty_title'] ?? 'Мы еще не придумали что у нас тут будет.'); ?>',
+                                    text: '<?php echo addslashes($pageMeta['events_empty_text'] ?? 'Есть идеи?'); ?>',
+                                    link: '<?php echo addslashes($pageMeta['events_empty_link'] ?? 'Свяжитесь с нами!'); ?>'
+                                },
+                                'en': {
+                                    title: '<?php echo addslashes($pageMeta['events_empty_title'] ?? 'We haven\'t figured out what we\'ll have here yet.'); ?>',
+                                    text: '<?php echo addslashes($pageMeta['events_empty_text'] ?? 'Have ideas?'); ?>',
+                                    link: '<?php echo addslashes($pageMeta['events_empty_link'] ?? 'Contact us!'); ?>'
+                                },
+                                'vi': {
+                                    title: '<?php echo addslashes($pageMeta['events_empty_title'] ?? 'Chúng tôi chưa nghĩ ra sẽ có gì ở đây.'); ?>',
+                                    text: '<?php echo addslashes($pageMeta['events_empty_text'] ?? 'Có ý tưởng?'); ?>',
+                                    link: '<?php echo addslashes($pageMeta['events_empty_link'] ?? 'Liên hệ với chúng tôi!'); ?>'
+                                }
+                            };
+                            
+                            const msg = messages[language] || messages['ru'];
+                            
+                            emptySlideEl.innerHTML = `
+                                <div class="poster-card empty-date">
+                                    <div class="poster-card__overlay">
+                                        <div class="poster-card__title">${msg.title}</div>
+                                        <div class="poster-card__description">
+                                            ${msg.text}<br>
+                                            <a href="#footer" class="contact-link">${msg.link}</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                            
+                            postersWrapper.appendChild(emptySlideEl);
+                        }
+                    });
+                    
+                    this.postersSwiper.update();
+                    
+                    // Привязываем события к новым элементам
+                    this.bindPosterEvents();
+                    
+                    // Инициализируем lazy loading для изображений
+                    this.initLazyLoading();
+                }
+
+                initLazyLoading() {
+                    // Используем Intersection Observer для lazy loading
+                    if ('IntersectionObserver' in window) {
+                        const imageObserver = new IntersectionObserver((entries, observer) => {
+                            entries.forEach(entry => {
+                                if (entry.isIntersecting) {
+                                    const img = entry.target;
+                                    const src = img.dataset.src;
+                                    
+                                    if (src) {
+                                        img.src = src;
+                                        img.classList.add('loaded');
+                                        img.removeAttribute('data-src');
+                                        observer.unobserve(img);
+                                    }
+                                }
+                            });
+                        }, {
+                            rootMargin: '50px 0px', // Загружаем за 50px до появления
+                            threshold: 0.1
+                        });
+                        
+                        // Наблюдаем за всеми изображениями с data-src
+                        document.querySelectorAll('.poster-card__image[data-src]').forEach(img => {
+                            imageObserver.observe(img);
+                        });
+                    } else {
+                        // Fallback для старых браузеров - загружаем все сразу
+                        document.querySelectorAll('.poster-card__image[data-src]').forEach(img => {
+                            img.src = img.dataset.src;
+                            img.classList.add('loaded');
+                            img.removeAttribute('data-src');
+                        });
+                    }
+                }
+
+                // Общая функция для центрирования слайдов
+                centerSlide(swiper, targetIndex, slideWidth) {
+                    const totalSlides = swiper.slides.length;
+                    const visibleSlides = Math.floor(swiper.width / slideWidth);
+                    let targetSlideIndex = targetIndex;
+                    
+                    // Центрируем слайд
+                    if (targetIndex > Math.floor(visibleSlides / 2)) {
+                        targetSlideIndex = targetIndex - Math.floor(visibleSlides / 2);
+                    } else {
+                        targetSlideIndex = 0;
+                    }
+                    
+                    // Убеждаемся, что не выходим за границы
+                    targetSlideIndex = Math.max(0, Math.min(targetSlideIndex, totalSlides - visibleSlides));
+                    
+                    return targetSlideIndex;
+                }
+
+
+                bindEvents() {
+                    // Обработка кликов по датам
+                    document.querySelectorAll('.dates-swiper .swiper-slide').forEach(slide => {
+                        slide.addEventListener('click', () => {
+                            // Убираем активный класс у всех дат
+                            document.querySelectorAll('.dates-swiper .swiper-slide').forEach(s => {
+                                s.classList.remove('active');
+                            });
+                            
+                            // Добавляем активный класс к выбранной дате
+                            slide.classList.add('active');
+                            
+                            // Убираем выделение у всех постеров
+                            document.querySelectorAll('.poster-card').forEach(card => {
+                                card.classList.remove('selected');
+                            });
+                            
+                            // Находим постеры для выбранной даты
+                            const selectedDate = slide.dataset.date;
+                            const posterSlides = document.querySelectorAll('.posters-swiper .swiper-slide');
+                            let targetPosterIndex = -1;
+                            
+                            // Ищем первый постер для этой даты
+                            posterSlides.forEach((posterSlide, index) => {
+                                if (posterSlide.dataset.date === selectedDate && targetPosterIndex === -1) {
+                                    targetPosterIndex = index;
+                                }
+                            });
+                            
+                            if (targetPosterIndex !== -1) {
+                                // Центрируем первый постер этой даты
+                                const centeredPosterIndex = this.centerSlide(this.postersSwiper, targetPosterIndex, 320);
+                                this.postersSwiper.slideTo(centeredPosterIndex, 300);
+                                
+                                // Выделяем все постеры этой даты
+                                posterSlides.forEach((posterSlide, index) => {
+                                    if (posterSlide.dataset.date === selectedDate) {
+                                        const card = posterSlide.querySelector('.poster-card');
+                                        if (card) {
+                                            card.classList.add('selected');
+                                        }
+                                    }
+                                });
+                            }
+                        });
+                    });
+
+                    // Обработка кликов по постерам
+                    this.bindPosterEvents();
+                }
+
+                bindPosterEvents() {
+                    // Удаляем старые обработчики событий
+                    document.querySelectorAll('.posters-swiper .swiper-slide').forEach(slide => {
+                        slide.removeEventListener('click', this.handlePosterClick);
+                    });
+
+                    // Добавляем новые обработчики
+                    document.querySelectorAll('.posters-swiper .swiper-slide').forEach(slide => {
+                        slide.addEventListener('click', this.handlePosterClick.bind(this));
+                    });
+                }
+
+                handlePosterClick(event) {
+                    const slide = event.currentTarget;
+                    const eventLink = slide.dataset.eventLink;
+                    
+                    // Если это пустая дата - прокручиваем к футеру
+                    if (slide.querySelector('.empty-date')) {
+                        const footer = document.querySelector('#footer');
+                        if (footer) {
+                            footer.scrollIntoView({ behavior: 'smooth' });
+                        }
+                        return;
+                    }
+                    
+                    // Переход по ссылке из MongoDB
+                    if (eventLink && eventLink !== '#') {
+                        window.open(eventLink, '_blank');
+                    }
+                }
+            }
+
+            // Lazy loading виджета - инициализируем после загрузки основного контента
+            let eventsWidgetInitialized = false;
+            
+            function initEventsWidget() {
+                if (!eventsWidgetInitialized) {
+                    try {
+                        // Проверяем, что элементы виджета существуют
+                        const eventsSection = document.querySelector('#events');
+                        const datesWrapper = document.getElementById('dates-wrapper');
+                        const postersWrapper = document.getElementById('posters-wrapper');
+                        
+                        if (eventsSection && datesWrapper && postersWrapper) {
+                            new EventsWidget();
+                            eventsWidgetInitialized = true;
+                            console.log('Виджет событий успешно инициализирован');
+                        } else {
+                            console.warn('Элементы виджета событий не найдены');
+                        }
+                    } catch (error) {
+                        console.error('Ошибка инициализации виджета событий:', error);
+                    }
+                }
+            }
+            
+            // Инициализируем виджет после загрузки DOM
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initEventsWidget);
+            } else {
+                // DOM уже загружен, но ждем немного для оптимизации
+                setTimeout(initEventsWidget, 100);
+            }
         });
     </script>
 
