@@ -457,14 +457,14 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                 <!-- Слайдер дат -->
                 <div class="swiper dates-swiper" role="tablist" aria-label="<?php echo safeHtml($pageMeta['events_dates_aria'] ?? 'Выбор даты события'); ?>">
                     <div class="swiper-wrapper" id="dates-wrapper" role="tablist">
-                        <!-- <?php echo safeHtml($pageMeta['events_dates_comment'] ?? 'Даты будут добавлены динамически'); ?> -->
+                        <!-- Даты будут добавлены динамически -->
                     </div>
                 </div>
 
                 <!-- Слайдер постеров -->
                 <div class="swiper posters-swiper" role="tabpanel" aria-label="<?php echo safeHtml($pageMeta['events_posters_aria'] ?? 'Постеры событий'); ?>">
                     <div class="swiper-wrapper" id="posters-wrapper">
-                        <!-- <?php echo safeHtml($pageMeta['events_posters_comment'] ?? 'Постеры будут добавлены динамически'); ?> -->
+                        <!-- Постеры будут добавлены динамически -->
                     </div>
                 </div>
             </div>
@@ -483,11 +483,11 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
 
             <div class="gallery-items grid-cols grid-cols--wrap">
                 <?php 
-                // <?php echo safeHtml($pageMeta['gallery_comment'] ?? 'Получаем изображения галереи из БД'); ?>
+                // Получаем изображения галереи из БД
                 $galleryImages = $pageMeta['gallery_images'] ?? [];
                 
                 if (!empty($galleryImages)) {
-                    // <?php echo safeHtml($pageMeta['gallery_db_comment'] ?? 'Используем изображения из БД'); ?>
+                    // Используем изображения из БД
                     foreach ($galleryImages as $image) {
                         $thumb = $image['thumb'] ?? '';
                         $large = $image['large'] ?? $thumb;
@@ -504,7 +504,7 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                         <?php
                     }
                 } else {
-                    // <?php echo safeHtml($pageMeta['gallery_fallback_comment'] ?? 'Fallback на статичные изображения'); ?>
+                    // Fallback на статичные изображения
                     for ($i = 1; $i <= 8; $i++): ?>
                         <div class="gallery-items__item grid-cols__column">
                             <a href="template/images/gallery/large/l-gallery-<?php echo sprintf('%02d', $i); ?>.jpg" class="gallery-items__item-thumb glightbox">
