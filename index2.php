@@ -263,7 +263,7 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
 
         .posters-swiper .swiper-slide {
             width: 300px;
-            height: 200px;
+            height: 100%;
             flex-shrink: 0;
         }
 
@@ -271,6 +271,7 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
         .poster-card {
             width: 100%;
             height: 100%;
+            min-height: 250px;
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -388,7 +389,7 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
             
             .posters-swiper .swiper-slide {
                 width: 220px;
-                height: 180px;
+                height: 100%;
             }
             
             .poster-card__overlay {
