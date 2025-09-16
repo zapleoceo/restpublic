@@ -778,7 +778,7 @@ if (count($events) > 0) {
         </div>
     </div>
 
-    <script src="/admin/assets/js/admin.js"></script>
+    <script src="/admin/assets/js/admin.js?v=<?php echo time(); ?>"></script>
     <script>
         // Переменная для отслеживания количества загруженных прошлых событий
         let pastEventsLoaded = 0;
@@ -864,12 +864,20 @@ if (count($events) > 0) {
             const form = document.getElementById('eventForm');
             const eventId = document.getElementById('eventId').value;
 
+            console.log('saveEvent вызвана, eventId:', eventId);
+            console.log('Форма:', form);
+
             // Валидация данных перед отправкой
             const validationResult = validateEventForm();
+            console.log('Результат валидации:', validationResult);
+            
             if (!validationResult.isValid) {
+                console.log('Валидация не пройдена, ошибки:', validationResult.errors);
                 alert('Ошибки в форме:\n' + validationResult.errors.join('\n'));
                 return;
             }
+
+            console.log('Валидация пройдена, отправляем данные...');
 
             // Собираем данные формы
             const formData = new FormData(form);
@@ -913,6 +921,8 @@ if (count($events) > 0) {
         function validateEventForm() {
             const errors = [];
             
+            console.log('Начинаем валидацию формы...');
+            
             // Очищаем предыдущие ошибки
             clearFormErrors();
             
@@ -921,6 +931,8 @@ if (count($events) > 0) {
             const date = document.getElementById('eventDate').value.trim();
             const time = document.getElementById('eventTime').value.trim();
             const conditions = document.getElementById('eventConditions').value.trim();
+            
+            console.log('Поля формы:', { title, date, time, conditions });
             
             if (!title) {
                 errors.push('• Название события обязательно для заполнения');
