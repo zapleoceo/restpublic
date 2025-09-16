@@ -215,7 +215,7 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
             cursor: pointer;
             font-size: 14px;
             font-weight: 500;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             user-select: none;
             position: relative;
         }
@@ -226,10 +226,13 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
         }
 
         .dates-swiper .swiper-slide.active {
-            background: var(--accent-color);
-            color: var(--bg-color);
-            border-color: var(--accent-color);
+            background: #28a745;
+            color: white;
+            border-color: #28a745;
             font-weight: 600;
+            font-size: 15px;
+            transform: scale(1.05);
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
 
         .dates-swiper .swiper-slide.has-event::after {
@@ -759,6 +762,7 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                         slidesPerView: 'auto',
                         spaceBetween: 12,
                         freeMode: true,
+                        centeredSlides: false,
                         mousewheel: {
                             enabled: true
                         },
@@ -907,7 +911,10 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                                 <div class="poster-card__overlay">
                                     <div class="poster-card__title">${event.title}</div>
                                     <div class="poster-card__date">${formattedDate} ${event.time || '19:00'}</div>
-                                    <div class="poster-card__description">${event.description || event.conditions || ''}</div>
+                                    <div class="poster-card__description">
+                                        <strong>Условия участия:</strong><br>
+                                        ${event.description || event.conditions || ''}
+                                    </div>
                                 </div>
                             </div>
                         `;
@@ -980,9 +987,15 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                             // Добавляем активный класс к выбранной дате
                             slide.classList.add('active');
                             
-                            // Прокручиваем слайдер дат
+                            // Прокручиваем слайдер дат с учетом позиционирования
                             this.isUserScrolling = true;
-                            this.datesSwiper.slideTo(targetIndex, 300);
+                            
+                            // Если это не первая дата, сдвигаем так, чтобы слева оставалась одна дата
+                            if (targetIndex > 0) {
+                                this.datesSwiper.slideTo(targetIndex - 1, 300);
+                            } else {
+                                this.datesSwiper.slideTo(0, 300);
+                            }
                             
                             // Находим первый постер для этой даты
                             const selectedDate = slide.dataset.date;
