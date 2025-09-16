@@ -929,6 +929,25 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                     this.bindPosterEvents();
                 }
 
+                // Общая функция для центрирования слайдов
+                centerSlide(swiper, targetIndex, slideWidth) {
+                    const totalSlides = swiper.slides.length;
+                    const visibleSlides = Math.floor(swiper.width / slideWidth);
+                    let targetSlideIndex = targetIndex;
+                    
+                    // Центрируем слайд
+                    if (targetIndex > Math.floor(visibleSlides / 2)) {
+                        targetSlideIndex = targetIndex - Math.floor(visibleSlides / 2);
+                    } else {
+                        targetSlideIndex = 0;
+                    }
+                    
+                    // Убеждаемся, что не выходим за границы
+                    targetSlideIndex = Math.max(0, Math.min(targetSlideIndex, totalSlides - visibleSlides));
+                    
+                    return targetSlideIndex;
+                }
+
                 onDateSlideChange() {
                     const activeSlide = this.datesSwiper.slides[this.datesSwiper.activeIndex];
                     if (!activeSlide) return;
@@ -940,10 +959,13 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                     
                     if (firstPosterIndex !== -1) {
                         this.isUserScrolling = true;
-                        this.postersSwiper.slideTo(firstPosterIndex, 300); // Добавляем время анимации
+                        
+                        // Центрируем постеры для выбранной даты
+                        const targetPosterIndex = this.centerSlide(this.postersSwiper, firstPosterIndex, 320);
+                        this.postersSwiper.slideTo(targetPosterIndex, 300);
                         setTimeout(() => {
                             this.isUserScrolling = false;
-                        }, 350); // Небольшая задержка для завершения анимации
+                        }, 350);
                     }
                 }
 
@@ -964,13 +986,16 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                         // Добавляем активный класс к текущей дате
                         dateSlide.classList.add('active');
                         
-                        // Прокручиваем слайдер дат к активной дате
+                        // Прокручиваем слайдер дат к активной дате с центрированием
                         const dateIndex = parseInt(dateSlide.dataset.index);
                         this.isUserScrolling = true;
-                        this.datesSwiper.slideTo(dateIndex, 300); // Добавляем время анимации
+                        
+                        // Применяем логику центрирования
+                        const targetSlideIndex = this.centerSlide(this.datesSwiper, dateIndex, 100);
+                        this.datesSwiper.slideTo(targetSlideIndex, 300);
                         setTimeout(() => {
                             this.isUserScrolling = false;
-                        }, 350); // Небольшая задержка для завершения анимации
+                        }, 350);
                     }
                 }
 
@@ -992,30 +1017,17 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                             this.isUserScrolling = true;
                             
                             // Позиционируем так, чтобы активная дата была по центру
-                            const totalSlides = this.datesSwiper.slides.length;
-                            let targetSlideIndex = targetIndex;
-                            
-                            // Вычисляем количество видимых слайдов (примерно)
-                            const visibleSlides = Math.floor(this.datesSwiper.width / 100); // 100px на слайд примерно
-                            
-                            // Центрируем активную дату
-                            if (targetIndex > Math.floor(visibleSlides / 2)) {
-                                targetSlideIndex = targetIndex - Math.floor(visibleSlides / 2);
-                            } else {
-                                targetSlideIndex = 0;
-                            }
-                            
-                            // Убеждаемся, что не выходим за границы
-                            targetSlideIndex = Math.max(0, Math.min(targetSlideIndex, totalSlides - visibleSlides));
-                            
+                            const targetSlideIndex = this.centerSlide(this.datesSwiper, targetIndex, 100);
                             this.datesSwiper.slideTo(targetSlideIndex, 300);
                             
-                            // Находим первый постер для этой даты
+                            // Находим первый постер для этой даты и центрируем его
                             const selectedDate = slide.dataset.date;
                             const firstPosterIndex = this.allPosters.findIndex(poster => poster.date === selectedDate);
                             
                             if (firstPosterIndex !== -1) {
-                                this.postersSwiper.slideTo(firstPosterIndex, 300);
+                                // Центрируем постеры для выбранной даты
+                                const targetPosterIndex = this.centerSlide(this.postersSwiper, firstPosterIndex, 320);
+                                this.postersSwiper.slideTo(targetPosterIndex, 300);
                             }
                             
                             setTimeout(() => {
