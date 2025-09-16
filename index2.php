@@ -895,8 +895,9 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                             });
                             
                             if (targetPosterIndex !== -1) {
-                                // Прокручиваем к первому постеру этой даты
-                                this.postersSwiper.slideTo(targetPosterIndex, 300);
+                                // Центрируем первый постер этой даты
+                                const centeredPosterIndex = this.centerSlide(this.postersSwiper, targetPosterIndex, 320);
+                                this.postersSwiper.slideTo(centeredPosterIndex, 300);
                                 
                                 // Выделяем все постеры этой даты
                                 posterSlides.forEach((posterSlide, index) => {
