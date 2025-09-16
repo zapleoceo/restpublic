@@ -364,12 +364,18 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                                 $categoryId = (string)($category['category_id']);
                                 $categoryProducts = $productsByCategory[$categoryId] ?? [];
                                 
+                                // DEBUG: Добавляем отладочную информацию
+                                error_log("DEBUG Category $categoryId: " . count($categoryProducts) . " products");
+                                
                                 // Применяем автоматический перевод для продуктов
                                 $translatedProducts = [];
                                 foreach (array_slice($categoryProducts, 0, 5) as $product) {
                                     $translatedProducts[] = $menuCache->translateProduct($product, $currentLanguage);
                                 }
                                 $topProducts = $translatedProducts;
+                                
+                                // DEBUG: Проверяем результат
+                                error_log("DEBUG Category $categoryId: " . count($topProducts) . " translated products");
                                 ?>
                                 <div id="tab-<?php echo htmlspecialchars($category['category_id']); ?>" 
                                      class="menu-block__group tab-content__item <?php echo $index === 0 ? 'active' : ''; ?>"
