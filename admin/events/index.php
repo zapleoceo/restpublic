@@ -1124,7 +1124,11 @@ if (count($events) > 0) {
             .then(response => {
                 console.log('Получен ответ:', response.status, response.statusText);
                 if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                    // Пытаемся получить текст ошибки
+                    return response.text().then(text => {
+                        console.log('Текст ошибки:', text);
+                        throw new Error(`HTTP error! status: ${response.status}, text: ${text}`);
+                    });
                 }
                 return response.json();
             })

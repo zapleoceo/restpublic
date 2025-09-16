@@ -270,10 +270,15 @@ try {
             error_log("API Events - Event ID: " . $eventId);
             
             if (empty($eventId)) {
+                error_log("API Events - Missing event_id");
                 http_response_code(400);
                 echo json_encode([
                     'success' => false,
-                    'message' => 'ID события обязателен'
+                    'message' => 'ID события обязателен',
+                    'debug' => [
+                        'input_keys' => array_keys($input),
+                        'input_data' => $input
+                    ]
                 ]);
                 exit;
             }
