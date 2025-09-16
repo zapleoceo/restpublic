@@ -40,11 +40,25 @@ try {
         $events[$index]['id'] = (string)$event['_id'];
     }
     
-    // Создаем календарь на 30 дней вперед
+    // Создаем календарь начиная с последнего понедельника
     $calendarDays = [];
-    $startDate = new DateTime();
+    $today = new DateTime();
+    
+    // Находим последний понедельник
+    $lastMonday = clone $today;
+    $dayOfWeek = (int)$today->format('N'); // 1 = понедельник, 7 = воскресенье
+    if ($dayOfWeek == 1) {
+        // Если сегодня понедельник, начинаем с него
+        $lastMonday = clone $today;
+    } else {
+        // Иначе идем назад к понедельнику
+        $daysBack = $dayOfWeek - 1;
+        $lastMonday->sub(new DateInterval('P' . $daysBack . 'D'));
+    }
+    
+    // Создаем календарь на 30 дней начиная с последнего понедельника
     for ($i = 0; $i < 30; $i++) {
-        $currentDate = clone $startDate;
+        $currentDate = clone $lastMonday;
         $currentDate->add(new DateInterval('P' . $i . 'D'));
         $dateStr = $currentDate->format('Y-m-d');
         
@@ -59,6 +73,16 @@ try {
             'month' => $currentDate->format('m'),
             'year' => $currentDate->format('Y'),
             'weekday' => $currentDate->format('l'),
+            'weekday_short' => $currentDate->format('D'),
+            'weekday_ru' => [
+                'Monday' => 'Пн',
+                'Tuesday' => 'Вт', 
+                'Wednesday' => 'Ср',
+                'Thursday' => 'Чт',
+                'Friday' => 'Пт',
+                'Saturday' => 'Сб',
+                'Sunday' => 'Вс'
+            ][$currentDate->format('l')],
             'events' => array_values($dayEvents)
         ];
     }
@@ -159,6 +183,13 @@ if (count($events) > 0) {
             font-family: monospace;
             color: #495057;
             font-weight: 500;
+        }
+
+        .weekday {
+            color: #6c757d;
+            font-size: 12px;
+            font-weight: normal;
+            margin-left: 5px;
         }
 
         .event-time {
@@ -659,7 +690,7 @@ if (count($events) > 0) {
             <div class="admin-content">
                 <div class="events-container">
                     <div class="events-header">
-                        <h2>События (14 дней вперед)</h2>
+                        <h2>События (начиная с понедельника)</h2>
                         <div class="header-buttons">
                             <button class="btn btn-primary" onclick="openEventModal()">
                                 ➕ Добавить событие
@@ -691,7 +722,7 @@ if (count($events) > 0) {
                                 <?php if (empty($day['events'])): ?>
                                     <!-- День без событий -->
                                     <tr class="no-events-row">
-                                        <td class="event-date"><?= $day['day'] ?>.<?= $day['month'] ?>.<?= $day['year'] ?></td>
+                                        <td class="event-date"><?= $day['day'] ?>.<?= $day['month'] ?>.<?= $day['year'] ?> <span class="weekday"><?= $day['weekday_ru'] ?></span></td>
                                         <td colspan="10" class="no-events-cell">
                                             <span class="no-events-text">Событий не запланировано</span>
                                             <button class="add-event-btn" onclick="openEventModal()" title="Добавить событие">+</button>
@@ -701,7 +732,7 @@ if (count($events) > 0) {
                                     <!-- События на этот день -->
                                     <?php foreach ($day['events'] as $event): ?>
                                         <tr data-event-id="<?= htmlspecialchars($event['id']) ?>">
-                                            <td class="event-date"><?= htmlspecialchars($event['date']) ?></td>
+                                            <td class="event-date"><?= htmlspecialchars($event['date']) ?> <span class="weekday"><?= $day['weekday_ru'] ?></span></td>
                                             <td class="event-time"><?= htmlspecialchars($event['time']) ?></td>
                                             <td class="event-title"><?= htmlspecialchars($event['title']) ?></td>
                                             <td class="event-conditions"><?= htmlspecialchars($event['conditions']) ?></td>
@@ -923,14 +954,22 @@ if (count($events) > 0) {
             console.log('Первое событие:', allEvents[0]);
         }
         
-        // Инициализируем Set с уже загруженными событиями (14 дней вперед)
+        // Инициализируем Set с уже загруженными событиями (начиная с понедельника)
         const today = new Date();
-        const futureDate = new Date(today);
-        futureDate.setDate(today.getDate() + 14); // 14 дней вперед
+        
+        // Находим последний понедельник
+        const lastMonday = new Date(today);
+        const dayOfWeek = today.getDay(); // 0 = воскресенье, 1 = понедельник
+        const daysBack = dayOfWeek === 0 ? 6 : dayOfWeek - 1; // Если воскресенье, то 6 дней назад
+        lastMonday.setDate(today.getDate() - daysBack);
+        
+        // 30 дней начиная с понедельника
+        const endDate = new Date(lastMonday);
+        endDate.setDate(lastMonday.getDate() + 30);
         
         allEvents.forEach(event => {
             const eventDate = new Date(event.date);
-            if (eventDate >= today && eventDate <= futureDate) {
+            if (eventDate >= lastMonday && eventDate <= endDate) {
                 loadedEventIds.add(event.id);
             }
         });
@@ -1408,8 +1447,13 @@ if (count($events) > 0) {
                 const comment = event.comment || '-';
                 const truncatedComment = comment.length > 50 ? comment.substring(0, 50) + '...' : comment;
                 
+                // Получаем день недели для события
+                const eventDate = new Date(event.date + 'T00:00:00');
+                const weekdays = ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
+                const weekday = weekdays[eventDate.getDay()];
+                
                 row.innerHTML = `
-                    <td class="event-date">${new Date(event.date + 'T00:00:00').toLocaleDateString('ru-RU')}</td>
+                    <td class="event-date">${eventDate.toLocaleDateString('ru-RU')} <span class="weekday">${weekday}</span></td>
                     <td class="event-time">${event.time}</td>
                     <td class="event-title">${event.title}</td>
                     <td class="event-conditions">${event.conditions}</td>
