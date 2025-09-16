@@ -1,0 +1,267 @@
+/* Events Widget Styles */
+.s-events {
+    --content-padding-top: calc(var(--vspace-2) * 0.7);
+    --content-padding-bottom: calc(var(--vspace-2) * 0.7);
+
+    padding-top: var(--content-padding-top);
+    padding-bottom: var(--content-padding-bottom);
+}
+
+.events-widget {
+    margin-top: calc(var(--vspace-2) * 0.7);
+}
+
+.events-widget__title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--text-color);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+/* Слайдер дат */
+.dates-swiper {
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+
+.dates-swiper .swiper-wrapper {
+    transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.dates-swiper .swiper-slide {
+    width: auto;
+    min-width: 80px;
+    text-align: center;
+    padding: 12px 20px;
+    color: var(--muted-text);
+    background: transparent;
+    border: 1px solid var(--card-border);
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    user-select: none;
+    position: relative;
+}
+
+.dates-swiper .swiper-slide:hover {
+    color: var(--text-color);
+    border-color: var(--accent-color);
+}
+
+.dates-swiper .swiper-slide.active {
+    background: #366b5b;
+    color: white;
+    border-color: #366b5b;
+    font-weight: 600;
+    font-size: 15px;
+    transform: scale(1.05);
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.dates-swiper .swiper-slide.has-event::after {
+    content: '';
+    position: absolute;
+    bottom: 4px;
+    right: 4px;
+    width: 6px;
+    height: 6px;
+    background: var(--accent-color);
+    border-radius: 50%;
+}
+
+.dates-swiper .swiper-slide.active.has-event::after {
+    background: var(--bg-color);
+}
+
+/* Слайдер постеров */
+.posters-swiper {
+    height: 250px;
+    overflow: hidden;
+    position: relative;
+}
+
+.posters-swiper .swiper-wrapper {
+    transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.posters-swiper .swiper-slide {
+    width: 300px;
+    height: 100%;
+    flex-shrink: 0;
+}
+
+/* Постер карточка */
+.poster-card {
+    width: 100%;
+    height: 100%;
+    min-height: 250px;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border-radius: 8px;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid var(--card-border);
+}
+
+.poster-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.poster-card__overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+    padding: 15px;
+    color: white;
+}
+
+.poster-card__title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 5px;
+    line-height: 1.2;
+}
+
+.poster-card__date {
+    font-size: 12px;
+    opacity: 0.9;
+}
+
+.poster-card__description {
+    font-size: 11px;
+    opacity: 0.8;
+    margin-top: 5px;
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Стили для пустых дат */
+.poster-card.empty-date {
+    background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
+    border: 2px dashed #ccc;
+}
+
+.poster-card.empty-date .poster-card__overlay {
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.6));
+    color: #666;
+}
+
+.poster-card.empty-date .poster-card__title {
+    color: #333;
+    font-weight: 700;
+}
+
+.contact-link {
+    color: #366b5b;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+.contact-link:hover {
+    color: #2a5a4a;
+    text-decoration: underline;
+}
+
+/* Индикатор прокрутки */
+.posters-swiper::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 30px;
+    background: linear-gradient(to left, rgba(255, 255, 255, 0.8), transparent);
+    pointer-events: none;
+    z-index: 10;
+}
+
+/* Сообщение об отсутствии событий */
+.no-events {
+    text-align: center;
+    color: var(--muted-text);
+    font-size: 16px;
+    padding: 40px;
+    width: 100%;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .events-widget__title {
+        font-size: 2rem;
+    }
+    
+    .dates-swiper .swiper-slide {
+        padding: 10px 16px;
+        font-size: 13px;
+        min-width: 60px;
+    }
+    
+    .posters-swiper .swiper-slide {
+        width: 250px;
+    }
+    
+    .poster-card__overlay {
+        padding: 12px;
+    }
+    
+    .poster-card__title {
+        font-size: 14px;
+    }
+    
+    .poster-card__date {
+        font-size: 11px;
+    }
+}
+
+@media (max-width: 480px) {
+    .events-widget__title {
+        font-size: 1.5rem;
+    }
+    
+    .dates-swiper .swiper-slide {
+        padding: 8px 12px;
+        font-size: 12px;
+        min-width: 50px;
+    }
+    
+    .posters-swiper {
+        height: 220px;
+    }
+    
+    .posters-swiper .swiper-slide {
+        width: 220px;
+        height: 100%;
+    }
+    
+    .poster-card__overlay {
+        padding: 10px;
+    }
+    
+    .poster-card__title {
+        font-size: 13px;
+    }
+    
+    .poster-card__date {
+        font-size: 10px;
+    }
+    
+    .poster-card__description {
+        font-size: 10px;
+        -webkit-line-clamp: 1;
+    }
+}

@@ -48,9 +48,9 @@ class EventsService {
     }
     
     /**
-     * Получить события для виджета начиная с указанной даты (7 событий)
+     * Получить события для виджета начиная с указанной даты на N дней вперед
      */
-    public function getEventsForWidget($startDate = null, $limit = 7) {
+    public function getEventsForWidget($startDate = null, $days = 14, $language = 'ru') {
         try {
             if (!$startDate) {
                 $startDate = new DateTime();
@@ -59,50 +59,31 @@ class EventsService {
             }
             $startDate->setTime(0, 0, 0);
             
-            // Получаем события начиная с указанной даты
+            // Вычисляем конечную дату
+            $endDate = clone $startDate;
+            $endDate->add(new DateInterval('P' . $days . 'D'));
+            
+            // Получаем события за указанный период
             $events = $this->eventsCollection->find(
                 [
                     'is_active' => true,
-                    'date' => ['$gte' => $startDate->format('Y-m-d')]
+                    'date' => [
+                        '$gte' => $startDate->format('Y-m-d'),
+                        '$lte' => $endDate->format('Y-m-d')
+                    ]
                 ],
                 [
-                    'sort' => ['date' => 1, 'time' => 1],
-                    'limit' => $limit
+                    'sort' => ['date' => 1, 'time' => 1]
                 ]
             )->toArray();
-            
-            // Если событий мало, добавляем события следующих дней
-            if (count($events) < $limit) {
-                $remaining = $limit - count($events);
-                $nextWeek = clone $startDate;
-                $nextWeek->add(new DateInterval('P7D'));
-                
-                $additionalEvents = $this->eventsCollection->find(
-                    [
-                        'is_active' => true,
-                        'date' => ['$gte' => $nextWeek->format('Y-m-d')]
-                    ],
-                    [
-                        'sort' => ['date' => 1, 'time' => 1],
-                        'limit' => $remaining
-                    ]
-                )->toArray();
-                
-                $events = array_merge($events, $additionalEvents);
-            }
             
             // Конвертируем в нужный формат для виджета
             $formattedEvents = [];
             foreach ($events as $event) {
-                $eventDate = new DateTime($event['date']);
-                $day = $eventDate->format('j');
-                $month = $this->getMonthShort($eventDate->format('n'));
-                
-                // Обработка условий участия
-                $conditions = $event['conditions'] ?? '';
-                if ($conditions && strpos($conditions, 'Условия участия:') !== 0) {
-                    $conditions = 'Условия участия: ' . $conditions;
-                }
+                // Получаем переводы для указанного языка
+                $title = $this->getLocalizedField($event, 'title', $language);
+                $description = $this->getLocalizedField($event, 'description', $language);
+                $conditions = $this->getLocalizedField($event, 'conditions', $language);
                 
                 // Определяем URL изображения
                 $imageUrl = '/images/event-default.png'; // По умолчанию
@@ -118,16 +99,14 @@ class EventsService {
                 
                 $formattedEvents[] = [
                     'id' => (string)$event['_id'],
-                    'day' => $day,
-                    'month' => $month,
-                    'title' => $event['title'] ?? 'Событие',
-                    'description' => $event['conditions'] ?? 'Описание события',
-                    'price' => 0, // Всегда 0, так как у нас нет цены
-                    'image' => $imageUrl,
-                    'link' => $event['description_link'] ?? '#',
+                    'title' => $title,
+                    'description' => $description,
+                    'conditions' => $conditions,
                     'date' => $event['date'],
                     'time' => $event['time'] ?? '19:00',
-                    'conditions' => $conditions
+                    'image' => $imageUrl,
+                    'link' => $event['description_link'] ?? '#',
+                    'category' => $event['category'] ?? 'general'
                 ];
             }
             
@@ -136,6 +115,39 @@ class EventsService {
         } catch (Exception $e) {
             error_log("Ошибка получения событий: " . $e->getMessage());
             return []; // Возвращаем пустой массив вместо фейковых данных
+        }
+    }
+    
+    /**
+     * Получить локализованное поле события
+     */
+    private function getLocalizedField($event, $field, $language) {
+        // Пробуем получить поле для указанного языка
+        $localizedField = $field . '_' . $language;
+        if (isset($event[$localizedField]) && !empty($event[$localizedField])) {
+            return $event[$localizedField];
+        }
+        
+        // Fallback на русский язык
+        if ($language !== 'ru' && isset($event[$field . '_ru']) && !empty($event[$field . '_ru'])) {
+            return $event[$field . '_ru'];
+        }
+        
+        // Fallback на старое поле (для совместимости)
+        if (isset($event[$field]) && !empty($event[$field])) {
+            return $event[$field];
+        }
+        
+        // Возвращаем значение по умолчанию
+        switch ($field) {
+            case 'title':
+                return 'Событие';
+            case 'description':
+                return 'Описание события';
+            case 'conditions':
+                return 'Условия участия';
+            default:
+                return '';
         }
     }
     

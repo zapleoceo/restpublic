@@ -17,12 +17,13 @@ require_once __DIR__ . '/../classes/EventsService.php';
 try {
     $eventsService = new EventsService();
     
-    // Get start date from query parameter
-    $startDate = $_GET['start_date'] ?? null;
-    $limit = (int)($_GET['limit'] ?? 20);
+    // Get parameters from query
+    $startDate = $_GET['start_date'] ?? date('Y-m-d'); // По умолчанию сегодня
+    $days = (int)($_GET['days'] ?? 14); // По умолчанию 14 дней
+    $language = $_GET['language'] ?? 'ru'; // По умолчанию русский
     
-    // Get events from MongoDB
-    $events = $eventsService->getEventsForWidget($startDate, $limit);
+    // Get events from MongoDB for specified period
+    $events = $eventsService->getEventsForWidget($startDate, $days, $language);
     
     // Convert to format expected by events widget
     $formattedEvents = [];
@@ -30,10 +31,13 @@ try {
         $formattedEvents[] = [
             'id' => $event['id'],
             'title' => $event['title'],
-            'event_date' => $event['date'],
-            'price' => $event['price'],
+            'description' => $event['description'],
+            'conditions' => $event['conditions'],
+            'date' => $event['date'],
+            'time' => $event['time'],
             'image' => $event['image'],
-            'description' => $event['description']
+            'link' => $event['link'],
+            'category' => $event['category'] ?? 'general'
         ];
     }
     

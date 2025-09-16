@@ -155,6 +155,7 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
     ================================================== -->
     <link rel="stylesheet" href="css/vendor.css">
     <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/events-widget.css">
     <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
     
     <style>
@@ -168,246 +169,6 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
         
         .intro-header__overline {
             font-family: "Roboto Flex", sans-serif;
-        }
-
-        /* Events Widget Styles */
-        .s-events {
-            --content-padding-top: calc(var(--vspace-2) * 0.7);
-            --content-padding-bottom: calc(var(--vspace-2) * 0.7);
-
-            padding-top: var(--content-padding-top);
-            padding-bottom: var(--content-padding-bottom);
-        }
-
-        .events-widget {
-            margin-top: calc(var(--vspace-2) * 0.7);
-        }
-
-        .events-widget__title {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: var(--text-color);
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 30px;
-            text-align: center;
-        }
-
-        /* Слайдер дат */
-        .dates-swiper {
-            margin-bottom: 20px;
-            overflow: hidden;
-        }
-
-        .dates-swiper .swiper-wrapper {
-            transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        }
-
-        .dates-swiper .swiper-slide {
-            width: auto;
-            min-width: 80px;
-            text-align: center;
-            padding: 12px 20px;
-            color: var(--muted-text);
-            background: transparent;
-            border: 1px solid var(--card-border);
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
-            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            user-select: none;
-            position: relative;
-        }
-
-        .dates-swiper .swiper-slide:hover {
-            color: var(--text-color);
-            border-color: var(--accent-color);
-        }
-
-        .dates-swiper .swiper-slide.active {
-            background: #366b5b;
-            color: white;
-            border-color: #366b5b;
-            font-weight: 600;
-            font-size: 15px;
-            transform: scale(1.05);
-            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        }
-
-        .dates-swiper .swiper-slide.has-event::after {
-            content: '';
-            position: absolute;
-            bottom: 4px;
-            right: 4px;
-            width: 6px;
-            height: 6px;
-            background: var(--accent-color);
-            border-radius: 50%;
-        }
-
-        .dates-swiper .swiper-slide.active.has-event::after {
-            background: var(--bg-color);
-        }
-
-        /* Слайдер постеров */
-        .posters-swiper {
-            height: 250px;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .posters-swiper .swiper-wrapper {
-            transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        }
-
-        .posters-swiper .swiper-slide {
-            width: 300px;
-            height: 100%;
-            flex-shrink: 0;
-        }
-
-        /* Постер карточка */
-        .poster-card {
-            width: 100%;
-            height: 100%;
-            min-height: 250px;
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            border-radius: 8px;
-            position: relative;
-            overflow: hidden;
-            cursor: pointer;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            border: 1px solid var(--card-border);
-        }
-
-        .poster-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-        }
-
-        .poster-card__overlay {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
-            padding: 15px;
-            color: white;
-        }
-
-        .poster-card__title {
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 5px;
-            line-height: 1.2;
-        }
-
-        .poster-card__date {
-            font-size: 12px;
-            opacity: 0.9;
-        }
-
-        .poster-card__description {
-            font-size: 11px;
-            opacity: 0.8;
-            margin-top: 5px;
-            line-height: 1.3;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-
-        /* Индикатор прокрутки */
-        .posters-swiper::after {
-            content: '';
-            position: absolute;
-            right: 0;
-            top: 0;
-            bottom: 0;
-            width: 30px;
-            background: linear-gradient(to left, rgba(255, 255, 255, 0.8), transparent);
-            pointer-events: none;
-            z-index: 10;
-        }
-
-        /* Сообщение об отсутствии событий */
-        .no-events {
-            text-align: center;
-            color: var(--muted-text);
-            font-size: 16px;
-            padding: 40px;
-            width: 100%;
-        }
-
-        /* Адаптивность */
-        @media (max-width: 768px) {
-            .events-widget__title {
-                font-size: 2rem;
-            }
-            
-            .dates-swiper .swiper-slide {
-                padding: 10px 16px;
-                font-size: 13px;
-                min-width: 60px;
-            }
-            
-            .posters-swiper .swiper-slide {
-                width: 250px;
-            }
-            
-            .poster-card__overlay {
-                padding: 12px;
-            }
-            
-            .poster-card__title {
-                font-size: 14px;
-            }
-            
-            .poster-card__date {
-                font-size: 11px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .events-widget__title {
-                font-size: 1.5rem;
-            }
-            
-            .dates-swiper .swiper-slide {
-                padding: 8px 12px;
-                font-size: 12px;
-                min-width: 50px;
-            }
-            
-            .posters-swiper {
-                height: 220px;
-            }
-            
-            .posters-swiper .swiper-slide {
-                width: 220px;
-                height: 100%;
-            }
-            
-            .poster-card__overlay {
-                padding: 10px;
-            }
-            
-            .poster-card__title {
-                font-size: 13px;
-            }
-            
-            .poster-card__date {
-                font-size: 10px;
-            }
-            
-            .poster-card__description {
-                font-size: 10px;
-                -webkit-line-clamp: 1;
-            }
         }
     </style>
 
@@ -804,11 +565,13 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
 
                 async loadEvents() {
                     try {
-                        // Загружаем события из API
-                        const response = await fetch('/api/events.php');
+                        // Загружаем события из API на 14 дней вперед
+                        const today = new Date().toISOString().split('T')[0];
+                        const response = await fetch(`/api/events.php?start_date=${today}&days=14&language=ru`);
                         const events = await response.json();
                         this.events = events;
                         this.processEvents();
+                        this.generateCalendarDays();
                         this.renderDates();
                         this.renderPosters();
                         this.bindEvents();
@@ -831,7 +594,7 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                     // Группируем события по дате
                     this.eventsByDate = {};
                     this.events.forEach(event => {
-                        const date = event.event_date;
+                        const date = event.date; // Используем новое поле 'date'
                         if (!this.eventsByDate[date]) {
                             this.eventsByDate[date] = [];
                         }
@@ -850,35 +613,55 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                     });
                 }
 
+                generateCalendarDays() {
+                    // Генерируем календарь на 14 дней начиная с сегодня
+                    this.calendarDays = [];
+                    const today = new Date();
+                    
+                    for (let i = 0; i < 14; i++) {
+                        const date = new Date(today);
+                        date.setDate(today.getDate() + i);
+                        const dateStr = date.toISOString().split('T')[0];
+                        
+                        this.calendarDays.push({
+                            date: dateStr,
+                            day: date.getDate(),
+                            month: this.getMonthShort(date.getMonth() + 1),
+                            hasEvents: this.eventsByDate[dateStr] && this.eventsByDate[dateStr].length > 0
+                        });
+                    }
+                }
+
                 getMonthShort(monthIndex) {
                     const months = ['янв', 'фев', 'мар', 'апр', 'май', 'июн', 
                                    'июл', 'авг', 'сен', 'окт', 'ноя', 'дек'];
-                    return months[monthIndex];
+                    return months[monthIndex - 1]; // Исправляем индекс (месяцы с 1)
                 }
 
                 renderDates() {
                     const datesWrapper = document.getElementById('dates-wrapper');
                     datesWrapper.innerHTML = '';
                     
-                    const dates = Object.keys(this.eventsByDate).sort();
-                    
-                    dates.forEach((date, index) => {
+                    // Используем сгенерированный календарь на 14 дней
+                    this.calendarDays.forEach((dayData, index) => {
                         const slideEl = document.createElement('div');
                         slideEl.className = 'swiper-slide';
-                        slideEl.dataset.date = date;
+                        slideEl.dataset.date = dayData.date;
                         slideEl.dataset.index = index;
                         
+                        // Первый день (сегодня) активен по умолчанию
                         if (index === 0) {
                             slideEl.classList.add('active');
                         }
                         
-                        const dateObj = new Date(date);
-                        const day = dateObj.getDate();
-                        const month = this.getMonthShort(dateObj.getMonth());
+                        // Добавляем класс для дат с событиями
+                        if (dayData.hasEvents) {
+                            slideEl.classList.add('has-event');
+                        }
                         
                         slideEl.innerHTML = `
-                            <div>${day}</div>
-                            <div style="font-size: 10px; margin-top: 2px;">${month}</div>
+                            <div>${dayData.day}</div>
+                            <div style="font-size: 10px; margin-top: 2px;">${dayData.month}</div>
                         `;
                         
                         datesWrapper.appendChild(slideEl);
@@ -891,36 +674,66 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                     const postersWrapper = document.getElementById('posters-wrapper');
                     postersWrapper.innerHTML = '';
                     
-                    if (this.allPosters.length === 0) {
-                        postersWrapper.innerHTML = '<div class="no-events">Событий не найдено</div>';
-                        return;
-                    }
-                    
-                    this.allPosters.forEach((event, index) => {
+                    // Показываем постеры для всех дней календаря
+                    this.calendarDays.forEach((dayData, index) => {
                         const slideEl = document.createElement('div');
                         slideEl.className = 'swiper-slide';
-                        slideEl.dataset.eventId = event.id;
-                        slideEl.dataset.date = event.date;
-                        slideEl.dataset.eventLink = event.link || '#';
+                        slideEl.dataset.date = dayData.date;
+                        slideEl.dataset.index = index;
                         
-                        const backgroundImage = event.image || 'images/event-default.png';
-                        const dateObj = new Date(event.date);
-                        const formattedDate = dateObj.toLocaleDateString('ru-RU');
-                        
-                        slideEl.innerHTML = `
-                            <div class="poster-card" style="background-image: url('${backgroundImage}')">
-                                <div class="poster-card__overlay">
-                                    <div class="poster-card__title">${event.title}</div>
-                                    <div class="poster-card__date">${formattedDate} ${event.time || '19:00'}</div>
-                                    <div class="poster-card__description">
-                                        <strong>Условия участия:</strong><br>
-                                        ${event.description || event.conditions || ''}
+                        if (dayData.hasEvents) {
+                            // Показываем события для этого дня
+                            const dayEvents = this.eventsByDate[dayData.date] || [];
+                            dayEvents.forEach(event => {
+                                const eventSlideEl = document.createElement('div');
+                                eventSlideEl.className = 'swiper-slide';
+                                eventSlideEl.dataset.eventId = event.id;
+                                eventSlideEl.dataset.date = event.date;
+                                eventSlideEl.dataset.eventLink = event.link || '#';
+                                
+                                const backgroundImage = event.image || 'images/event-default.png';
+                                const dateObj = new Date(event.date);
+                                const formattedDate = dateObj.toLocaleDateString('ru-RU');
+                                
+                                eventSlideEl.innerHTML = `
+                                    <div class="poster-card" style="background-image: url('${backgroundImage}')">
+                                        <div class="poster-card__overlay">
+                                            <div class="poster-card__title">${event.title}</div>
+                                            <div class="poster-card__date">${formattedDate} ${event.time || '19:00'}</div>
+                                            <div class="poster-card__description">
+                                                <strong>Условия участия:</strong><br>
+                                                ${event.conditions || ''}
+                                            </div>
+                                        </div>
+                                    </div>
+                                `;
+                                
+                                postersWrapper.appendChild(eventSlideEl);
+                            });
+                        } else {
+                            // Показываем сообщение для пустых дат
+                            const emptySlideEl = document.createElement('div');
+                            emptySlideEl.className = 'swiper-slide';
+                            emptySlideEl.dataset.date = dayData.date;
+                            emptySlideEl.dataset.index = index;
+                            
+                            const dateObj = new Date(dayData.date);
+                            const formattedDate = dateObj.toLocaleDateString('ru-RU');
+                            
+                            emptySlideEl.innerHTML = `
+                                <div class="poster-card empty-date">
+                                    <div class="poster-card__overlay">
+                                        <div class="poster-card__title">${formattedDate}</div>
+                                        <div class="poster-card__description">
+                                            Мы еще не придумали что у нас тут будет.<br>
+                                            Есть идеи? <a href="#footer" class="contact-link">Свяжитесь с нами!</a>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        `;
-                        
-                        postersWrapper.appendChild(slideEl);
+                            `;
+                            
+                            postersWrapper.appendChild(emptySlideEl);
+                        }
                     });
                     
                     this.postersSwiper.update();
@@ -1063,8 +876,23 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                 }
             }
 
-            // Инициализация виджета
-            new EventsWidget();
+            // Lazy loading виджета - инициализируем после загрузки основного контента
+            let eventsWidgetInitialized = false;
+            
+            function initEventsWidget() {
+                if (!eventsWidgetInitialized) {
+                    new EventsWidget();
+                    eventsWidgetInitialized = true;
+                }
+            }
+            
+            // Инициализируем виджет после загрузки DOM
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initEventsWidget);
+            } else {
+                // DOM уже загружен, но ждем немного для оптимизации
+                setTimeout(initEventsWidget, 100);
+            }
         });
     </script>
 
