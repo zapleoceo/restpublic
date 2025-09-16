@@ -915,6 +915,7 @@ if (count($events) > 0) {
         let pastEventsLoaded = 0;
         const allEvents = <?php echo json_encode($events); ?>;
         const loadedEventIds = new Set(); // Отслеживаем уже загруженные события
+        const deletingEvents = new Set(); // Отслеживаем удаляемые события
         
         // Отладочная информация
         console.log('Всего событий загружено:', allEvents.length);
@@ -1259,8 +1260,29 @@ if (count($events) > 0) {
         function deleteEvent(eventId) {
             console.log('deleteEvent вызвана для ID:', eventId);
             
+            // Проверяем, не удаляется ли уже это событие
+            if (deletingEvents.has(eventId)) {
+                console.log('Событие уже удаляется:', eventId);
+                return;
+            }
+            
+            const eventRow = document.querySelector(`tr[data-event-id="${eventId}"]`);
+            if (!eventRow) {
+                console.log('Строка события не найдена, возможно уже удалена');
+                return;
+            }
+            
+            const deleteButton = eventRow.querySelector('button.btn-delete');
+            if (deleteButton && deleteButton.disabled) {
+                console.log('Кнопка уже отключена, событие уже удаляется');
+                return;
+            }
+            
             if (confirm('Вы уверены, что хотите удалить это событие?')) {
                 console.log('Пользователь подтвердил удаление');
+                
+                // Добавляем событие в список удаляемых
+                deletingEvents.add(eventId);
                 
                 // Отключаем кнопку удаления - ищем в строке таблицы
                 const eventRow = document.querySelector(`tr[data-event-id="${eventId}"]`);
@@ -1309,6 +1331,10 @@ if (count($events) > 0) {
                         deleteButton.disabled = false;
                         deleteButton.textContent = '🗑️';
                     }
+                })
+                .finally(() => {
+                    // Удаляем событие из списка удаляемых
+                    deletingEvents.delete(eventId);
                 });
             }
         }
