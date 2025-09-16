@@ -1256,22 +1256,15 @@ if (count($events) > 0) {
             openEventModal(eventId);
         }
 
-        // Хранилище для отслеживания удаляемых событий
-        const deletingEvents = new Set();
-        
         function deleteEvent(eventId) {
-            // Проверяем, не удаляется ли уже это событие
-            if (deletingEvents.has(eventId)) {
-                console.log('Событие уже удаляется:', eventId);
-                return;
-            }
+            console.log('deleteEvent вызвана для ID:', eventId);
             
             if (confirm('Вы уверены, что хотите удалить это событие?')) {
-                // Добавляем событие в список удаляемых
-                deletingEvents.add(eventId);
+                console.log('Пользователь подтвердил удаление');
                 
-                // Отключаем кнопку удаления
-                const deleteButton = document.querySelector(`button[onclick="deleteEvent('${eventId}')"]`);
+                // Отключаем кнопку удаления - ищем в строке таблицы
+                const eventRow = document.querySelector(`tr[data-event-id="${eventId}"]`);
+                const deleteButton = eventRow ? eventRow.querySelector('button.btn-delete') : null;
                 if (deleteButton) {
                     deleteButton.disabled = true;
                     deleteButton.textContent = '⏳';
@@ -1316,10 +1309,6 @@ if (count($events) > 0) {
                         deleteButton.disabled = false;
                         deleteButton.textContent = '🗑️';
                     }
-                })
-                .finally(() => {
-                    // Удаляем событие из списка удаляемых
-                    deletingEvents.delete(eventId);
                 });
             }
         }
