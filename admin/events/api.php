@@ -77,9 +77,12 @@ try {
             
         case 'POST':
             // Создать новое событие
+            error_log("POST запрос - input: " . print_r($input, true));
+            
             $requiredFields = ['title', 'date', 'time', 'conditions'];
             foreach ($requiredFields as $field) {
                 if (empty($input[$field])) {
+                    error_log("Валидация не пройдена: поле '$field' пустое. Значение: '" . ($input[$field] ?? 'null') . "'");
                     http_response_code(400);
                     echo json_encode([
                         'success' => false,
@@ -185,6 +188,7 @@ try {
             $requiredFields = ['title', 'date', 'time', 'conditions'];
             foreach ($requiredFields as $field) {
                 if (empty($input[$field])) {
+                    error_log("Валидация не пройдена: поле '$field' пустое. Значение: '" . ($input[$field] ?? 'null') . "'");
                     http_response_code(400);
                     echo json_encode([
                         'success' => false,
