@@ -656,7 +656,14 @@ if (count($events) > 0) {
                                                     if (preg_match('/^[a-f\d]{24}$/i', $event['image'])) {
                                                         $imageUrl = "/api/image.php?id=" . $event['image'];
                                                     } else {
-                                                        $imageUrl = $event['image'];
+                                                        // Для старых путей к файлам проверяем существование
+                                                        $fullPath = __DIR__ . $event['image'];
+                                                        if (file_exists($fullPath)) {
+                                                            $imageUrl = $event['image'];
+                                                        } else {
+                                                            // Если файл не найден, используем дефолтное изображение
+                                                            $imageUrl = '/images/event-default.png';
+                                                        }
                                                     }
                                                 }
                                                 ?>
@@ -761,6 +768,7 @@ if (count($events) > 0) {
                     <input type="file" id="eventImage" name="image" accept="image/*">
                     <small>Если не выбрана, будет использована дефолтная картинка</small>
                     <div class="error-message">Поддерживаются только изображения: JPEG, PNG, GIF, WebP. Максимальный размер: 5MB</div>
+                    <div id="imagePreview" style="display: none; margin-top: 10px;"></div>
                 </div>
 
                 <div class="form-group">

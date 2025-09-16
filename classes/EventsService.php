@@ -135,7 +135,7 @@ class EventsService {
             
         } catch (Exception $e) {
             error_log("Ошибка получения событий: " . $e->getMessage());
-            return $this->getDefaultEvents();
+            return []; // Возвращаем пустой массив вместо фейковых данных
         }
     }
     
@@ -152,59 +152,5 @@ class EventsService {
         return $months[$monthNumber] ?? 'янв';
     }
     
-    /**
-     * Дефолтные события если нет данных в БД
-     */
-    private function getDefaultEvents() {
-        $today = new DateTime();
-        $events = [];
-        
-        for ($i = 0; $i < 8; $i++) {
-            $eventDate = clone $today;
-            $eventDate->add(new DateInterval('P' . $i . 'D'));
-            
-            $day = $eventDate->format('j');
-            $month = $this->getMonthShort($eventDate->format('n'));
-            
-            $eventTitles = [
-                'Стрельба из лука', 'Кино на свежем воздухе', 'Йога-класс', 'Кулинарный мастер-класс',
-                'Живая музыка', 'Пикник с семьей', 'Дегустация вин', 'Фотосессия на природе'
-            ];
-            
-            $eventDescriptions = [
-                'Мастер-класс по стрельбе из лука на свежем воздухе. Подходит для всех уровней подготовки.',
-                'Просмотр фильмов под звездным небом с попкорном и горячими напитками.',
-                'Утренняя йога на природе с профессиональным инструктором. Начните день с гармонии.',
-                'Учимся готовить традиционные блюда с шеф-поваром North Republic.',
-                'Выступление местных музыкантов с акустической программой.',
-                'Семейный пикник с играми, конкурсами и вкусной едой.',
-                'Знакомство с лучшими винами региона в сопровождении сомелье.',
-                'Профессиональная фотосессия в живописных местах North Republic.'
-            ];
-            
-            $prices = ['от 150₽', 'от 300₽', 'от 200₽', 'от 500₽', 'от 400₽', 'от 250₽', 'от 800₽', 'от 1200₽'];
-            $images = [
-                'template/images/gallery/gallery-01.jpg', 'template/images/gallery/gallery-02.jpg',
-                'template/images/gallery/gallery-03.jpg', 'template/images/gallery/gallery-04.jpg',
-                'template/images/gallery/gallery-05.jpg', 'template/images/gallery/gallery-06.jpg',
-                'template/images/gallery/gallery-07.jpg', 'template/images/gallery/gallery-08.jpg'
-            ];
-            
-            $events[] = [
-                'id' => $i + 1,
-                'day' => $day,
-                'month' => $month,
-                'title' => $eventTitles[$i] ?? 'Событие',
-                'description' => $eventDescriptions[$i] ?? 'Описание события',
-                'price' => 0, // Всегда 0, так как у нас нет цены
-                'image' => $images[$i] ?? '/images/event-default.png',
-                'link' => '/event/' . strtolower(str_replace([' ', '-'], ['-', '-'], $eventTitles[$i] ?? 'event')),
-                'date' => $eventDate->format('Y-m-d'),
-                'time' => '19:00'
-            ];
-        }
-        
-        return $events;
-    }
 }
 ?>

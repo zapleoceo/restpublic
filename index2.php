@@ -803,50 +803,8 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                 }
 
                 loadTestData() {
-                    // Тестовые данные для демонстрации
-                    this.events = [
-                        {
-                            id: 1,
-                            title: 'Music Festival',
-                            event_date: this.getDateString(0), // сегодня
-                            price: 2500,
-                            image: '/images/events/music-festival.jpg',
-                            description: 'Грандиозный музыкальный фестиваль с участием лучших исполнителей'
-                        },
-                        {
-                            id: 2,
-                            title: 'Business Conference',
-                            event_date: this.getDateString(1), // завтра
-                            price: 1500,
-                            image: '/images/events/business-conference.jpg',
-                            description: 'Конференция для бизнес-лидеров и предпринимателей'
-                        },
-                        {
-                            id: 3,
-                            title: 'Art Exhibition',
-                            event_date: this.getDateString(2), // послезавтра
-                            price: 800,
-                            image: '/images/events/art-exhibition.jpg',
-                            description: 'Выставка современного искусства от местных художников'
-                        },
-                        {
-                            id: 4,
-                            title: 'Food Festival',
-                            event_date: this.getDateString(3),
-                            price: 1200,
-                            image: '/images/events/food-festival.jpg',
-                            description: 'Фестиваль кулинарного искусства и гастрономии'
-                        },
-                        {
-                            id: 5,
-                            title: 'Tech Meetup',
-                            event_date: this.getDateString(5),
-                            price: 500,
-                            image: '/images/events/tech-meetup.jpg',
-                            description: 'Встреча IT-специалистов и обсуждение новых технологий'
-                        }
-                    ];
-                    
+                    // Если нет данных из API, показываем пустой календарь
+                    this.events = [];
                     this.processEvents();
                     this.generateCalendar();
                     this.renderDates();

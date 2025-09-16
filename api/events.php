@@ -42,48 +42,7 @@ try {
 } catch (Exception $e) {
     error_log("Ошибка API событий: " . $e->getMessage());
     
-    // Fallback to test data if MongoDB is unavailable
-    echo json_encode([
-        [
-            'id' => 1,
-            'title' => 'Music Festival',
-            'event_date' => date('Y-m-d'),
-            'price' => 2500,
-            'image' => '/images/events/music-festival.jpg',
-            'description' => 'Грандиозный музыкальный фестиваль с участием лучших исполнителей'
-        ],
-        [
-            'id' => 2,
-            'title' => 'Business Conference',
-            'event_date' => date('Y-m-d', strtotime('+1 day')),
-            'price' => 1500,
-            'image' => '/images/events/business-conference.jpg',
-            'description' => 'Конференция для бизнес-лидеров и предпринимателей'
-        ],
-        [
-            'id' => 3,
-            'title' => 'Art Exhibition',
-            'event_date' => date('Y-m-d', strtotime('+2 days')),
-            'price' => 800,
-            'image' => '/images/events/art-exhibition.jpg',
-            'description' => 'Выставка современного искусства от местных художников'
-        ],
-        [
-            'id' => 4,
-            'title' => 'Food Festival',
-            'event_date' => date('Y-m-d', strtotime('+3 days')),
-            'price' => 1200,
-            'image' => '/images/events/food-festival.jpg',
-            'description' => 'Фестиваль кулинарного искусства и гастрономии'
-        ],
-        [
-            'id' => 5,
-            'title' => 'Tech Meetup',
-            'event_date' => date('Y-m-d', strtotime('+5 days')),
-            'price' => 500,
-            'image' => '/images/events/tech-meetup.jpg',
-            'description' => 'Встреча IT-специалистов и обсуждение новых технологий'
-        ]
-    ], JSON_UNESCAPED_UNICODE);
+    // Возвращаем пустой массив вместо фейковых данных
+    echo json_encode([], JSON_UNESCAPED_UNICODE);
 }
 ?>
