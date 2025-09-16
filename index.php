@@ -360,12 +360,15 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                                 $categoryId = (string)($category['category_id']);
                                 $categoryProducts = $productsByCategory[$categoryId] ?? [];
                                 
-                                // Применяем автоматический перевод для продуктов
-                                $translatedProducts = [];
-                                foreach (array_slice($categoryProducts, 0, 5) as $product) {
-                                    $translatedProducts[] = $menuCache->translateProduct($product, $currentLanguage);
+                                // Применяем автоматический перевод для продуктов (оптимизировано)
+                                $topProducts = array_slice($categoryProducts, 0, 5);
+                                if ($currentLanguage !== 'ru') {
+                                    $translatedProducts = [];
+                                    foreach ($topProducts as $product) {
+                                        $translatedProducts[] = $menuCache->translateProduct($product, $currentLanguage);
+                                    }
+                                    $topProducts = $translatedProducts;
                                 }
-                                $topProducts = $translatedProducts;
                                 ?>
                                 <div id="tab-<?php echo htmlspecialchars($category['category_id']); ?>" 
                                      class="menu-block__group tab-content__item <?php echo $index === 0 ? 'active' : ''; ?>">
@@ -523,26 +526,32 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
     <script src="https://unpkg.com/swiper/swiper-bundle.min.js" defer></script>
     
     <script>
-        // Tab switching for menu categories
+        // Tab switching for menu categories (оптимизировано)
         document.addEventListener('DOMContentLoaded', function() {
             const categoryLinks = document.querySelectorAll('#menu-categories a');
             const menuItems = document.querySelectorAll('#menu-content .tab-content__item');
+            
+            // Кешируем элементы для быстрого доступа
+            const menuItemsMap = new Map();
+            menuItems.forEach(item => {
+                menuItemsMap.set(item.id, item);
+            });
             
             categoryLinks.forEach(link => {
                 link.addEventListener('click', function(e) {
                     e.preventDefault();
                     
-                    // Remove active class from all links and items
-                    categoryLinks.forEach(l => l.classList.remove('active'));
-                    menuItems.forEach(item => item.classList.remove('active'));
-                    
-                    // Add active class to clicked link
-                    this.classList.add('active');
-                    
-                    // Show corresponding menu item
+                    // Быстрое переключение без лишних DOM операций
                     const targetId = this.getAttribute('href').substring(1);
-                    const targetItem = document.getElementById(targetId);
+                    const targetItem = menuItemsMap.get(targetId);
+                    
                     if (targetItem) {
+                        // Убираем активные классы
+                        categoryLinks.forEach(l => l.classList.remove('active'));
+                        menuItems.forEach(item => item.classList.remove('active'));
+                        
+                        // Добавляем активные классы
+                        this.classList.add('active');
                         targetItem.classList.add('active');
                     }
                 });

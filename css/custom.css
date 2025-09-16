@@ -30,6 +30,30 @@ html {
   max-height: none;
 }
 
+/* Плавные переходы для табов меню - исправляем скачки контента */
+.tab-content__item {
+  transition: opacity 0.3s ease, visibility 0.3s ease !important;
+  position: relative !important;
+  top: 0 !important; /* Убираем скачок с top: 100px */
+}
+
+.tab-content__item.active {
+  transition: opacity 0.3s ease, visibility 0.3s ease !important;
+  position: relative !important;
+  top: 0 !important;
+}
+
+/* Убираем резкие изменения высоты */
+.menu-block__group {
+  transition: all 0.2s ease;
+}
+
+/* Исправляем позиционирование контейнера табов */
+.tab-content {
+  position: relative !important;
+  top: 0 !important; /* Убираем отрицательный top */
+}
+
 /* Full menu link styles */
 .full-menu-item {
   list-style: none;
