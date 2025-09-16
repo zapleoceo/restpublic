@@ -1084,14 +1084,35 @@ if (count($events) > 0) {
             const pastDate = new Date(today);
             pastDate.setDate(today.getDate() - (pastWeeksLoaded * 7)); // Уходим назад на N недель
             
+            console.log(`Загружаем прошлые события, неделя ${pastWeeksLoaded}`);
+            console.log(`Диапазон: с ${pastDate.toISOString().split('T')[0]} до ${today.toISOString().split('T')[0]}`);
+            
             // Фильтруем события для показа - только те, которые еще не загружены
             const pastEvents = allEvents.filter(event => {
                 const eventDate = new Date(event.date);
-                return eventDate < today && eventDate >= pastDate && !loadedEventIds.has(event.id);
+                const isPast = eventDate < today;
+                const isInRange = eventDate >= pastDate;
+                const notLoaded = !loadedEventIds.has(event.id);
+                
+                console.log(`Событие ${event.title} (${event.date}): прошлое=${isPast}, в диапазоне=${isInRange}, не загружено=${notLoaded}`);
+                
+                return isPast && isInRange && notLoaded;
             }).slice(0, 7); // Показываем максимум 7 событий за раз
             
+            console.log(`Найдено прошлых событий: ${pastEvents.length}`);
+            
             if (pastEvents.length === 0) {
-                alert('Больше прошлых событий нет');
+                // Если в текущем диапазоне нет событий, попробуем найти любые прошлые события
+                const anyPastEvents = allEvents.filter(event => {
+                    const eventDate = new Date(event.date);
+                    return eventDate < today && !loadedEventIds.has(event.id);
+                });
+                
+                if (anyPastEvents.length === 0) {
+                    alert('Больше прошлых событий нет');
+                } else {
+                    alert(`В текущем диапазоне (${pastWeeksLoaded} недель назад) событий нет, но есть ${anyPastEvents.length} событий в более далеком прошлом`);
+                }
                 return;
             }
             
