@@ -766,17 +766,17 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                             const language = document.documentElement.lang || 'ru';
                             const messages = {
                                 'ru': {
-                                    title: 'Нет событий',
+                                    title: 'Мы еще не придумали что у нас тут будет.',
                                     text: 'Есть идеи?',
                                     link: 'Свяжитесь с нами!'
                                 },
                                 'en': {
-                                    title: 'No events',
+                                    title: 'We haven\'t figured out what we\'ll have here yet.',
                                     text: 'Have ideas?',
                                     link: 'Contact us!'
                                 },
                                 'vi': {
-                                    title: 'Không có sự kiện',
+                                    title: 'Chúng tôi chưa nghĩ ra sẽ có gì ở đây.',
                                     text: 'Có ý tưởng?',
                                     link: 'Liên hệ với chúng tôi!'
                                 }
