@@ -767,6 +767,10 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                             slideChange: () => {
                                 if (!this.isUserScrolling) return;
                                 this.onDateSlideChange();
+                            },
+                            touchEnd: () => {
+                                if (!this.isUserScrolling) return;
+                                this.onDateSlideChange();
                             }
                         }
                     });
@@ -782,6 +786,10 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                         speed: 300,
                         on: {
                             slideChange: () => {
+                                if (!this.isUserScrolling) return;
+                                this.onPosterSlideChange();
+                            },
+                            touchEnd: () => {
                                 if (!this.isUserScrolling) return;
                                 this.onPosterSlideChange();
                             }
@@ -920,8 +928,10 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                     
                     if (firstPosterIndex !== -1) {
                         this.isUserScrolling = true;
-                        this.postersSwiper.slideTo(firstPosterIndex);
-                        this.isUserScrolling = false;
+                        this.postersSwiper.slideTo(firstPosterIndex, 300); // Добавляем время анимации
+                        setTimeout(() => {
+                            this.isUserScrolling = false;
+                        }, 350); // Небольшая задержка для завершения анимации
                     }
                 }
 
@@ -945,8 +955,10 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                         // Прокручиваем слайдер дат к активной дате
                         const dateIndex = parseInt(dateSlide.dataset.index);
                         this.isUserScrolling = true;
-                        this.datesSwiper.slideTo(dateIndex);
-                        this.isUserScrolling = false;
+                        this.datesSwiper.slideTo(dateIndex, 300); // Добавляем время анимации
+                        setTimeout(() => {
+                            this.isUserScrolling = false;
+                        }, 350); // Небольшая задержка для завершения анимации
                     }
                 }
 
@@ -954,9 +966,31 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                     // Обработка кликов по датам
                     document.querySelectorAll('.dates-swiper .swiper-slide').forEach(slide => {
                         slide.addEventListener('click', () => {
+                            const targetIndex = parseInt(slide.dataset.index);
+                            
+                            // Убираем активный класс у всех дат
+                            document.querySelectorAll('.dates-swiper .swiper-slide').forEach(s => {
+                                s.classList.remove('active');
+                            });
+                            
+                            // Добавляем активный класс к выбранной дате
+                            slide.classList.add('active');
+                            
+                            // Прокручиваем слайдер дат
                             this.isUserScrolling = true;
-                            this.datesSwiper.slideTo(parseInt(slide.dataset.index));
-                            this.isUserScrolling = false;
+                            this.datesSwiper.slideTo(targetIndex, 300);
+                            
+                            // Находим первый постер для этой даты
+                            const selectedDate = slide.dataset.date;
+                            const firstPosterIndex = this.allPosters.findIndex(poster => poster.date === selectedDate);
+                            
+                            if (firstPosterIndex !== -1) {
+                                this.postersSwiper.slideTo(firstPosterIndex, 300);
+                            }
+                            
+                            setTimeout(() => {
+                                this.isUserScrolling = false;
+                            }, 350);
                         });
                     });
 
