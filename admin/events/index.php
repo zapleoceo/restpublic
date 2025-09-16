@@ -398,12 +398,12 @@ if (count($events) > 0) {
             background-color: #e0a800;
         }
 
-        .btn-delete {
+        .btn-danger {
             background-color: #dc3545;
             color: white;
         }
 
-        .btn-delete:hover {
+        .btn-danger:hover {
             background-color: #c82333;
         }
 
@@ -765,7 +765,7 @@ if (count($events) > 0) {
                                             </td>
                                             <td class="event-actions">
                                                 <button class="btn btn-edit" onclick="editEvent('<?= $event['id'] ?>')" title="Редактировать">✏️</button>
-                                                <button class="btn btn-delete" onclick="deleteEvent('<?= $event['id'] ?>')" title="Удалить">🗑️</button>
+                                                <button class="btn btn-danger" onclick="deleteEvent('<?= $event['id'] ?>')" title="Удалить">🗑️</button>
                                             </td>
                                         </tr>
                                     <?php endforeach; ?>
@@ -1138,7 +1138,10 @@ if (count($events) > 0) {
                 if (data.success) {
                     alert(data.message);
                     closeEventModal();
-                    location.reload(); // Перезагружаем страницу для обновления списка
+                    // Небольшая задержка перед перезагрузкой, чтобы изображение успело сохраниться
+                    setTimeout(() => {
+                        location.reload(); // Перезагружаем страницу для обновления списка
+                    }, 500);
                 } else {
                     alert('Ошибка: ' + data.message);
                 }
@@ -1273,7 +1276,7 @@ if (count($events) > 0) {
                 return;
             }
             
-            const deleteButton = eventRow.querySelector('button.btn-delete');
+            const deleteButton = eventRow.querySelector('button.btn-danger');
             if (deleteButton && deleteButton.disabled) {
                 console.log('Кнопка уже отключена, событие уже удаляется');
                 return;
@@ -1289,7 +1292,7 @@ if (count($events) > 0) {
                 
                 // Отключаем кнопку удаления - ищем в строке таблицы
                 const eventRow = document.querySelector(`tr[data-event-id="${eventId}"]`);
-                const deleteButton = eventRow ? eventRow.querySelector('button.btn-delete') : null;
+                const deleteButton = eventRow ? eventRow.querySelector('button.btn-danger') : null;
                 if (deleteButton) {
                     deleteButton.disabled = true;
                     deleteButton.textContent = '⏳';
@@ -1416,7 +1419,7 @@ if (count($events) > 0) {
                     <td class="event-comment">${truncatedComment}</td>
                     <td class="event-actions">
                         <button class="btn btn-edit" onclick="editEvent('${event.id}')" title="Редактировать">✏️</button>
-                        <button class="btn btn-delete" onclick="deleteEvent('${event.id}')" title="Удалить">🗑️</button>
+                        <button class="btn btn-danger" onclick="deleteEvent('${event.id}')" title="Удалить">🗑️</button>
                     </td>
                 `;
                 tbody.insertBefore(row, tbody.firstChild);
