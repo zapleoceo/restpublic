@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/ImageService.php';
 
 class EventsService {
     private $client;
@@ -103,6 +104,18 @@ class EventsService {
                     $conditions = 'Условия участия: ' . $conditions;
                 }
                 
+                // Определяем URL изображения
+                $imageUrl = '/images/event-default.png'; // По умолчанию
+                if (!empty($event['image'])) {
+                    // Если image содержит file_id (GridFS), создаем URL
+                    if (preg_match('/^[a-f\d]{24}$/i', $event['image'])) {
+                        $imageUrl = "/api/image.php?id=" . $event['image'];
+                    } else {
+                        // Если это старый путь к файлу
+                        $imageUrl = $event['image'];
+                    }
+                }
+                
                 $formattedEvents[] = [
                     'id' => (string)$event['_id'],
                     'day' => $day,
@@ -110,7 +123,7 @@ class EventsService {
                     'title' => $event['title'] ?? 'Событие',
                     'description' => $event['conditions'] ?? 'Описание события',
                     'price' => 0, // Всегда 0, так как у нас нет цены
-                    'image' => $event['image'] ?? '/images/event-default.png',
+                    'image' => $imageUrl,
                     'link' => $event['description_link'] ?? '#',
                     'date' => $event['date'],
                     'time' => $event['time'] ?? '19:00',

@@ -6,6 +6,7 @@ header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE');
 header('Access-Control-Allow-Headers: Content-Type, X-Requested-With');
 
 require_once __DIR__ . '/../../vendor/autoload.php';
+require_once __DIR__ . '/../../classes/ImageService.php';
 
 // Проверка авторизации без редиректа
 session_start();
@@ -115,29 +116,20 @@ try {
             // Правильная обработка is_active (checkbox приходит как 'on' или отсутствует)
             $isActive = isset($input['is_active']) && $input['is_active'] !== false && $input['is_active'] !== 'false' && $input['is_active'] !== '0';
             
-            // Обработка загрузки изображения
-            $imagePath = null;
+            // Обработка загрузки изображения в GridFS
+            $imageData = null;
             if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
-                $uploadDir = dirname(__DIR__, 2) . '/images/events/';
-                error_log("POST - Upload directory: " . $uploadDir);
-                error_log("POST - Directory exists: " . (is_dir($uploadDir) ? 'YES' : 'NO'));
-                error_log("POST - Directory writable: " . (is_writable($uploadDir) ? 'YES' : 'NO'));
+                $imageService = new ImageService();
+                $validation = $imageService->validateImage($_FILES['image']);
                 
-                $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-                $maxSize = 5 * 1024 * 1024; // 5MB
-                
-                $fileInfo = $_FILES['image'];
-                $fileType = $fileInfo['type'];
-                $fileSize = $fileInfo['size'];
-                
-                if (in_array($fileType, $allowedTypes) && $fileSize <= $maxSize) {
-                    $extension = pathinfo($fileInfo['name'], PATHINFO_EXTENSION);
-                    $fileName = 'event_' . time() . '_' . uniqid() . '.' . $extension;
-                    $filePath = $uploadDir . $fileName;
-                    
-                    if (move_uploaded_file($fileInfo['tmp_name'], $filePath)) {
-                        $imagePath = '/images/events/' . $fileName;
-                    }
+                if ($validation['valid']) {
+                    $fileData = file_get_contents($_FILES['image']['tmp_name']);
+                    $imageData = $imageService->saveImage($fileData, $_FILES['image']['name'], [
+                        'event_type' => 'new_event'
+                    ]);
+                    error_log("POST - Image saved to GridFS: " . $imageData['file_id']);
+                } else {
+                    error_log("POST - Image validation failed: " . $validation['error']);
                 }
             }
             
@@ -147,7 +139,7 @@ try {
                 'time' => $input['time'],
                 'conditions' => trim($input['conditions']),
                 'description_link' => !empty($input['description_link']) ? trim($input['description_link']) : null,
-                'image' => $imagePath ?: '/images/event-default.png',
+                'image' => $imageData ? $imageData['file_id'] : null,
                 'comment' => !empty($input['comment']) ? trim($input['comment']) : null,
                 'is_active' => $isActive,
                 'created_at' => new MongoDB\BSON\UTCDateTime(),
@@ -233,34 +225,21 @@ try {
             // Правильная обработка is_active (checkbox приходит как 'on' или отсутствует)
             $is_active = isset($input['is_active']) && $input['is_active'] !== false && $input['is_active'] !== 'false' && $input['is_active'] !== '0';
             
-            // Обработка загрузки изображения для редактирования
-            $imagePath = null;
+            // Обработка загрузки изображения для редактирования в GridFS
+            $imageData = null;
             if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
-                $uploadDir = dirname(__DIR__, 2) . '/images/events/';
-                error_log("PUT - Upload directory: " . $uploadDir);
-                error_log("PUT - Directory exists: " . (is_dir($uploadDir) ? 'YES' : 'NO'));
-                error_log("PUT - Directory writable: " . (is_writable($uploadDir) ? 'YES' : 'NO'));
+                $imageService = new ImageService();
+                $validation = $imageService->validateImage($_FILES['image']);
                 
-                $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-                $maxSize = 5 * 1024 * 1024; // 5MB
-                
-                $fileInfo = $_FILES['image'];
-                $fileType = $fileInfo['type'];
-                $fileSize = $fileInfo['size'];
-                
-                if (in_array($fileType, $allowedTypes) && $fileSize <= $maxSize) {
-                    $extension = pathinfo($fileInfo['name'], PATHINFO_EXTENSION);
-                    $fileName = 'event_' . time() . '_' . uniqid() . '.' . $extension;
-                    $filePath = $uploadDir . $fileName;
-                    
-                    if (move_uploaded_file($fileInfo['tmp_name'], $filePath)) {
-                        $imagePath = '/images/events/' . $fileName;
-                        error_log("PUT - Image uploaded successfully: " . $imagePath);
-                    } else {
-                        error_log("PUT - Failed to move uploaded file");
-                    }
+                if ($validation['valid']) {
+                    $fileData = file_get_contents($_FILES['image']['tmp_name']);
+                    $imageData = $imageService->saveImage($fileData, $_FILES['image']['name'], [
+                        'event_type' => 'updated_event',
+                        'original_event_id' => $eventId
+                    ]);
+                    error_log("PUT - Image saved to GridFS: " . $imageData['file_id']);
                 } else {
-                    error_log("PUT - Invalid file type or size: " . $fileType . ", " . $fileSize);
+                    error_log("PUT - Image validation failed: " . $validation['error']);
                 }
             } else {
                 error_log("PUT - No image file or upload error: " . ($_FILES['image']['error'] ?? 'no file'));
@@ -284,9 +263,9 @@ try {
                 ];
                 
                 // Обновляем изображение только если загружено новое
-                if ($imagePath !== null) {
-                    $updateData['image'] = $imagePath;
-                    error_log("PUT - Updating with new image: " . $imagePath);
+                if ($imageData !== null) {
+                    $updateData['image'] = $imageData['file_id'];
+                    error_log("PUT - Updating with new image: " . $imageData['file_id']);
                 } else {
                     // Если изображение не загружено, оставляем существующее
                     $existingEvent = $eventsCollection->findOne(['_id' => $eventId]);
@@ -294,8 +273,8 @@ try {
                         $updateData['image'] = $existingEvent['image'];
                         error_log("PUT - Keeping existing image: " . $existingEvent['image']);
                     } else {
-                        $updateData['image'] = '/images/event-default.png';
-                        error_log("PUT - Using default image");
+                        $updateData['image'] = null;
+                        error_log("PUT - No image");
                     }
                 }
                 

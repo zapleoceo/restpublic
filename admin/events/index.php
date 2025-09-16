@@ -632,17 +632,21 @@ if (count($events) > 0) {
                                                 <?php endif; ?>
                                             </td>
                                             <td class="event-thumbnail">
-                                                <?php if (!empty($event['image'])): ?>
-                                                    <img src="<?php echo htmlspecialchars($event['image']); ?>" 
-                                                         alt="<?php echo htmlspecialchars($event['title']); ?>" 
-                                                         class="thumbnail-img" 
-                                                         onclick="showImageModal('<?php echo htmlspecialchars($event['image']); ?>', '<?php echo htmlspecialchars($event['title']); ?>')">
-                                                <?php else: ?>
-                                                    <img src="/images/event-default.png" 
-                                                         alt="Дефолтное изображение" 
-                                                         class="thumbnail-img default-thumbnail"
-                                                         onclick="showImageModal('/images/event-default.png', 'Дефолтное изображение')">
-                                                <?php endif; ?>
+                                                <?php 
+                                                $imageUrl = '/images/event-default.png';
+                                                if (!empty($event['image'])) {
+                                                    // Проверяем, является ли это GridFS file_id
+                                                    if (preg_match('/^[a-f\d]{24}$/i', $event['image'])) {
+                                                        $imageUrl = "/api/image.php?id=" . $event['image'];
+                                                    } else {
+                                                        $imageUrl = $event['image'];
+                                                    }
+                                                }
+                                                ?>
+                                                <img src="<?php echo htmlspecialchars($imageUrl); ?>" 
+                                                     alt="<?php echo htmlspecialchars($event['title']); ?>" 
+                                                     class="thumbnail-img <?= $imageUrl === '/images/event-default.png' ? 'default-thumbnail' : '' ?>" 
+                                                     onclick="showImageModal('<?php echo htmlspecialchars($imageUrl); ?>', '<?php echo htmlspecialchars($event['title']); ?>')">
                                             </td>
                                             <td class="event-status">
                                                 <span class="status-badge <?php echo $event['is_active'] ? 'active' : 'inactive'; ?>">
