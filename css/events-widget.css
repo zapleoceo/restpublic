@@ -83,9 +83,10 @@
 
 /* Слайдер постеров */
 .posters-swiper {
-    height: 325px; /* 317px + 8px запас для hover эффекта */
+    height: 355px; /* 325px + 30px для padding (15px сверху + 15px снизу) */
     overflow: hidden;
     position: relative;
+    padding: 15px 0; /* Отступы сверху и снизу для центрирования слайдов */
 }
 
 .posters-swiper .swiper-wrapper {
@@ -96,7 +97,6 @@
     width: 320px; /* Увеличили для карточек 315×288px */
     height: 100%;
     flex-shrink: 0;
-    margin: 15px auto !important; /* Центрирование с отступами сверху и снизу */
 }
 
 /* Постер карточка */
@@ -336,7 +336,6 @@
     
     .posters-swiper .swiper-slide {
         width: 280px; /* Увеличили для лучшего отображения карточек */
-        margin: 10px auto !important; /* Меньшие отступы для мобильных */
     }
     
     .poster-card__overlay {
@@ -366,13 +365,13 @@
     }
     
     .posters-swiper {
-        height: 250px; /* 242px + 8px запас для hover эффекта */
+        height: 270px; /* 250px + 20px для padding (10px сверху + 10px снизу) */
+        padding: 10px 0; /* Меньшие отступы для мобильных */
     }
     
     .posters-swiper .swiper-slide {
         width: 250px; /* Увеличили для лучшего отображения карточек */
         height: 100%;
-        margin: 8px auto !important; /* Еще меньшие отступы для маленьких экранов */
     }
     
     .poster-card__overlay {
@@ -408,7 +407,6 @@
     
     .posters-swiper .swiper-slide {
         width: 220px; /* Увеличили для лучшего отображения карточек */
-        margin: 5px auto !important; /* Минимальные отступы для очень маленьких экранов */
     }
     
     .poster-card__overlay {
