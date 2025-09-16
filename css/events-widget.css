@@ -302,10 +302,10 @@
     }
     
     .dates-swiper .swiper-slide {
-        padding: 6px 8px;
-        font-size: 11px;
-        min-width: 50px;
-        max-width: 60px;
+        padding: 4px 6px;
+        font-size: 10px;
+        min-width: 40px;
+        max-width: 50px;
     }
     
     .posters-swiper .swiper-slide {
@@ -331,10 +331,10 @@
     }
     
     .dates-swiper .swiper-slide {
-        padding: 4px 6px;
-        font-size: 10px;
-        min-width: 40px;
-        max-width: 50px;
+        padding: 2px 4px;
+        font-size: 9px;
+        min-width: 35px;
+        max-width: 40px;
     }
     
     .posters-swiper {
@@ -360,6 +360,40 @@
     
     .poster-card__description {
         font-size: 10px;
+        -webkit-line-clamp: 1;
+    }
+}
+
+@media (max-width: 320px) {
+    .events-widget__title {
+        font-size: 1.2rem;
+    }
+    
+    .dates-swiper .swiper-slide {
+        padding: 1px 2px;
+        font-size: 8px;
+        min-width: 30px;
+        max-width: 35px;
+    }
+    
+    .posters-swiper .swiper-slide {
+        width: 200px;
+    }
+    
+    .poster-card__overlay {
+        padding: 8px;
+    }
+    
+    .poster-card__title {
+        font-size: 12px;
+    }
+    
+    .poster-card__date {
+        font-size: 9px;
+    }
+    
+    .poster-card__description {
+        font-size: 9px;
         -webkit-line-clamp: 1;
     }
 }
