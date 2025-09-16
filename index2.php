@@ -528,25 +528,23 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                 }
 
                 initSwipers() {
-                    // Инициализация слайдера дат
+                    // Инициализация слайдера дат - показываем все 14 дней сразу
                     this.datesSwiper = new Swiper('.dates-swiper', {
-                        slidesPerView: 'auto',
-                        spaceBetween: 12,
-                        freeMode: true,
+                        slidesPerView: 14, // Показываем все 14 дней
+                        spaceBetween: 8,
+                        freeMode: false,
                         centeredSlides: false,
                         mousewheel: {
-                            enabled: true
+                            enabled: false // Отключаем прокрутку
                         },
                         speed: 300,
+                        breakpoints: {
+                            320: { slidesPerView: 7, spaceBetween: 4 },
+                            480: { slidesPerView: 10, spaceBetween: 6 },
+                            768: { slidesPerView: 14, spaceBetween: 8 }
+                        },
                         on: {
-                            slideChange: () => {
-                                if (!this.isUserScrolling) return;
-                                this.onDateSlideChange();
-                            },
-                            touchEnd: () => {
-                                if (!this.isUserScrolling) return;
-                                this.onDateSlideChange();
-                            }
+                            // Убрали обработчики slideChange, так как теперь все даты видны сразу
                         }
                     });
 
@@ -560,14 +558,7 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                         },
                         speed: 300,
                         on: {
-                            slideChange: () => {
-                                if (!this.isUserScrolling) return;
-                                this.onPosterSlideChange();
-                            },
-                            touchEnd: () => {
-                                if (!this.isUserScrolling) return;
-                                this.onPosterSlideChange();
-                            }
+                            // Убрали обработчики slideChange для постеров
                         }
                     });
                 }
@@ -793,70 +784,11 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                     return targetSlideIndex;
                 }
 
-                onDateSlideChange() {
-                    const activeSlide = this.datesSwiper.slides[this.datesSwiper.activeIndex];
-                    if (!activeSlide) return;
-                    
-                    const selectedDate = activeSlide.dataset.date;
-                    
-                    // Находим первый постер для этой даты
-                    const posterSlides = document.querySelectorAll('.posters-swiper .swiper-slide');
-                    let targetPosterIndex = -1;
-                    
-                    posterSlides.forEach((posterSlide, index) => {
-                        if (posterSlide.dataset.date === selectedDate && targetPosterIndex === -1) {
-                            targetPosterIndex = index;
-                        }
-                    });
-                    
-                    if (targetPosterIndex !== -1) {
-                        this.isUserScrolling = true;
-                        
-                        // Центрируем постеры для выбранной даты
-                        const centeredPosterIndex = this.centerSlide(this.postersSwiper, targetPosterIndex, 320);
-                        this.postersSwiper.slideTo(centeredPosterIndex, 300);
-                        setTimeout(() => {
-                            this.isUserScrolling = false;
-                        }, 350);
-                    }
-                }
-
-                onPosterSlideChange() {
-                    const activeSlide = this.postersSwiper.slides[this.postersSwiper.activeIndex];
-                    if (!activeSlide) return;
-                    
-                    const selectedDate = activeSlide.dataset.date;
-                    
-                    // Обновляем активную дату
-                    const dateSlide = document.querySelector(`.dates-swiper .swiper-slide[data-date="${selectedDate}"]`);
-                    if (dateSlide) {
-                        // Убираем активный класс у всех дат
-                        document.querySelectorAll('.dates-swiper .swiper-slide').forEach(slide => {
-                            slide.classList.remove('active');
-                        });
-                        
-                        // Добавляем активный класс к текущей дате
-                        dateSlide.classList.add('active');
-                        
-                        // Прокручиваем слайдер дат к активной дате с центрированием
-                        const dateIndex = parseInt(dateSlide.dataset.index);
-                        this.isUserScrolling = true;
-                        
-                        // Применяем логику центрирования
-                        const targetSlideIndex = this.centerSlide(this.datesSwiper, dateIndex, 100);
-                        this.datesSwiper.slideTo(targetSlideIndex, 300);
-                        setTimeout(() => {
-                            this.isUserScrolling = false;
-                        }, 350);
-                    }
-                }
 
                 bindEvents() {
                     // Обработка кликов по датам
                     document.querySelectorAll('.dates-swiper .swiper-slide').forEach(slide => {
                         slide.addEventListener('click', () => {
-                            const targetIndex = parseInt(slide.dataset.index);
-                            
                             // Убираем активный класс у всех дат
                             document.querySelectorAll('.dates-swiper .swiper-slide').forEach(s => {
                                 s.classList.remove('active');
@@ -865,12 +797,10 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                             // Добавляем активный класс к выбранной дате
                             slide.classList.add('active');
                             
-                            // Прокручиваем слайдер дат с учетом позиционирования
-                            this.isUserScrolling = true;
-                            
-                            // Позиционируем так, чтобы активная дата была по центру
-                            const targetSlideIndex = this.centerSlide(this.datesSwiper, targetIndex, 100);
-                            this.datesSwiper.slideTo(targetSlideIndex, 300);
+                            // Убираем выделение у всех постеров
+                            document.querySelectorAll('.poster-card').forEach(card => {
+                                card.classList.remove('selected');
+                            });
                             
                             // Находим постеры для выбранной даты
                             const selectedDate = slide.dataset.date;
@@ -885,14 +815,19 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                             });
                             
                             if (targetPosterIndex !== -1) {
-                                // Центрируем постеры для выбранной даты
-                                const centeredPosterIndex = this.centerSlide(this.postersSwiper, targetPosterIndex, 320);
-                                this.postersSwiper.slideTo(centeredPosterIndex, 300);
+                                // Прокручиваем к первому постеру этой даты
+                                this.postersSwiper.slideTo(targetPosterIndex, 300);
+                                
+                                // Выделяем все постеры этой даты
+                                posterSlides.forEach((posterSlide, index) => {
+                                    if (posterSlide.dataset.date === selectedDate) {
+                                        const card = posterSlide.querySelector('.poster-card');
+                                        if (card) {
+                                            card.classList.add('selected');
+                                        }
+                                    }
+                                });
                             }
-                            
-                            setTimeout(() => {
-                                this.isUserScrolling = false;
-                            }, 350);
                         });
                     });
 

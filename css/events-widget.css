@@ -33,19 +33,21 @@
 
 .dates-swiper .swiper-slide {
     width: auto;
-    min-width: 80px;
+    min-width: 60px;
+    max-width: 80px;
     text-align: center;
-    padding: 12px 20px;
+    padding: 8px 12px;
     color: var(--muted-text);
     background: transparent;
     border: 1px solid var(--card-border);
     border-radius: 6px;
     cursor: pointer;
-    font-size: 14px;
+    font-size: 12px;
     font-weight: 500;
     transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     user-select: none;
     position: relative;
+    flex-shrink: 0;
 }
 
 .dates-swiper .swiper-slide:hover {
@@ -114,6 +116,15 @@
 .poster-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+/* Выделенные постеры после клика на дату */
+.poster-card.selected {
+    transform: scale(1.05);
+    border: 3px solid #366b5b;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(54, 107, 91, 0.3);
+    transition: all 0.3s ease;
 }
 
 .poster-card__overlay {
@@ -269,9 +280,10 @@
     }
     
     .dates-swiper .swiper-slide {
-        padding: 10px 16px;
-        font-size: 13px;
-        min-width: 60px;
+        padding: 6px 8px;
+        font-size: 11px;
+        min-width: 50px;
+        max-width: 60px;
     }
     
     .posters-swiper .swiper-slide {
@@ -297,9 +309,10 @@
     }
     
     .dates-swiper .swiper-slide {
-        padding: 8px 12px;
-        font-size: 12px;
-        min-width: 50px;
+        padding: 4px 6px;
+        font-size: 10px;
+        min-width: 40px;
+        max-width: 50px;
     }
     
     .posters-swiper {
