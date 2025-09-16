@@ -344,7 +344,18 @@ class MenuCache {
                 'Хот-дог классический' => 'Classic Hot Dog',
                 'Шаурма' => 'Shawarma',
                 'Шаурма XL' => 'Shawarma XL',
-                'Шашлык свиной' => 'Pork Shashlik'
+                'Шашлык свиной' => 'Pork Shashlik',
+                'Куриный шашлык' => 'Chicken Shashlik',
+                'Пиво 0,5' => 'Beer 0.5L',
+                'Лимончелло' => 'Limoncello',
+                'Лонг Айленд' => 'Long Island',
+                'Джин' => 'Gin',
+                'Ром Кола' => 'Rum Cola',
+                'Зеленая Фея' => 'Green Fairy',
+                'Виски Кола' => 'Whiskey Cola',
+                'Горячий чай' => 'Hot Tea',
+                'Кофе 3в1' => 'Coffee 3in1',
+                'Кофе молоко лимон' => 'Coffee Milk Lemon'
             ],
             'vi' => [
                 '7 ап' => '7 Up',
@@ -380,7 +391,18 @@ class MenuCache {
                 'Хот-дог классический' => 'Hot dog cổ điển',
                 'Шаурма' => 'Shawarma',
                 'Шаурма XL' => 'Shawarma XL',
-                'Шашлык свиной' => 'Thịt heo nướng xiên'
+                'Шашлык свиной' => 'Thịt heo nướng xiên',
+                'Куриный шашлык' => 'Thịt gà nướng xiên',
+                'Пиво 0,5' => 'Bia 0.5L',
+                'Лимончелло' => 'Limoncello',
+                'Лонг Айленд' => 'Long Island',
+                'Джин' => 'Gin',
+                'Ром Кола' => 'Rum Cola',
+                'Зеленая Фея' => 'Tiên xanh',
+                'Виски Кола' => 'Whiskey Cola',
+                'Горячий чай' => 'Trà nóng',
+                'Кофе 3в1' => 'Cà phê 3in1',
+                'Кофе молоко лимон' => 'Cà phê sữa chanh'
             ]
         ];
         
