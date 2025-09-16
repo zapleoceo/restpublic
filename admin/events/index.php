@@ -220,12 +220,14 @@ if (count($events) > 0) {
         .link-btn {
             background: #007bff;
             color: white;
-            padding: 4px 8px;
-            border-radius: 4px;
+            padding: 2px 6px;
+            border-radius: 3px;
             text-decoration: none;
-            font-size: 12px;
+            font-size: 14px;
             display: inline-block;
             transition: background-color 0.2s ease;
+            min-width: 24px;
+            text-align: center;
         }
 
         .link-btn:hover {
@@ -738,7 +740,7 @@ if (count($events) > 0) {
                                             <td class="event-conditions"><?= htmlspecialchars($event['conditions']) ?></td>
                                             <td class="event-link">
                                                 <?php if (!empty($event['description_link'])): ?>
-                                                    <a href="<?= htmlspecialchars($event['description_link']) ?>" target="_blank" class="link-btn">🔗 Открыть</a>
+                                                    <a href="<?= htmlspecialchars($event['description_link']) ?>" target="_blank" class="link-btn">🔗</a>
                                                 <?php else: ?>
                                                     <span class="no-link">-</span>
                                                 <?php endif; ?>
@@ -1420,7 +1422,7 @@ if (count($events) > 0) {
                 
                 // Формируем ссылку
                 const linkHtml = event.description_link ? 
-                    `<a href="${event.description_link}" target="_blank" class="link-btn">🔗 Открыть</a>` : 
+                    `<a href="${event.description_link}" target="_blank" class="link-btn">🔗</a>` : 
                     '<span class="no-link">-</span>';
                 
                 // Формируем миниатюру - только из GridFS
