@@ -887,16 +887,23 @@ if (count($events) > 0) {
             let requestBody;
             let contentType;
 
-            if (method === 'POST') {
-                // Для создания используем FormData (поддержка файлов)
+            // Проверяем, есть ли файл для загрузки
+            const imageInput = document.getElementById('eventImage');
+            const hasImageFile = imageInput.files.length > 0;
+            
+            if (method === 'POST' || hasImageFile) {
+                // Для создания или обновления с файлом используем FormData
                 requestBody = new FormData(form);
                 requestBody.set('is_active', document.getElementById('eventIsActive').checked);
+                
+                // Для PUT запроса добавляем event_id
+                if (method === 'PUT') {
+                    requestBody.set('event_id', eventId);
+                }
+                
                 contentType = undefined; // FormData сам установит Content-Type
             } else {
-                // Для обновления используем JSON (без файлов)
-                const formData = new FormData(form);
-                const imageFile = formData.get('image');
-                
+                // Для обновления без файла используем JSON
                 requestBody = JSON.stringify({
                     event_id: eventId,
                     title: document.getElementById('eventTitle').value,

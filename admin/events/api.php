@@ -176,7 +176,7 @@ try {
             
         case 'PUT':
             // Обновить событие
-            // Получаем данные из JSON
+            // Получаем данные из FormData или JSON
             $eventId = $input['event_id'] ?? null;
             
             if (empty($eventId)) {
@@ -255,8 +255,15 @@ try {
                     
                     if (move_uploaded_file($fileInfo['tmp_name'], $filePath)) {
                         $imagePath = '/images/events/' . $fileName;
+                        error_log("PUT - Image uploaded successfully: " . $imagePath);
+                    } else {
+                        error_log("PUT - Failed to move uploaded file");
                     }
+                } else {
+                    error_log("PUT - Invalid file type or size: " . $fileType . ", " . $fileSize);
                 }
+            } else {
+                error_log("PUT - No image file or upload error: " . ($_FILES['image']['error'] ?? 'no file'));
             }
             
             // Отладочная информация
@@ -279,13 +286,16 @@ try {
                 // Обновляем изображение только если загружено новое
                 if ($imagePath !== null) {
                     $updateData['image'] = $imagePath;
+                    error_log("PUT - Updating with new image: " . $imagePath);
                 } else {
                     // Если изображение не загружено, оставляем существующее
                     $existingEvent = $eventsCollection->findOne(['_id' => $eventId]);
                     if ($existingEvent && isset($existingEvent['image'])) {
                         $updateData['image'] = $existingEvent['image'];
+                        error_log("PUT - Keeping existing image: " . $existingEvent['image']);
                     } else {
                         $updateData['image'] = '/images/event-default.png';
+                        error_log("PUT - Using default image");
                     }
                 }
                 
