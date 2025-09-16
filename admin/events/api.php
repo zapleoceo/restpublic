@@ -146,8 +146,9 @@ try {
                 'date' => $input['date'],
                 'time' => $input['time'],
                 'conditions' => trim($input['conditions']),
+                'price' => isset($input['price']) ? (int)$input['price'] : 0,
                 'description_link' => !empty($input['description_link']) ? trim($input['description_link']) : null,
-                'image' => $imagePath,
+                'image' => $imagePath ?: '/images/event-default.png',
                 'comment' => !empty($input['comment']) ? trim($input['comment']) : null,
                 'is_active' => $isActive,
                 'created_at' => new MongoDB\BSON\UTCDateTime(),
@@ -270,6 +271,7 @@ try {
                     'date' => $date,
                     'time' => $time,
                     'conditions' => $conditions,
+                    'price' => isset($input['price']) ? (int)$input['price'] : 0,
                     'description_link' => $description_link,
                     'comment' => $comment,
                     'is_active' => $is_active,
@@ -279,6 +281,14 @@ try {
                 // Обновляем изображение только если загружено новое
                 if ($imagePath !== null) {
                     $updateData['image'] = $imagePath;
+                } else {
+                    // Если изображение не загружено, оставляем существующее
+                    $existingEvent = $eventsCollection->findOne(['_id' => $eventId]);
+                    if ($existingEvent && isset($existingEvent['image'])) {
+                        $updateData['image'] = $existingEvent['image'];
+                    } else {
+                        $updateData['image'] = '/images/event-default.png';
+                    }
                 }
                 
                 $result = $eventsCollection->updateOne(

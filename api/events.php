@@ -4,12 +4,45 @@ header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type');
 
-// Подключение к базе данных (замените на свои данные)
+// Load environment variables
+require_once __DIR__ . '/../vendor/autoload.php';
+if (file_exists(__DIR__ . '/../.env')) {
+    $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/..');
+    $dotenv->load();
+}
+
+// Initialize events service
+require_once __DIR__ . '/../classes/EventsService.php';
+
 try {
-    $pdo = new PDO('mysql:host=localhost;dbname=north_republic;charset=utf8', 'username', 'password');
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch(PDOException $e) {
-    // Возвращаем тестовые данные при ошибке подключения
+    $eventsService = new EventsService();
+    
+    // Get start date from query parameter
+    $startDate = $_GET['start_date'] ?? null;
+    $limit = (int)($_GET['limit'] ?? 20);
+    
+    // Get events from MongoDB
+    $events = $eventsService->getEventsForWidget($startDate, $limit);
+    
+    // Convert to format expected by events widget
+    $formattedEvents = [];
+    foreach ($events as $event) {
+        $formattedEvents[] = [
+            'id' => $event['id'],
+            'title' => $event['title'],
+            'event_date' => $event['date'],
+            'price' => $event['price'],
+            'image' => $event['image'],
+            'description' => $event['description']
+        ];
+    }
+    
+    echo json_encode($formattedEvents, JSON_UNESCAPED_UNICODE);
+    
+} catch (Exception $e) {
+    error_log("Ошибка API событий: " . $e->getMessage());
+    
+    // Fallback to test data if MongoDB is unavailable
     echo json_encode([
         [
             'id' => 1,
@@ -51,36 +84,6 @@ try {
             'image' => '/images/events/tech-meetup.jpg',
             'description' => 'Встреча IT-специалистов и обсуждение новых технологий'
         ]
-    ]);
-    exit;
-}
-
-try {
-    // Получаем события из базы данных
-    $stmt = $pdo->prepare("
-        SELECT 
-            id, 
-            title, 
-            event_date, 
-            price, 
-            image, 
-            description
-        FROM events 
-        WHERE event_date >= CURDATE() 
-        ORDER BY event_date ASC 
-        LIMIT 20
-    ");
-    $stmt->execute();
-    $events = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    
-    // Преобразуем price в число
-    foreach ($events as &$event) {
-        $event['price'] = (int)$event['price'];
-    }
-    
-    echo json_encode($events);
-} catch(PDOException $e) {
-    http_response_code(500);
-    echo json_encode(['error' => 'Database error: ' . $e->getMessage()]);
+    ], JSON_UNESCAPED_UNICODE);
 }
 ?>

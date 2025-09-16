@@ -108,9 +108,9 @@ class EventsService {
                     'day' => $day,
                     'month' => $month,
                     'title' => $event['title'] ?? 'Событие',
-                    'description' => $event['description'] ?? 'Описание события',
-                    'price' => $event['price'] ?? 'Уточняйте',
-                    'image' => $event['image'] ?? 'template/images/gallery/gallery-01.jpg',
+                    'description' => $event['conditions'] ?? 'Описание события',
+                    'price' => $event['price'] ?? 0,
+                    'image' => $event['image'] ?? '/images/event-default.png',
                     'link' => $event['description_link'] ?? '#',
                     'date' => $event['date'],
                     'time' => $event['time'] ?? '19:00',
@@ -178,12 +178,13 @@ class EventsService {
             ];
             
             $events[] = [
+                'id' => $i + 1,
                 'day' => $day,
                 'month' => $month,
                 'title' => $eventTitles[$i] ?? 'Событие',
                 'description' => $eventDescriptions[$i] ?? 'Описание события',
-                'price' => $prices[$i] ?? 'Уточняйте',
-                'image' => $images[$i] ?? 'template/images/gallery/gallery-01.jpg',
+                'price' => (int)str_replace(['от ', '₽'], '', $prices[$i] ?? '0'),
+                'image' => $images[$i] ?? '/images/event-default.png',
                 'link' => '/event/' . strtolower(str_replace([' ', '-'], ['-', '-'], $eventTitles[$i] ?? 'event')),
                 'date' => $eventDate->format('Y-m-d'),
                 'time' => '19:00'
