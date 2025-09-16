@@ -80,9 +80,9 @@ class MenuCache {
     }
     
     /**
-     * Получить продукты по категории с сортировкой по популярности
+     * Получить продукты по категории с сортировкой по популярности и автоматическим переводом
      */
-    public function getProductsByCategory($categoryId, $limit = 5) {
+    public function getProductsByCategory($categoryId, $limit = 5, $language = 'ru') {
         $menu = $this->getMenu();
         
         if (!$menu) {
@@ -146,8 +146,13 @@ class MenuCache {
             return $bSort <=> $aSort; // higher sort_order first (more popular)
         });
         
-        // Возвращаем только топ N продуктов
-        return array_slice($categoryProducts, 0, $limit);
+        // Применяем автоматический перевод для каждого продукта
+        $translatedProducts = [];
+        foreach (array_slice($categoryProducts, 0, $limit) as $product) {
+            $translatedProducts[] = $this->translateProduct($product, $language);
+        }
+        
+        return $translatedProducts;
     }
     
     /**
@@ -267,6 +272,177 @@ class MenuCache {
         } catch (Exception $e) {
             error_log("Ошибка фонового обновления меню: " . $e->getMessage());
         }
+    }
+    
+    /**
+     * Перевести продукт на указанный язык
+     */
+    public function translateProduct($product, $language) {
+        if ($language === 'ru') {
+            return $product; // Русский - исходный язык
+        }
+        
+        $translatedProduct = $product;
+        
+        // Переводим название продукта
+        if (isset($product['name'])) {
+            $translatedName = $this->autoTranslateProductName($product['name'], $language);
+            if ($translatedName && $translatedName !== $product['name']) {
+                $translatedProduct['name'] = $translatedName;
+            }
+        }
+        
+        // Переводим описание продукта
+        if (isset($product['description'])) {
+            $translatedDescription = $this->autoTranslateProductDescription($product['description'], $language);
+            if ($translatedDescription && $translatedDescription !== $product['description']) {
+                $translatedProduct['description'] = $translatedDescription;
+            }
+        }
+        
+        return $translatedProduct;
+    }
+    
+    /**
+     * Автоматический перевод названия продукта
+     */
+    private function autoTranslateProductName($name, $language) {
+        $translations = [
+            'en' => [
+                'Борщ' => 'Borscht',
+                'Пельмени' => 'Dumplings',
+                'Пицца' => 'Pizza',
+                'Паста' => 'Pasta',
+                'Стейк' => 'Steak',
+                'Рыба' => 'Fish',
+                'Курица' => 'Chicken',
+                'Суп' => 'Soup',
+                'Салат' => 'Salad',
+                'Десерт' => 'Dessert',
+                'Кофе' => 'Coffee',
+                'Чай' => 'Tea',
+                'Сок' => 'Juice',
+                'Вода' => 'Water',
+                'Пиво' => 'Beer',
+                'Вино' => 'Wine',
+                'Коктейль' => 'Cocktail',
+                'Маргарита' => 'Margarita',
+                'Мохито' => 'Mojito',
+                'Космополитен' => 'Cosmopolitan',
+                'Мартини' => 'Martini',
+                'Джин' => 'Gin',
+                'Водка' => 'Vodka',
+                'Виски' => 'Whiskey',
+                'Ром' => 'Rum',
+                'Текила' => 'Tequila',
+                'Коньяк' => 'Cognac',
+                'Ликер' => 'Liqueur',
+                'Шампанское' => 'Champagne',
+                'Просекко' => 'Prosecco'
+            ],
+            'vi' => [
+                'Борщ' => 'Borscht',
+                'Пельмени' => 'Bánh bao',
+                'Пицца' => 'Pizza',
+                'Паста' => 'Mì Ý',
+                'Стейк' => 'Thịt bò nướng',
+                'Рыба' => 'Cá',
+                'Курица' => 'Thịt gà',
+                'Суп' => 'Canh',
+                'Салат' => 'Salad',
+                'Десерт' => 'Tráng miệng',
+                'Кофе' => 'Cà phê',
+                'Чай' => 'Trà',
+                'Сок' => 'Nước ép',
+                'Вода' => 'Nước',
+                'Пиво' => 'Bia',
+                'Вино' => 'Rượu vang',
+                'Коктейль' => 'Cocktail',
+                'Маргарита' => 'Margarita',
+                'Мохито' => 'Mojito',
+                'Космополитен' => 'Cosmopolitan',
+                'Мартини' => 'Martini',
+                'Джин' => 'Gin',
+                'Водка' => 'Vodka',
+                'Виски' => 'Whiskey',
+                'Ром' => 'Rum',
+                'Текила' => 'Tequila',
+                'Коньяк' => 'Cognac',
+                'Ликер' => 'Rượu mùi',
+                'Шампанское' => 'Champagne',
+                'Просекко' => 'Prosecco'
+            ]
+        ];
+        
+        $translatedName = $name;
+        if (isset($translations[$language])) {
+            foreach ($translations[$language] as $ru => $translated) {
+                $translatedName = str_replace($ru, $translated, $translatedName);
+            }
+        }
+        
+        return $translatedName;
+    }
+    
+    /**
+     * Автоматический перевод описания продукта
+     */
+    private function autoTranslateProductDescription($description, $language) {
+        $translations = [
+            'en' => [
+                'свежий' => 'fresh',
+                'домашний' => 'homemade',
+                'традиционный' => 'traditional',
+                'авторский' => 'signature',
+                'острый' => 'spicy',
+                'сладкий' => 'sweet',
+                'соленый' => 'salty',
+                'горячий' => 'hot',
+                'холодный' => 'cold',
+                'натуральный' => 'natural',
+                'органический' => 'organic',
+                'вегетарианский' => 'vegetarian',
+                'веганский' => 'vegan',
+                'без глютена' => 'gluten-free',
+                'без лактозы' => 'lactose-free',
+                'подается' => 'served',
+                'с' => 'with',
+                'без' => 'without',
+                'и' => 'and',
+                'или' => 'or'
+            ],
+            'vi' => [
+                'свежий' => 'tươi',
+                'домашний' => 'nhà làm',
+                'традиционный' => 'truyền thống',
+                'авторский' => 'đặc biệt',
+                'острый' => 'cay',
+                'сладкий' => 'ngọt',
+                'соленый' => 'mặn',
+                'горячий' => 'nóng',
+                'холодный' => 'lạnh',
+                'натуральный' => 'tự nhiên',
+                'органический' => 'hữu cơ',
+                'вегетарианский' => 'chay',
+                'веганский' => 'thuần chay',
+                'без глютена' => 'không gluten',
+                'без лактозы' => 'không lactose',
+                'подается' => 'phục vụ',
+                'с' => 'với',
+                'без' => 'không có',
+                'и' => 'và',
+                'или' => 'hoặc'
+            ]
+        ];
+        
+        $translatedDescription = $description;
+        if (isset($translations[$language])) {
+            foreach ($translations[$language] as $ru => $translated) {
+                $translatedDescription = str_replace($ru, $translated, $translatedDescription);
+            }
+        }
+        
+        return $translatedDescription;
     }
 }
 ?>

@@ -363,7 +363,13 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                                 <?php 
                                 $categoryId = (string)($category['category_id']);
                                 $categoryProducts = $productsByCategory[$categoryId] ?? [];
-                                $topProducts = array_slice($categoryProducts, 0, 5); // Top 5 products
+                                
+                                // Применяем автоматический перевод для продуктов
+                                $translatedProducts = [];
+                                foreach (array_slice($categoryProducts, 0, 5) as $product) {
+                                    $translatedProducts[] = $menuCache->translateProduct($product, $currentLanguage);
+                                }
+                                $topProducts = $translatedProducts;
                                 ?>
                                 <div id="tab-<?php echo htmlspecialchars($category['category_id']); ?>" 
                                      class="menu-block__group tab-content__item <?php echo $index === 0 ? 'active' : ''; ?>"

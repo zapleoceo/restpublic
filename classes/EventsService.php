@@ -119,7 +119,7 @@ class EventsService {
     }
     
     /**
-     * Получить локализованное поле события
+     * Получить локализованное поле события с автоматическим переводом
      */
     private function getLocalizedField($event, $field, $language) {
         // Пробуем получить поле для указанного языка
@@ -130,7 +130,19 @@ class EventsService {
         
         // Fallback на русский язык
         if ($language !== 'ru' && isset($event[$field . '_ru']) && !empty($event[$field . '_ru'])) {
-            return $event[$field . '_ru'];
+            $russianText = $event[$field . '_ru'];
+            
+            // Автоматический перевод для английского и вьетнамского
+            if ($language === 'en' || $language === 'vi') {
+                $translatedText = $this->autoTranslate($russianText, $language);
+                if ($translatedText && $translatedText !== $russianText) {
+                    // Сохраняем перевод в базу данных для будущего использования
+                    $this->saveTranslation($event['_id'], $field, $language, $translatedText);
+                    return $translatedText;
+                }
+            }
+            
+            return $russianText;
         }
         
         // Fallback на старое поле (для совместимости)
@@ -148,6 +160,78 @@ class EventsService {
                 return 'Условия участия';
             default:
                 return '';
+        }
+    }
+    
+    /**
+     * Автоматический перевод текста
+     */
+    private function autoTranslate($text, $targetLanguage) {
+        // Простой словарь для базовых переводов
+        $translations = [
+            'en' => [
+                'Мафия' => 'Mafia',
+                'Квест' => 'Quest',
+                'Барбекю' => 'Barbecue',
+                'Лазертаг' => 'Laser Tag',
+                'Арчеритаг' => 'Archery Tag',
+                'Вечеринка' => 'Party',
+                'Концерт' => 'Concert',
+                'Фестиваль' => 'Festival',
+                'Турнир' => 'Tournament',
+                'Мастер-класс' => 'Master Class',
+                'Дегустация' => 'Tasting',
+                'Презентация' => 'Presentation',
+                'Встреча' => 'Meeting',
+                'Семинар' => 'Seminar',
+                'Тренинг' => 'Training'
+            ],
+            'vi' => [
+                'Мафия' => 'Mafia',
+                'Квест' => 'Quest',
+                'Барбекю' => 'Thịt nướng',
+                'Лазертаг' => 'Laser Tag',
+                'Арчеритаг' => 'Bắn cung',
+                'Вечеринка' => 'Tiệc tùng',
+                'Концерт' => 'Buổi hòa nhạc',
+                'Фестиваль' => 'Lễ hội',
+                'Турнир' => 'Giải đấu',
+                'Мастер-класс' => 'Lớp học chuyên sâu',
+                'Дегустация' => 'Nếm thử',
+                'Презентация' => 'Thuyết trình',
+                'Встреча' => 'Cuộc gặp',
+                'Семинар' => 'Hội thảo',
+                'Тренинг' => 'Đào tạo'
+            ]
+        ];
+        
+        // Простая замена ключевых слов
+        $translatedText = $text;
+        if (isset($translations[$targetLanguage])) {
+            foreach ($translations[$targetLanguage] as $ru => $translated) {
+                $translatedText = str_replace($ru, $translated, $translatedText);
+            }
+        }
+        
+        return $translatedText;
+    }
+    
+    /**
+     * Сохранить перевод в базу данных
+     */
+    private function saveTranslation($eventId, $field, $language, $translatedText) {
+        try {
+            $updateData = [
+                $field . '_' . $language => $translatedText,
+                'updated_at' => new MongoDB\BSON\UTCDateTime()
+            ];
+            
+            $this->eventsCollection->updateOne(
+                ['_id' => $eventId],
+                ['$set' => $updateData]
+            );
+        } catch (Exception $e) {
+            error_log("Ошибка сохранения перевода: " . $e->getMessage());
         }
     }
     

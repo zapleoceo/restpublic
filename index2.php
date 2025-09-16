@@ -75,6 +75,11 @@ $currentLanguage = $pageContentService->getLanguage();
 $pageContent = $pageContentService->getPageContent('index', $currentLanguage);
 $pageMeta = $pageContent['meta'] ?? [];
 
+// Helper function for safe HTML output
+function safeHtml($value, $default = '') {
+    return htmlspecialchars($value ?? $default, ENT_QUOTES, 'UTF-8');
+}
+
 // No fallback - only database content
 
 // Load menu from MongoDB cache for fast rendering (if available)
@@ -319,7 +324,13 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                                 <?php 
                                 $categoryId = (string)($category['category_id']);
                                 $categoryProducts = $productsByCategory[$categoryId] ?? [];
-                                $topProducts = array_slice($categoryProducts, 0, 5); // Top 5 products
+                                
+                                // Применяем автоматический перевод для продуктов
+                                $translatedProducts = [];
+                                foreach (array_slice($categoryProducts, 0, 5) as $product) {
+                                    $translatedProducts[] = $menuCache->translateProduct($product, $currentLanguage);
+                                }
+                                $topProducts = $translatedProducts;
                                 ?>
                                 <div id="tab-<?php echo htmlspecialchars($category['category_id']); ?>" class="menu-block__group tab-content__item <?php echo $index === 0 ? 'active' : ''; ?>">
                                     <h6 class="menu-block__cat-name"><?php echo htmlspecialchars(translateCategoryName($category['category_name'] ?? $category['name'] ?? 'Без названия', getCurrentLanguage())); ?></h6>
@@ -392,13 +403,13 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
             <div class="row s-events__header">
                 <div class="column xl-12 section-header-wrap">
                     <div class="section-header" data-num="03">
-                        <h2 class="text-display-title">События</h2>
+                        <h2 class="text-display-title"><?php echo safeHtml($pageMeta['events_title'] ?? 'События'); ?></h2>
                     </div>
                 </div> <!-- end section-header-wrap -->
             </div> <!-- end s-events__header -->
 
             <div class="events-widget">
-                <h2 class="events-widget__title">Афиша событий</h2>
+                <h2 class="events-widget__title"><?php echo safeHtml($pageMeta['events_widget_title'] ?? 'Афиша событий'); ?></h2>
                 
                 <!-- Слайдер дат -->
                 <div class="swiper dates-swiper">
