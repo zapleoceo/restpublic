@@ -263,6 +263,17 @@ try {
             
         case 'PUT':
             // Обновить событие
+            $debugLog = "=== PUT REQUEST DEBUG ===\n";
+            $debugLog .= "Timestamp: " . date('Y-m-d H:i:s') . "\n";
+            $debugLog .= "Input data: " . print_r($input, true) . "\n";
+            $debugLog .= "POST data: " . print_r($_POST, true) . "\n";
+            $debugLog .= "FILES data: " . print_r($_FILES, true) . "\n";
+            $debugLog .= "Content-Type: " . ($_SERVER['CONTENT_TYPE'] ?? 'not set') . "\n";
+            $debugLog .= "========================\n";
+            
+            // Записываем в файл для отладки
+            file_put_contents('/var/www/northrepubli_usr/data/logs/api_debug.log', $debugLog, FILE_APPEND);
+            
             error_log("API Events - PUT request started");
             error_log("API Events - Input data: " . print_r($input, true));
             error_log("API Events - POST data: " . print_r($_POST, true));
