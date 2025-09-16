@@ -732,7 +732,11 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                                 const formattedDate = dateObj.toLocaleDateString('ru-RU');
                                 
                                 eventSlideEl.innerHTML = `
-                                    <div class="poster-card" style="background-image: url('${backgroundImage}')">
+                                    <div class="poster-card">
+                                        <img class="poster-card__image" 
+                                             data-src="${backgroundImage}" 
+                                             alt="${event.title}"
+                                             loading="lazy">
                                         <div class="poster-card__overlay">
                                             <div class="poster-card__title">${event.title}</div>
                                             <div class="poster-card__date">${formattedDate} ${event.time || '19:00'}</div>
@@ -798,6 +802,45 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                     
                     // Привязываем события к новым элементам
                     this.bindPosterEvents();
+                    
+                    // Инициализируем lazy loading для изображений
+                    this.initLazyLoading();
+                }
+
+                initLazyLoading() {
+                    // Используем Intersection Observer для lazy loading
+                    if ('IntersectionObserver' in window) {
+                        const imageObserver = new IntersectionObserver((entries, observer) => {
+                            entries.forEach(entry => {
+                                if (entry.isIntersecting) {
+                                    const img = entry.target;
+                                    const src = img.dataset.src;
+                                    
+                                    if (src) {
+                                        img.src = src;
+                                        img.classList.add('loaded');
+                                        img.removeAttribute('data-src');
+                                        observer.unobserve(img);
+                                    }
+                                }
+                            });
+                        }, {
+                            rootMargin: '50px 0px', // Загружаем за 50px до появления
+                            threshold: 0.1
+                        });
+                        
+                        // Наблюдаем за всеми изображениями с data-src
+                        document.querySelectorAll('.poster-card__image[data-src]').forEach(img => {
+                            imageObserver.observe(img);
+                        });
+                    } else {
+                        // Fallback для старых браузеров - загружаем все сразу
+                        document.querySelectorAll('.poster-card__image[data-src]').forEach(img => {
+                            img.src = img.dataset.src;
+                            img.classList.add('loaded');
+                            img.removeAttribute('data-src');
+                        });
+                    }
                 }
 
                 // Общая функция для центрирования слайдов
