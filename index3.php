@@ -364,18 +364,12 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                                 $categoryId = (string)($category['category_id']);
                                 $categoryProducts = $productsByCategory[$categoryId] ?? [];
                                 
-                                // DEBUG: Добавляем отладочную информацию
-                                error_log("DEBUG Category $categoryId: " . count($categoryProducts) . " products");
-                                
                                 // Применяем автоматический перевод для продуктов
                                 $translatedProducts = [];
                                 foreach (array_slice($categoryProducts, 0, 5) as $product) {
                                     $translatedProducts[] = $menuCache->translateProduct($product, $currentLanguage);
                                 }
                                 $topProducts = $translatedProducts;
-                                
-                                // DEBUG: Проверяем результат
-                                error_log("DEBUG Category $categoryId: " . count($topProducts) . " translated products");
                                 ?>
                                 <div id="tab-<?php echo htmlspecialchars($category['category_id']); ?>" 
                                      class="menu-block__group tab-content__item <?php echo $index === 0 ? 'active' : ''; ?>"
@@ -798,6 +792,15 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                                 const dateObj = new Date(event.date);
                                 const formattedDate = dateObj.toLocaleDateString('ru-RU');
                                 
+                                // Определяем язык для перевода лейбла
+                                const language = document.documentElement.lang || 'ru';
+                                const conditionsLabels = {
+                                    'ru': 'Условия участия:',
+                                    'en': 'Participation conditions:',
+                                    'vi': 'Điều kiện tham gia:'
+                                };
+                                const conditionsLabel = conditionsLabels[language] || conditionsLabels['ru'];
+                                
                                 eventSlideEl.innerHTML = `
                                     <div class="poster-card">
                                         <img class="poster-card__image" 
@@ -808,7 +811,7 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                                             <div class="poster-card__title">${event.title}</div>
                                             <div class="poster-card__date">${formattedDate} ${event.time || '19:00'}</div>
                                             <div class="poster-card__description">
-                                                <strong>Условия участия:</strong><br>
+                                                <strong>${conditionsLabel}</strong><br>
                                                 ${event.conditions || ''}
                                             </div>
                                         </div>
