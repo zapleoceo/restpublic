@@ -86,6 +86,15 @@ try {
                 }
             }
             
+            // Логируем просмотр событий
+            $logger->log('view_events', 'Просмотр списка событий', [
+                'events_count' => count($events)
+            ], [
+                'username' => $_SESSION['admin_username'] ?? 'unknown',
+                'ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown',
+                'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'unknown'
+            ]);
+            
             echo json_encode([
                 'success' => true,
                 'data' => $events
@@ -98,6 +107,16 @@ try {
             $requiredFields = ['title', 'date', 'time', 'conditions'];
             foreach ($requiredFields as $field) {
                 if (empty($input[$field])) {
+                    // Логируем ошибку валидации
+                    $logger->log('validation_error', 'Ошибка валидации при создании события', [
+                        'missing_field' => $field,
+                        'provided_data' => array_keys($input)
+                    ], [
+                        'username' => $_SESSION['admin_username'] ?? 'unknown',
+                        'ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown',
+                        'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'unknown'
+                    ]);
+                    
                     http_response_code(400);
                     echo json_encode([
                         'success' => false,
@@ -137,10 +156,46 @@ try {
                 $validation = $imageService->validateImage($_FILES['image']);
                 
                 if ($validation['valid']) {
-                    $fileData = file_get_contents($_FILES['image']['tmp_name']);
-                    $imageData = $imageService->saveImage($fileData, $_FILES['image']['name'], [
-                        'event_type' => 'new_event'
+                    try {
+                        $fileData = file_get_contents($_FILES['image']['tmp_name']);
+                        $imageData = $imageService->saveImage($fileData, $_FILES['image']['name'], [
+                            'event_type' => 'new_event'
+                        ]);
+                    } catch (Exception $e) {
+                        // Логируем ошибку загрузки изображения
+                        $logger->log('image_upload_error', 'Ошибка загрузки изображения при создании события', [
+                            'error_message' => $e->getMessage(),
+                            'filename' => $_FILES['image']['name']
+                        ], [
+                            'username' => $_SESSION['admin_username'] ?? 'unknown',
+                            'ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown',
+                            'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'unknown'
+                        ]);
+                        
+                        http_response_code(400);
+                        echo json_encode([
+                            'success' => false,
+                            'message' => 'Ошибка загрузки изображения: ' . $e->getMessage()
+                        ]);
+                        exit;
+                    }
+                } else {
+                    // Логируем ошибку валидации изображения
+                    $logger->log('image_validation_error', 'Ошибка валидации изображения при создании события', [
+                        'validation_error' => $validation['error'],
+                        'filename' => $_FILES['image']['name']
+                    ], [
+                        'username' => $_SESSION['admin_username'] ?? 'unknown',
+                        'ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown',
+                        'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'unknown'
                     ]);
+                    
+                    http_response_code(400);
+                    echo json_encode([
+                        'success' => false,
+                        'message' => 'Ошибка валидации изображения: ' . $validation['error']
+                    ]);
+                    exit;
                 }
             }
             
@@ -160,12 +215,36 @@ try {
             $result = $eventsCollection->insertOne($eventData);
             
             if ($result->getInsertedId()) {
+                // Логируем создание события
+                $logger->log('create_event', 'Создано новое событие', [
+                    'event_id' => (string)$result->getInsertedId(),
+                    'event_title' => $eventData['title'],
+                    'event_date' => $eventData['date'],
+                    'event_time' => $eventData['time'],
+                    'has_image' => !empty($eventData['image']),
+                    'is_active' => $eventData['is_active']
+                ], [
+                    'username' => $_SESSION['admin_username'] ?? 'unknown',
+                    'ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown',
+                    'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'unknown'
+                ]);
+                
                 echo json_encode([
                     'success' => true,
                     'message' => 'Событие создано успешно',
                     'id' => (string)$result->getInsertedId()
                 ]);
             } else {
+                // Логируем ошибку создания
+                $logger->log('create_event_failed', 'Ошибка при создании события', [
+                    'event_title' => $eventData['title'],
+                    'event_date' => $eventData['date']
+                ], [
+                    'username' => $_SESSION['admin_username'] ?? 'unknown',
+                    'ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown',
+                    'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'unknown'
+                ]);
+                
                 http_response_code(500);
                 echo json_encode([
                     'success' => false,
@@ -239,11 +318,49 @@ try {
                 $validation = $imageService->validateImage($_FILES['image']);
                 
                 if ($validation['valid']) {
-                    $fileData = file_get_contents($_FILES['image']['tmp_name']);
-                    $imageData = $imageService->saveImage($fileData, $_FILES['image']['name'], [
-                        'event_type' => 'updated_event',
-                        'original_event_id' => $eventId
+                    try {
+                        $fileData = file_get_contents($_FILES['image']['tmp_name']);
+                        $imageData = $imageService->saveImage($fileData, $_FILES['image']['name'], [
+                            'event_type' => 'updated_event',
+                            'original_event_id' => $eventId
+                        ]);
+                    } catch (Exception $e) {
+                        // Логируем ошибку загрузки изображения
+                        $logger->log('image_upload_error', 'Ошибка загрузки изображения при обновлении события', [
+                            'error_message' => $e->getMessage(),
+                            'filename' => $_FILES['image']['name'],
+                            'event_id' => (string)$eventId
+                        ], [
+                            'username' => $_SESSION['admin_username'] ?? 'unknown',
+                            'ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown',
+                            'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'unknown'
+                        ]);
+                        
+                        http_response_code(400);
+                        echo json_encode([
+                            'success' => false,
+                            'message' => 'Ошибка загрузки изображения: ' . $e->getMessage()
+                        ]);
+                        exit;
+                    }
+                } else {
+                    // Логируем ошибку валидации изображения
+                    $logger->log('image_validation_error', 'Ошибка валидации изображения при обновлении события', [
+                        'validation_error' => $validation['error'],
+                        'filename' => $_FILES['image']['name'],
+                        'event_id' => (string)$eventId
+                    ], [
+                        'username' => $_SESSION['admin_username'] ?? 'unknown',
+                        'ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown',
+                        'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'unknown'
                     ]);
+                    
+                    http_response_code(400);
+                    echo json_encode([
+                        'success' => false,
+                        'message' => 'Ошибка валидации изображения: ' . $validation['error']
+                    ]);
+                    exit;
                 }
             }
             
@@ -280,11 +397,36 @@ try {
                 );
                 
                 if ($result->getModifiedCount() > 0) {
+                    // Логируем обновление события
+                    $logger->log('update_event', 'Событие обновлено', [
+                        'event_id' => (string)$eventId,
+                        'event_title' => $title,
+                        'event_date' => $date,
+                        'event_time' => $time,
+                        'has_image' => !empty($updateData['image']),
+                        'is_active' => $is_active,
+                        'image_updated' => $imageData !== null
+                    ], [
+                        'username' => $_SESSION['admin_username'] ?? 'unknown',
+                        'ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown',
+                        'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'unknown'
+                    ]);
+                    
                     echo json_encode([
                         'success' => true,
                         'message' => 'Событие обновлено успешно'
                     ]);
                 } else {
+                    // Логируем попытку обновления несуществующего события
+                    $logger->log('update_event_failed', 'Попытка обновления несуществующего события', [
+                        'event_id' => (string)$eventId,
+                        'event_title' => $title
+                    ], [
+                        'username' => $_SESSION['admin_username'] ?? 'unknown',
+                        'ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown',
+                        'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'unknown'
+                    ]);
+                    
                     http_response_code(404);
                     echo json_encode([
                         'success' => false,
@@ -317,14 +459,38 @@ try {
             try {
                 $eventId = new MongoDB\BSON\ObjectId($eventId);
                 
+                // Получаем информацию о событии перед удалением для логирования
+                $eventToDelete = $eventsCollection->findOne(['_id' => $eventId]);
+                
                 $result = $eventsCollection->deleteOne(['_id' => $eventId]);
                 
                 if ($result->getDeletedCount() > 0) {
+                    // Логируем удаление события
+                    $logger->log('delete_event', 'Событие удалено', [
+                        'event_id' => (string)$eventId,
+                        'event_title' => $eventToDelete['title'] ?? 'Unknown',
+                        'event_date' => $eventToDelete['date'] ?? 'Unknown',
+                        'event_time' => $eventToDelete['time'] ?? 'Unknown'
+                    ], [
+                        'username' => $_SESSION['admin_username'] ?? 'unknown',
+                        'ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown',
+                        'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'unknown'
+                    ]);
+                    
                     echo json_encode([
                         'success' => true,
                         'message' => 'Событие удалено успешно'
                     ]);
                 } else {
+                    // Логируем попытку удаления несуществующего события
+                    $logger->log('delete_event_failed', 'Попытка удаления несуществующего события', [
+                        'event_id' => (string)$eventId
+                    ], [
+                        'username' => $_SESSION['admin_username'] ?? 'unknown',
+                        'ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown',
+                        'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'unknown'
+                    ]);
+                    
                     http_response_code(404);
                     echo json_encode([
                         'success' => false,
@@ -350,6 +516,20 @@ try {
     }
     
 } catch (Exception $e) {
+    // Логируем общую ошибку сервера
+    if (isset($logger)) {
+        $logger->log('server_error', 'Внутренняя ошибка сервера в API событий', [
+            'error_message' => $e->getMessage(),
+            'error_file' => $e->getFile(),
+            'error_line' => $e->getLine(),
+            'request_method' => $_SERVER['REQUEST_METHOD'] ?? 'unknown'
+        ], [
+            'username' => $_SESSION['admin_username'] ?? 'unknown',
+            'ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown',
+            'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'unknown'
+        ]);
+    }
+    
     http_response_code(500);
     echo json_encode([
         'success' => false,

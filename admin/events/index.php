@@ -301,6 +301,70 @@ if (count($events) > 0) {
             display: block;
         }
 
+        .form-section {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #007bff;
+        }
+
+        .form-section h3 {
+            margin: 0 0 1rem 0;
+            color: #495057;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .form-group small {
+            display: block;
+            margin-top: 5px;
+            color: #6c757d;
+            font-size: 12px;
+        }
+
+        .image-preview, .current-image {
+            margin-top: 15px;
+            padding: 15px;
+            background: white;
+            border: 2px dashed #dee2e6;
+            border-radius: 8px;
+        }
+
+        .preview-container, .current-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .preview-container img, .current-container img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 2px solid #dee2e6;
+        }
+
+        .preview-info, .current-info {
+            flex: 1;
+        }
+
+        .preview-info p, .current-info p {
+            margin: 0 0 5px 0;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .preview-info small, .current-info small {
+            color: #6c757d;
+            font-size: 12px;
+        }
+
+        .btn-sm {
+            padding: 4px 8px;
+            font-size: 12px;
+        }
+
         .event-actions {
             white-space: nowrap;
         }
@@ -650,20 +714,20 @@ if (count($events) > 0) {
                                             </td>
                                             <td class="event-thumbnail">
                                                 <?php 
-                                                $imageUrl = '/images/event-default.png';
+                                                $imageUrl = '/images/logo.png'; // Используем логотип как дефолтное изображение
                                                 if (!empty($event['image'])) {
                                                     // Проверяем, является ли это GridFS file_id
                                                     if (preg_match('/^[a-f\d]{24}$/i', $event['image'])) {
                                                         $imageUrl = "/api/image.php?id=" . $event['image'];
                                                     } else {
-                                                        // Если это не GridFS ID, используем изображение по умолчанию
-                                                        $imageUrl = '/images/event-default.png';
+                                                        // Если это не GridFS ID, используем логотип
+                                                        $imageUrl = '/images/logo.png';
                                                     }
                                                 }
                                                 ?>
                                                 <img src="<?= htmlspecialchars($imageUrl) ?>" 
                                                      alt="<?= htmlspecialchars($event['title']) ?>" 
-                                                     class="thumbnail-img <?= $imageUrl === '/images/event-default.png' ? 'default-thumbnail' : '' ?>" 
+                                                     class="thumbnail-img <?= $imageUrl === '/images/logo.png' ? 'default-thumbnail' : '' ?>" 
                                                      onclick="showImageModal('<?= htmlspecialchars($imageUrl) ?>', '<?= htmlspecialchars($event['title']) ?>')">
                                             </td>
                                             <td class="event-comment">
@@ -718,64 +782,105 @@ if (count($events) > 0) {
     <div id="eventModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 id="modalTitle">Добавить событие</h2>
+                <h2 id="modalTitle">Добавить событие v2</h2>
                 <button class="modal-close" onclick="closeEventModal()">&times;</button>
             </div>
 
-            <form id="eventForm" class="modal-body">
+            <form id="eventForm" class="modal-body" enctype="multipart/form-data">
                 <input type="hidden" id="eventId" name="event_id">
 
-                <div class="form-group">
-                    <label for="eventTitle">Название события *</label>
-                    <input type="text" id="eventTitle" name="title" required>
-                    <div class="error-message">Название события обязательно для заполнения</div>
-                </div>
-
-                <div class="form-row">
+                <!-- Основная информация -->
+                <div class="form-section">
+                    <h3>📝 Основная информация</h3>
+                    
                     <div class="form-group">
-                        <label for="eventDate">Дата *</label>
-                        <input type="date" id="eventDate" name="date" required>
-                        <div class="error-message">Дата обязательна для заполнения</div>
+                        <label for="eventTitle">Название события *</label>
+                        <input type="text" id="eventTitle" name="title" required maxlength="200" placeholder="Введите название события">
+                        <div class="error-message">Название события обязательно для заполнения</div>
                     </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="eventDate">Дата проведения *</label>
+                            <input type="date" id="eventDate" name="date" required>
+                            <div class="error-message">Дата обязательна для заполнения</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="eventTime">Время начала *</label>
+                            <input type="time" id="eventTime" name="time" required>
+                            <div class="error-message">Время обязательно для заполнения</div>
+                        </div>
+                    </div>
+
                     <div class="form-group">
-                        <label for="eventTime">Время *</label>
-                        <input type="time" id="eventTime" name="time" required>
-                        <div class="error-message">Время обязательно для заполнения</div>
+                        <label for="eventConditions">Условия участия *</label>
+                        <textarea id="eventConditions" name="conditions" required rows="3" maxlength="500" placeholder="Опишите условия участия (цена, требования, ограничения)"></textarea>
+                        <div class="error-message">Условия участия обязательны для заполнения</div>
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="eventConditions">Условия участия *</label>
-                    <input type="text" id="eventConditions" name="conditions" required>
-                    <div class="error-message">Условия участия обязательны для заполнения</div>
+                <!-- Дополнительная информация -->
+                <div class="form-section">
+                    <h3>🔗 Дополнительная информация</h3>
+                    
+                    <div class="form-group">
+                        <label for="eventDescriptionLink">Ссылка на подробное описание</label>
+                        <input type="url" id="eventDescriptionLink" name="description_link" placeholder="https://example.com/event-details">
+                        <small>Ссылка на страницу с подробным описанием события</small>
+                        <div class="error-message">Неверный формат ссылки</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="eventComment">Внутренний комментарий</label>
+                        <textarea id="eventComment" name="comment" rows="3" maxlength="1000" placeholder="Комментарий только для администраторов (не отображается на сайте)"></textarea>
+                        <small>Этот комментарий виден только администраторам</small>
+                    </div>
                 </div>
 
+                <!-- Изображение -->
+                <div class="form-section">
+                    <h3>🖼️ Изображение события</h3>
+                    
+                    <div class="form-group">
+                        <label for="eventImage">Загрузить изображение</label>
+                        <input type="file" id="eventImage" name="image" accept="image/jpeg,image/png,image/gif,image/webp">
+                        <small>Поддерживаемые форматы: JPEG, PNG, GIF, WebP. Максимальный размер: 5MB</small>
+                        <div class="error-message">Поддерживаются только изображения: JPEG, PNG, GIF, WebP. Максимальный размер: 5MB</div>
+                    </div>
 
-                <div class="form-group">
-                    <label for="eventDescriptionLink">Ссылка на описание</label>
-                    <input type="url" id="eventDescriptionLink" name="description_link">
-                    <div class="error-message">Неверный формат ссылки</div>
+                    <div id="imagePreview" class="image-preview" style="display: none;">
+                        <div class="preview-container">
+                            <img id="previewImage" src="" alt="Предварительный просмотр">
+                            <div class="preview-info">
+                                <p id="previewText">Новое изображение</p>
+                                <button type="button" class="btn btn-secondary btn-sm" onclick="clearImagePreview()">Удалить</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="currentImage" class="current-image" style="display: none;">
+                        <div class="current-container">
+                            <img id="currentImageSrc" src="" alt="Текущее изображение">
+                            <div class="current-info">
+                                <p>Текущее изображение</p>
+                                <small>Загрузите новое изображение, чтобы заменить</small>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="eventImage">Картинка</label>
-                    <input type="file" id="eventImage" name="image" accept="image/*">
-                    <small>Если не выбрана, будет использована дефолтная картинка</small>
-                    <div class="error-message">Поддерживаются только изображения: JPEG, PNG, GIF, WebP. Максимальный размер: 5MB</div>
-                    <div id="imagePreview" style="display: none; margin-top: 10px;"></div>
-                </div>
-
-                <div class="form-group">
-                    <label for="eventComment">Комментарий (только для админов)</label>
-                    <textarea id="eventComment" name="comment" rows="3"></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label class="checkbox-label">
-                        <input type="checkbox" id="eventIsActive" name="is_active" checked>
-                        <span class="checkmark"></span>
-                        Активное событие
-                    </label>
+                <!-- Настройки -->
+                <div class="form-section">
+                    <h3>⚙️ Настройки</h3>
+                    
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="eventIsActive" name="is_active" checked>
+                            <span class="checkmark"></span>
+                            Активное событие
+                        </label>
+                        <small>Неактивные события не отображаются на сайте</small>
+                    </div>
                 </div>
             </form>
 
@@ -783,8 +888,9 @@ if (count($events) > 0) {
                 <button type="button" class="btn btn-secondary" onclick="closeEventModal()">
                     Отмена
                 </button>
-                <button type="button" class="btn btn-primary" onclick="saveEvent()">
-                    Сохранить
+                <button type="button" class="btn btn-primary" onclick="saveEvent()" id="saveButton">
+                    <span id="saveButtonText">Сохранить</span>
+                    <span id="saveButtonSpinner" style="display: none;">⏳ Сохранение...</span>
                 </button>
             </div>
         </div>
@@ -835,25 +941,35 @@ if (count($events) > 0) {
             const modal = document.getElementById('eventModal');
             const form = document.getElementById('eventForm');
             const title = document.getElementById('modalTitle');
-            const imagePreview = document.getElementById('imagePreview');
 
             // Очищаем ошибки при открытии модального окна
             clearFormErrors();
             
-            // Очищаем превью изображения
-            imagePreview.style.display = 'none';
-            imagePreview.innerHTML = '';
+            // Скрываем все превью изображений
+            hideImagePreview();
+            document.getElementById('currentImage').style.display = 'none';
 
             if (eventId) {
-                title.textContent = 'Редактировать событие';
+                title.textContent = 'Редактировать событие v2';
                 loadEventData(eventId);
             } else {
-                title.textContent = 'Добавить событие';
+                title.textContent = 'Добавить событие v2';
                 form.reset();
                 document.getElementById('eventIsActive').checked = true;
+                
+                // Для нового события показываем логотип как дефолтное изображение
+                showDefaultImage();
             }
 
             modal.style.display = 'block';
+        }
+
+        function showDefaultImage() {
+            const currentImageDiv = document.getElementById('currentImage');
+            const currentImageSrc = document.getElementById('currentImageSrc');
+            
+            currentImageSrc.src = "/images/logo.png";
+            currentImageDiv.style.display = 'block';
         }
         
         function closeEventModal() {
@@ -879,34 +995,11 @@ if (count($events) > 0) {
                             document.getElementById('eventIsActive').checked = event.is_active !== false;
                             
                             // Обрабатываем изображение
-                            const imagePreview = document.getElementById('imagePreview');
-                            const imageInput = document.getElementById('eventImage');
+                            showCurrentImage(event);
                             
-                            if (event.image) {
-                                // Определяем URL изображения - только из GridFS
-                                let imageUrl = '/images/event-default.png';
-                                if (event.image) {
-                                    // Проверяем, является ли это GridFS file_id
-                                    if (/^[a-f\d]{24}$/i.test(event.image)) {
-                                        imageUrl = "/api/image.php?id=" + event.image;
-                                    } else {
-                                        // Если это не GridFS ID, используем изображение по умолчанию
-                                        imageUrl = '/images/event-default.png';
-                                    }
-                                }
-                                
-                                imagePreview.innerHTML = `
-                                    <img src="${imageUrl}" alt="Текущее изображение" style="max-width: 200px; max-height: 200px; object-fit: cover; border-radius: 4px;">
-                                    <p style="margin-top: 10px; font-size: 12px; color: #666;">Текущее изображение</p>
-                                `;
-                                imagePreview.style.display = 'block';
-                            } else {
-                                imagePreview.innerHTML = '<p style="color: #666;">Нет изображения</p>';
-                                imagePreview.style.display = 'block';
-                            }
-                            
-                            // Очищаем поле выбора файла
-                            imageInput.value = '';
+                            // Очищаем поле выбора файла и превью
+                            document.getElementById('eventImage').value = '';
+                            hideImagePreview();
                         } else {
                             alert('Событие не найдено');
                         }
@@ -919,10 +1012,37 @@ if (count($events) > 0) {
                     alert('Ошибка загрузки события: ' + error.message);
                 });
         }
+
+        function showCurrentImage(event) {
+            const currentImageDiv = document.getElementById('currentImage');
+            const currentImageSrc = document.getElementById('currentImageSrc');
+            
+            if (event.image && /^[a-f\d]{24}$/i.test(event.image)) {
+                // Есть изображение в GridFS
+                currentImageSrc.src = "/api/image.php?id=" + event.image;
+                currentImageDiv.style.display = 'block';
+            } else {
+                // Нет изображения, показываем логотип
+                currentImageSrc.src = "/images/logo.png";
+                currentImageDiv.style.display = 'block';
+            }
+        }
+
+        function hideImagePreview() {
+            document.getElementById('imagePreview').style.display = 'none';
+        }
+
+        function clearImagePreview() {
+            document.getElementById('eventImage').value = '';
+            hideImagePreview();
+        }
         
         function saveEvent() {
             const form = document.getElementById('eventForm');
             const eventId = document.getElementById('eventId').value;
+            const saveButton = document.getElementById('saveButton');
+            const saveButtonText = document.getElementById('saveButtonText');
+            const saveButtonSpinner = document.getElementById('saveButtonSpinner');
 
             console.log('saveEvent вызвана, eventId:', eventId);
             console.log('Форма:', form);
@@ -937,10 +1057,16 @@ if (count($events) > 0) {
                 return;
             }
 
+            // Показываем индикатор загрузки
+            saveButton.disabled = true;
+            saveButtonText.style.display = 'none';
+            saveButtonSpinner.style.display = 'inline';
+
             console.log('Валидация пройдена, отправляем данные...');
 
             // Определяем метод (POST для создания, PUT для обновления)
             const method = eventId ? 'PUT' : 'POST';
+            console.log('Метод запроса:', method);
 
             let requestBody;
             let contentType;
@@ -948,6 +1074,10 @@ if (count($events) > 0) {
             // Проверяем, есть ли файл для загрузки
             const imageInput = document.getElementById('eventImage');
             const hasImageFile = imageInput.files.length > 0;
+            console.log('Есть файл для загрузки:', hasImageFile);
+            if (hasImageFile) {
+                console.log('Файл:', imageInput.files[0]);
+            }
             
             if (method === 'POST' || hasImageFile) {
                 // Для создания или обновления с файлом используем FormData
@@ -986,14 +1116,20 @@ if (count($events) > 0) {
                 };
             }
 
+            console.log('Отправляем запрос на:', '/admin/events/api.php');
+            console.log('Метод:', method);
+            console.log('Опции запроса:', fetchOptions);
+            
             fetch('/admin/events/api.php', fetchOptions)
             .then(response => {
+                console.log('Получен ответ:', response.status, response.statusText);
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 return response.json();
             })
             .then(data => {
+                console.log('Данные ответа:', data);
                 if (data.success) {
                     alert(data.message);
                     closeEventModal();
@@ -1005,6 +1141,12 @@ if (count($events) > 0) {
             .catch(error => {
                 console.error('Ошибка сохранения события:', error);
                 alert('Ошибка сохранения события: ' + error.message);
+            })
+            .finally(() => {
+                // Скрываем индикатор загрузки
+                saveButton.disabled = false;
+                saveButtonText.style.display = 'inline';
+                saveButtonSpinner.style.display = 'none';
             });
         }
 
@@ -1218,14 +1360,14 @@ if (count($events) > 0) {
                     '<span class="no-link">-</span>';
                 
                 // Формируем миниатюру - только из GridFS
-                let imageSrc = '/images/event-default.png';
+                let imageSrc = '/images/logo.png'; // Используем логотип как дефолтное изображение
                 if (event.image) {
                     // Проверяем, является ли это GridFS file_id
                     if (/^[a-f\d]{24}$/i.test(event.image)) {
                         imageSrc = "/api/image.php?id=" + event.image;
                     } else {
-                        // Если это не GridFS ID, используем изображение по умолчанию
-                        imageSrc = '/images/event-default.png';
+                        // Если это не GridFS ID, используем логотип
+                        imageSrc = '/images/logo.png';
                     }
                 }
                 const imageAlt = event.image ? event.title : 'Дефолтное изображение';
@@ -1298,14 +1440,30 @@ if (count($events) > 0) {
         document.getElementById('eventImage').addEventListener('change', function(e) {
             const file = e.target.files[0];
             const imagePreview = document.getElementById('imagePreview');
+            const previewImage = document.getElementById('previewImage');
+            const previewText = document.getElementById('previewText');
             
             if (file) {
+                // Валидация файла
+                const maxSize = 5 * 1024 * 1024; // 5MB
+                const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+                
+                if (file.size > maxSize) {
+                    alert('Размер изображения не должен превышать 5MB');
+                    this.value = '';
+                    return;
+                }
+                
+                if (!allowedTypes.includes(file.type)) {
+                    alert('Поддерживаются только изображения: JPEG, PNG, GIF, WebP');
+                    this.value = '';
+                    return;
+                }
+                
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    imagePreview.innerHTML = `
-                        <img src="${e.target.result}" alt="Новое изображение" style="max-width: 200px; max-height: 200px; object-fit: cover; border-radius: 4px;">
-                        <p style="margin-top: 10px; font-size: 12px; color: #666;">Новое изображение</p>
-                    `;
+                    previewImage.src = e.target.result;
+                    previewText.textContent = `Новое изображение (${(file.size / 1024 / 1024).toFixed(2)} MB)`;
                     imagePreview.style.display = 'block';
                 };
                 reader.readAsDataURL(file);

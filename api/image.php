@@ -15,13 +15,12 @@ if (file_exists($envFile)) {
     }
 }
 
-header('Content-Type: application/json');
-
 try {
     $fileId = $_GET['id'] ?? null;
     
     if (!$fileId) {
         http_response_code(400);
+        header('Content-Type: application/json');
         echo json_encode(['error' => 'File ID required']);
         exit;
     }
@@ -31,6 +30,7 @@ try {
     
     if (!$metadata) {
         http_response_code(404);
+        header('Content-Type: application/json');
         echo json_encode(['error' => 'Image not found']);
         exit;
     }
@@ -39,14 +39,16 @@ try {
     
     if (!$imageData) {
         http_response_code(404);
+        header('Content-Type: application/json');
         echo json_encode(['error' => 'Image data not found']);
         exit;
     }
     
-    // Устанавливаем правильные заголовки
+    // Устанавливаем правильные заголовки для изображения
     header('Content-Type: ' . ($metadata['metadata']['content_type'] ?? 'image/jpeg'));
     header('Content-Length: ' . strlen($imageData));
     header('Cache-Control: public, max-age=3600'); // Кешируем на час
+    header('Content-Disposition: inline; filename="' . ($metadata['filename'] ?? 'image') . '"');
     
     // Выводим изображение
     echo $imageData;
@@ -54,5 +56,6 @@ try {
 } catch (Exception $e) {
     error_log("Image API error: " . $e->getMessage());
     http_response_code(500);
+    header('Content-Type: application/json');
     echo json_encode(['error' => 'Internal server error']);
 }
