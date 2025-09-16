@@ -1176,13 +1176,7 @@ if (count($events) > 0) {
             console.log(`Всего загружено событий: ${loadedEventIds.size}`);
         }
 
-        // Закрытие модального окна при клике вне его
-        window.onclick = function(event) {
-            const modal = document.getElementById('eventModal');
-            if (event.target === modal) {
-                closeEventModal();
-            }
-        }
+        // Закрытие модального окна при клике вне его отключено
 
         // Функции для работы с модальным окном изображений
         function showImageModal(imageSrc, imageTitle) {
