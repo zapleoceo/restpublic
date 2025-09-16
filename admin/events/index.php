@@ -780,8 +780,8 @@ if (count($events) > 0) {
 
     <script src="/admin/assets/js/admin.js"></script>
     <script>
-        // Переменная для отслеживания загруженных прошлых недель
-        let pastWeeksLoaded = 0;
+        // Переменная для отслеживания количества загруженных прошлых событий
+        let pastEventsLoaded = 0;
         const allEvents = <?php echo json_encode($events); ?>;
         const loadedEventIds = new Set(); // Отслеживаем уже загруженные события
         
@@ -1077,50 +1077,33 @@ if (count($events) > 0) {
         }
 
         function loadPastEvents() {
-            pastWeeksLoaded++;
-            
-            // Вычисляем дату начала для загрузки прошлых событий
             const today = new Date();
-            const pastDate = new Date(today);
-            pastDate.setDate(today.getDate() - (pastWeeksLoaded * 7)); // Уходим назад на N недель
             
-            console.log(`Загружаем прошлые события, неделя ${pastWeeksLoaded}`);
-            console.log(`Диапазон: с ${pastDate.toISOString().split('T')[0]} до ${today.toISOString().split('T')[0]}`);
-            
-            // Фильтруем события для показа - только те, которые еще не загружены
-            const pastEvents = allEvents.filter(event => {
+            // Получаем все прошлые события, отсортированные по дате (новые сначала)
+            const allPastEvents = allEvents.filter(event => {
                 const eventDate = new Date(event.date);
-                const isPast = eventDate < today;
-                const isInRange = eventDate >= pastDate;
-                const notLoaded = !loadedEventIds.has(event.id);
-                
-                console.log(`Событие ${event.title} (${event.date}): прошлое=${isPast}, в диапазоне=${isInRange}, не загружено=${notLoaded}`);
-                
-                return isPast && isInRange && notLoaded;
-            }).slice(0, 7); // Показываем максимум 7 событий за раз
+                return eventDate < today && !loadedEventIds.has(event.id);
+            }).sort((a, b) => new Date(b.date) - new Date(a.date)); // Сортируем по убыванию даты
             
-            console.log(`Найдено прошлых событий: ${pastEvents.length}`);
+            console.log(`Всего прошлых событий доступно: ${allPastEvents.length}`);
+            console.log(`Уже загружено прошлых событий: ${pastEventsLoaded}`);
             
-            if (pastEvents.length === 0) {
-                // Если в текущем диапазоне нет событий, попробуем найти любые прошлые события
-                const anyPastEvents = allEvents.filter(event => {
-                    const eventDate = new Date(event.date);
-                    return eventDate < today && !loadedEventIds.has(event.id);
-                });
-                
-                if (anyPastEvents.length === 0) {
-                    alert('Больше прошлых событий нет');
-                } else {
-                    alert(`В текущем диапазоне (${pastWeeksLoaded} недель назад) событий нет, но есть ${anyPastEvents.length} событий в более далеком прошлом`);
-                }
+            // Берем следующие 10 событий
+            const nextBatch = allPastEvents.slice(pastEventsLoaded, pastEventsLoaded + 10);
+            
+            if (nextBatch.length === 0) {
+                alert('Больше прошлых событий нет');
                 return;
             }
             
-            console.log(`Загружаем ${pastEvents.length} прошлых событий`);
+            console.log(`Загружаем ${nextBatch.length} прошлых событий (пакет ${Math.floor(pastEventsLoaded / 10) + 1})`);
+            
+            // Обновляем счетчик
+            pastEventsLoaded += nextBatch.length;
             
             // Добавляем события в таблицу
             const tbody = document.getElementById('eventsTableBody');
-            pastEvents.forEach(event => {
+            nextBatch.forEach(event => {
                 // Добавляем событие в список загруженных
                 loadedEventIds.add(event.id);
                 
@@ -1166,7 +1149,17 @@ if (count($events) > 0) {
             
             // Обновляем текст кнопки
             const loadBtn = document.querySelector('.load-past-btn');
-            loadBtn.textContent = `📅 Показать еще прошлые (${pastWeeksLoaded} недель назад)`;
+            const remainingEvents = allEvents.filter(event => {
+                const eventDate = new Date(event.date);
+                return eventDate < today && !loadedEventIds.has(event.id);
+            }).length;
+            
+            if (remainingEvents > 0) {
+                loadBtn.textContent = `📅 Показать еще прошлые (осталось ${remainingEvents})`;
+            } else {
+                loadBtn.textContent = `📅 Все прошлые события загружены`;
+                loadBtn.disabled = true;
+            }
             
             console.log(`Всего загружено событий: ${loadedEventIds.size}`);
         }
