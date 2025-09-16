@@ -354,7 +354,7 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                 </div> <!-- end s-menu__content-start -->
 
                 <div class="column xl-6 lg-6 md-12 s-menu__content-end">
-                    <div class="section-header" data-num="Top 5 позиций">
+                    <div class="section-header" data-num="<?php echo safeHtml($pageMeta['menu_top_5'] ?? 'Top 5 позиций'); ?>">
                     </div>
                     
                     <div class="tab-content menu-block" id="menu-content" role="tabpanel" aria-label="Содержимое меню">
@@ -426,7 +426,7 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                     ?>
                     <div class="menu-update-time">
                         <small style="color: #1e1e1e; font-size: 0.75rem; margin-top: 0.5rem; display: block;">
-                            Обновлено: <?php echo htmlspecialchars($lastUpdateTime); ?> (Нячанг)
+                            <?php echo safeHtml($pageMeta['menu_updated'] ?? 'Обновлено'); ?>: <?php echo htmlspecialchars($lastUpdateTime); ?> (<?php echo safeHtml($pageMeta['location_nha_trang'] ?? 'Нячанг'); ?>)
                         </small>
                     </div>
                     <?php endif; ?>
@@ -440,13 +440,13 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
             <div class="row s-events__header">
                 <div class="column xl-12 section-header-wrap">
                     <div class="section-header" data-num="03">
-                        <h2 class="text-display-title">События</h2>
+                        <h2 class="text-display-title"><?php echo safeHtml($pageMeta['events_title'] ?? 'События'); ?></h2>
                     </div>
                 </div> <!-- end section-header-wrap -->
             </div> <!-- end s-events__header -->
 
-            <div class="events-widget" role="region" aria-label="Афиша событий">
-                <h2 class="events-widget__title">Афиша событий</h2>
+            <div class="events-widget" role="region" aria-label="<?php echo safeHtml($pageMeta['events_widget_title'] ?? 'Афиша событий'); ?>">
+                <h2 class="events-widget__title"><?php echo safeHtml($pageMeta['events_widget_title'] ?? 'Афиша событий'); ?></h2>
                 
                 <!-- Слайдер дат -->
                 <div class="swiper dates-swiper" role="tablist" aria-label="Выбор даты события">
@@ -819,19 +819,19 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                             const language = document.documentElement.lang || 'ru';
                             const messages = {
                                 'ru': {
-                                    title: 'Мы еще не придумали что у нас тут будет.',
-                                    text: 'Есть идеи?',
-                                    link: 'Свяжитесь с нами!'
+                                    title: '<?php echo addslashes($pageMeta['events_empty_title'] ?? 'Мы еще не придумали что у нас тут будет.'); ?>',
+                                    text: '<?php echo addslashes($pageMeta['events_empty_text'] ?? 'Есть идеи?'); ?>',
+                                    link: '<?php echo addslashes($pageMeta['events_empty_link'] ?? 'Свяжитесь с нами!'); ?>'
                                 },
                                 'en': {
-                                    title: 'We haven\'t figured out what we\'ll have here yet.',
-                                    text: 'Have ideas?',
-                                    link: 'Contact us!'
+                                    title: '<?php echo addslashes($pageMeta['events_empty_title'] ?? 'We haven\'t figured out what we\'ll have here yet.'); ?>',
+                                    text: '<?php echo addslashes($pageMeta['events_empty_text'] ?? 'Have ideas?'); ?>',
+                                    link: '<?php echo addslashes($pageMeta['events_empty_link'] ?? 'Contact us!'); ?>'
                                 },
                                 'vi': {
-                                    title: 'Chúng tôi chưa nghĩ ra sẽ có gì ở đây.',
-                                    text: 'Có ý tưởng?',
-                                    link: 'Liên hệ với chúng tôi!'
+                                    title: '<?php echo addslashes($pageMeta['events_empty_title'] ?? 'Chúng tôi chưa nghĩ ra sẽ có gì ở đây.'); ?>',
+                                    text: '<?php echo addslashes($pageMeta['events_empty_text'] ?? 'Có ý tưởng?'); ?>',
+                                    link: '<?php echo addslashes($pageMeta['events_empty_link'] ?? 'Liên hệ với chúng tôi!'); ?>'
                                 }
                             };
                             
