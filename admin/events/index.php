@@ -1121,8 +1121,15 @@ if (count($events) > 0) {
 
             console.log('Валидация пройдена, отправляем данные...');
 
-            // Определяем метод (POST для создания, PUT для обновления)
-            const method = eventId ? 'PUT' : 'POST';
+            // Определяем метод (POST для создания, POST для обновления с файлом, PUT для обновления без файла)
+            let method;
+            if (!eventId) {
+                method = 'POST'; // Создание нового события
+            } else if (hasImageFile) {
+                method = 'POST'; // Обновление с файлом - используем POST
+            } else {
+                method = 'PUT'; // Обновление без файла - используем PUT
+            }
             console.log('Метод запроса:', method);
 
             let requestBody;

@@ -110,8 +110,147 @@ try {
             break;
             
         case 'POST':
-            // Создать новое событие
+            // Создать новое событие или обновить существующее (если есть event_id)
             
+            // Проверяем, это обновление или создание
+            $isUpdate = !empty($input['event_id']);
+            
+            if ($isUpdate) {
+                // Это обновление существующего события
+                $eventId = $input['event_id'];
+                error_log("API Events - POST UPDATE request for event_id: " . $eventId);
+                
+                // Валидация обязательных полей для обновления
+                $requiredFields = ['title', 'date', 'time', 'conditions'];
+                foreach ($requiredFields as $field) {
+                    if (empty($input[$field])) {
+                        error_log("API Events - Validation error: missing field '$field'");
+                        http_response_code(400);
+                        echo json_encode([
+                            'success' => false,
+                            'message' => "Поле '$field' обязательно для заполнения"
+                        ]);
+                        exit;
+                    }
+                }
+                
+                // Валидация формата даты
+                if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $input['date'])) {
+                    http_response_code(400);
+                    echo json_encode([
+                        'success' => false,
+                        'message' => 'Неверный формат даты. Используйте YYYY-MM-DD'
+                    ]);
+                    exit;
+                }
+                
+                // Валидация формата времени
+                if (!preg_match('/^\d{2}:\d{2}$/', $input['time'])) {
+                    http_response_code(400);
+                    echo json_encode([
+                        'success' => false,
+                        'message' => 'Неверный формат времени. Используйте HH:MM'
+                    ]);
+                    exit;
+                }
+                
+                // Получаем и санитизируем данные
+                $title = trim($input['title']);
+                $date = $input['date'];
+                $time = $input['time'];
+                $conditions = trim($input['conditions']);
+                $description_link = !empty($input['description_link']) ? trim($input['description_link']) : null;
+                $comment = !empty($input['comment']) ? trim($input['comment']) : null;
+                
+                // Правильная обработка is_active
+                $is_active = isset($input['is_active']) && $input['is_active'] !== false && $input['is_active'] !== 'false' && $input['is_active'] !== '0';
+                
+                // Обработка загрузки изображения для редактирования в GridFS
+                $imageData = null;
+                if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
+                    $imageService = new ImageService();
+                    $validation = $imageService->validateImage($_FILES['image']);
+                    
+                    if ($validation['valid']) {
+                        try {
+                            $fileData = file_get_contents($_FILES['image']['tmp_name']);
+                            $imageData = $imageService->saveImage($fileData, $_FILES['image']['name'], [
+                                'event_type' => 'updated_event',
+                                'original_event_id' => $eventId
+                            ]);
+                        } catch (Exception $e) {
+                            http_response_code(400);
+                            echo json_encode([
+                                'success' => false,
+                                'message' => 'Ошибка загрузки изображения: ' . $e->getMessage()
+                            ]);
+                            exit;
+                        }
+                    } else {
+                        http_response_code(400);
+                        echo json_encode([
+                            'success' => false,
+                            'message' => 'Ошибка валидации изображения: ' . $validation['error']
+                        ]);
+                        exit;
+                    }
+                }
+                
+                try {
+                    $eventId = new MongoDB\BSON\ObjectId($eventId);
+                    
+                    $updateData = [
+                        'title' => $title,
+                        'date' => $date,
+                        'time' => $time,
+                        'conditions' => $conditions,
+                        'description_link' => $description_link,
+                        'comment' => $comment,
+                        'is_active' => $is_active,
+                        'updated_at' => new MongoDB\BSON\UTCDateTime()
+                    ];
+                    
+                    // Обновляем изображение только если загружено новое
+                    if ($imageData !== null) {
+                        $updateData['image'] = $imageData['file_id'];
+                    } else {
+                        // Если изображение не загружено, оставляем существующее
+                        $existingEvent = $eventsCollection->findOne(['_id' => $eventId]);
+                        if ($existingEvent && isset($existingEvent['image'])) {
+                            $updateData['image'] = $existingEvent['image'];
+                        } else {
+                            $updateData['image'] = null;
+                        }
+                    }
+                    
+                    $result = $eventsCollection->updateOne(
+                        ['_id' => $eventId],
+                        ['$set' => $updateData]
+                    );
+                    
+                    if ($result->getModifiedCount() > 0) {
+                        echo json_encode([
+                            'success' => true,
+                            'message' => 'Событие обновлено успешно'
+                        ]);
+                    } else {
+                        http_response_code(404);
+                        echo json_encode([
+                            'success' => false,
+                            'message' => 'Событие не найдено или не было изменений'
+                        ]);
+                    }
+                } catch (Exception $e) {
+                    http_response_code(400);
+                    echo json_encode([
+                        'success' => false,
+                        'message' => 'Неверный формат ID события'
+                    ]);
+                }
+                break;
+            }
+            
+            // Это создание нового события
             $requiredFields = ['title', 'date', 'time', 'conditions'];
             foreach ($requiredFields as $field) {
                 if (empty($input[$field])) {
