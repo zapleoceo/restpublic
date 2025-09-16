@@ -326,7 +326,7 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                         <h2 class="text-display-title"><?php echo $pageMeta['menu_title'] ?? ''; ?></h2>
                     </div>  
 
-                    <nav class="tab-nav" role="tablist" aria-label="Категории меню">
+                    <nav class="tab-nav" role="tablist" aria-label="<?php echo safeHtml($pageMeta['menu_categories_aria'] ?? 'Категории меню'); ?>">
                         <ul class="tab-nav__list" id="menu-categories" role="tablist">
                             <?php if (!empty($categories)): ?>
                                 <?php foreach ($categories as $index => $category): ?>
@@ -357,7 +357,7 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                     <div class="section-header" data-num="<?php echo safeHtml($pageMeta['menu_top_5'] ?? 'Top 5 позиций'); ?>">
                     </div>
                     
-                    <div class="tab-content menu-block" id="menu-content" role="tabpanel" aria-label="Содержимое меню">
+                    <div class="tab-content menu-block" id="menu-content" role="tabpanel" aria-label="<?php echo safeHtml($pageMeta['menu_content_aria'] ?? 'Содержимое меню'); ?>">
                         <?php if (!empty($categories)): ?>
                             <?php foreach ($categories as $index => $category): ?>
                                 <?php 
@@ -455,14 +455,14 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                 <h2 class="events-widget__title"><?php echo safeHtml($pageMeta['events_widget_title'] ?? 'Афиша событий'); ?></h2>
                 
                 <!-- Слайдер дат -->
-                <div class="swiper dates-swiper" role="tablist" aria-label="Выбор даты события">
+                <div class="swiper dates-swiper" role="tablist" aria-label="<?php echo safeHtml($pageMeta['events_dates_aria'] ?? 'Выбор даты события'); ?>">
                     <div class="swiper-wrapper" id="dates-wrapper" role="tablist">
                         <!-- Даты будут добавлены динамически -->
                     </div>
                 </div>
 
                 <!-- Слайдер постеров -->
-                <div class="swiper posters-swiper" role="tabpanel" aria-label="Постеры событий">
+                <div class="swiper posters-swiper" role="tabpanel" aria-label="<?php echo safeHtml($pageMeta['events_posters_aria'] ?? 'Постеры событий'); ?>">
                     <div class="swiper-wrapper" id="posters-wrapper">
                         <!-- Постеры будут добавлены динамически -->
                     </div>
