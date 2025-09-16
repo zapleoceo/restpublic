@@ -1121,6 +1121,14 @@ if (count($events) > 0) {
 
             console.log('Валидация пройдена, отправляем данные...');
 
+            // Проверяем, есть ли файл для загрузки
+            const imageInput = document.getElementById('eventImage');
+            const hasImageFile = imageInput.files.length > 0;
+            console.log('Есть файл для загрузки:', hasImageFile);
+            if (hasImageFile) {
+                console.log('Файл:', imageInput.files[0]);
+            }
+
             // Определяем метод (POST для создания, POST для обновления с файлом, PUT для обновления без файла)
             let method;
             if (!eventId) {
@@ -1134,14 +1142,6 @@ if (count($events) > 0) {
 
             let requestBody;
             let contentType;
-
-            // Проверяем, есть ли файл для загрузки
-            const imageInput = document.getElementById('eventImage');
-            const hasImageFile = imageInput.files.length > 0;
-            console.log('Есть файл для загрузки:', hasImageFile);
-            if (hasImageFile) {
-                console.log('Файл:', imageInput.files[0]);
-            }
             
             if (method === 'POST' || hasImageFile) {
                 // Для создания или обновления с файлом используем FormData
