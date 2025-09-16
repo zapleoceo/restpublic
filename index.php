@@ -326,17 +326,13 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                         <h2 class="text-display-title"><?php echo $pageMeta['menu_title'] ?? ''; ?></h2>
                     </div>  
 
-                    <nav class="tab-nav" role="tablist" aria-label="<?php echo safeHtml($pageMeta['menu_categories_aria'] ?? 'Категории меню'); ?>">
-                        <ul class="tab-nav__list" id="menu-categories" role="tablist">
+                    <nav class="tab-nav">
+                        <ul class="tab-nav__list" id="menu-categories">
                             <?php if (!empty($categories)): ?>
                                 <?php foreach ($categories as $index => $category): ?>
-                                    <li role="presentation">
+                                    <li>
                                         <a href="#tab-<?php echo htmlspecialchars($category['category_id']); ?>" 
-                                           class="<?php echo $index === 0 ? 'active' : ''; ?>"
-                                           role="tab"
-                                           aria-controls="tab-<?php echo htmlspecialchars($category['category_id']); ?>"
-                                           aria-selected="<?php echo $index === 0 ? 'true' : 'false'; ?>"
-                                           tabindex="<?php echo $index === 0 ? '0' : '-1'; ?>">
+                                           class="<?php echo $index === 0 ? 'active' : ''; ?>">
                                             <span><?php echo htmlspecialchars(translateCategoryName($category['category_name'] ?? $category['name'] ?? 'Без названия', getCurrentLanguage())); ?></span>
                                             <svg clip-rule="evenodd" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="m14.523 18.787s4.501-4.505 6.255-6.26c.146-.146.219-.338.219-.53s-.073-.383-.219-.53c-1.753-1.754-6.255-6.258-6.255-6.258-.144-.145-.334-.217-.524-.217-.193 0-.385.074-.532.221-.293.292-.295.766-.004 1.056l4.978 4.978h-14.692c-.414 0-.75.336-.75.75s.336.75.75.75h14.692l-4.979 4.979c-.289.289-.286.762.006 1.054.148.148.341.222.533.222.19 0 .378-.072.522-.215z" fill-rule="nonzero"/></svg>
                                         </a>
@@ -357,7 +353,7 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                     <div class="section-header" data-num="<?php echo safeHtml($pageMeta['menu_top_5'] ?? 'Top 5 позиций'); ?>">
                     </div>
                     
-                    <div class="tab-content menu-block" id="menu-content" role="tabpanel" aria-label="<?php echo safeHtml($pageMeta['menu_content_aria'] ?? 'Содержимое меню'); ?>">
+                    <div class="tab-content menu-block" id="menu-content">
                         <?php if (!empty($categories)): ?>
                             <?php foreach ($categories as $index => $category): ?>
                                 <?php 
@@ -372,10 +368,7 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                                 $topProducts = $translatedProducts;
                                 ?>
                                 <div id="tab-<?php echo htmlspecialchars($category['category_id']); ?>" 
-                                     class="menu-block__group tab-content__item <?php echo $index === 0 ? 'active' : ''; ?>"
-                                     role="tabpanel"
-                                     aria-labelledby="tab-<?php echo htmlspecialchars($category['category_id']); ?>"
-                                     <?php echo $index === 0 ? '' : 'aria-hidden="true"'; ?>>
+                                     class="menu-block__group tab-content__item <?php echo $index === 0 ? 'active' : ''; ?>">
                                     <h6 class="menu-block__cat-name"><?php echo htmlspecialchars(translateCategoryName($category['category_name'] ?? $category['name'] ?? 'Без названия', getCurrentLanguage())); ?></h6>
                                     <ul class="menu-list">
                                         <?php if (!empty($topProducts)): ?>
