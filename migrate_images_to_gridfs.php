@@ -16,6 +16,14 @@ if (file_exists($envFile)) {
     }
 }
 
+// Проверяем, что переменные загружены
+if (empty($_ENV['MONGODB_URI']) || empty($_ENV['MONGODB_DATABASE'])) {
+    echo "ОШИБКА: Не удалось загрузить переменные окружения из .env файла\n";
+    echo "MONGODB_URI: " . ($_ENV['MONGODB_URI'] ?? 'НЕ НАЙДЕНО') . "\n";
+    echo "MONGODB_DATABASE: " . ($_ENV['MONGODB_DATABASE'] ?? 'НЕ НАЙДЕНО') . "\n";
+    exit(1);
+}
+
 try {
     echo "Начинаем миграцию изображений в GridFS...\n";
     
