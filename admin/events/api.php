@@ -52,13 +52,20 @@ try {
     if ($method === 'POST' || $method === 'PUT') {
         $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
         
+        // Логируем информацию о запросе
+        error_log("API Events - Method: $method, Content-Type: $contentType");
+        error_log("API Events - POST data: " . print_r($_POST, true));
+        error_log("API Events - FILES data: " . print_r($_FILES, true));
+        
         if (strpos($contentType, 'multipart/form-data') !== false) {
             // FormData (для загрузки файлов)
             $input = $_POST;
+            error_log("API Events - Using FormData input: " . print_r($input, true));
         } else {
             // JSON
             $rawInput = file_get_contents('php://input');
             $input = json_decode($rawInput, true);
+            error_log("API Events - Using JSON input: " . print_r($input, true));
         }
     } else {
         $input = json_decode(file_get_contents('php://input'), true);
@@ -255,8 +262,12 @@ try {
             
         case 'PUT':
             // Обновить событие
+            error_log("API Events - PUT request started");
+            error_log("API Events - Input data: " . print_r($input, true));
+            
             // Получаем данные из FormData или JSON
             $eventId = $input['event_id'] ?? null;
+            error_log("API Events - Event ID: " . $eventId);
             
             if (empty($eventId)) {
                 http_response_code(400);
@@ -271,6 +282,7 @@ try {
             $requiredFields = ['title', 'date', 'time', 'conditions'];
             foreach ($requiredFields as $field) {
                 if (empty($input[$field])) {
+                    error_log("API Events - Validation error: missing field '$field'");
                     http_response_code(400);
                     echo json_encode([
                         'success' => false,
