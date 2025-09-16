@@ -656,14 +656,8 @@ if (count($events) > 0) {
                                                     if (preg_match('/^[a-f\d]{24}$/i', $event['image'])) {
                                                         $imageUrl = "/api/image.php?id=" . $event['image'];
                                                     } else {
-                                                        // Для старых путей к файлам проверяем существование
-                                                        $fullPath = __DIR__ . $event['image'];
-                                                        if (file_exists($fullPath)) {
-                                                            $imageUrl = $event['image'];
-                                                        } else {
-                                                            // Если файл не найден, используем дефолтное изображение
-                                                            $imageUrl = '/images/event-default.png';
-                                                        }
+                                                        // Если это не GridFS ID, используем изображение по умолчанию
+                                                        $imageUrl = '/images/event-default.png';
                                                     }
                                                 }
                                                 ?>
@@ -889,14 +883,15 @@ if (count($events) > 0) {
                             const imageInput = document.getElementById('eventImage');
                             
                             if (event.image) {
-                                // Определяем URL изображения
+                                // Определяем URL изображения - только из GridFS
                                 let imageUrl = '/images/event-default.png';
                                 if (event.image) {
                                     // Проверяем, является ли это GridFS file_id
                                     if (/^[a-f\d]{24}$/i.test(event.image)) {
                                         imageUrl = "/api/image.php?id=" + event.image;
                                     } else {
-                                        imageUrl = event.image;
+                                        // Если это не GridFS ID, используем изображение по умолчанию
+                                        imageUrl = '/images/event-default.png';
                                     }
                                 }
                                 
@@ -1222,14 +1217,15 @@ if (count($events) > 0) {
                     `<a href="${event.description_link}" target="_blank" class="link-btn">🔗 Открыть</a>` : 
                     '<span class="no-link">-</span>';
                 
-                // Формируем миниатюру с учетом GridFS
+                // Формируем миниатюру - только из GridFS
                 let imageSrc = '/images/event-default.png';
                 if (event.image) {
                     // Проверяем, является ли это GridFS file_id
                     if (/^[a-f\d]{24}$/i.test(event.image)) {
                         imageSrc = "/api/image.php?id=" + event.image;
                     } else {
-                        imageSrc = event.image;
+                        // Если это не GridFS ID, используем изображение по умолчанию
+                        imageSrc = '/images/event-default.png';
                     }
                 }
                 const imageAlt = event.image ? event.title : 'Дефолтное изображение';

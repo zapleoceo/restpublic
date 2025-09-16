@@ -12,8 +12,11 @@ class ImageService {
     
     private function connect() {
         try {
-            $client = new MongoDB\Client($_ENV['MONGODB_URI']);
-            $this->database = $client->selectDatabase($_ENV['MONGODB_DATABASE']);
+            $mongodbUrl = $_ENV['MONGODB_URL'] ?? 'mongodb://localhost:27017';
+            $dbName = $_ENV['MONGODB_DB_NAME'] ?? 'northrepublic';
+            
+            $client = new MongoDB\Client($mongodbUrl);
+            $this->database = $client->$dbName;
             $this->bucket = $this->database->selectGridFSBucket(['bucketName' => 'event_images']);
         } catch (Exception $e) {
             error_log("ImageService connection error: " . $e->getMessage());
