@@ -526,7 +526,7 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
     <script src="https://unpkg.com/swiper/swiper-bundle.min.js" defer></script>
     
     <script>
-        // Tab switching for menu categories (оптимизировано)
+        // Tab switching for menu categories (исправлено по образцу исходника)
         document.addEventListener('DOMContentLoaded', function() {
             const categoryLinks = document.querySelectorAll('#menu-categories a');
             const menuItems = document.querySelectorAll('#menu-content .tab-content__item');
@@ -537,23 +537,36 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                 menuItemsMap.set(item.id, item);
             });
             
-            categoryLinks.forEach(link => {
+            categoryLinks.forEach((link, linkIndex) => {
                 link.addEventListener('click', function(e) {
                     e.preventDefault();
                     
-                    // Быстрое переключение без лишних DOM операций
-                    const targetId = this.getAttribute('href').substring(1);
-                    const targetItem = menuItemsMap.get(targetId);
+                    // Reset all the tablinks (как в исходнике)
+                    categoryLinks.forEach(function(l) {
+                        l.setAttribute('tabindex', '-1');
+                        l.setAttribute('aria-selected', 'false');
+                        l.parentNode.removeAttribute('data-tab-active');
+                        l.removeAttribute('data-tab-active');
+                    });
                     
-                    if (targetItem) {
-                        // Убираем активные классы
-                        categoryLinks.forEach(l => l.classList.remove('active'));
-                        menuItems.forEach(item => item.classList.remove('active'));
-                        
-                        // Добавляем активные классы
-                        this.classList.add('active');
-                        targetItem.classList.add('active');
-                    }
+                    // Set the active link attributes (как в исходнике)
+                    this.setAttribute('tabindex', '0');
+                    this.setAttribute('aria-selected', 'true');
+                    this.parentNode.setAttribute('data-tab-active', '');
+                    this.setAttribute('data-tab-active', '');
+                    
+                    // Change tab panel visibility (как в исходнике)
+                    menuItems.forEach(function(panel, index) {
+                        if (index != linkIndex) {
+                            panel.setAttribute('aria-hidden', 'true');
+                            panel.removeAttribute('data-tab-active');
+                        } else {
+                            panel.setAttribute('aria-hidden', 'false');
+                            panel.setAttribute('data-tab-active', '');
+                        }
+                    });
+                    
+                    window.dispatchEvent(new Event("resize"));
                 });
             });
 
