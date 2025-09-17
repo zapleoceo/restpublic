@@ -371,7 +371,7 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                                 }
                                 ?>
                                 <div id="tab-<?php echo htmlspecialchars($category['category_id']); ?>" 
-                                     class="menu-block__group tab-content__item <?php echo $index === 0 ? 'active' : ''; ?>">
+                                     class="menu-block__group tab-content__item" <?php echo $index === 0 ? 'data-tab-active aria-hidden="false"' : 'aria-hidden="true"'; ?>>
                                     <h6 class="menu-block__cat-name"><?php echo htmlspecialchars(translateCategoryName($category['category_name'] ?? $category['name'] ?? 'Без названия', getCurrentLanguage())); ?></h6>
                                     <ul class="menu-list">
                                         <?php if (!empty($topProducts)): ?>
@@ -398,7 +398,7 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                                 </div>
                             <?php endforeach; ?>
                         <?php else: ?>
-                            <div class="menu-block__group tab-content__item active">
+                            <div class="menu-block__group tab-content__item" data-tab-active aria-hidden="false">
                                 <h6 class="menu-block__cat-name"><?php echo $pageMeta['menu_title'] ?? ''; ?></h6>
                                 <ul class="menu-list">
                                     <li class="menu-list__item">
@@ -547,6 +547,7 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                         l.setAttribute('aria-selected', 'false');
                         l.parentNode.removeAttribute('data-tab-active');
                         l.removeAttribute('data-tab-active');
+                        l.classList.remove('active'); // Убираем класс active
                     });
                     
                     // Set the active link attributes (как в исходнике)
@@ -554,6 +555,7 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                     this.setAttribute('aria-selected', 'true');
                     this.parentNode.setAttribute('data-tab-active', '');
                     this.setAttribute('data-tab-active', '');
+                    this.classList.add('active'); // Добавляем класс active
                     
                     // Change tab panel visibility (как в исходнике)
                     menuItems.forEach(function(panel, index) {
