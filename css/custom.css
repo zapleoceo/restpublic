@@ -34,7 +34,7 @@
 .tab-content {
   position: relative;
   overflow: hidden;
-  min-height: 400px; /* Фиксированная минимальная высота для предотвращения скачков */
+  height: 500px !important; /* Фиксированная высота вместо min-height */
 }
 
 .tab-content__item {
@@ -45,13 +45,15 @@
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.3s ease;
+  height: 500px !important; /* Фиксированная высота для всех табов */
+  overflow-y: auto; /* Скролл если контент не помещается */
 }
 
 .tab-content__item[data-tab-active] {
   position: relative;
   opacity: 1;
   pointer-events: auto;
-  min-height: 400px; /* Обеспечиваем минимальную высоту для активного таба */
+  height: 500px !important; /* Фиксированная высота для активного таба */
 }
 
 /* Убираем резкие изменения высоты */
@@ -61,7 +63,8 @@
 
 /* Стабилизация списка продуктов */
 .menu-list {
-  min-height: 300px; /* Минимальная высота для списка продуктов */
+  height: 400px !important; /* Фиксированная высота для списка продуктов */
+  overflow-y: auto; /* Скролл если продуктов много */
 }
 
 .menu-list__item {
