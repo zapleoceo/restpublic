@@ -1364,11 +1364,19 @@ if (count($events) > 0) {
                 // Для обновления без файла используем JSON
                 requestBody = JSON.stringify({
                     event_id: eventId,
-                    title: document.getElementById('eventTitle').value,
+                    title_ru: document.getElementById('eventTitleRu').value,
+                    title_en: document.getElementById('eventTitleEn').value,
+                    title_vi: document.getElementById('eventTitleVi').value,
+                    description_ru: document.getElementById('eventDescriptionRu').value,
+                    description_en: document.getElementById('eventDescriptionEn').value,
+                    description_vi: document.getElementById('eventDescriptionVi').value,
+                    conditions_ru: document.getElementById('eventConditionsRu').value,
+                    conditions_en: document.getElementById('eventConditionsEn').value,
+                    conditions_vi: document.getElementById('eventConditionsVi').value,
                     date: document.getElementById('eventDate').value,
                     time: document.getElementById('eventTime').value,
-                    conditions: document.getElementById('eventConditions').value,
-                    description_link: document.getElementById('eventDescriptionLink').value,
+                    link: document.getElementById('eventLink').value,
+                    category: document.getElementById('eventCategory').value,
                     comment: document.getElementById('eventComment').value,
                     is_active: document.getElementById('eventIsActive').checked
                 });
