@@ -30,11 +30,18 @@
   max-height: none;
 }
 
-/* Радикальный подход с абсолютным позиционированием */
+/* Убираем лишние скроллы и расширяем контейнеры по высоте */
+.s-menu__content-end {
+  height: 100vh !important; /* На всю высоту экрана */
+  display: flex;
+  flex-direction: column;
+}
+
 .tab-content {
   position: relative;
-  overflow: hidden;
-  height: 500px !important; /* Фиксированная высота вместо min-height */
+  overflow: visible; /* Убираем overflow: hidden */
+  height: 100% !important; /* На всю доступную высоту */
+  flex: 1; /* Занимает все доступное пространство */
 }
 
 .tab-content__item {
@@ -45,27 +52,31 @@
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.3s ease;
-  height: 500px !important; /* Фиксированная высота для всех табов */
-  overflow-y: auto; /* Скролл если контент не помещается */
+  height: 100% !important; /* На всю высоту контейнера */
+  overflow: visible; /* Убираем скролл */
 }
 
 .tab-content__item[data-tab-active] {
   position: relative;
   opacity: 1;
   pointer-events: auto;
-  height: 500px !important; /* Фиксированная высота для активного таба */
+  height: 100% !important; /* На всю высоту контейнера */
 }
 
 /* Убираем резкие изменения высоты */
 .menu-block__group {
   transition: all 0.2s ease;
   margin-bottom: 0 !important; /* Убираем нижний маржин */
+  height: 100%; /* На всю высоту */
+  display: flex;
+  flex-direction: column;
 }
 
 /* Стабилизация списка продуктов */
 .menu-list {
-  height: 450px !important; /* Увеличена высота для списка продуктов (было 400px) */
-  overflow-y: auto; /* Скролл если продуктов много */
+  height: 100% !important; /* На всю доступную высоту */
+  overflow: visible; /* Убираем скролл */
+  flex: 1; /* Занимает все доступное пространство */
 }
 
 .menu-list__item {
