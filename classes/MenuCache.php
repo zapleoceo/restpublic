@@ -370,7 +370,7 @@ class MenuCache {
                 'Игристое бутылка' => 'Rượu vang sủi bọt',
                 'Кальян "MustHave"' => 'Shisha "MustHave"',
                 'Картошка печеная' => 'Khoai tây nướng',
-                'Квас' => 'Kvass',
+                'Квас' => 'Kvass (nước lên men)',
                 'Кокос' => 'Dừa',
                 'Комбуча' => 'Kombucha',
                 'Куриные джерки' => 'Thịt gà khô',
