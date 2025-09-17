@@ -202,8 +202,12 @@
 
 /* Mini Menu Full Menu Button Styles */
 .s-menu__footer {
-  margin-top: 3rem;
-  padding-top: 2rem;
+  margin: 0 !important; /* Убираем все отступы */
+  padding: 0 !important; /* Убираем все внутренние отступы */
+  height: auto; /* Высота по содержимому */
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .s-menu__footer .btn {
@@ -218,6 +222,12 @@
 .s-menu__footer .btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+/* Убираем отступы у внутреннего контейнера */
+.s-menu__footer .column {
+  margin: 0 !important;
+  padding: 0 !important;
 }
 
 /* Loading state for menu items */
