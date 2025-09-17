@@ -563,22 +563,18 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                     this.setAttribute('data-tab-active', '');
                     this.classList.add('active');
                     
-                    // Change tab panel visibility
+                    // Change tab panel visibility (упрощенная версия с абсолютным позиционированием)
                     const targetTabId = this.getAttribute('data-tab-id');
                     
-                    // Сначала скрываем все табы
+                    // Убираем data-tab-active со всех табов
                     menuItems.forEach(function(panel) {
-                        panel.setAttribute('aria-hidden', 'true');
                         panel.removeAttribute('data-tab-active');
-                        panel.style.display = 'none';
                     });
                     
-                    // Затем показываем нужный таб
+                    // Добавляем data-tab-active к нужному табу
                     const targetPanel = document.getElementById(targetTabId);
                     if (targetPanel) {
-                        targetPanel.setAttribute('aria-hidden', 'false');
                         targetPanel.setAttribute('data-tab-active', '');
-                        targetPanel.style.display = 'block';
                     }
                     
                     // Восстанавливаем позицию скрола

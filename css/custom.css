@@ -30,46 +30,26 @@
   max-height: none;
 }
 
-/* Плавные переходы для табов меню - исправляем скачки контента */
-.tab-content__item {
-  transition: opacity 0.3s ease, visibility 0.3s ease !important;
-  position: relative !important;
-  top: 0 !important; /* Убираем скачок с top: 100px */
-}
-
-.tab-content__item.active {
-  transition: opacity 0.3s ease, visibility 0.3s ease !important;
-  position: relative !important;
-  top: 0 !important;
-}
-
-/* Правильное скрытие неактивных табов */
-.tab-content__item[aria-hidden="true"] {
-  display: none !important;
-}
-
-.tab-content__item[aria-hidden="false"] {
-  display: block;
-}
-
-/* Стабилизация контейнера меню */
-#menu-content {
-  min-height: 200px; /* Минимальная высота для предотвращения скачков */
+/* Радикальный подход с абсолютным позиционированием */
+.tab-content {
   position: relative;
+  overflow: hidden;
 }
 
-.menu-block__group {
-  transition: opacity 0.2s ease-in-out;
+.tab-content__item {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
 }
 
-/* Плавное появление активного таба */
 .tab-content__item[data-tab-active] {
-  animation: fadeIn 0.3s ease-in-out;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  position: relative;
+  opacity: 1;
+  pointer-events: auto;
 }
 
 /* Убираем резкие изменения высоты */
