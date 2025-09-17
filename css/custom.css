@@ -59,11 +59,12 @@
 /* Убираем резкие изменения высоты */
 .menu-block__group {
   transition: all 0.2s ease;
+  margin-bottom: 0 !important; /* Убираем нижний маржин */
 }
 
 /* Стабилизация списка продуктов */
 .menu-list {
-  height: 400px !important; /* Фиксированная высота для списка продуктов */
+  height: 450px !important; /* Увеличена высота для списка продуктов (было 400px) */
   overflow-y: auto; /* Скролл если продуктов много */
 }
 
