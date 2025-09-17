@@ -528,10 +528,11 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
     <script src="https://unpkg.com/swiper/swiper-bundle.min.js" defer></script>
     
     <script>
-        // Tab switching for menu categories (исправлено по образцу исходника)
+        // Tab switching for menu categories (исправлено для предотвращения скачков)
         document.addEventListener('DOMContentLoaded', function() {
             const categoryLinks = document.querySelectorAll('#menu-categories a');
             const menuItems = document.querySelectorAll('#menu-content .tab-content__item');
+            const menuContainer = document.querySelector('#menu-content');
             
             // Кешируем элементы для быстрого доступа
             const menuItemsMap = new Map();
@@ -543,35 +544,50 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                 link.addEventListener('click', function(e) {
                     e.preventDefault();
                     
-                    // Reset all the tablinks (как в исходнике)
+                    // Сохраняем текущую позицию скрола
+                    const scrollY = window.pageYOffset;
+                    
+                    // Reset all the tablinks
                     categoryLinks.forEach(function(l) {
                         l.setAttribute('tabindex', '-1');
                         l.setAttribute('aria-selected', 'false');
                         l.parentNode.removeAttribute('data-tab-active');
                         l.removeAttribute('data-tab-active');
-                        l.classList.remove('active'); // Убираем класс active
+                        l.classList.remove('active');
                     });
                     
-                    // Set the active link attributes (как в исходнике)
+                    // Set the active link attributes
                     this.setAttribute('tabindex', '0');
                     this.setAttribute('aria-selected', 'true');
                     this.parentNode.setAttribute('data-tab-active', '');
                     this.setAttribute('data-tab-active', '');
-                    this.classList.add('active'); // Добавляем класс active
+                    this.classList.add('active');
                     
-                    // Change tab panel visibility (как в исходнике)
+                    // Change tab panel visibility
                     const targetTabId = this.getAttribute('data-tab-id');
-                    menuItems.forEach(function(panel, index) {
-                        if (panel.id !== targetTabId) {
-                            panel.setAttribute('aria-hidden', 'true');
-                            panel.removeAttribute('data-tab-active');
-                        } else {
-                            panel.setAttribute('aria-hidden', 'false');
-                            panel.setAttribute('data-tab-active', '');
-                        }
+                    
+                    // Сначала скрываем все табы
+                    menuItems.forEach(function(panel) {
+                        panel.setAttribute('aria-hidden', 'true');
+                        panel.removeAttribute('data-tab-active');
+                        panel.style.display = 'none';
                     });
                     
-                    window.dispatchEvent(new Event("resize"));
+                    // Затем показываем нужный таб
+                    const targetPanel = document.getElementById(targetTabId);
+                    if (targetPanel) {
+                        targetPanel.setAttribute('aria-hidden', 'false');
+                        targetPanel.setAttribute('data-tab-active', '');
+                        targetPanel.style.display = 'block';
+                    }
+                    
+                    // Восстанавливаем позицию скрола
+                    window.scrollTo(0, scrollY);
+                    
+                    // Небольшая задержка для корректной работы
+                    setTimeout(() => {
+                        window.dispatchEvent(new Event('resize'));
+                    }, 10);
                 });
             });
 

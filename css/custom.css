@@ -43,6 +43,35 @@
   top: 0 !important;
 }
 
+/* Правильное скрытие неактивных табов */
+.tab-content__item[aria-hidden="true"] {
+  display: none !important;
+}
+
+.tab-content__item[aria-hidden="false"] {
+  display: block;
+}
+
+/* Стабилизация контейнера меню */
+#menu-content {
+  min-height: 200px; /* Минимальная высота для предотвращения скачков */
+  position: relative;
+}
+
+.menu-block__group {
+  transition: opacity 0.2s ease-in-out;
+}
+
+/* Плавное появление активного таба */
+.tab-content__item[data-tab-active] {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
 /* Убираем резкие изменения высоты */
 .menu-block__group {
   transition: all 0.2s ease;
