@@ -1,7 +1,7 @@
 /* Custom styles for North Republic website */
 
-/* Smooth scrolling for anchor links */
-html {
+/* Smooth scrolling only for anchor links with smoothscroll class */
+.smoothscroll {
   scroll-behavior: smooth;
 }
 
