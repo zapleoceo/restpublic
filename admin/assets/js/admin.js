@@ -15,10 +15,47 @@ function initAdminPanel() {
 
 function addEventListeners() {
     // Обработчик для мобильного меню
-    const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
-    if (mobileMenuToggle) {
-        mobileMenuToggle.addEventListener('click', toggleMobileMenu);
+    const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+    if (mobileMenuBtn) {
+        console.log('Кнопка мобильного меню найдена, добавляем обработчики');
+        
+        // Обработчик для клика
+        mobileMenuBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('Клик по кнопке меню');
+            toggleMobileMenu();
+        });
+        
+        // Обработчик для touch
+        mobileMenuBtn.addEventListener('touchstart', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('Touch по кнопке меню');
+            toggleMobileMenu();
+        });
+        
+        // Обработчик для touchend
+        mobileMenuBtn.addEventListener('touchend', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        });
+    } else {
+        console.error('Кнопка мобильного меню не найдена');
     }
+    
+    // Обработчик для оверлея
+    const overlay = document.querySelector('.sidebar-overlay');
+    if (overlay) {
+        overlay.addEventListener('click', closeMobileMenu);
+        overlay.addEventListener('touchstart', closeMobileMenu);
+    }
+    
+    // Закрытие меню при клике на пункт меню
+    const menuItems = document.querySelectorAll('.menu-item a');
+    menuItems.forEach(item => {
+        item.addEventListener('click', closeMobileMenu);
+    });
     
     // Обработчики для форм
     const forms = document.querySelectorAll('form');
@@ -56,8 +93,29 @@ function initComponents() {
 }
 
 function toggleMobileMenu() {
+    console.log('toggleMobileMenu вызвана');
     const sidebar = document.querySelector('.admin-sidebar');
-    sidebar.classList.toggle('open');
+    const overlay = document.querySelector('.sidebar-overlay');
+    
+    if (sidebar && overlay) {
+        sidebar.classList.toggle('open');
+        overlay.classList.toggle('active');
+        console.log('Меню переключено, классы:', sidebar.classList.toString());
+    } else {
+        console.error('Элементы меню не найдены');
+    }
+}
+
+function closeMobileMenu() {
+    console.log('closeMobileMenu вызвана');
+    const sidebar = document.querySelector('.admin-sidebar');
+    const overlay = document.querySelector('.sidebar-overlay');
+    
+    if (sidebar && overlay) {
+        sidebar.classList.remove('open');
+        overlay.classList.remove('active');
+        console.log('Меню закрыто');
+    }
 }
 
 function handleFormSubmit(event) {

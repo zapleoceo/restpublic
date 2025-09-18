@@ -24,6 +24,9 @@ $stats = [
     <div class="admin-container">
         <?php include 'includes/sidebar.php'; ?>
         
+        <!-- Оверлей для мобильного меню -->
+        <div class="sidebar-overlay"></div>
+        
         <main class="admin-main">
             <div class="page-header">
                 <h1>Панель управления</h1>
