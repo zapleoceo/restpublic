@@ -5,6 +5,7 @@ require_once 'auth-check.php';
 <header class="admin-header">
     <div class="header-content">
         <div class="header-left">
+            <button class="mobile-menu-btn" onclick="toggleSidebar()">☰</button>
             <a href="/admin/" class="logo">
                 <img src="/images/logo.png" alt="North Republic" style="height: 40px;">
             </a>

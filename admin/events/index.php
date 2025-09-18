@@ -712,21 +712,43 @@ if (count($events) > 0) {
             .events-container {
                 margin: 10px 0;
             }
+            
+            .table-container {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                border-radius: 8px;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            }
+            
+            .events-table {
+                min-width: 800px;
+            }
 
             .events-table th,
             .events-table td {
-                padding: 10px 8px;
-                font-size: 13px;
+                padding: 8px 6px;
+                font-size: 12px;
+                white-space: nowrap;
             }
 
             .event-conditions {
-                max-width: 200px;
-                font-size: 12px;
+                max-width: 150px;
+                font-size: 11px;
+                white-space: normal;
+                word-wrap: break-word;
             }
 
             .event-comment {
+                max-width: 120px;
+                font-size: 10px;
+                white-space: normal;
+                word-wrap: break-word;
+            }
+            
+            .event-title {
                 max-width: 150px;
-                font-size: 11px;
+                white-space: normal;
+                word-wrap: break-word;
             }
 
             .form-row {
@@ -735,11 +757,24 @@ if (count($events) > 0) {
 
             .modal-content {
                 width: 95%;
-                margin: 10% auto;
+                margin: 5% auto;
+                max-height: 90vh;
             }
 
             .modal-body {
-                padding: 20px;
+                padding: 15px;
+                max-height: 60vh;
+                overflow-y: auto;
+            }
+            
+            .events-header {
+                flex-direction: column;
+                gap: 10px;
+                align-items: stretch;
+            }
+            
+            .header-buttons {
+                justify-content: center;
             }
         }
 
@@ -763,6 +798,9 @@ if (count($events) > 0) {
 
     <div class="admin-container">
         <?php include __DIR__ . '/../includes/sidebar.php'; ?>
+        
+        <!-- Оверлей для мобильного меню -->
+        <div class="sidebar-overlay" onclick="closeSidebar()"></div>
 
         <main class="admin-main">
             <div class="admin-header">
@@ -783,7 +821,8 @@ if (count($events) > 0) {
                         </div>
                     </div>
 
-                    <table class="events-table">
+                    <div class="table-container">
+                        <table class="events-table">
                         <thead>
                             <tr>
                                 <th>Дата</th>
@@ -892,7 +931,8 @@ if (count($events) > 0) {
                                 <?php endif; ?>
                             <?php endforeach; ?>
                         </tbody>
-                    </table>
+                        </table>
+                    </div>
                 </div>
             </div>
         </main>
@@ -1939,6 +1979,31 @@ if (count($events) > 0) {
                 });
             }
         }
+        
+        // Функции для мобильного меню
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.admin-sidebar');
+            const overlay = document.querySelector('.sidebar-overlay');
+            
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('active');
+        }
+        
+        function closeSidebar() {
+            const sidebar = document.querySelector('.admin-sidebar');
+            const overlay = document.querySelector('.sidebar-overlay');
+            
+            sidebar.classList.remove('open');
+            overlay.classList.remove('active');
+        }
+        
+        // Закрытие меню при клике на пункт меню
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuItems = document.querySelectorAll('.menu-item a');
+            menuItems.forEach(item => {
+                item.addEventListener('click', closeSidebar);
+            });
+        });
     </script>
 </body>
 </html>
