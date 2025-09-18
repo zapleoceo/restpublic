@@ -1,7 +1,7 @@
 <?php
 // Страница управления событиями в админке
 session_start();
-// require_once __DIR__ . '/../includes/auth-check.php'; // Временно отключено для тестирования
+require_once __DIR__ . '/../includes/auth-check.php';
 require_once __DIR__ . '/../../vendor/autoload.php';
 
 // Загружаем переменные окружения
