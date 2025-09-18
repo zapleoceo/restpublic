@@ -22,10 +22,20 @@ class TelegramService {
         $this->apiUrl = "https://api.telegram.org/bot{$this->botToken}";
         
         // Целевые чаты для уведомлений
-        $this->chatIds = [
-            '7795513546', // Rest_publica_bar
-            '169510539'   // zapleosoft
+        $groupId = $_ENV['TELEGRAM_GROUP_ID'] ?? getenv('TELEGRAM_GROUP_ID');
+        
+        // Чаты для платежей (личные чаты)
+        $this->paymentChatIds = [
+            '7795513546', // Касса
+            '169510539'   // Дима
         ];
+        
+        // Чаты для общих уведомлений (группа + личные чаты)
+        if (!empty($groupId)) {
+            $this->chatIds = [$groupId];
+        } else {
+            $this->chatIds = $this->paymentChatIds;
+        }
         
         if (empty($this->botToken)) {
             throw new Exception('TELEGRAM_BOT_TOKEN не установлен');
@@ -148,6 +158,94 @@ class TelegramService {
             return true;
         }
         return false;
+    }
+    
+    /**
+     * Настройка группы для уведомлений
+     */
+    public function setGroupId($groupId) {
+        $this->chatIds = [$groupId];
+        return true;
+    }
+    
+    /**
+     * Отправка сообщения только в группу (если настроена)
+     */
+    public function sendToGroup($text, $parseMode = 'Markdown') {
+        $groupId = $_ENV['TELEGRAM_GROUP_ID'] ?? getenv('TELEGRAM_GROUP_ID');
+        
+        if (empty($groupId)) {
+            error_log("TelegramService: TELEGRAM_GROUP_ID не настроен");
+            return false;
+        }
+        
+        return $this->sendMessage($groupId, $text, $parseMode);
+    }
+    
+    /**
+     * Отправка уведомлений о платежах только в личные чаты
+     */
+    public function sendPaymentNotifications($text, $parseMode = 'Markdown') {
+        $results = [];
+        
+        foreach ($this->paymentChatIds as $chatId) {
+            $result = $this->sendMessage($chatId, $text, $parseMode);
+            $results[$chatId] = $result;
+            
+            // Небольшая задержка между отправками
+            usleep(500000); // 0.5 секунды
+        }
+        
+        return $results;
+    }
+    
+    /**
+     * Отправка сообщения в топик группы
+     */
+    public function sendMessageToTopic($chatId, $text, $topicId, $parseMode = 'Markdown') {
+        $url = $this->apiUrl . '/sendMessage';
+        
+        $data = [
+            'chat_id' => $chatId,
+            'message_thread_id' => $topicId,
+            'text' => $text,
+            'parse_mode' => $parseMode
+        ];
+        
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Content-Type: application/json'
+        ]);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+        
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $error = curl_error($ch);
+        curl_close($ch);
+        
+        if ($error) {
+            error_log("TelegramService: cURL Error: " . $error);
+            return false;
+        }
+        
+        if ($httpCode !== 200) {
+            error_log("TelegramService: HTTP Error: " . $httpCode . " Response: " . $response);
+            return false;
+        }
+        
+        $result = json_decode($response, true);
+        
+        if (!$result['ok']) {
+            error_log("TelegramService: API Error: " . $response);
+            return false;
+        }
+        
+        return true;
     }
     
     /**

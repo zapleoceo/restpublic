@@ -104,7 +104,7 @@ try {
                 $message .= "🏦 Банк: {$unsentTransaction['gateway']}\n";
                 $message .= "🆔 ID: `{$unsentTransaction['transaction_id']}`";
                 
-                $telegramResult = $telegramService->sendToAllChats($message);
+                $telegramResult = $telegramService->sendPaymentNotifications($message);
                 file_put_contents('logs/sepay_webhook.log', date('Y-m-d H:i:s') . " - SENDING TRANSACTION {$unsentTransaction['transaction_id']}: " . json_encode($telegramResult) . "\n", FILE_APPEND | LOCK_EX);
 
                 // Проверяем успешность отправки
