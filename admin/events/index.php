@@ -800,7 +800,7 @@ if (count($events) > 0) {
         <?php include __DIR__ . '/../includes/sidebar.php'; ?>
         
         <!-- Оверлей для мобильного меню -->
-        <div class="sidebar-overlay" onclick="closeSidebar()"></div>
+        <div class="sidebar-overlay"></div>
 
         <main class="admin-main">
             <div class="admin-header">
@@ -1982,27 +1982,77 @@ if (count($events) > 0) {
         
         // Функции для мобильного меню
         function toggleSidebar() {
+            console.log('toggleSidebar вызвана');
             const sidebar = document.querySelector('.admin-sidebar');
             const overlay = document.querySelector('.sidebar-overlay');
             
-            sidebar.classList.toggle('open');
-            overlay.classList.toggle('active');
+            if (sidebar && overlay) {
+                sidebar.classList.toggle('open');
+                overlay.classList.toggle('active');
+                console.log('Меню переключено, классы:', sidebar.classList.toString());
+            } else {
+                console.error('Элементы меню не найдены');
+            }
         }
         
         function closeSidebar() {
+            console.log('closeSidebar вызвана');
             const sidebar = document.querySelector('.admin-sidebar');
             const overlay = document.querySelector('.sidebar-overlay');
             
-            sidebar.classList.remove('open');
-            overlay.classList.remove('active');
+            if (sidebar && overlay) {
+                sidebar.classList.remove('open');
+                overlay.classList.remove('active');
+                console.log('Меню закрыто');
+            }
         }
         
-        // Закрытие меню при клике на пункт меню
+        // Инициализация мобильного меню
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM загружен, инициализация мобильного меню');
+            
+            // Закрытие меню при клике на пункт меню
             const menuItems = document.querySelectorAll('.menu-item a');
             menuItems.forEach(item => {
                 item.addEventListener('click', closeSidebar);
             });
+            
+            // Добавляем обработчики для touch устройств
+            const menuBtn = document.querySelector('.mobile-menu-btn');
+            if (menuBtn) {
+                console.log('Кнопка меню найдена, добавляем обработчики');
+                
+                // Обработчик для клика
+                menuBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('Клик по кнопке меню');
+                    toggleSidebar();
+                });
+                
+                // Обработчик для touch
+                menuBtn.addEventListener('touchstart', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('Touch по кнопке меню');
+                    toggleSidebar();
+                });
+                
+                // Обработчик для touchend
+                menuBtn.addEventListener('touchend', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                });
+            } else {
+                console.error('Кнопка меню не найдена');
+            }
+            
+            // Обработчик для оверлея
+            const overlay = document.querySelector('.sidebar-overlay');
+            if (overlay) {
+                overlay.addEventListener('click', closeSidebar);
+                overlay.addEventListener('touchstart', closeSidebar);
+            }
         });
     </script>
 </body>

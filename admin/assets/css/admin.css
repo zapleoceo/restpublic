@@ -476,8 +476,23 @@ body {
         border: none;
         font-size: 1.5rem;
         cursor: pointer;
-        padding: 0.5rem;
+        padding: 0.75rem;
         color: #333;
+        min-width: 44px;
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
+    }
+    
+    .mobile-menu-btn:hover {
+        background-color: rgba(0, 0, 0, 0.05);
+    }
+    
+    .mobile-menu-btn:active {
+        background-color: rgba(0, 0, 0, 0.1);
     }
     
     /* Оверлей для закрытия меню */
