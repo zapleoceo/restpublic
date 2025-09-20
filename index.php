@@ -824,6 +824,15 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                                 const dateObj = new Date(event.date);
                                 const formattedDate = dateObj.toLocaleDateString('ru-RU');
                                 
+                                // Добавляем день недели к дате
+                                const dayNames = {
+                                    'ru': ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'],
+                                    'en': ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+                                    'vi': ['Chủ nhật', 'Thứ hai', 'Thứ ba', 'Thứ tư', 'Thứ năm', 'Thứ sáu', 'Thứ bảy']
+                                };
+                                const dayOfWeek = dayNames[language]?.[dateObj.getDay()] || dayNames['ru'][dateObj.getDay()];
+                                const dateWithDay = `${formattedDate} (${dayOfWeek})`;
+                                
                                 // Определяем язык для перевода лейбла
                                 const language = document.documentElement.lang || 'ru';
                                 const conditionsLabels = {
@@ -846,7 +855,7 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                                         </div>
                                         <div class="poster-card__overlay">
                                             <div class="poster-card__title">${event.title}</div>
-                                            <div class="poster-card__date">${formattedDate} ${event.time || '19:00'}</div>
+                                            <div class="poster-card__date">${dateWithDay} ${event.time || '19:00'}</div>
                                             <div class="poster-card__description">
                                                 <strong>${conditionsLabel}</strong><br>
                                                 ${event.conditions || ''}
@@ -854,7 +863,7 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                                         </div>
                                         <div class="poster-card__hover-description">
                                             <div class="poster-card__title">${event.title}</div>
-                                            <div class="poster-card__date">${formattedDate} ${event.time || '19:00'}</div>
+                                            <div class="poster-card__date">${dateWithDay} ${event.time || '19:00'}</div>
                                             <div class="poster-card__description">
                                                 ${event.description || 'Описание события будет добавлено позже.'}
                                             </div>
@@ -873,6 +882,15 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                             
                             const dateObj = new Date(dayData.date);
                             const formattedDate = dateObj.toLocaleDateString('ru-RU');
+                            
+                            // Добавляем день недели к дате для пустых афиш
+                            const dayNames = {
+                                'ru': ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'],
+                                'en': ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+                                'vi': ['Chủ nhật', 'Thứ hai', 'Thứ ba', 'Thứ tư', 'Thứ năm', 'Thứ sáu', 'Thứ bảy']
+                            };
+                            const dayOfWeek = dayNames[language]?.[dateObj.getDay()] || dayNames['ru'][dateObj.getDay()];
+                            const dateWithDay = `${formattedDate} (${dayOfWeek})`;
                             
                             // Определяем язык для сообщения
                             const language = document.documentElement.lang || 'ru';
@@ -900,6 +918,7 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                                 <div class="poster-card empty-date">
                                     <div class="poster-card__overlay">
                                         <div class="poster-card__title">${msg.title}</div>
+                                        <div class="poster-card__date">${dateWithDay}</div>
                                         <div class="poster-card__description">
                                             ${msg.text}<br>
                                             <a href="#footer" class="contact-link">${msg.link}</a>
