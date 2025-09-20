@@ -128,7 +128,7 @@ class EventsService {
             return $event[$localizedField];
         }
         
-        // Fallback на русский язык
+        // Fallback на русский язык (если запрашиваемый язык не русский)
         if ($language !== 'ru' && isset($event[$field . '_ru']) && !empty($event[$field . '_ru'])) {
             $russianText = $event[$field . '_ru'];
             
@@ -143,6 +143,11 @@ class EventsService {
             }
             
             return $russianText;
+        }
+        
+        // Если запрашиваем русский язык, но нет поля _ru, пробуем старое поле
+        if ($language === 'ru' && isset($event[$field]) && !empty($event[$field])) {
+            return $event[$field];
         }
         
         // Fallback на старое поле (для совместимости)
