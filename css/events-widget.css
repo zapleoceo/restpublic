@@ -370,54 +370,16 @@
     background: rgba(0, 0, 0, 0.05); /* Почти убираем затемнение при ховере */
 }
 
-/* Hover эффект с описанием события */
-.poster-card:not(.empty-date):hover .poster-card__overlay {
-    background: rgba(0, 0, 0, 0.85);
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    height: 100%;
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 3;
-}
-
-.poster-card:not(.empty-date):hover .poster-card__title {
-    font-size: 18px;
-    font-weight: 700;
-    margin-bottom: 15px;
-    line-height: 1.3;
-}
-
-.poster-card:not(.empty-date):hover .poster-card__date {
-    font-size: 14px;
-    opacity: 0.9;
-    margin-bottom: 15px;
-}
-
-.poster-card:not(.empty-date):hover .poster-card__description {
-    font-size: 14px;
-    line-height: 1.5;
-    opacity: 1;
-    display: block;
-    -webkit-line-clamp: unset;
-    overflow: visible;
-    max-height: none;
-    margin: 0;
-}
-
-/* Скрываем обычное описание при hover */
+/* Скрываем обычное описание и overlay при hover */
 .poster-card:not(.empty-date) .poster-card__description {
     transition: opacity 0.3s ease;
 }
 
 .poster-card:not(.empty-date):hover .poster-card__description {
+    opacity: 0;
+}
+
+.poster-card:not(.empty-date):hover .poster-card__overlay {
     opacity: 0;
 }
 
