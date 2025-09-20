@@ -200,7 +200,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.6);
+    background: rgba(0, 0, 0, 0.4);
     transition: background 0.3s ease;
     z-index: 1;
     pointer-events: none;
@@ -232,6 +232,10 @@
 /* Стили для пустых дат */
 .poster-card.empty-date {
     background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    background-image: url('/images/event-default.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
     border: 2px dashed #dee2e6;
     position: relative;
     display: flex;
@@ -240,6 +244,18 @@
 }
 
 .poster-card.empty-date::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 1;
+    pointer-events: none;
+}
+
+.poster-card.empty-date::after {
     content: '📅';
     position: absolute;
     top: 15px;
@@ -247,11 +263,12 @@
     transform: translateX(-50%);
     font-size: 32px;
     opacity: 0.3;
+    z-index: 2;
 }
 
 .poster-card.empty-date .poster-card__overlay {
     background: transparent;
-    color: #495057;
+    color: white;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -261,10 +278,11 @@
     position: static;
     width: 100%;
     height: 100%;
+    z-index: 3;
 }
 
 .poster-card.empty-date .poster-card__title {
-    color: #212529;
+    color: white;
     font-weight: 600;
     font-size: 16px;
     margin-bottom: 10px;
@@ -279,7 +297,7 @@
 }
 
 .contact-link {
-    color: #366b5b;
+    color: #4fb17d;
     text-decoration: none;
     font-weight: 600;
     transition: color 0.3s ease;
@@ -288,8 +306,8 @@
 }
 
 .contact-link:hover {
-    color: #2a5a4a;
-    border-bottom-color: #2a5a4a;
+    color: #66c28a;
+    border-bottom-color: #66c28a;
 }
 
 /* Индикатор прокрутки убран */
