@@ -138,7 +138,7 @@ if (count($events) > 0) {
             font-size: 18px;
         }
 
-        .load-past-btn {
+        .load-past-btn, .load-future-btn {
             background: #6c757d;
             color: white;
             border: none;
@@ -149,8 +149,16 @@ if (count($events) > 0) {
             transition: background-color 0.2s ease;
         }
 
-        .load-past-btn:hover {
+        .load-past-btn:hover, .load-future-btn:hover {
             background: #5a6268;
+        }
+
+        .load-future-btn {
+            background: #28a745;
+        }
+
+        .load-future-btn:hover {
+            background: #218838;
         }
 
         .events-table {
@@ -818,6 +826,9 @@ if (count($events) > 0) {
                             <button class="load-past-btn" onclick="loadPastEvents()">
                                 📅 Показать прошлые
                             </button>
+                            <button class="load-future-btn" onclick="loadFutureEvents()">
+                                📅 Показать еще +7 дней
+                            </button>
                         </div>
                     </div>
 
@@ -1144,8 +1155,9 @@ if (count($events) > 0) {
     <script>
         // Версия скрипта для избежания кэширования
         console.log('Events script loaded, version:', <?php echo time(); ?>);
-        // Переменная для отслеживания количества загруженных прошлых событий
+        // Переменные для отслеживания количества загруженных событий
         let pastEventsLoaded = 0;
+        let futureEventsLoaded = 0;
         const allEvents = <?php echo json_encode($events); ?>;
         const loadedEventIds = new Set(); // Отслеживаем уже загруженные события
         const deletingEvents = new Set(); // Отслеживаем удаляемые события
@@ -1826,6 +1838,112 @@ if (count($events) > 0) {
                 loadBtn.textContent = `📅 Показать еще прошлые (осталось ${remainingEvents})`;
             } else {
                 loadBtn.textContent = `📅 Все прошлые события загружены`;
+                loadBtn.disabled = true;
+            }
+            
+            console.log(`Всего загружено событий: ${loadedEventIds.size}`);
+        }
+
+        function loadFutureEvents() {
+            const today = new Date();
+            
+            // Получаем все будущие события, отсортированные по дате (старые сначала)
+            const allFutureEvents = allEvents.filter(event => {
+                const eventDate = new Date(event.date);
+                return eventDate > today && !loadedEventIds.has(event.id);
+            }).sort((a, b) => new Date(a.date) - new Date(b.date)); // Сортируем по возрастанию даты
+            
+            console.log(`Всего будущих событий доступно: ${allFutureEvents.length}`);
+            console.log(`Уже загружено будущих событий: ${futureEventsLoaded}`);
+            
+            // Берем следующие 7 дней событий (или все доступные, если меньше)
+            const nextBatch = allFutureEvents.slice(futureEventsLoaded, futureEventsLoaded + 7);
+            
+            if (nextBatch.length === 0) {
+                alert('Больше будущих событий нет');
+                return;
+            }
+            
+            console.log(`Загружаем ${nextBatch.length} будущих событий (пакет ${Math.floor(futureEventsLoaded / 7) + 1})`);
+            
+            // Обновляем счетчик
+            futureEventsLoaded += nextBatch.length;
+            
+            // Добавляем события в таблицу
+            const tbody = document.getElementById('eventsTableBody');
+            nextBatch.forEach(event => {
+                // Добавляем событие в список загруженных
+                loadedEventIds.add(event.id);
+                
+                const row = document.createElement('tr');
+                row.setAttribute('data-event-id', event.id);
+                
+                // Формируем ссылку
+                const linkHtml = (event.link || event.description_link) ? 
+                    `<a href="${event.link || event.description_link}" target="_blank" class="link-btn">🔗</a>` : 
+                    '<span class="no-link">-</span>';
+                
+                // Формируем миниатюру - только из GridFS
+                let imageSrc = '/images/logo.png'; // Используем логотип как дефолтное изображение
+                if (event.image) {
+                    // Проверяем, является ли это GridFS file_id
+                    if (/^[a-f\d]{24}$/i.test(event.image)) {
+                        imageSrc = "/api/image.php?id=" + event.image;
+                    } else {
+                        // Если это не GridFS ID, используем логотип
+                        imageSrc = '/images/logo.png';
+                    }
+                }
+                const imageAlt = event.image ? (event.title_ru || event.title || '') : 'Дефолтное изображение';
+                const thumbnailClass = event.image ? 'thumbnail-img' : 'thumbnail-img default-thumbnail';
+                const thumbnailHtml = `<img src="${imageSrc}" alt="${imageAlt}" class="${thumbnailClass}" onclick="showImageModal('${imageSrc}', '${imageAlt}')">`;
+                
+                // Формируем статус
+                const statusClass = event.is_active ? 'active' : 'inactive';
+                const statusText = event.is_active ? 'Активно' : 'Неактивно';
+                const statusHtml = `<span class="status-badge ${statusClass}">${statusText}</span>`;
+                
+                // Обрезаем комментарий до 50 символов
+                const comment = event.comment || '-';
+                const truncatedComment = comment.length > 50 ? comment.substring(0, 50) + '...' : comment;
+                
+                // Получаем день недели для события
+                const eventDate = new Date(event.date + 'T00:00:00');
+                const weekdays = ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
+                const weekday = weekdays[eventDate.getDay()];
+                
+                row.innerHTML = `
+                    <td class="event-date">
+                        <div class="date-line">${eventDate.toLocaleDateString('ru-RU')}</div>
+                        <div class="weekday">${weekday}</div>
+                    </td>
+                    <td class="event-time">${event.time}</td>
+                    <td class="event-title">${event.title_ru || event.title || ''}</td>
+                    <td class="event-conditions">${event.conditions_ru || event.conditions || ''}</td>
+                    <td class="event-link">${linkHtml}</td>
+                    <td class="event-thumbnail">${thumbnailHtml}</td>
+                    <td class="event-status">${statusHtml}</td>
+                    <td class="event-comment">${truncatedComment}</td>
+                    <td class="event-actions">
+                        <button class="btn btn-edit" onclick="editEvent('${event.id}')" title="Редактировать">✏️</button>
+                        <button class="btn btn-primary" onclick="copyEvent('${event.id}')" title="Копировать">📋</button>
+                        <button class="btn btn-danger" onclick="deleteEvent('${event.id}')" title="Удалить">🗑️</button>
+                    </td>
+                `;
+                tbody.appendChild(row); // Добавляем в конец таблицы
+            });
+            
+            // Обновляем текст кнопки
+            const loadBtn = document.querySelector('.load-future-btn');
+            const remainingEvents = allEvents.filter(event => {
+                const eventDate = new Date(event.date);
+                return eventDate > today && !loadedEventIds.has(event.id);
+            }).length;
+            
+            if (remainingEvents > 0) {
+                loadBtn.textContent = `📅 Показать еще +7 дней (осталось ${remainingEvents})`;
+            } else {
+                loadBtn.textContent = `📅 Все будущие события загружены`;
                 loadBtn.disabled = true;
             }
             

@@ -835,10 +835,15 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                                 
                                 eventSlideEl.innerHTML = `
                                     <div class="poster-card">
-                                        <img class="poster-card__image" 
-                                             data-src="${backgroundImage}" 
-                                             alt="${event.title}"
-                                             loading="lazy">
+                                        <div class="poster-card__image-container">
+                                            <img class="poster-card__image" 
+                                                 data-src="${backgroundImage}" 
+                                                 alt="${event.title}"
+                                                 loading="lazy">
+                                            <div class="poster-card__image-placeholder">
+                                                <div class="loading-spinner"></div>
+                                            </div>
+                                        </div>
                                         <div class="poster-card__overlay">
                                             <div class="poster-card__title">${event.title}</div>
                                             <div class="poster-card__date">${formattedDate} ${event.time || '19:00'}</div>
@@ -905,29 +910,62 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                     // Привязываем события к новым элементам
                     this.bindPosterEvents();
                     
-                    // Инициализируем lazy loading для изображений
-                    this.initLazyLoading();
+                    // Инициализируем улучшенный lazy loading
+                    this.initAdvancedLazyLoading();
                 }
 
-                initLazyLoading() {
-                    // Используем Intersection Observer для lazy loading
+                initAdvancedLazyLoading() {
+                    // Улучшенный lazy loading с обработкой ошибок
                     if ('IntersectionObserver' in window) {
                         const imageObserver = new IntersectionObserver((entries, observer) => {
                             entries.forEach(entry => {
                                 if (entry.isIntersecting) {
                                     const img = entry.target;
-                                    const src = img.dataset.src;
+                                    const container = img.closest('.poster-card__image-container');
+                                    const placeholder = container?.querySelector('.poster-card__image-placeholder');
                                     
-                                    if (src) {
-                                        img.src = src;
-                                        img.classList.add('loaded');
-                                        img.removeAttribute('data-src');
-                                        observer.unobserve(img);
+                                    if (img.dataset.src) {
+                                        // Создаем новый Image объект для предзагрузки
+                                        const tempImg = new Image();
+                                        
+                                        tempImg.onload = () => {
+                                            img.src = img.dataset.src;
+                                            img.classList.add('loaded');
+                                            img.removeAttribute('data-src');
+                                            
+                                            // Скрываем placeholder
+                                            if (placeholder) {
+                                                placeholder.style.opacity = '0';
+                                                setTimeout(() => {
+                                                    placeholder.style.display = 'none';
+                                                }, 300);
+                                            }
+                                        };
+                                        
+                                        tempImg.onerror = () => {
+                                            // Fallback на дефолтное изображение
+                                            img.src = '/images/event-default.png';
+                                            img.classList.add('loaded', 'fallback');
+                                            img.removeAttribute('data-src');
+                                            
+                                            // Скрываем placeholder
+                                            if (placeholder) {
+                                                placeholder.style.opacity = '0';
+                                                setTimeout(() => {
+                                                    placeholder.style.display = 'none';
+                                                }, 300);
+                                            }
+                                        };
+                                        
+                                        // Начинаем загрузку
+                                        tempImg.src = img.dataset.src;
                                     }
+                                    
+                                    observer.unobserve(img);
                                 }
                             });
                         }, {
-                            rootMargin: '50px 0px', // Загружаем за 50px до появления
+                            rootMargin: '50px 0px',
                             threshold: 0.1
                         });
                         
@@ -936,11 +974,20 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                             imageObserver.observe(img);
                         });
                     } else {
-                        // Fallback для старых браузеров - загружаем все сразу
+                        // Fallback для старых браузеров
                         document.querySelectorAll('.poster-card__image[data-src]').forEach(img => {
-                            img.src = img.dataset.src;
-                            img.classList.add('loaded');
-                            img.removeAttribute('data-src');
+                            const tempImg = new Image();
+                            tempImg.onload = () => {
+                                img.src = img.dataset.src;
+                                img.classList.add('loaded');
+                                img.removeAttribute('data-src');
+                            };
+                            tempImg.onerror = () => {
+                                img.src = '/images/event-default.png';
+                                img.classList.add('loaded', 'fallback');
+                                img.removeAttribute('data-src');
+                            };
+                            tempImg.src = img.dataset.src;
                         });
                     }
                 }
