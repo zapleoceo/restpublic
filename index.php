@@ -188,7 +188,7 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
     <link rel="stylesheet" href="css/vendor.css">
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="css/custom.css">
-    <link rel="stylesheet" href="css/events-widget.css">
+    <link rel="stylesheet" href="css/events-widget.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
     
     <!-- Preload critical resources -->
