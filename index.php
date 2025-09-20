@@ -824,6 +824,9 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                                 const dateObj = new Date(event.date);
                                 const formattedDate = dateObj.toLocaleDateString('ru-RU');
                                 
+                                // Определяем язык для перевода лейбла
+                                const language = document.documentElement.lang || 'ru';
+                                
                                 // Добавляем день недели к дате
                                 const dayNames = {
                                     'ru': ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'],
@@ -832,9 +835,6 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                                 };
                                 const dayOfWeek = dayNames[language]?.[dateObj.getDay()] || dayNames['ru'][dateObj.getDay()];
                                 const dateWithDay = `${formattedDate} (${dayOfWeek})`;
-                                
-                                // Определяем язык для перевода лейбла
-                                const language = document.documentElement.lang || 'ru';
                                 const conditionsLabels = {
                                     'ru': 'Условия участия:',
                                     'en': 'Participation conditions:',
@@ -883,6 +883,9 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                             const dateObj = new Date(dayData.date);
                             const formattedDate = dateObj.toLocaleDateString('ru-RU');
                             
+                            // Определяем язык для сообщения
+                            const language = document.documentElement.lang || 'ru';
+                            
                             // Добавляем день недели к дате для пустых афиш
                             const dayNames = {
                                 'ru': ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'],
@@ -891,9 +894,6 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                             };
                             const dayOfWeek = dayNames[language]?.[dateObj.getDay()] || dayNames['ru'][dateObj.getDay()];
                             const dateWithDay = `${formattedDate} (${dayOfWeek})`;
-                            
-                            // Определяем язык для сообщения
-                            const language = document.documentElement.lang || 'ru';
                             const messages = {
                                 'ru': {
                                     title: '<?php echo addslashes($pageMeta['events_empty_title'] ?? 'Мы еще не придумали что у нас тут будет.'); ?>',
