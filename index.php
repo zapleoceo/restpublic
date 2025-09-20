@@ -857,6 +857,9 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                                             <div class="poster-card__title">${event.title}</div>
                                             <div class="poster-card__date">${dateWithDay} ${event.time || '19:00'}</div>
                                             <div class="poster-card__description">
+                                                ${event.description || ''}
+                                            </div>
+                                            <div class="poster-card__conditions">
                                                 <strong>${conditionsLabel}</strong><br>
                                                 ${event.conditions || ''}
                                             </div>
@@ -913,7 +916,9 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                                         <div class="poster-card__title">${msg.title}</div>
                                         <div class="poster-card__date">${dateWithDay}</div>
                                         <div class="poster-card__description">
-                                            ${msg.text}<br>
+                                            ${msg.text}
+                                        </div>
+                                        <div class="poster-card__conditions">
                                             <a href="#footer" class="contact-link">${msg.link}</a>
                                         </div>
                                     </div>
