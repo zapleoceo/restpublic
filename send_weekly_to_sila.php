@@ -99,7 +99,7 @@ try {
             $title = $event['title_ru'] ?? $event['title'] ?? 'Без названия';
             $time = $event['time'] ?? 'Время не указано';
             $conditions = $event['conditions_ru'] ?? $event['conditions'] ?? '';
-            $description = $event['description_ru'] ?? $event['description'] ?? '';
+            $description = $event['comment'] ?? $event['description_ru'] ?? $event['description'] ?? '';
             
             $message .= "🗓️ **$weekday, $dateStr**  $time\n";
             $message .= "$title\n";
