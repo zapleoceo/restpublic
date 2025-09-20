@@ -852,6 +852,13 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                                                 ${event.conditions || ''}
                                             </div>
                                         </div>
+                                        <div class="poster-card__hover-description">
+                                            <div class="poster-card__title">${event.title}</div>
+                                            <div class="poster-card__date">${formattedDate} ${event.time || '19:00'}</div>
+                                            <div class="poster-card__description">
+                                                ${event.description || 'Описание события будет добавлено позже.'}
+                                            </div>
+                                        </div>
                                     </div>
                                 `;
                                 
@@ -1067,11 +1074,17 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                     // Удаляем старые обработчики событий
                     document.querySelectorAll('.posters-swiper .swiper-slide').forEach(slide => {
                         slide.removeEventListener('click', this.handlePosterClick);
+                        slide.removeEventListener('touchstart', this.handlePosterTouch);
+                        slide.removeEventListener('touchend', this.handlePosterTouchEnd);
                     });
 
                     // Добавляем новые обработчики
                     document.querySelectorAll('.posters-swiper .swiper-slide').forEach(slide => {
                         slide.addEventListener('click', this.handlePosterClick.bind(this));
+                        
+                        // Добавляем поддержку touch для мобильных устройств
+                        slide.addEventListener('touchstart', this.handlePosterTouch.bind(this));
+                        slide.addEventListener('touchend', this.handlePosterTouchEnd.bind(this));
                     });
                 }
 
@@ -1091,6 +1104,28 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                     // Переход по ссылке из MongoDB
                     if (eventLink && eventLink !== '#') {
                         window.open(eventLink, '_blank');
+                    }
+                }
+
+                handlePosterTouch(event) {
+                    const slide = event.currentTarget;
+                    const posterCard = slide.querySelector('.poster-card:not(.empty-date)');
+                    
+                    if (posterCard) {
+                        // Показываем hover описание на touch устройствах
+                        posterCard.classList.add('touch-hover');
+                    }
+                }
+
+                handlePosterTouchEnd(event) {
+                    const slide = event.currentTarget;
+                    const posterCard = slide.querySelector('.poster-card:not(.empty-date)');
+                    
+                    if (posterCard) {
+                        // Убираем hover описание через небольшую задержку
+                        setTimeout(() => {
+                            posterCard.classList.remove('touch-hover');
+                        }, 2000); // Показываем 2 секунды
                     }
                 }
             }
