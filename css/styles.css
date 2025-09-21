@@ -4463,9 +4463,11 @@ td:last-child {
 /* ===================================================================
  * # HEADER NAV SOCIAL (MOBILE ONLY)
  * =================================================================== */
-/* Hide social links on desktop screens */
-.header-nav__social {
-    display: none;
+/* Hide social links on desktop screens (more than 768px) */
+@media screen and (min-width: 769px) {
+    .header-nav__social {
+        display: none !important;
+    }
 }
 
 /* ===================================================================
