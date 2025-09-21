@@ -3747,7 +3747,12 @@ td:last-child {
 .intro-block-content__social a {
     font-size     : var(--text-sm);
     letter-spacing: 0.15em;
-    color         : var(--color-text-light);
+    color         : #5f6362;
+    transition    : color 0.3s ease;
+}
+
+.intro-block-content__social a:hover {
+    color: #468672;
 }
 
 /* --------------------------------------------------------------------
@@ -4457,7 +4462,12 @@ td:last-child {
 .intro-block-content__social a {
     font-size     : var(--text-sm);
     letter-spacing: 0.15em;
-    color         : var(--color-text-light);
+    color         : #5f6362;
+    transition    : color 0.3s ease;
+}
+
+.intro-block-content__social a:hover {
+    color: #468672;
 }
 
 /* ===================================================================
