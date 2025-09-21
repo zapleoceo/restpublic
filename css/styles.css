@@ -4157,6 +4157,8 @@ td:last-child {
 }
 
 .s-menu__content-end {
+    position: sticky;
+    top: calc(var(--vspace-5) + 100px); /* Больше чем у левого блока */
     padding-top: var(--vspace-2_5);
 }
 
