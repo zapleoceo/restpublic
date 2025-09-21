@@ -1,7 +1,9 @@
 <?php
 // Страница управления событиями в админке
-session_start();
-require_once __DIR__ . '/../includes/auth-check.php';
+$page_title = 'Управление событиями - Админка';
+$page_header = 'Управление событиями';
+$page_description = 'Администрирование событий ресторана';
+
 require_once __DIR__ . '/../../vendor/autoload.php';
 
 // Загружаем переменные окружения
@@ -16,8 +18,6 @@ if (file_exists($envFile)) {
     }
 }
 
-$pageTitle = 'Управление событиями';
-$pageDescription = 'Администрирование событий ресторана';
 
 try {
     // Подключение к MongoDB
@@ -100,14 +100,11 @@ if (count($events) > 0) {
 }
 ?>
 
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo htmlspecialchars($pageTitle); ?> - Админка</title>
-    <link rel="stylesheet" href="/admin/assets/css/admin.css">
-    <style>
+// Генерируем контент
+ob_start();
+?>
+
+<style>
         /* Стили для таблицы событий */
         .events-container {
             background: white;
@@ -799,23 +796,9 @@ if (count($events) > 0) {
                 margin: 1px;
             }
         }
-    </style>
-</head>
-<body>
-    <?php include __DIR__ . '/../includes/header.php'; ?>
+</style>
 
-    <div class="admin-container">
-        <?php include __DIR__ . '/../includes/sidebar.php'; ?>
-        
-        <!-- Оверлей для мобильного меню -->
-        <div class="sidebar-overlay"></div>
-
-        <main class="admin-main">
-            <div class="admin-header">
-                <h1><?php echo htmlspecialchars($pageTitle); ?></h1>
-            </div>
-
-            <div class="admin-content">
+<div class="admin-content">
                 <div class="events-container">
                     <div class="events-header">
                         <h2>События (начиная с понедельника)</h2>
@@ -946,8 +929,7 @@ if (count($events) > 0) {
                     </div>
                 </div>
             </div>
-        </main>
-    </div>
+</div>
 
     <!-- Модальное окно для добавления/редактирования события -->
     <div id="eventModal" class="modal">
@@ -1151,8 +1133,7 @@ if (count($events) > 0) {
         </div>
     </div>
 
-    <script src="/admin/assets/js/admin.js?v=<?php echo time(); ?>"></script>
-    <script>
+<script>
         // Версия скрипта для избежания кэширования
         console.log('Events script loaded, version:', <?php echo time(); ?>);
         // Переменные для отслеживания количества загруженных событий
@@ -2172,6 +2153,11 @@ if (count($events) > 0) {
                 overlay.addEventListener('touchstart', closeSidebar);
             }
         });
-    </script>
-</body>
-</html>
+</script>
+
+<?php
+$content = ob_get_clean();
+
+// Подключаем layout
+require_once __DIR__ . '/../includes/layout.php';
+?>

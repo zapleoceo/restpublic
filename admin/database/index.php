@@ -1,6 +1,8 @@
 <?php
-session_start();
-require_once __DIR__ . '/../includes/auth-check.php';
+// Страница базы данных
+$page_title = 'База данных - Админка';
+$page_header = 'База данных';
+$page_description = 'Просмотр содержимого MongoDB и статистики системы';
 
 $error = '';
 $success = '';
@@ -94,14 +96,11 @@ function formatFileSize($bytes) {
 }
 ?>
 
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>База данных - Админка</title>
-    <link rel="stylesheet" href="/admin/assets/css/admin.css">
-    <style>
+// Генерируем контент
+ob_start();
+?>
+
+<style>
         .database-info {
             background: white;
             border-radius: 8px;
@@ -247,29 +246,17 @@ function formatFileSize($bytes) {
         .btn-secondary:hover {
             background: #545b62;
         }
-    </style>
-</head>
-<body>
-    <?php include '../includes/header.php'; ?>
-    
-    <div class="admin-container">
-        <?php include '../includes/sidebar.php'; ?>
-        
-        <main class="admin-main">
-            <div class="page-header">
-                <h1>База данных</h1>
-                <p>Просмотр содержимого MongoDB и статистики системы</p>
-            </div>
+</style>
+
+<?php if ($error): ?>
+    <div class="alert alert-error"><?php echo htmlspecialchars($error); ?></div>
+<?php endif; ?>
+
+<?php if ($success): ?>
+    <div class="alert alert-success"><?php echo htmlspecialchars($success); ?></div>
+<?php endif; ?>
             
-            <?php if ($error): ?>
-                <div class="alert alert-error"><?php echo htmlspecialchars($error); ?></div>
-            <?php endif; ?>
-            
-            <?php if ($success): ?>
-                <div class="alert alert-success"><?php echo htmlspecialchars($success); ?></div>
-            <?php endif; ?>
-            
-            <!-- Общая информация -->
+<!-- Общая информация -->
             <div class="info-grid">
                 <div class="info-card">
                     <h3>📊 Статистика MongoDB</h3>
@@ -330,7 +317,7 @@ function formatFileSize($bytes) {
                 </div>
             </div>
             
-            <!-- Статус MongoDB -->
+<!-- Статус MongoDB -->
             <div class="database-info">
                 <h3>🗄️ Статус MongoDB</h3>
                 <div class="mongo-status" style="padding: 1rem; border-radius: 5px; background: <?php echo $mongoConnection ? '#d4edda' : '#f8d7da'; ?>; border: 1px solid <?php echo $mongoConnection ? '#c3e6cb' : '#f5c6cb'; ?>;">
@@ -346,10 +333,10 @@ function formatFileSize($bytes) {
                 </div>
             </div>
             
-            <!-- MongoDB Viewer -->
+<!-- MongoDB Viewer -->
             <?php include 'mongodb-viewer.php'; ?>
             
-            <!-- Просмотр JSON файла -->
+<!-- Просмотр JSON файла -->
             <?php if ($fileContent): ?>
                 <div class="json-viewer">
                     <div class="json-header">
@@ -360,13 +347,16 @@ function formatFileSize($bytes) {
                 </div>
             <?php endif; ?>
             
-            <!-- Предупреждение -->
+<!-- Предупреждение -->
             <div class="alert alert-warning">
                 <strong>⚠️ Только для просмотра</strong><br>
                 Этот раздел предназначен только для просмотра информации о базе данных. 
                 Редактирование данных производится через соответствующие разделы админки.
             </div>
-        </main>
-    </div>
-</body>
-</html>
+
+<?php
+$content = ob_get_clean();
+
+// Подключаем layout
+require_once __DIR__ . '/../includes/layout.php';
+?>
