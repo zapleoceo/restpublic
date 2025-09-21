@@ -32,7 +32,8 @@
 
 /* Убираем лишние скроллы и расширяем контейнеры по высоте */
 .s-menu__content-end {
-  height: 100vh !important; /* На всю высоту экрана */
+  height: auto !important; /* Автоматическая высота */
+  min-height: 100vh; /* Минимальная высота на весь экран */
   display: flex;
   flex-direction: column;
 }
