@@ -88,14 +88,6 @@ $adminUsers = count(array_filter($users, function($user) { return ($user['role']
 // Генерируем контент
 ob_start();
 ?>
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Управление пользователями - North Republic Admin</title>
-    <link rel="stylesheet" href="/admin/assets/css/admin.css">
-    <link rel="icon" type="image/png" href="/template/favicon-32x32.png">
     
     <style>
         .users-container {
