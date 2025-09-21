@@ -395,22 +395,22 @@ ob_start();
                                             </span>
                                         </td>
                                         <td>
-                                            <span class="status-badge status-<?php echo $user['status']; ?>">
-                                                <?php echo $user['status'] === 'active' ? 'Активен' : 'Неактивен'; ?>
+                                            <span class="status-badge status-<?php echo $user['status'] ?? 'active'; ?>">
+                                                <?php echo ($user['status'] ?? 'active') === 'active' ? 'Активен' : 'Неактивен'; ?>
                                             </span>
                                         </td>
                                         <td>
                                             <?php echo isset($user['last_login']) && $user['last_login'] ? date('d.m.Y H:i', strtotime($user['last_login'])) : 'Никогда'; ?>
                                         </td>
                                         <td>
-                                            <?php if ($user['username'] !== $_SESSION['admin_username']): ?>
+                                            <?php if ($user['username'] !== ($_SESSION['admin_username'] ?? '')): ?>
                                                 <form method="POST" action="" style="display: inline;">
                                                     <input type="hidden" name="action" value="update_user">
                                                     <input type="hidden" name="username" value="<?php echo htmlspecialchars($user['username']); ?>">
                                                     
                                                     <select name="status" onchange="this.form.submit()" style="font-size: 12px; padding: 0.25rem;">
-                                                        <option value="active" <?php echo $user['status'] === 'active' ? 'selected' : ''; ?>>Активен</option>
-                                                        <option value="inactive" <?php echo $user['status'] === 'inactive' ? 'selected' : ''; ?>>Неактивен</option>
+                                                        <option value="active" <?php echo ($user['status'] ?? 'active') === 'active' ? 'selected' : ''; ?>>Активен</option>
+                                                        <option value="inactive" <?php echo ($user['status'] ?? 'active') === 'inactive' ? 'selected' : ''; ?>>Неактивен</option>
                                                     </select>
                                                 </form>
                                                 
