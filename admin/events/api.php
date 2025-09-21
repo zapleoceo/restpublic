@@ -36,7 +36,7 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
 
 try {
     // Подключение к MongoDB
-    $mongodbUrl = $_ENV['MONGODB_URI'] ?? 'mongodb://localhost:27017';
+    $mongodbUrl = $_ENV['MONGODB_URL'] ?? 'mongodb://localhost:27018';
     $dbName = $_ENV['MONGODB_DATABASE'] ?? 'northrepublic';
     
     $client = new MongoDB\Client($mongodbUrl);

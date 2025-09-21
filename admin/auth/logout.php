@@ -5,7 +5,14 @@ session_start();
 if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true) {
     try {
         require_once __DIR__ . '/../../vendor/autoload.php';
-        $client = new MongoDB\Client("mongodb://localhost:27017");
+        // Загружаем переменные окружения
+        if (file_exists(__DIR__ . '/../../.env')) {
+            $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../../');
+            $dotenv->load();
+        }
+
+        $mongodbUrl = $_ENV['MONGODB_URL'] ?? 'mongodb://localhost:27018';
+        $client = new MongoDB\Client($mongodbUrl);
         $db = $client->northrepublic;
         $logsCollection = $db->admin_logs;
         

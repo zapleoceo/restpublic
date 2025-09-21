@@ -10,7 +10,14 @@ function get_db_connection() {
     
     if ($client === null) {
         try {
-            $client = new MongoDB\Client("mongodb://localhost:27017");
+            // Загружаем переменные окружения
+            if (file_exists(__DIR__ . '/../../.env')) {
+                $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../..');
+                $dotenv->load();
+            }
+
+            $mongoUri = $_ENV['MONGODB_URL'] ?? 'mongodb://localhost:27018';
+            $client = new MongoDB\Client($mongoUri);
             $db = $client->northrepublic; // Используем название базы данных из проекта
         } catch (Exception $e) {
             error_log("MongoDB connection error: " . $e->getMessage());
