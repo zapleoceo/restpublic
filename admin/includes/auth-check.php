@@ -8,6 +8,11 @@ if (file_exists(__DIR__ . '/../../.env')) {
 
 require_once __DIR__ . '/../config/auth.php';
 
+// Запускаем сессию если она еще не запущена
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 // Проверка авторизации для админских страниц
 if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
     header('Location: /admin/auth/login.php');

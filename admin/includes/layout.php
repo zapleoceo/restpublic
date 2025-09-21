@@ -1,6 +1,8 @@
 <?php
 // Единый layout для всех страниц админки
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 // Проверка авторизации
 require_once __DIR__ . '/auth-check.php';
