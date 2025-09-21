@@ -160,7 +160,7 @@ function checkTranslations() {
     try {
         require_once __DIR__ . '/../../classes/TranslationService.php';
         $service = new TranslationService();
-        $translations = $service->getTranslations('ru');
+        $testTranslation = $service->get('site_title', 'Test');
         return [
             'status' => 'success',
             'message' => 'Translation Service работает',
@@ -198,7 +198,7 @@ function checkEventsService() {
     try {
         require_once __DIR__ . '/../../classes/EventsService.php';
         $service = new EventsService();
-        $events = $service->getEvents();
+        $events = $service->getEventsForWidget();
         return [
             'status' => 'success',
             'message' => 'Events Service работает',
