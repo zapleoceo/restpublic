@@ -1,6 +1,8 @@
 <?php
-session_start();
-require_once __DIR__ . '/../includes/auth-check.php';
+// Настройки страницы для layout
+$page_title = 'Управление - Админка';
+$page_header = 'Управление';
+$page_description = 'Панель управления';
 
 // Загружаем переменные окружения
 require_once __DIR__ . '/../../vendor/autoload.php';
@@ -90,8 +92,11 @@ function formatAction($action) {
     $icon = $icons[$action] ?? '📝';
     return $icon . ' ' . ucfirst($action);
 }
-?>
 
+
+// Генерируем контент
+ob_start();
+?>
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -336,15 +341,7 @@ function formatAction($action) {
             max-height: 300px;
             overflow-y: auto;
         }
-    </style>
-</head>
-<body>
-    <?php include '../includes/header.php'; ?>
-    
-    <div class="admin-container">
-        <?php include '../includes/sidebar.php'; ?>
-        
-        <main class="admin-main">
+    </style><div class="admin-container"><main class="admin-main">
             <div class="page-header">
                 <h1>Логи админов</h1>
                 <p>Просмотр действий администраторов системы</p>
@@ -547,5 +544,10 @@ function formatAction($action) {
             <?php endif; ?>
         </main>
     </div>
-</body>
-</html>
+
+<?php
+$content = ob_get_clean();
+
+// Подключаем layout
+require_once __DIR__ . '/../includes/layout.php';
+?>

@@ -11,8 +11,10 @@ if (file_exists(__DIR__ . '/../../.env')) {
     $dotenv->load();
 }
 
-session_start();
-require_once __DIR__ . '/../includes/auth-check.php';
+// Настройки страницы для layout
+$page_title = 'Управление страницами - Админка';
+$page_header = 'Управление страницами';
+$page_description = 'Редактирование контента страниц сайта с WYSIWYG редактором';
 
 $error = '';
 $success = '';
@@ -70,19 +72,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 
 // Получаем список всех страниц из PageContentService
 $availablePages = $pageContentService->getAllPages();
+
+// Генерируем контент
+ob_start();
 ?>
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Управление страницами - North Republic Admin</title>
-    <link rel="stylesheet" href="/admin/assets/css/admin.css">
-    <link rel="icon" type="image/png" href="/template/favicon-32x32.png">
-    
-    <!-- Simple Editor (replacing TinyMCE) -->
-    <script src="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.min.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.snow.css" rel="stylesheet">
+
+<!-- Simple Editor (replacing TinyMCE) -->
+<script src="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.snow.css" rel="stylesheet">
     
     <style>
         .page-editor {
@@ -235,26 +232,13 @@ $availablePages = $pageContentService->getAllPages();
             }
         }
     </style>
-</head>
-<body>
-    <?php include '../includes/header.php'; ?>
-    
-    <div class="admin-container">
-        <?php include '../includes/sidebar.php'; ?>
-        
-        <main class="admin-main">
-            <div class="page-header">
-                <h1>📄 Управление страницами</h1>
-                <p>Редактирование контента страниц сайта с WYSIWYG редактором</p>
-            </div>
-            
-            <?php if ($error): ?>
-                <div class="alert alert-error"><?php echo htmlspecialchars($error); ?></div>
-            <?php endif; ?>
-            
-            <?php if ($success): ?>
-                <div class="alert alert-success"><?php echo htmlspecialchars($success); ?></div>
-            <?php endif; ?>
+<?php if ($error): ?>
+    <div class="alert alert-error"><?php echo htmlspecialchars($error); ?></div>
+<?php endif; ?>
+
+<?php if ($success): ?>
+    <div class="alert alert-success"><?php echo htmlspecialchars($success); ?></div>
+<?php endif; ?>
             
             <!-- Селекторы страницы и языка -->
             <div class="page-selector">
@@ -431,5 +415,10 @@ $availablePages = $pageContentService->getAllPages();
             }
         });
     </script>
-</body>
-</html>
+
+<?php
+$content = ob_get_clean();
+
+// Подключаем layout
+require_once __DIR__ . '/../includes/layout.php';
+?>

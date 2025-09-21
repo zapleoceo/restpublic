@@ -9,8 +9,11 @@ if (file_exists(__DIR__ . '/../../.env')) {
 }
 
 require_once __DIR__ . '/../includes/auth-check.php';
-?>
 
+
+// Генерируем контент
+ob_start();
+?>
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -69,15 +72,7 @@ require_once __DIR__ . '/../includes/auth-check.php';
             font-size: 3rem;
             margin-bottom: 1rem;
         }
-    </style>
-</head>
-<body>
-    <?php include '../includes/header.php'; ?>
-    
-    <div class="admin-container">
-        <?php include '../includes/sidebar.php'; ?>
-        
-        <main class="admin-main">
+    </style><div class="admin-container"><main class="admin-main">
             <div class="page-header">
                 <h1>⚙️ Настройки системы</h1>
                 <nav class="breadcrumb">
@@ -124,5 +119,10 @@ require_once __DIR__ . '/../includes/auth-check.php';
         </div>
         </main>
     </div>
-</body>
-</html>
+
+<?php
+$content = ob_get_clean();
+
+// Подключаем layout
+require_once __DIR__ . '/../includes/layout.php';
+?>

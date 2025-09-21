@@ -77,6 +77,10 @@ try {
         $error .= " Подождите {$retryAfter} секунд и обновите страницу.";
     }
 }
+
+
+// Генерируем контент
+ob_start();
 ?>
 <!DOCTYPE html>
 <html lang="ru">
@@ -89,15 +93,7 @@ try {
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-</head>
-<body>
-    <?php include '../includes/header.php'; ?>
-    
-    <div class="admin-container">
-        <?php include '../includes/sidebar.php'; ?>
-        
-        <main class="admin-main">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet"><div class="admin-container"><main class="admin-main">
             <div class="page-header">
                 <h1>SePay Transactions</h1>
                 <p>Просмотр транзакций полученных через webhook</p>
@@ -423,5 +419,10 @@ function viewTransaction(transactionId) {
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+
+<?php
+$content = ob_get_clean();
+
+// Подключаем layout
+require_once __DIR__ . '/../includes/layout.php';
+?>

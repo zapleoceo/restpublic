@@ -11,8 +11,10 @@ if (file_exists(__DIR__ . '/../../.env')) {
     $dotenv->load();
 }
 
-session_start();
-require_once __DIR__ . '/../includes/auth-check.php';
+// Настройки страницы для layout
+$page_title = 'Управление - Админка';
+$page_header = 'Управление';
+$page_description = 'Панель управления';
 
 $error = '';
 $success = '';
@@ -81,6 +83,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 $totalUsers = count($users);
 $activeUsers = count(array_filter($users, function($user) { return ($user['status'] ?? 'active') === 'active'; }));
 $adminUsers = count(array_filter($users, function($user) { return ($user['role'] ?? 'admin') === 'admin'; }));
+
+
+// Генерируем контент
+ob_start();
 ?>
 <!DOCTYPE html>
 <html lang="ru">
@@ -294,15 +300,7 @@ $adminUsers = count(array_filter($users, function($user) { return ($user['role']
                 grid-template-columns: 1fr;
             }
         }
-    </style>
-</head>
-<body>
-    <?php include '../includes/header.php'; ?>
-    
-    <div class="admin-container">
-        <?php include '../includes/sidebar.php'; ?>
-        
-        <main class="admin-main">
+    </style><div class="admin-container"><main class="admin-main">
             <div class="page-header">
                 <h1>👥 Управление пользователями</h1>
                 <p>Создание и управление пользователями админки</p>
@@ -439,5 +437,10 @@ $adminUsers = count(array_filter($users, function($user) { return ($user['role']
             </div>
         </main>
     </div>
-</body>
-</html>
+
+<?php
+$content = ob_get_clean();
+
+// Подключаем layout
+require_once __DIR__ . '/../includes/layout.php';
+?>

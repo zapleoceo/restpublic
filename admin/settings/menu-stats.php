@@ -53,8 +53,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['force_update'])) {
         $error = "Ошибка: " . $e->getMessage();
     }
 }
-?>
 
+
+// Генерируем контент
+ob_start();
+?>
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -166,15 +169,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['force_update'])) {
             color: #721c24;
             border: 1px solid #f5c6cb;
         }
-    </style>
-</head>
-<body>
-    <?php include '../includes/header.php'; ?>
-    
-    <div class="admin-container">
-        <?php include '../includes/sidebar.php'; ?>
-        
-        <main class="admin-main">
+    </style><div class="admin-container"><main class="admin-main">
             <div class="page-header">
                 <h1>📊 Статистика обновлений меню</h1>
                 <nav class="breadcrumb">
@@ -285,5 +280,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['force_update'])) {
         </div>
         </main>
     </div>
-</body>
-</html>
+
+<?php
+$content = ob_get_clean();
+
+// Подключаем layout
+require_once __DIR__ . '/../includes/layout.php';
+?>
