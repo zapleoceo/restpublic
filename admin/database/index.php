@@ -94,7 +94,6 @@ function formatFileSize($bytes) {
         return $bytes . ' bytes';
     }
 }
-?>
 
 // Генерируем контент
 ob_start();

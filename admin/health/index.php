@@ -4,6 +4,13 @@ $page_title = 'Здоровье системы - Админка';
 $page_header = 'Здоровье системы';
 $page_description = 'Проверка всех API endpoints и системных компонентов';
 
+// Загружаем переменные окружения
+require_once __DIR__ . '/../../vendor/autoload.php';
+if (file_exists(__DIR__ . '/../../.env')) {
+    $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../..');
+    $dotenv->load();
+}
+
 // Список всех API endpoints для проверки
 $api_endpoints = [
     'menu' => [

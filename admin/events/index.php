@@ -98,7 +98,6 @@ error_log("Загружено событий: " . count($events));
 if (count($events) > 0) {
     error_log("Первое событие: " . json_encode($events[0]));
 }
-?>
 
 // Генерируем контент
 ob_start();
