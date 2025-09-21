@@ -10,6 +10,10 @@ if (file_exists(__DIR__ . '/../../.env')) {
 
 require_once __DIR__ . '/../includes/auth-check.php';
 
+// Настройки страницы для layout
+$page_title = 'Настройки системы - Админка';
+$page_header = '⚙️ Настройки системы';
+$page_description = 'Управление настройками и конфигурацией';
 
 // Генерируем контент
 ob_start();
@@ -67,12 +71,6 @@ ob_start();
         }
     </style>
     
-    <div class="page-header">
-        <h1>⚙️ Настройки системы</h1>
-        <nav class="breadcrumb">
-            <a href="/admin/">Главная</a> > Настройки
-        </nav>
-    </div>
 
         <div class="settings-grid">
             <div class="settings-card">

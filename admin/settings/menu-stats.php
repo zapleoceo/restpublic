@@ -17,6 +17,11 @@ if (class_exists('MongoDB\Client')) {
 
 require_once __DIR__ . '/../includes/auth-check.php';
 
+// Настройки страницы для layout
+$page_title = 'Статистика меню - Админка';
+$page_header = '📊 Статистика обновлений меню';
+$page_description = 'Мониторинг обновлений кэша меню и производительности';
+
 // Инициализируем сервис настроек
 require_once __DIR__ . '/../../classes/SettingsService.php';
 $settingsService = new SettingsService();
@@ -164,14 +169,6 @@ ob_start();
         }
     </style>
     
-    <div class="page-header">
-        <h1>📊 Статистика обновлений меню</h1>
-        <nav class="breadcrumb">
-            <a href="/admin/">Главная</a> > 
-            <a href="/admin/settings/">Настройки</a> > 
-            Статистика меню
-        </nav>
-    </div>
 
         <?php if (isset($success)): ?>
             <div class="alert alert-success">
