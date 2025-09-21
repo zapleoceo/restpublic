@@ -10,7 +10,7 @@ class SePayTransactionService {
     
     public function __construct() {
         try {
-            $client = new Client('mongodb://localhost:27017');
+            $client = new Client('mongodb://localhost:27018');
             $database = $client->selectDatabase('northrepublic');
             $this->collection = $database->selectCollection('sepay_transactions');
         } catch (Exception $e) {

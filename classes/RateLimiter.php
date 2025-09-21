@@ -9,7 +9,7 @@ class RateLimiter
     {
         try {
             require_once __DIR__ . '/../vendor/autoload.php';
-            $client = new MongoDB\Client("mongodb://localhost:27017");
+            $client = new MongoDB\Client("mongodb://localhost:27018");
             $this->db = $client->northrepublic;
             $this->collection = $this->db->rate_limits;
         } catch (Exception $e) {

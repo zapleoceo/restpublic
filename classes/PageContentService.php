@@ -18,7 +18,7 @@ class PageContentService {
     public function __construct() {
         try {
             // Подключение к MongoDB
-            $this->client = new MongoDB\Client($_ENV['MONGODB_URI'] ?? 'mongodb://localhost:27017');
+            $this->client = new MongoDB\Client($_ENV['MONGODB_URI'] ?? 'mongodb://localhost:27018');
             $this->db = $this->client->selectDatabase($_ENV['MONGODB_DB'] ?? 'northrepublic');
             $this->collection = $this->db->page_content;
             

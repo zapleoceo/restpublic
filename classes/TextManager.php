@@ -11,7 +11,7 @@ class TextManager {
     
     public function __construct($language = null) {
         try {
-            $client = new MongoDB\Client("mongodb://localhost:27017");
+            $client = new MongoDB\Client("mongodb://localhost:27018");
             $this->db = $client->northrepublic;
             
             // Определяем язык
