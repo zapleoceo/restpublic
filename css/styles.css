@@ -3552,6 +3552,48 @@ td:last-child {
         transition      : all 0.6s var(--ease-quick-out);
         transition-delay: 0.3s;
     }
+
+    /* Social links in mobile menu */
+    .header-nav__social {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        margin-top: var(--vspace-1);
+        transform: translateY(-2rem);
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.6s var(--ease-quick-out);
+        transition-delay: 0.4s;
+    }
+
+    .header-nav__social a {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        background-color: var(--color-bg-neutral-dark);
+        border-radius: 50%;
+        color: var(--color-text-light);
+        transition: all 0.3s ease;
+    }
+
+    .header-nav__social a:hover {
+        background-color: var(--color-bg-primary);
+        color: var(--color-white);
+        transform: translateY(-2px);
+    }
+
+    .header-nav__social svg {
+        width: 20px;
+        height: 20px;
+    }
+
+    .menu-is-open .header-nav__social {
+        transform: translateY(0);
+        opacity: 1;
+        visibility: visible;
+    }
 }
 
 @media screen and (max-width: 600px) {
