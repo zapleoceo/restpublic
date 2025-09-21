@@ -65,13 +65,14 @@ ob_start();
             font-size: 3rem;
             margin-bottom: 1rem;
         }
-    </style><div class="admin-container"><main class="admin-main">
-            <div class="page-header">
-                <h1>⚙️ Настройки системы</h1>
-                <nav class="breadcrumb">
-                    <a href="/admin/">Главная</a> > Настройки
-                </nav>
-            </div>
+    </style>
+    
+    <div class="page-header">
+        <h1>⚙️ Настройки системы</h1>
+        <nav class="breadcrumb">
+            <a href="/admin/">Главная</a> > Настройки
+        </nav>
+    </div>
 
         <div class="settings-grid">
             <div class="settings-card">
@@ -109,8 +110,6 @@ ob_start();
                     Просмотр логов
                 </a>
             </div>
-        </div>
-        </main>
     </div>
 
 <?php

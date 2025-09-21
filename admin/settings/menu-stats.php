@@ -162,15 +162,16 @@ ob_start();
             color: #721c24;
             border: 1px solid #f5c6cb;
         }
-    </style><div class="admin-container"><main class="admin-main">
-            <div class="page-header">
-                <h1>📊 Статистика обновлений меню</h1>
-                <nav class="breadcrumb">
-                    <a href="/admin/">Главная</a> > 
-                    <a href="/admin/settings/">Настройки</a> > 
-                    Статистика меню
-                </nav>
-            </div>
+    </style>
+    
+    <div class="page-header">
+        <h1>📊 Статистика обновлений меню</h1>
+        <nav class="breadcrumb">
+            <a href="/admin/">Главная</a> > 
+            <a href="/admin/settings/">Настройки</a> > 
+            Статистика меню
+        </nav>
+    </div>
 
         <?php if (isset($success)): ?>
             <div class="alert alert-success">
@@ -270,8 +271,6 @@ ob_start();
             <p><strong>Интервал обновления:</strong> каждый час</p>
             <p><strong>Часовой пояс:</strong> Asia/Ho_Chi_Minh (UTC+7)</p>
             <p><strong>Источник данных:</strong> Poster API через Node.js backend</p>
-        </div>
-        </main>
     </div>
 
 <?php

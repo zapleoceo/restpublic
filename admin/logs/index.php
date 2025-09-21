@@ -334,11 +334,12 @@ ob_start();
             max-height: 300px;
             overflow-y: auto;
         }
-    </style><div class="admin-container"><main class="admin-main">
-            <div class="page-header">
-                <h1>Логи админов</h1>
-                <p>Просмотр действий администраторов системы</p>
-            </div>
+    </style>
+    
+    <div class="page-header">
+        <h1>Логи админов</h1>
+        <p>Просмотр действий администраторов системы</p>
+    </div>
             
             <!-- Статистика -->
             <div class="stats-grid">
@@ -535,9 +536,6 @@ ob_start();
                     </div>
                 </div>
             <?php endif; ?>
-        </main>
-    </div>
-
 <?php
 $content = ob_get_clean();
 

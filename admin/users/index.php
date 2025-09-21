@@ -292,11 +292,12 @@ ob_start();
                 grid-template-columns: 1fr;
             }
         }
-    </style><div class="admin-container"><main class="admin-main">
-            <div class="page-header">
-                <h1>👥 Управление пользователями</h1>
-                <p>Создание и управление пользователями админки</p>
-            </div>
+    </style>
+    
+    <div class="page-header">
+        <h1>👥 Управление пользователями</h1>
+        <p>Создание и управление пользователями админки</p>
+    </div>
             
             <?php if ($error): ?>
                 <div class="alert alert-error"><?php echo htmlspecialchars($error); ?></div>
@@ -423,11 +424,9 @@ ob_start();
                 </div>
             </div>
             
-            <!-- Действия -->
-            <div style="margin-top: 2rem; text-align: center;">
-                <a href="/admin/" class="btn btn-secondary">← Назад в админку</a>
-            </div>
-        </main>
+    <!-- Действия -->
+    <div style="margin-top: 2rem; text-align: center;">
+        <a href="/admin/" class="btn btn-secondary">← Назад в админку</a>
     </div>
 
 <?php
