@@ -30,6 +30,28 @@ if (isset($database) && isset($databaseName)) {
 if ($mongoConnection && !$error) {
     try {
     
+    // Описания коллекций
+    $collectionDescriptions = [
+        'admin_users' => 'Пользователи админки - логины, пароли, роли администраторов',
+        'admin_logs' => 'Логи действий администраторов - входы, изменения, операции',
+        'admin_sessions' => 'Активные сессии администраторов - токены, время входа',
+        'page_content' => 'Контент страниц сайта - тексты, мета-данные, переводы',
+        'admin_texts' => 'Тексты интерфейса - переводы меню, кнопок, сообщений',
+        'menu_cache' => 'Кэш меню ресторана - блюда, категории, цены',
+        'events' => 'События ресторана - банкеты, вечеринки, специальные мероприятия',
+        'tables_cache' => 'Кэш столов - доступность, бронирование, статус',
+        'sepay_transactions' => 'Транзакции SePay - платежи, статусы, webhook данные',
+        'rate_limits' => 'Ограничения запросов - IP адреса, лимиты, блокировки',
+        'telegram_logs' => 'Логи Telegram бота - сообщения, команды, уведомления',
+        'image_cache' => 'Кэш изображений - миниатюры, оптимизированные версии',
+        'settings' => 'Настройки системы - конфигурация, параметры приложения',
+        'user_sessions' => 'Сессии пользователей сайта - корзина, предпочтения',
+        'orders' => 'Заказы клиентов - блюда, суммы, статусы доставки',
+        'feedback' => 'Отзывы клиентов - оценки, комментарии, рейтинги',
+        'newsletter' => 'Подписки на рассылку - email адреса, предпочтения',
+        'analytics' => 'Аналитика сайта - просмотры, клики, конверсии'
+    ];
+
     // Получаем список коллекций
     $collections = $database->listCollections();
     $collectionsList = [];
@@ -41,7 +63,8 @@ if ($mongoConnection && !$error) {
         
         $collectionsList[] = [
             'name' => $collectionName,
-            'count' => $count
+            'count' => $count,
+            'description' => $collectionDescriptions[$collectionName] ?? 'Коллекция данных - назначение не указано'
         ];
     }
     
@@ -140,7 +163,12 @@ function extractFields($document, &$fields, $prefix = '') {
                     <div class="collection-card">
                         <a href="?collection=<?php echo urlencode($collection['name']); ?>" 
                            class="collection-link <?php echo $selectedCollection === $collection['name'] ? 'active' : ''; ?>">
-                            <div class="collection-name"><?php echo htmlspecialchars($collection['name']); ?></div>
+                            <div class="collection-name">
+                                <?php echo htmlspecialchars($collection['name']); ?>
+                                <small style="display: block; color: #666; font-size: 0.8em; margin-top: 0.25rem; font-weight: normal;">
+                                    <?php echo htmlspecialchars($collection['description']); ?>
+                                </small>
+                            </div>
                             <div class="collection-count"><?php echo number_format($collection['count']); ?> документов</div>
                         </a>
                     </div>

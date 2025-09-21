@@ -82,18 +82,6 @@ try {
 // Генерируем контент
 ob_start();
 ?>
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SePay Transactions - North Republic Admin</title>
-    <link rel="stylesheet" href="../assets/css/admin.css">
-    <link rel="icon" type="image/png" href="../../template/favicon-32x32.png">
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet"><div class="admin-container"><main class="admin-main">
             <div class="page-header">
                 <h1>SePay Transactions</h1>
                 <p>Просмотр транзакций полученных через webhook</p>

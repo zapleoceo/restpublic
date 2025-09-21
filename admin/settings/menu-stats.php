@@ -58,13 +58,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['force_update'])) {
 // Генерируем контент
 ob_start();
 ?>
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Статистика обновлений меню - Админка</title>
-    <link rel="stylesheet" href="/admin/assets/css/admin.css">
     <style>
         .stats-container {
             background: white;

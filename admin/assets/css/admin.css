@@ -137,8 +137,9 @@ body {
 .admin-main {
     flex: 1;
     margin-left: 250px;
-    padding: 2rem;
+    padding: 2rem 3rem;
     max-width: calc(100% - 250px);
+    margin-top: 80px; /* Отступ от фиксированного хедера */
 }
 
 /* Page Header (inside admin-main) */
@@ -450,7 +451,8 @@ body {
     .admin-main {
         margin-left: 0;
         max-width: 100%;
-        padding: 1rem;
+        padding: 1rem 1.5rem;
+        margin-top: 60px; /* Меньший отступ на мобильных */
     }
     
     .stats-grid {
