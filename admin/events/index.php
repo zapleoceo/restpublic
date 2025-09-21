@@ -21,7 +21,7 @@ $pageDescription = 'Администрирование событий ресто
 
 try {
     // Подключение к MongoDB
-    $mongodbUrl = $_ENV['MONGODB_URL'] ?? 'mongodb://localhost:27018';
+    $mongodbUrl = $_ENV['MONGODB_URL'] ?? 'mongodb://localhost:27017';
     $dbName = $_ENV['MONGODB_DB_NAME'] ?? 'northrepublic';
     
     $client = new MongoDB\Client($mongodbUrl);

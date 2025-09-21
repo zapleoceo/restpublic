@@ -11,7 +11,7 @@ if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true
             $dotenv->load();
         }
 
-        $mongodbUrl = $_ENV['MONGODB_URL'] ?? 'mongodb://localhost:27018';
+        $mongodbUrl = $_ENV['MONGODB_URL'] ?? 'mongodb://localhost:27017';
         $client = new MongoDB\Client($mongodbUrl);
         $db = $client->northrepublic;
         $logsCollection = $db->admin_logs;

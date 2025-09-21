@@ -11,8 +11,17 @@ class TextManager {
     
     public function __construct($language = null) {
         try {
-            $client = new MongoDB\Client("mongodb://localhost:27018");
-            $this->db = $client->northrepublic;
+            // Загружаем переменные окружения
+            if (file_exists(__DIR__ . '/../.env')) {
+                $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/..');
+                $dotenv->load();
+            }
+            
+            $mongodbUrl = $_ENV['MONGODB_URL'] ?? 'mongodb://localhost:27017';
+            $dbName = $_ENV['MONGODB_DB_NAME'] ?? 'northrepublic';
+            
+            $client = new MongoDB\Client($mongodbUrl);
+            $this->db = $client->$dbName;
             
             // Определяем язык
             if ($language) {

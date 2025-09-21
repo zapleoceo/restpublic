@@ -31,7 +31,7 @@ define('LOG_ADMIN_ACTIONS', true);
 define('CSRF_TOKEN_LIFETIME', 3600); // 1 час
 
 // Настройки базы данных
-define('DB_CONNECTION_STRING', $_ENV['MONGODB_URL'] ?? 'mongodb://localhost:27018');
+define('DB_CONNECTION_STRING', $_ENV['MONGODB_URL'] ?? 'mongodb://localhost:27017');
 define('DB_NAME', $_ENV['MONGODB_DB_NAME'] ?? 'northrepublic');
 define('USERS_COLLECTION', 'admin_users');
 define('LOGS_COLLECTION', 'admin_logs');

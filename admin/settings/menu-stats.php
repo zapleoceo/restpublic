@@ -235,7 +235,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['force_update'])) {
                             $settingsService = new SettingsService();
                             
                             // Подключаемся к MongoDB для получения столов
-                            $client = new MongoDB\Client($_ENV['MONGODB_URL'] ?? 'mongodb://localhost:27018');
+                            $client = new MongoDB\Client($_ENV['MONGODB_URL'] ?? 'mongodb://localhost:27017');
                             $db = $client->selectDatabase($_ENV['MONGODB_DB_NAME'] ?? 'northrepublic');
                             $menuCollection = $db->selectCollection('menu');
                             

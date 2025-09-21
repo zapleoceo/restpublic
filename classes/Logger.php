@@ -15,8 +15,10 @@ class Logger {
     private function initializeDatabase() {
         try {
             if (class_exists('MongoDB\Client')) {
-                $client = new MongoDB\Client($_ENV['MONGODB_URI'] ?? 'mongodb://localhost:27018');
-                $this->db = $client->selectDatabase($_ENV['MONGODB_DATABASE'] ?? 'northrepublic');
+                $mongodbUrl = $_ENV['MONGODB_URL'] ?? 'mongodb://localhost:27017';
+                $client = new MongoDB\Client($mongodbUrl);
+                $dbName = $_ENV['MONGODB_DB_NAME'] ?? 'northrepublic';
+                $this->db = $client->selectDatabase($dbName);
                 $this->logsCollection = $this->db->selectCollection('admin_logs');
                 $this->useMongoDB = true;
             } else {

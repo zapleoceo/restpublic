@@ -4,7 +4,7 @@
  * Заменяет TranslationService для новой архитектуры
  */
 
-require_once __DIR__ . '/../vendor/autoload.php';
+// require_once __DIR__ . '/../vendor/autoload.php'; // Убрано для локального тестирования
 
 class PageContentService {
     private $client;
@@ -18,8 +18,11 @@ class PageContentService {
     public function __construct() {
         try {
             // Подключение к MongoDB
-            $this->client = new MongoDB\Client($_ENV['MONGODB_URI'] ?? 'mongodb://localhost:27018');
-            $this->db = $this->client->selectDatabase($_ENV['MONGODB_DB'] ?? 'northrepublic');
+            $mongodbUrl = $_ENV['MONGODB_URL'] ?? 'mongodb://localhost:27017';
+            $dbName = $_ENV['MONGODB_DB_NAME'] ?? 'northrepublic';
+            
+            $this->client = new MongoDB\Client($mongodbUrl);
+            $this->db = $this->client->selectDatabase($dbName);
             $this->collection = $this->db->page_content;
             
             // Определяем текущий язык

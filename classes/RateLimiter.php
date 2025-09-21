@@ -9,8 +9,16 @@ class RateLimiter
     {
         try {
             require_once __DIR__ . '/../vendor/autoload.php';
-            $client = new MongoDB\Client("mongodb://localhost:27018");
-            $this->db = $client->northrepublic;
+            // Загружаем переменные окружения
+            if (file_exists(__DIR__ . '/../.env')) {
+                $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/..');
+                $dotenv->load();
+            }
+            
+            $mongodbUrl = $_ENV['MONGODB_URL'] ?? 'mongodb://localhost:27017';
+            $client = new MongoDB\Client($mongodbUrl);
+            $dbName = $_ENV['MONGODB_DB_NAME'] ?? 'northrepublic';
+            $this->db = $client->$dbName;
             $this->collection = $this->db->rate_limits;
         } catch (Exception $e) {
             error_log("RateLimiter connection error: " . $e->getMessage());

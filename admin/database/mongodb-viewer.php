@@ -13,7 +13,7 @@ if (isset($database) && isset($databaseName)) {
     }
 
     // Подключение к MongoDB
-    $mongoUri = $_ENV['MONGODB_URL'] ?? 'mongodb://localhost:27018';
+    $mongoUri = $_ENV['MONGODB_URL'] ?? 'mongodb://localhost:27017';
     $databaseName = $_ENV['MONGODB_DB_NAME'] ?? 'northrepublic';
     $mongoConnection = false;
     $error = null;

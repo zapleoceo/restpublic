@@ -16,7 +16,7 @@ function get_db_connection() {
                 $dotenv->load();
             }
 
-            $mongoUri = $_ENV['MONGODB_URL'] ?? 'mongodb://localhost:27018';
+            $mongoUri = $_ENV['MONGODB_URL'] ?? 'mongodb://localhost:27017';
             $client = new MongoDB\Client($mongoUri);
             $db = $client->northrepublic; // Используем название базы данных из проекта
         } catch (Exception $e) {

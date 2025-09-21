@@ -10,8 +10,16 @@ class SePayTransactionService {
     
     public function __construct() {
         try {
-            $client = new Client('mongodb://localhost:27018');
-            $database = $client->selectDatabase('northrepublic');
+            // Загружаем переменные окружения
+            if (file_exists(__DIR__ . '/../.env')) {
+                $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/..');
+                $dotenv->load();
+            }
+            
+            $mongodbUrl = $_ENV['MONGODB_URL'] ?? 'mongodb://localhost:27017';
+            $client = new Client($mongodbUrl);
+            $dbName = $_ENV['MONGODB_DB_NAME'] ?? 'northrepublic';
+            $database = $client->selectDatabase($dbName);
             $this->collection = $database->selectCollection('sepay_transactions');
         } catch (Exception $e) {
             error_log("MongoDB connection error: " . $e->getMessage());

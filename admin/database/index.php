@@ -20,7 +20,7 @@ try {
     }
     
     if (class_exists('MongoDB\Client')) {
-        $mongoUri = $_ENV['MONGODB_URL'] ?? 'mongodb://localhost:27018';
+        $mongoUri = $_ENV['MONGODB_URL'] ?? 'mongodb://localhost:27017';
         $databaseName = $_ENV['MONGODB_DB_NAME'] ?? 'northrepublic';
         $client = new MongoDB\Client($mongoUri);
         $database = $client->selectDatabase($databaseName);

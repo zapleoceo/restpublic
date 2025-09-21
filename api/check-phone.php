@@ -49,7 +49,7 @@ try {
     curl_setopt($ch, CURLOPT_URL, $backendUrl . '?phone=' . urlencode($phone));
     curl_setopt($ch, CURLOPT_POST, false);
     curl_setopt($ch, CURLOPT_HTTPHEADER, [
-        'X-API-Token: nr_api_2024_7f8a9b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0u1v2w3x4y5z6'
+        'X-API-Token: ' . ($_ENV['API_AUTH_TOKEN'] ?? 'nr_api_2024_7f8a9b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0u1v2w3x4y5z6')
     ]);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_TIMEOUT, 10);
