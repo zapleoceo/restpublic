@@ -3755,6 +3755,10 @@ td:last-child {
     color: #468672;
 }
 
+.intro-block-content__social svg {
+    fill: currentColor;
+}
+
 /* --------------------------------------------------------------------
  * ## intro scroll down
  * -------------------------------------------------------------------- */
@@ -4468,6 +4472,10 @@ td:last-child {
 
 .intro-block-content__social a:hover {
     color: #468672;
+}
+
+.intro-block-content__social svg {
+    fill: currentColor;
 }
 
 /* ===================================================================
