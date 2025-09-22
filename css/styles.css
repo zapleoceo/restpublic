@@ -3359,7 +3359,13 @@ td:last-child {
 .section-header--with-button {
     display: flex;
     align-items: center;
-    justify-content: flex-end;
+    justify-content: space-between;
+}
+
+.section-header--with-button::before {
+    content: attr(data-num);
+    font-size: var(--text-display-title);
+    font-weight: 600;
 }
 
 .section-header--with-button .btn {
@@ -3368,7 +3374,9 @@ td:last-child {
 
 @media (max-width: 768px) {
     .section-header--with-button {
-        justify-content: center;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--vspace-0_75);
     }
     
     .section-header--with-button .btn {
