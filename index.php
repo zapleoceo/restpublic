@@ -379,7 +379,10 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                 </div> <!-- end s-menu__content-start -->
 
                 <div class="column xl-6 lg-6 md-12 s-menu__content-end">
-                    <div class="section-header" data-num="<?php echo safeHtml($pageMeta['menu_top_5'] ?? 'Top 5 позиций'); ?>">
+                    <div class="section-header section-header--with-button" data-num="<?php echo safeHtml($pageMeta['menu_top_5'] ?? 'Top 5 позиций'); ?>">
+                        <a href="/menu" class="btn btn--primary">
+                            <?php echo $pageMeta['menu_full_button'] ?? 'Открыть полное меню'; ?>
+                        </a>
                     </div>
                     
                     <div class="tab-content menu-block" id="menu-content">
@@ -443,14 +446,9 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                 </div> <!-- end s-menu__content-end -->
             </div> <!-- end s-menu__content -->
             
-            <!-- Full Menu Button -->
+            <!-- Menu Update Time -->
             <div class="row s-menu__footer">
                 <div class="column xl-12 text-center">
-                    <a href="/menu" class="btn btn--primary">
-                        <?php echo $pageMeta['menu_full_button'] ?? ''; ?>
-                    </a>
-                    
-                    <!-- Menu Update Time -->
                     <?php 
                     $lastUpdateTime = $menuCache->getLastUpdateTimeFormatted();
                     if ($lastUpdateTime): 
