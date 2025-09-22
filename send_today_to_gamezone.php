@@ -64,7 +64,7 @@ try {
             $title = $event['title_ru'] ?? $event['title'] ?? 'Без названия';
             $time = $event['time'] ?? 'Время не указано';
             $conditions = $event['conditions_ru'] ?? $event['conditions'] ?? '';
-            $description = $event['comment'] ?? $event['description_ru'] ?? $event['description'] ?? '';
+            $description = $event['description_ru'] ?? $event['description'] ?? $event['comment'] ?? '';
             
             $message .= "📅 " . $today->format('d.m.Y') . " в $time\n";
             $message .= "$title\n\n";
