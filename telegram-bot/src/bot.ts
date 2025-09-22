@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 import fetch from 'node-fetch';
 
 // Загружаем переменные окружения из общего .env файла
-dotenv.config({ path: '../../.cursor/env.txt' });
+dotenv.config({ path: '../.env' });
 
 // Определяем интерфейс для сессии
 interface SessionData {

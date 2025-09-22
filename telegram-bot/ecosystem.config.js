@@ -8,7 +8,7 @@ module.exports = {
       exec_mode: 'fork',
       watch: false,
       max_memory_restart: '200M',
-      env_file: '/var/www/northrepubli_usr/data/www/northrepublic.me/.cursor/env.txt',
+      env_file: '/var/www/northrepubli_usr/data/www/northrepublic.me/.env',
       env: {
         NODE_ENV: 'production',
         BACKEND_URL: 'https://northrepublic.me'

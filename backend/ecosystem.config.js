@@ -3,7 +3,7 @@ module.exports = {
     name: 'northrepublic-backend',
     script: 'server.js',
     cwd: '/var/www/northrepubli_usr/data/www/northrepublic.me/backend',
-    env_file: './config.env',
+    env_file: '../.env',
     env: {
       NODE_ENV: 'production',
       PORT: 3002
