@@ -124,8 +124,8 @@ router.post('/telegram-callback', async (req, res) => {
     } else {
       // Create new user
       const clientData = {
-        firstname: name || 'Пользователь',
-        lastname: lastName || '',
+        firstname: lastName || 'Пользователь',
+        lastname: name || '',
         client_groups_id_client: 1, // Default group
         phone: phone
       };
