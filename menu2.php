@@ -620,6 +620,7 @@ if ($menu_loaded) {
             constructor() {
                 this.isAuthenticated = false;
                 this.userData = null;
+                this.sessionToken = localStorage.getItem('auth_session_token');
                 this.init();
             }
 
@@ -748,6 +749,8 @@ if ($menu_loaded) {
             authenticateWithTelegram() {
                 // Generate unique session token
                 const sessionToken = this.generateSessionToken();
+                this.sessionToken = sessionToken;
+                localStorage.setItem('auth_session_token', sessionToken);
                 
                 // Create Telegram auth URL
                 const telegramUrl = `https://t.me/RestPublic_bot?start=auth_${sessionToken}`;
@@ -767,8 +770,18 @@ if ($menu_loaded) {
             }
 
             checkAuthStatus() {
+                if (!this.sessionToken) {
+                    this.isAuthenticated = false;
+                    this.updateAuthUI();
+                    return;
+                }
+
                 // Check if user is authenticated
-                fetch('/api/auth/status')
+                fetch('/api/auth/status', {
+                    headers: {
+                        'X-Session-Token': this.sessionToken
+                    }
+                })
                     .then(response => response.json())
                     .then(data => {
                         if (data.success && data.authenticated) {
@@ -778,6 +791,8 @@ if ($menu_loaded) {
                         } else {
                             this.isAuthenticated = false;
                             this.userData = null;
+                            this.sessionToken = null;
+                            localStorage.removeItem('auth_session_token');
                             this.updateAuthUI();
                         }
                     })
@@ -805,9 +820,13 @@ if ($menu_loaded) {
             }
 
             loadProfileData() {
-                if (!this.isAuthenticated) return;
+                if (!this.isAuthenticated || !this.sessionToken) return;
 
-                fetch('/api/user/profile')
+                fetch('/api/user/profile', {
+                    headers: {
+                        'X-Session-Token': this.sessionToken
+                    }
+                })
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
@@ -857,9 +876,13 @@ if ($menu_loaded) {
             }
 
             loadOrdersData() {
-                if (!this.isAuthenticated) return;
+                if (!this.isAuthenticated || !this.sessionToken) return;
 
-                fetch('/api/user/orders')
+                fetch('/api/user/orders', {
+                    headers: {
+                        'X-Session-Token': this.sessionToken
+                    }
+                })
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
@@ -900,12 +923,19 @@ if ($menu_loaded) {
             }
 
             logout() {
-                fetch('/api/auth/logout', { method: 'POST' })
+                fetch('/api/auth/logout', { 
+                    method: 'POST',
+                    headers: {
+                        'X-Session-Token': this.sessionToken
+                    }
+                })
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
                             this.isAuthenticated = false;
                             this.userData = null;
+                            this.sessionToken = null;
+                            localStorage.removeItem('auth_session_token');
                             this.updateAuthUI();
                             this.showNotification('Вы вышли из системы', 'success');
                         } else {
