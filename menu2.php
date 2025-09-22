@@ -876,6 +876,9 @@ if ($menu_loaded) {
                         <label>Общая сумма покупок:</label>
                         <span>${user.total_payed_sum ? (user.total_payed_sum / 100).toFixed(0) + ' ₫' : '0 ₫'}</span>
                     </div>
+                    <div class="profile-footer">
+                        <p>Нашли ошибку? <a href="https://t.me/zapleosoft" target="_blank">Свяжитесь с нами</a></p>
+                    </div>
                 `;
             }
 
