@@ -90,26 +90,50 @@ bot.on('contact', async (ctx) => {
   const session = ctx.session;
 
   console.log(`📱 Получен контакт: ${contact.phone_number}, ${contact.first_name} ${contact.last_name || ''}`);                                                   
+  console.log(`📋 Полные данные контакта:`, {
+    phone_number: contact.phone_number,
+    first_name: contact.first_name,
+    last_name: contact.last_name,
+    user_id: contact.user_id,
+    vcard: contact.vcard
+  });
+  console.log(`🔐 Данные сессии:`, {
+    authMode: session?.authMode,
+    returnUrl: session?.returnUrl
+  });
 
   if (session?.authMode) {
     try {
       // Отправляем данные на backend
-      const backendUrl = process.env.BACKEND_URL || 'https://northrepublic.me';  
+      const backendUrl = process.env.BACKEND_URL || 'https://northrepublic.me';
+      const requestData = {
+        phone: contact.phone_number,
+        name: contact.first_name,
+        lastName: contact.last_name || '',
+        birthday: '',
+        sessionToken: session.returnUrl || ''
+      };
+      
+      console.log(`🚀 Отправляем данные на backend:`, {
+        url: `${backendUrl}/api/auth/telegram-callback`,
+        data: requestData
+      });
+      
       const response = await fetch(`${backendUrl}/api/auth/telegram-callback`, { 
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          phone: contact.phone_number,
-          name: contact.first_name,
-          lastName: contact.last_name || '',
-          birthday: '',
-          sessionToken: session.returnUrl || ''
-        })
+        body: JSON.stringify(requestData)
       });
 
       const result = await response.json() as any;
+      
+      console.log(`📥 Ответ от backend:`, {
+        status: response.status,
+        success: result.success,
+        data: result
+      });
 
       if (result.success) {
         // Создаем клавиатуру с кнопкой возврата в приложение
