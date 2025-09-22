@@ -3359,14 +3359,7 @@ td:last-child {
 .section-header--with-button {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: var(--vspace-1);
-}
-
-.section-header--with-button h2 {
-    flex: 1;
-    margin: 0;
-    text-align: left;
+    justify-content: flex-end;
 }
 
 .section-header--with-button .btn {
@@ -3375,9 +3368,7 @@ td:last-child {
 
 @media (max-width: 768px) {
     .section-header--with-button {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: var(--vspace-0_75);
+        justify-content: center;
     }
     
     .section-header--with-button .btn {
