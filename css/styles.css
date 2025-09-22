@@ -3355,6 +3355,39 @@ td:last-child {
     top      : 50%;
 }
 
+/* Section header with button layout */
+.section-header--with-button {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--vspace-1);
+}
+
+.section-header__content {
+    flex: 1;
+}
+
+.section-header__button {
+    flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+    .section-header--with-button {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--vspace-0_75);
+    }
+    
+    .section-header__button {
+        width: 100%;
+    }
+    
+    .section-header__button .btn {
+        width: 100%;
+        text-align: center;
+    }
+}
+
 .header-contact__num {
     display        : flex;
     align-items    : center;
