@@ -13,7 +13,8 @@ $current_dir = basename(dirname($_SERVER['PHP_SELF']));
 $current_section = '';
 
 // Определяем текущий раздел
-if ($current_page === 'index' || $current_dir === 'admin') {
+if ($current_page === 'index' && $current_dir === 'admin') {
+    // Главная страница админки
     $current_section = 'dashboard';
 } elseif ($current_dir === 'pages') {
     $current_section = 'pages';

@@ -188,6 +188,7 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
     <link rel="stylesheet" href="css/vendor.css">
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="css/custom.css">
+    <link rel="stylesheet" href="css/auth-modal.css">
     <link rel="stylesheet" href="css/events-widget.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
     
@@ -1178,6 +1179,444 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
             }
         });
     </script>
+
+    <!-- Auth System JavaScript -->
+    <script>
+        // Auth System
+        class AuthSystem {
+            constructor() {
+                this.isAuthenticated = false;
+                this.userData = null;
+                this.init();
+            }
+
+            init() {
+                this.bindEvents();
+                this.checkAuthStatus();
+            }
+
+            bindEvents() {
+                // Auth icon click
+                document.getElementById('authIcon').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    this.toggleAuthDropdown();
+                });
+
+                // Auth dropdown items
+                document.getElementById('authLoginBtn').addEventListener('click', (e) => {
+                    e.preventDefault();
+                    this.openAuthModal();
+                    this.closeAuthDropdown();
+                });
+
+                document.getElementById('authProfileBtn').addEventListener('click', (e) => {
+                    e.preventDefault();
+                    this.openProfileModal();
+                    this.closeAuthDropdown();
+                });
+
+                document.getElementById('authOrdersBtn').addEventListener('click', (e) => {
+                    e.preventDefault();
+                    this.openOrdersModal();
+                    this.closeAuthDropdown();
+                });
+
+                document.getElementById('authLogoutBtn').addEventListener('click', (e) => {
+                    e.preventDefault();
+                    this.logout();
+                    this.closeAuthDropdown();
+                });
+
+                // Telegram auth button
+                document.getElementById('telegramAuthBtn').addEventListener('click', () => {
+                    this.authenticateWithTelegram();
+                });
+
+                // Modal close buttons
+                document.getElementById('authModalClose').addEventListener('click', () => {
+                    this.closeAuthModal();
+                });
+
+                document.getElementById('profileModalClose').addEventListener('click', () => {
+                    this.closeProfileModal();
+                });
+
+                document.getElementById('ordersModalClose').addEventListener('click', () => {
+                    this.closeOrdersModal();
+                });
+
+                // Close dropdown when clicking outside
+                document.addEventListener('click', (e) => {
+                    if (!e.target.closest('.header-auth')) {
+                        this.closeAuthDropdown();
+                    }
+                });
+
+                // Close modals when clicking overlay
+                document.getElementById('modalOverlay').addEventListener('click', () => {
+                    this.closeAllModals();
+                });
+            }
+
+            toggleAuthDropdown() {
+                const dropdown = document.getElementById('authDropdown');
+                dropdown.classList.toggle('auth-dropdown--active');
+            }
+
+            closeAuthDropdown() {
+                const dropdown = document.getElementById('authDropdown');
+                dropdown.classList.remove('auth-dropdown--active');
+            }
+
+            openAuthModal() {
+                document.getElementById('authModal').classList.remove('modal-hidden');
+                document.getElementById('modalOverlay').classList.remove('overlay-hidden');
+                document.body.style.overflow = 'hidden';
+            }
+
+            closeAuthModal() {
+                document.getElementById('authModal').classList.add('modal-hidden');
+                document.getElementById('modalOverlay').classList.add('overlay-hidden');
+                document.body.style.overflow = '';
+            }
+
+            openProfileModal() {
+                this.loadProfileData();
+                document.getElementById('profileModal').classList.remove('modal-hidden');
+                document.getElementById('modalOverlay').classList.remove('overlay-hidden');
+                document.body.style.overflow = 'hidden';
+            }
+
+            closeProfileModal() {
+                document.getElementById('profileModal').classList.add('modal-hidden');
+                document.getElementById('modalOverlay').classList.add('overlay-hidden');
+                document.body.style.overflow = '';
+            }
+
+            openOrdersModal() {
+                this.loadOrdersData();
+                document.getElementById('ordersModal').classList.remove('modal-hidden');
+                document.getElementById('modalOverlay').classList.remove('overlay-hidden');
+                document.body.style.overflow = 'hidden';
+            }
+
+            closeOrdersModal() {
+                document.getElementById('ordersModal').classList.add('modal-hidden');
+                document.getElementById('modalOverlay').classList.add('overlay-hidden');
+                document.body.style.overflow = '';
+            }
+
+            closeAllModals() {
+                this.closeAuthModal();
+                this.closeProfileModal();
+                this.closeOrdersModal();
+            }
+
+            authenticateWithTelegram() {
+                // Generate unique session token
+                const sessionToken = this.generateSessionToken();
+                
+                // Create Telegram auth URL
+                const telegramUrl = `https://t.me/RestPublic_bot?start=auth_${sessionToken}`;
+                
+                // Open Telegram
+                window.open(telegramUrl, '_blank');
+                
+                // Close auth modal
+                this.closeAuthModal();
+                
+                // Show loading message
+                this.showNotification('Переходим в Telegram для авторизации...', 'info');
+            }
+
+            generateSessionToken() {
+                return Date.now().toString(36) + Math.random().toString(36).substr(2);
+            }
+
+            checkAuthStatus() {
+                // Check if user is authenticated
+                fetch('/api/auth/status')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success && data.authenticated) {
+                            this.isAuthenticated = true;
+                            this.userData = data.user;
+                            this.updateAuthUI();
+                        } else {
+                            this.isAuthenticated = false;
+                            this.userData = null;
+                            this.updateAuthUI();
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Auth status check failed:', error);
+                        this.isAuthenticated = false;
+                        this.updateAuthUI();
+                    });
+            }
+
+            updateAuthUI() {
+                const guestMenu = document.getElementById('authGuestMenu');
+                const userMenu = document.getElementById('authUserMenu');
+                const authIcon = document.querySelector('.auth-icon-img');
+
+                if (this.isAuthenticated) {
+                    guestMenu.style.display = 'none';
+                    userMenu.style.display = 'block';
+                    authIcon.src = 'images/icons/auth-green.png';
+                } else {
+                    guestMenu.style.display = 'block';
+                    userMenu.style.display = 'none';
+                    authIcon.src = 'images/icons/auth-gray.png';
+                }
+            }
+
+            loadProfileData() {
+                if (!this.isAuthenticated) return;
+
+                fetch('/api/user/profile')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            this.displayProfileData(data.user);
+                        } else {
+                            this.showNotification('Ошибка загрузки профиля', 'error');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Profile load failed:', error);
+                        this.showNotification('Ошибка загрузки профиля', 'error');
+                    });
+            }
+
+            displayProfileData(user) {
+                const profileInfo = document.getElementById('profileInfo');
+                profileInfo.innerHTML = `
+                    <div class="profile-field">
+                        <label>Имя:</label>
+                        <span>${user.firstname || 'Не указано'}</span>
+                    </div>
+                    <div class="profile-field">
+                        <label>Фамилия:</label>
+                        <span>${user.lastname || 'Не указано'}</span>
+                    </div>
+                    <div class="profile-field">
+                        <label>Телефон:</label>
+                        <span>${user.phone || 'Не указано'}</span>
+                    </div>
+                    <div class="profile-field">
+                        <label>Email:</label>
+                        <span>${user.email || 'Не указано'}</span>
+                    </div>
+                    <div class="profile-field">
+                        <label>Скидка:</label>
+                        <span>${user.discount_per || 0}%</span>
+                    </div>
+                    <div class="profile-field">
+                        <label>Бонусы:</label>
+                        <span>${user.bonus || 0} ₫</span>
+                    </div>
+                    <div class="profile-field">
+                        <label>Дата регистрации:</label>
+                        <span>${user.date_activale ? new Date(user.date_activale).toLocaleDateString('ru-RU') : 'Не указано'}</span>
+                    </div>
+                `;
+            }
+
+            loadOrdersData() {
+                if (!this.isAuthenticated) return;
+
+                fetch('/api/user/orders')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            this.displayOrdersData(data.orders);
+                        } else {
+                            this.showNotification('Ошибка загрузки заказов', 'error');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Orders load failed:', error);
+                        this.showNotification('Ошибка загрузки заказов', 'error');
+                    });
+            }
+
+            displayOrdersData(orders) {
+                const ordersList = document.getElementById('ordersList');
+                
+                if (!orders || orders.length === 0) {
+                    ordersList.innerHTML = '<p>У вас пока нет заказов</p>';
+                    return;
+                }
+
+                ordersList.innerHTML = orders.map(order => `
+                    <div class="order-item">
+                        <div class="order-info">
+                            <h4>Заказ #${order.id}</h4>
+                            <p>Дата: ${new Date(order.date).toLocaleDateString('ru-RU')}</p>
+                            <p>Сумма: ${order.total} ₫</p>
+                            <p>Статус: ${order.status}</p>
+                        </div>
+                        <div class="order-actions">
+                            <button class="btn btn--primary" onclick="authSystem.repeatOrder(${order.id})">
+                                Повторить заказ
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            logout() {
+                fetch('/api/auth/logout', { method: 'POST' })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            this.isAuthenticated = false;
+                            this.userData = null;
+                            this.updateAuthUI();
+                            this.showNotification('Вы вышли из системы', 'success');
+                        } else {
+                            this.showNotification('Ошибка выхода', 'error');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Logout failed:', error);
+                        this.showNotification('Ошибка выхода', 'error');
+                    });
+            }
+
+            showNotification(message, type = 'info') {
+                // Simple notification system
+                const notification = document.createElement('div');
+                notification.className = `notification notification--${type}`;
+                notification.textContent = message;
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    padding: 12px 20px;
+                    border-radius: 4px;
+                    color: white;
+                    z-index: 10000;
+                    font-size: 14px;
+                    max-width: 300px;
+                `;
+
+                // Set background color based on type
+                switch (type) {
+                    case 'success':
+                        notification.style.backgroundColor = '#4CAF50';
+                        break;
+                    case 'error':
+                        notification.style.backgroundColor = '#f44336';
+                        break;
+                    case 'info':
+                    default:
+                        notification.style.backgroundColor = '#2196F3';
+                        break;
+                }
+
+                document.body.appendChild(notification);
+
+                // Remove after 3 seconds
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 3000);
+            }
+        }
+
+        // Initialize auth system when DOM is loaded
+        let authSystem;
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                authSystem = new AuthSystem();
+            });
+        } else {
+            authSystem = new AuthSystem();
+        }
+    </script>
+
+    <!-- Auth Modal -->
+    <div id="authModal" class="modal modal-hidden">
+        <div class="modal-content auth-modal-content">
+            <div class="modal-header">
+                <h2>Авторизация</h2>
+                <button class="modal-close" id="authModalClose">&times;</button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="auth-providers">
+                    <button class="auth-provider-btn" id="telegramAuthBtn">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="m20.665 3.717-17.73 6.837c-1.21.486-1.203 1.161-.222 1.462l4.552 1.42 10.532-6.645c.498-.303.953-.14.579.192l-8.533 7.701h-.002l.002.001-.314 4.692c.46 0 .663-.211.921-.46l2.211-2.15 4.599 3.397c.848.467 1.457.227 1.668-.785l3.019-14.228c.309-1.239-.473-1.8-1.282-1.434z"/>
+                        </svg>
+                        <span>Telegram</span>
+                    </button>
+                    
+                    <button class="auth-provider-btn auth-provider-btn--disabled" disabled>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                        </svg>
+                        <span>Google</span>
+                    </button>
+                    
+                    <button class="auth-provider-btn auth-provider-btn--disabled" disabled>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M20,3H4C3.447,3,3,3.448,3,4v16c0,0.552,0.447,1,1,1h8.615v-6.96h-2.338v-2.725h2.338v-2c0-2.325,1.42-3.592,3.5-3.592 c0.699-0.002,1.399,0.034,2.095,0.107v2.42h-1.435c-1.128,0-1.348,0.538-1.348,1.325v1.735h2.697l-0.35,2.725h-2.348V21H20 c0.553,0,1-0.448,1-1V4C21,3.448,20.553,3,20,3z"/>
+                        </svg>
+                        <span>Facebook</span>
+                    </button>
+                    
+                    <button class="auth-provider-btn auth-provider-btn--disabled" disabled>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M18.71,19.5C17.88,20.74 17,21.95 15.66,21.97C14.32,22 13.89,21.18 12.37,21.18C10.84,21.18 10.37,21.95 9.1,22C7.79,22.05 6.8,20.68 5.96,19.47C4.25,17 2.94,12.45 4.7,9.39C5.57,7.87 7.13,6.91 8.82,6.88C10.1,6.86 11.32,7.75 12.11,7.75C12.89,7.75 14.37,6.68 15.92,6.84C16.57,6.87 18.39,7.1 19.56,8.82C19.47,8.88 17.39,10.1 17.41,12.63C17.44,15.65 20.06,16.66 20.09,16.67C20.06,16.74 19.67,18.11 18.71,19.5M13,3.5C13.73,2.67 14.94,2.04 15.94,2C16.07,3.17 15.6,4.35 14.9,5.19C14.21,6.04 13.07,6.7 11.95,6.61C11.8,5.46 12.36,4.26 13,3.5Z"/>
+                        </svg>
+                        <span>Apple</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Modal -->
+    <div id="profileModal" class="modal modal-hidden">
+        <div class="modal-content profile-modal-content">
+            <div class="modal-header">
+                <h2>Профиль</h2>
+                <button class="modal-close" id="profileModalClose">&times;</button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="profile-info" id="profileInfo">
+                    <!-- Profile data will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Orders Modal -->
+    <div id="ordersModal" class="modal modal-hidden">
+        <div class="modal-content orders-modal-content">
+            <div class="modal-header">
+                <h2>Мои заказы</h2>
+                <button class="modal-close" id="ordersModalClose">&times;</button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="orders-list" id="ordersList">
+                    <!-- Orders will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Overlay -->
+    <div id="modalOverlay" class="modal-overlay overlay-hidden"></div>
 
 </body>
 </html>

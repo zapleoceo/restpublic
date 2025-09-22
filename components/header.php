@@ -35,13 +35,60 @@ if (!isset($translationService)) {
                 <?php include 'components/language-switcher.php'; ?>
             </div>
 
-            <!-- Контактный телефон -->
-            <div class="header-contact">
-                <a href="tel:+84349338758" class="header-contact__num btn">
-                    <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" width="24" height="24" color="#000000"><defs><style>.cls-6376396cc3a86d32eae6f0dc-1{fill:none;stroke:currentColor;stroke-miterlimit:10;}</style></defs><path class="cls-6376396cc3a86d32eae6f0dc-1" d="M19.64,21.25c-2.54,2.55-8.38.83-13-3.84S.2,6.9,2.75,4.36L5.53,1.57,10.9,6.94l-2,2A2.18,2.18,0,0,0,8.9,12L12,15.1a2.18,2.18,0,0,0,3.07,0l2-2,5.37,5.37Z"></path></svg>
-                    +84 349 338 758
-                </a>
-            </div> <!-- end header-contact -->
+            <!-- Header Actions -->
+            <div class="header-actions">
+                <!-- Authorization Icon -->
+                <div class="header-auth">
+                    <button class="auth-icon" id="authIcon" title="Авторизация">
+                        <img src="images/icons/auth-gray.png" alt="Авторизация" class="auth-icon-img">
+                    </button>
+                    
+                    <!-- Auth Dropdown Menu -->
+                    <div class="auth-dropdown" id="authDropdown">
+                        <div class="auth-dropdown__content">
+                            <!-- For non-authenticated users -->
+                            <div class="auth-dropdown__guest" id="authGuestMenu">
+                                <a href="#" class="auth-dropdown__item" id="authLoginBtn">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z"/>
+                                    </svg>
+                                    Войти
+                                </a>
+                            </div>
+                            
+                            <!-- For authenticated users -->
+                            <div class="auth-dropdown__user" id="authUserMenu" style="display: none;">
+                                <a href="#" class="auth-dropdown__item" id="authProfileBtn">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z"/>
+                                    </svg>
+                                    Профиль
+                                </a>
+                                <a href="#" class="auth-dropdown__item" id="authOrdersBtn">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M9,5V9H21V5M9,19H21V15H9M9,14H21V10H9M4,9H8V5H4M4,19H8V15H4M4,14H8V10H4"/>
+                                    </svg>
+                                    Заказы
+                                </a>
+                                <a href="#" class="auth-dropdown__item" id="authLogoutBtn">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M14.08,15.59L16.67,13H7V11H16.67L14.08,8.41L15.5,7L20.5,12L15.5,17L14.08,15.59M19,3A2,2 0 0,1 21,5V9.67L19,7.67V5H5V19H19V16.33L21,14.33V19A2,2 0 0,1 19,21H5C3.89,21 3,20.1 3,19V5C3,3.89 3.89,3 5,3H19Z"/>
+                                    </svg>
+                                    Выйти
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Контактный телефон -->
+                <div class="header-contact">
+                    <a href="tel:+84349338758" class="header-contact__num btn">
+                        <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" width="24" height="24" color="#000000"><defs><style>.cls-6376396cc3a86d32eae6f0dc-1{fill:none;stroke:currentColor;stroke-miterlimit:10;}</style></defs><path class="cls-6376396cc3a86d32eae6f0dc-1" d="M19.64,21.25c-2.54,2.55-8.38.83-13-3.84S.2,6.9,2.75,4.36L5.53,1.57,10.9,6.94l-2,2A2.18,2.18,0,0,0,8.9,12L12,15.1a2.18,2.18,0,0,0,3.07,0l2-2,5.37,5.37Z"></path></svg>
+                        +84 349 338 758
+                    </a>
+                </div> <!-- end header-contact -->
+            </div> <!-- end header-actions -->
 
             <!-- Social links for mobile menu -->
             <div class="header-nav__social">

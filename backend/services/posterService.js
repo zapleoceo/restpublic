@@ -316,6 +316,95 @@ class PosterService {
       throw new Error(`Failed to create order: ${error.message}`);
     }
   }
+
+  // Get clients by phone
+  async getClients(phone) {
+    console.log(`🔍 getClients() called with phone: ${phone}`);
+    try {
+      const clients = await this.makeRequest('clients.getClients', { phone });
+      console.log(`📥 Raw clients from Poster API:`, clients);
+      console.log(`📋 Retrieved ${clients.length} clients`);
+      return clients;
+    } catch (error) {
+      console.error('Error getting clients:', error);
+      throw new Error(`Failed to get clients: ${error.message}`);
+    }
+  }
+
+  // Create new client
+  async createClient(clientData) {
+    console.log(`🔍 createClient() called with data:`, clientData);
+    
+    try {
+      if (!this.token) {
+        throw new Error('Poster API token not configured');
+      }
+
+      const url = `${this.baseURL}/clients.createClient?token=${this.token}`;
+      
+      // Валидация обязательных полей
+      if (!clientData.client_name) {
+        throw new Error('client_name is required');
+      }
+      if (!clientData.client_groups_id_client) {
+        throw new Error('client_groups_id_client is required');
+      }
+      if (!clientData.phone) {
+        throw new Error('phone is required');
+      }
+
+      // Подготавливаем данные для создания клиента
+      const processedClientData = {
+        client_name: clientData.client_name,
+        client_groups_id_client: parseInt(clientData.client_groups_id_client),
+        phone: clientData.phone,
+        client_sex: clientData.client_sex || 0,
+        email: clientData.email || '',
+        birthday: clientData.birthday || '',
+        city: clientData.city || '',
+        country: clientData.country || '',
+        address: clientData.address || '',
+        comment: clientData.comment || ''
+      };
+
+      console.log(`📡 Poster API Request: ${url}`);
+      console.log(`👤 Client data:`, processedClientData);
+
+      const response = await this.api.post(url, processedClientData, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      console.log(`📥 Poster API Response:`, response.data);
+      
+      // Проверяем, есть ли ошибка в ответе Poster API
+      if (response.data.error) {
+        console.error(`❌ Poster API returned error:`, response.data.error);
+        throw new Error(`Poster API error: ${response.data.error.message || 'Unknown error'}`);
+      }
+      
+      console.log(`✅ Client created successfully:`, response.data);
+      return response.data;
+    } catch (error) {
+      console.error(`❌ Poster API Error (createClient):`, error.message);
+      throw new Error(`Failed to create client: ${error.message}`);
+    }
+  }
+
+  // Get client by ID
+  async getClientById(clientId) {
+    console.log(`🔍 getClientById() called with clientId: ${clientId}`);
+    try {
+      const client = await this.makeRequest('clients.getClient', { client_id: clientId });
+      console.log(`📥 Raw client from Poster API:`, client);
+      console.log(`📋 Retrieved client data`);
+      return client && client.length > 0 ? client[0] : null;
+    } catch (error) {
+      console.error('Error getting client by ID:', error);
+      throw new Error(`Failed to get client: ${error.message}`);
+    }
+  }
 }
 
 module.exports = new PosterService();
