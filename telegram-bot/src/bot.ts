@@ -171,7 +171,11 @@ bot.on('text', async (ctx) => {
 // Обработка ошибок
 bot.catch((err, ctx) => {
   console.error(`Error for ${ctx.updateType}:`, err);
-  ctx.reply('❌ Произошла ошибка. Попробуйте позже.');
+  
+  // Отправляем сообщение об ошибке только в личных чатах
+  if (ctx.chat?.type === 'private') {
+    ctx.reply('❌ Произошла ошибка. Попробуйте позже.').catch(console.error);
+  }
 });
 
 // Функция запуска бота
