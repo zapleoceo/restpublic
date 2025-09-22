@@ -380,14 +380,10 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
 
                 <div class="column xl-6 lg-6 md-12 s-menu__content-end">
                     <div class="section-header section-header--with-button" data-num="<?php echo safeHtml($pageMeta['menu_top_5'] ?? 'Top 5 позиций'); ?>">
-                        <div class="section-header__content">
-                            <h2 class="text-display-title"><?php echo safeHtml($pageMeta['menu_top_5'] ?? 'Top 5 позиций'); ?></h2>
-                        </div>
-                        <div class="section-header__button">
-                            <a href="/menu" class="btn btn--primary">
-                                <?php echo $pageMeta['menu_full_button'] ?? 'Открыть полное меню'; ?>
-                            </a>
-                        </div>
+                        <h2 class="text-display-title"><?php echo safeHtml($pageMeta['menu_top_5'] ?? 'Top 5 позиций'); ?></h2>
+                        <a href="/menu" class="btn btn--primary">
+                            <?php echo $pageMeta['menu_full_button'] ?? 'Открыть полное меню'; ?>
+                        </a>
                     </div>
                     
                     <div class="tab-content menu-block" id="menu-content">

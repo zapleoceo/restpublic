@@ -3363,11 +3363,12 @@ td:last-child {
     gap: var(--vspace-1);
 }
 
-.section-header__content {
+.section-header--with-button h2 {
     flex: 1;
+    margin: 0;
 }
 
-.section-header__button {
+.section-header--with-button .btn {
     flex-shrink: 0;
 }
 
@@ -3378,11 +3379,7 @@ td:last-child {
         gap: var(--vspace-0_75);
     }
     
-    .section-header__button {
-        width: 100%;
-    }
-    
-    .section-header__button .btn {
+    .section-header--with-button .btn {
         width: 100%;
         text-align: center;
     }
