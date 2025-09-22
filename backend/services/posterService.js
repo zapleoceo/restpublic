@@ -374,7 +374,7 @@ class PosterService {
 
       const response = await this.api.post(url, processedClientData, {
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/x-www-form-urlencoded'
         }
       });
       
