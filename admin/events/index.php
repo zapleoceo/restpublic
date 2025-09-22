@@ -824,7 +824,7 @@ ob_start();
                                 <th>Условия участия (RU)</th>
                                 <th>Ссылка</th>
                                 <th>Изображение</th>
-                                <th>Комментарий</th>
+                                <th>Описание (RU)</th>
                                 <th>Статус</th>
                                 <th>Создано</th>
                                 <th>Обновлено</th>
@@ -882,10 +882,10 @@ ob_start();
                                                      onclick="showImageModal('<?= htmlspecialchars($imageUrl) ?>', '<?= htmlspecialchars($event['title_ru'] ?? $event['title'] ?? '') ?>')">
                                             </td>
                                             <td class="event-comment">
-                                                <?php if (!empty($event['comment'])): ?>
+                                                <?php if (!empty($event['description_ru'])): ?>
                                                     <?php 
-                                                    $comment = htmlspecialchars($event['comment']);
-                                                    echo strlen($comment) > 50 ? substr($comment, 0, 50) . '...' : $comment;
+                                                    $description = htmlspecialchars($event['description_ru']);
+                                                    echo strlen($description) > 50 ? substr($description, 0, 50) . '...' : $description;
                                                     ?>
                                                 <?php else: ?>
                                                     -
@@ -1037,9 +1037,9 @@ ob_start();
                     </div>
 
                     <div class="form-group">
-                        <label for="eventComment">Внутренний комментарий</label>
-                        <textarea id="eventComment" name="comment" rows="3" maxlength="1000" placeholder="Комментарий только для администраторов (не отображается на сайте)"></textarea>
-                        <small>Этот комментарий виден только администраторам</small>
+                        <label for="eventDescriptionRu">Описание (RU)</label>
+                        <textarea id="eventDescriptionRu" name="description_ru" rows="3" maxlength="1000" placeholder="Описание события на русском языке"></textarea>
+                        <small>Описание события, которое будет отображаться на сайте</small>
                     </div>
                 </div>
 
@@ -1258,7 +1258,7 @@ ob_start();
                             document.getElementById('eventTime').value = event.time || '';
                             document.getElementById('eventLink').value = event.link || event.description_link || '';
                             document.getElementById('eventCategory').value = event.category || 'general';
-                            document.getElementById('eventComment').value = event.comment || '';
+                            document.getElementById('eventDescriptionRu').value = event.description_ru || '';
                             document.getElementById('eventIsActive').checked = event.is_active !== false;
                             
                             // Обрабатываем изображение
@@ -1409,7 +1409,7 @@ ob_start();
                     time: document.getElementById('eventTime').value,
                     link: document.getElementById('eventLink').value,
                     category: document.getElementById('eventCategory').value,
-                    comment: document.getElementById('eventComment').value,
+                    description_ru: document.getElementById('eventDescriptionRu').value,
                     is_active: document.getElementById('eventIsActive').checked
                 });
                 contentType = 'application/json';
@@ -1612,7 +1612,7 @@ ob_start();
                             document.getElementById('eventTime').value = event.time || '';
                             document.getElementById('eventLink').value = event.link || event.description_link || '';
                             document.getElementById('eventCategory').value = event.category || 'general';
-                            document.getElementById('eventComment').value = event.comment || '';
+                            document.getElementById('eventDescriptionRu').value = event.description_ru || '';
                             document.getElementById('eventIsActive').checked = event.is_active !== false;
                             
                             // Показываем текущее изображение
@@ -1777,9 +1777,9 @@ ob_start();
                 const statusText = event.is_active ? 'Активно' : 'Неактивно';
                 const statusHtml = `<span class="status-badge ${statusClass}">${statusText}</span>`;
                 
-                // Обрезаем комментарий до 50 символов
-                const comment = event.comment || '-';
-                const truncatedComment = comment.length > 50 ? comment.substring(0, 50) + '...' : comment;
+                // Обрезаем описание до 50 символов
+                const description = event.description_ru || '-';
+                const truncatedDescription = description.length > 50 ? description.substring(0, 50) + '...' : description;
                 
                 // Получаем день недели для события
                 const eventDate = new Date(event.date + 'T00:00:00');
@@ -1797,7 +1797,7 @@ ob_start();
                     <td class="event-link">${linkHtml}</td>
                     <td class="event-thumbnail">${thumbnailHtml}</td>
                     <td class="event-status">${statusHtml}</td>
-                    <td class="event-comment">${truncatedComment}</td>
+                    <td class="event-comment">${truncatedDescription}</td>
                     <td class="event-actions">
                         <button class="btn btn-edit" onclick="editEvent('${event.id}')" title="Редактировать">✏️</button>
                         <button class="btn btn-primary" onclick="copyEvent('${event.id}')" title="Копировать">📋</button>
@@ -1883,9 +1883,9 @@ ob_start();
                 const statusText = event.is_active ? 'Активно' : 'Неактивно';
                 const statusHtml = `<span class="status-badge ${statusClass}">${statusText}</span>`;
                 
-                // Обрезаем комментарий до 50 символов
-                const comment = event.comment || '-';
-                const truncatedComment = comment.length > 50 ? comment.substring(0, 50) + '...' : comment;
+                // Обрезаем описание до 50 символов
+                const description = event.description_ru || '-';
+                const truncatedDescription = description.length > 50 ? description.substring(0, 50) + '...' : description;
                 
                 // Получаем день недели для события
                 const eventDate = new Date(event.date + 'T00:00:00');
@@ -1903,7 +1903,7 @@ ob_start();
                     <td class="event-link">${linkHtml}</td>
                     <td class="event-thumbnail">${thumbnailHtml}</td>
                     <td class="event-status">${statusHtml}</td>
-                    <td class="event-comment">${truncatedComment}</td>
+                    <td class="event-comment">${truncatedDescription}</td>
                     <td class="event-actions">
                         <button class="btn btn-edit" onclick="editEvent('${event.id}')" title="Редактировать">✏️</button>
                         <button class="btn btn-primary" onclick="copyEvent('${event.id}')" title="Копировать">📋</button>
