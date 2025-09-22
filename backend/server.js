@@ -36,6 +36,9 @@ const speedLimiter = slowDown({
   delayMs: () => 500 // begin adding 500ms of delay per request above 50
 });
 
+// Trust proxy for rate limiting
+app.set('trust proxy', 1);
+
 // Middleware
 app.use(helmet());
 app.use(compression());
