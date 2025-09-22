@@ -3372,18 +3372,6 @@ td:last-child {
     flex-shrink: 0;
 }
 
-@media (max-width: 768px) {
-    .section-header--with-button {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: var(--vspace-0_75);
-    }
-    
-    .section-header--with-button .btn {
-        width: 100%;
-        text-align: center;
-    }
-}
 
 .header-contact__num {
     display        : flex;
