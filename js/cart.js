@@ -85,7 +85,52 @@ class Cart {
     }
 
     getTotal() {
+        const subtotal = this.items.reduce((total, item) => total + (item.price * item.quantity), 0);
+        
+        // Применяем скидку если есть
+        if (this.promotionId === 1) {
+            return subtotal * 0.8; // 20% скидка
+        }
+        
+        return subtotal;
+    }
+
+    getSubtotal() {
         return this.items.reduce((total, item) => total + (item.price * item.quantity), 0);
+    }
+
+    updateTotalDisplay() {
+        const cartTotal = document.querySelector('.cart-total');
+        if (!cartTotal) return;
+
+        const subtotal = this.getSubtotal();
+        const total = this.getTotal();
+        
+        if (this.promotionId === 1 && subtotal > 0) {
+            // Показываем субтотал, скидку и итого
+            cartTotal.innerHTML = `
+                <div class="total-row">
+                    <span>Субтотал:</span>
+                    <span>${this.formatNumber(subtotal)} ₫</span>
+                </div>
+                <div class="total-row discount-row">
+                    <span>Скидка 20%:</span>
+                    <span>-${this.formatNumber(subtotal - total)} ₫</span>
+                </div>
+                <div class="total-row total-final">
+                    <span>Итого:</span>
+                    <span class="total-amount">${this.formatNumber(total)} ₫</span>
+                </div>
+            `;
+        } else {
+            // Показываем только итого
+            cartTotal.innerHTML = `
+                <div class="total-row">
+                    <span>Итого:</span>
+                    <span class="total-amount">${this.formatNumber(total)} ₫</span>
+                </div>
+            `;
+        }
     }
 
     saveCart() {
@@ -135,7 +180,8 @@ class Cart {
                 </div>
             `).join('');
 
-            cartTotalAmount.textContent = `${this.formatNumber(this.getTotal())} ₫`;
+            // Обновляем отображение суммы с учетом скидки
+            this.updateTotalDisplay();
         }
     }
 
@@ -151,6 +197,12 @@ class Cart {
         this.populateCartModal();
         this.showModal();
         this.showGuestFields();
+        
+        // Заполняем поля данными из профиля, если пользователь авторизован
+        if (window.authSystem && window.authSystem.isAuthenticated && window.authSystem.userData) {
+            this.fillFieldsFromProfile(window.authSystem.userData);
+            this.checkAndApplyDiscount(window.authSystem.userData);
+        }
     }
 
     showGuestFields() {
@@ -449,6 +501,11 @@ class Cart {
             comment: this.getOrderComment(orderType)
         };
 
+        // Добавляем promotion_id если есть скидка
+        if (this.promotionId) {
+            orderData.promotion_id = this.promotionId;
+        }
+
         // Для заказа на столик добавляем имя стола
         if (orderType === 'table') {
             const tableSelect = document.getElementById('tableNumber');
@@ -572,6 +629,60 @@ class Cart {
         // Auth modal is now handled by AuthSystem in menu2.php
         // This method is no longer used
         console.log('Auth modal handled by AuthSystem');
+    }
+
+    fillFieldsFromProfile(userData) {
+        // Заполняем поля корзины данными из профиля
+        const nameField = document.getElementById('customerName');
+        const phoneField = document.getElementById('customerPhone');
+        
+        if (nameField && userData.firstname && userData.lastname) {
+            nameField.value = `${userData.firstname} ${userData.lastname}`.trim();
+        }
+        
+        if (phoneField && userData.phone) {
+            phoneField.value = userData.phone;
+        }
+    }
+
+    checkAndApplyDiscount(userData) {
+        // Проверяем сумму предыдущих заказов
+        const totalPaidSum = userData.total_payed_sum || 0;
+        
+        if (totalPaidSum === 0) {
+            // Новый клиент - применяем скидку 20% (акция ID 1)
+            this.applyDiscount(1, 'Скидка 20% для новых клиентов');
+        } else {
+            // Существующий клиент - показываем информацию о скидке
+            this.showDiscountInfo();
+        }
+    }
+
+    applyDiscount(promotionId, description) {
+        // Применяем скидку к корзине
+        this.promotionId = promotionId;
+        this.discountDescription = description;
+        
+        // Обновляем отображение корзины с учетом скидки
+        this.updateCartDisplay();
+        
+        // Показываем уведомление о примененной скидке
+        this.showToast(description, 'info');
+    }
+
+    showDiscountInfo() {
+        // Показываем информацию о скидке для существующих клиентов
+        const cartTotal = document.querySelector('.cart-total');
+        if (cartTotal) {
+            const discountInfo = document.createElement('div');
+            discountInfo.className = 'discount-info';
+            discountInfo.innerHTML = `
+                <div style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 4px; padding: 8px; margin-top: 8px; font-size: 12px; color: #856404;">
+                    💡 -20% на первый заказ при регистрации нового гостя
+                </div>
+            `;
+            cartTotal.appendChild(discountInfo);
+        }
     }
 
     showToast(message, type = 'success') {

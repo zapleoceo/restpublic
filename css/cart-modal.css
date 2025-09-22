@@ -378,6 +378,19 @@
     margin-bottom: 10px;
 }
 
+.discount-row {
+    color: #28a745;
+    font-weight: 500;
+}
+
+.total-final {
+    font-weight: bold;
+    font-size: 1.1em;
+    border-top: 1px solid #e0e0e0;
+    padding-top: 8px;
+    margin-top: 8px;
+}
+
 .total-row {
     display: flex;
     justify-content: space-between;

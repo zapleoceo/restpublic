@@ -831,6 +831,7 @@ if ($menu_loaded) {
                     .then(data => {
                         if (data.success) {
                             this.displayProfileData(data.user);
+                            this.fillCartFields(data.user);
                         } else {
                             this.showNotification('Ошибка загрузки профиля', 'error');
                         }
@@ -839,6 +840,20 @@ if ($menu_loaded) {
                         console.error('Profile load failed:', error);
                         this.showNotification('Ошибка загрузки профиля', 'error');
                     });
+            }
+
+            fillCartFields(user) {
+                // Заполняем поля корзины данными из профиля
+                const nameField = document.getElementById('customerName');
+                const phoneField = document.getElementById('customerPhone');
+                
+                if (nameField && user.firstname && user.lastname) {
+                    nameField.value = `${user.firstname} ${user.lastname}`.trim();
+                }
+                
+                if (phoneField && user.phone) {
+                    phoneField.value = user.phone;
+                }
             }
 
             displayProfileData(user) {
@@ -998,13 +1013,12 @@ if ($menu_loaded) {
         }
 
         // Initialize auth system when DOM is loaded
-        let authSystem;
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', () => {
-                authSystem = new AuthSystem();
+                window.authSystem = new AuthSystem();
             });
         } else {
-            authSystem = new AuthSystem();
+            window.authSystem = new AuthSystem();
         }
     </script>
 
