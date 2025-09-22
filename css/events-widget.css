@@ -265,7 +265,7 @@
 }
 
 .poster-card:hover .poster-card__description {
-    font-size: 20px;
+    font-size: 17px;
     opacity: 1;
     line-height: 1.4;
     -webkit-line-clamp: unset;
@@ -642,7 +642,7 @@
 }
 
 .poster-card.empty-date:hover .poster-card__description {
-    font-size: 20px;
+    font-size: 17px;
     opacity: 1;
     line-height: 1.4;
     text-align: center;
