@@ -101,7 +101,7 @@ ob_start();
 
     <!-- Статистика -->
     <div class="row">
-        <div class="col-md-3">
+        <div class="col-md-6">
             <div class="card">
                 <div class="card-body">
                     <div class="d-flex align-items-center">
@@ -119,43 +119,7 @@ ob_start();
             </div>
         </div>
         
-        <div class="col-md-3">
-            <div class="card">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-shrink-0">
-                            <div class="avatar-sm rounded-circle bg-success-subtle text-success">
-                                <i class="fas fa-paper-plane font-size-18"></i>
-                            </div>
-                        </div>
-                        <div class="flex-grow-1 ms-3">
-                            <p class="text-muted mb-1">Отправлено в Telegram</p>
-                            <h4 class="mb-0"><?php echo number_format($stats['telegram_sent'] ?? 0); ?></h4>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-md-3">
-            <div class="card">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-shrink-0">
-                            <div class="avatar-sm rounded-circle bg-warning-subtle text-warning">
-                                <i class="fas fa-clock font-size-18"></i>
-                            </div>
-                        </div>
-                        <div class="flex-grow-1 ms-3">
-                            <p class="text-muted mb-1">Не отправлено</p>
-                            <h4 class="mb-0"><?php echo number_format($stats['telegram_not_sent'] ?? 0); ?></h4>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-md-3">
+        <div class="col-md-6">
             <div class="card">
                 <div class="card-body">
                     <div class="d-flex align-items-center">
@@ -242,7 +206,6 @@ ob_start();
                                     <th>Описание</th>
                                     <th>Банк</th>
                                     <th>Дата</th>
-                                    <th>Telegram</th>
                                     <th>Действия</th>
                                 </tr>
                             </thead>
@@ -269,20 +232,6 @@ ob_start();
                                     </td>
                                     <td>
                                         <?php echo date('d.m.Y H:i', strtotime($transaction['transaction_date'])); ?>
-                                    </td>
-                                    <td>
-                                        <?php if ($transaction['telegram_sent']): ?>
-                                        <span class="badge bg-success">
-                                            <i class="fas fa-check"></i> Отправлено
-                                        </span>
-                                        <?php if ($transaction['telegram_sent_at']): ?>
-                                        <br><small class="text-muted"><?php echo date('d.m.Y H:i', strtotime($transaction['telegram_sent_at'])); ?></small>
-                                        <?php endif; ?>
-                                        <?php else: ?>
-                                        <span class="badge bg-warning">
-                                            <i class="fas fa-clock"></i> Не отправлено
-                                        </span>
-                                        <?php endif; ?>
                                     </td>
                                     <td>
                                         <button class="btn btn-sm btn-outline-primary" onclick="viewTransaction('<?php echo $transaction['id']; ?>')">
@@ -377,18 +326,6 @@ function viewTransaction(transactionId) {
                                 <tr><td><strong>Дата транзакции:</strong></td><td>${new Date(transaction.transaction_date).toLocaleString()}</td></tr>
                                 <tr><td><strong>Webhook получен:</strong></td><td>${new Date(transaction.webhook_received_at).toLocaleString()}</td></tr>
                             </table>
-                        </div>
-                    </div>
-                    <div class="row mt-3">
-                        <div class="col-12">
-                            <h6>Статус Telegram</h6>
-                            ${transaction.telegram_sent ? 
-                                `<span class="badge bg-success"><i class="fas fa-check"></i> Отправлено</span>` +
-                                (transaction.telegram_sent_at ? `<br><small class="text-muted">${new Date(transaction.telegram_sent_at).toLocaleString()}</small>` : '') +
-                                (transaction.telegram_message_id ? `<br><small class="text-muted">Message ID: ${transaction.telegram_message_id}</small>` : '')
-                                : 
-                                `<span class="badge bg-warning"><i class="fas fa-clock"></i> Не отправлено</span>`
-                            }
                         </div>
                     </div>
                 `;
