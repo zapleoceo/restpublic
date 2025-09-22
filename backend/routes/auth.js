@@ -118,7 +118,7 @@ router.post('/telegram-callback', async (req, res) => {
       };
       
       const createResult = await posterService.createClient(clientData);
-      client_id = createResult.client_id;
+      client_id = createResult.response;
     }
 
     // Save user to MongoDB
