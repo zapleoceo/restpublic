@@ -569,8 +569,9 @@ class Cart {
     }
 
     showAuthModal() {
-        // TODO: Implement auth modal
-        this.showToast('Модалка авторизации будет реализована', 'info');
+        // Auth modal is now handled by AuthSystem in menu2.php
+        // This method is no longer used
+        console.log('Auth modal handled by AuthSystem');
     }
 
     showToast(message, type = 'success') {
