@@ -876,14 +876,6 @@ if ($menu_loaded) {
                         <label>Общая сумма покупок:</label>
                         <span>${user.total_payed_sum ? (user.total_payed_sum / 100).toFixed(0) + ' ₫' : '0 ₫'}</span>
                     </div>
-                    <div class="profile-field">
-                        <label>Группа клиента:</label>
-                        <span>${user.client_groups_name || 'Не указано'}</span>
-                    </div>
-                    <div class="profile-field">
-                        <label>Скидка группы:</label>
-                        <span>${user.client_groups_discount || 0}%</span>
-                    </div>
                 `;
             }
 
