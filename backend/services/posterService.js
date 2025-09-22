@@ -343,8 +343,8 @@ class PosterService {
       const url = `${this.baseURL}/clients.createClient?token=${this.token}`;
       
       // Валидация обязательных полей
-      if (!clientData.client_name) {
-        throw new Error('client_name is required');
+      if (!clientData.firstname && !clientData.client_name) {
+        throw new Error('firstname or client_name is required');
       }
       if (!clientData.client_groups_id_client) {
         throw new Error('client_groups_id_client is required');
@@ -355,7 +355,9 @@ class PosterService {
 
       // Подготавливаем данные для создания клиента
       const processedClientData = {
-        client_name: clientData.client_name,
+        client_name: clientData.client_name || `${clientData.firstname || ''} ${clientData.lastname || ''}`.trim() || 'Пользователь',
+        firstname: clientData.firstname,
+        lastname: clientData.lastname,
         client_groups_id_client: parseInt(clientData.client_groups_id_client),
         phone: clientData.phone,
         client_sex: clientData.client_sex || 0,
