@@ -34,10 +34,10 @@ class Cart {
             }
         });
 
-        // Auth icon click
-        document.getElementById('authIcon')?.addEventListener('click', () => {
-            this.showAuthModal();
-        });
+        // Auth icon click - handled by AuthSystem
+        // document.getElementById('authIcon')?.addEventListener('click', () => {
+        //     this.showAuthModal();
+        // });
     }
 
     addItem(product) {
