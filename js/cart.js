@@ -745,35 +745,21 @@ class Cart {
     }
 
     showDiscountText(show) {
-        // Показываем или скрываем текст скидки в футере модалки
-        let discountTextElement = document.getElementById('discountText');
-        
-        if (!discountTextElement) {
-            // Создаем элемент если его нет
-            const cartModal = document.getElementById('cartModal');
-            if (cartModal) {
-                const footer = cartModal.querySelector('.modal-footer');
-                if (footer) {
-                    discountTextElement = document.createElement('div');
-                    discountTextElement.id = 'discountText';
-                    discountTextElement.style.cssText = `
-                        color: #366b5b;
-                        font-size: 14px;
-                        text-align: center;
-                        margin-top: 10px;
-                        font-weight: 500;
-                    `;
-                    footer.appendChild(discountTextElement);
-                }
-            }
+        // Удаляем динамически созданный элемент discountText если он существует
+        const oldDiscountText = document.getElementById('discountText');
+        if (oldDiscountText) {
+            oldDiscountText.remove();
         }
         
-        if (discountTextElement) {
+        // Показываем или скрываем текст скидки в футере модалки
+        const discountInfoElement = document.querySelector('.discount-info');
+        
+        if (discountInfoElement) {
             if (show) {
-                discountTextElement.textContent = '-20% на первый заказ при регистрации нового гостя';
-                discountTextElement.style.display = 'block';
+                discountInfoElement.style.display = 'block';
+                discountInfoElement.style.backgroundColor = '#366b5b';
             } else {
-                discountTextElement.style.display = 'none';
+                discountInfoElement.style.display = 'none';
             }
         }
     }
