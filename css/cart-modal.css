@@ -364,6 +364,19 @@
     color: #666;
     font-style: italic;
     margin-bottom: 5px;
+    animation: discountColorPulse 2s ease-in-out infinite;
+}
+
+@keyframes discountColorPulse {
+    0% {
+        color: #666;
+    }
+    50% {
+        color: #fff;
+    }
+    100% {
+        color: #666;
+    }
 }
 
 .modal-buttons {
