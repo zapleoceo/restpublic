@@ -165,6 +165,11 @@
    /* glightbox
     * ------------------------------------------------------ */ 
     const ssGLightbox = function() {
+        // Проверяем, доступна ли библиотека GLightbox
+        if (typeof GLightbox === 'undefined') {
+            console.warn('GLightbox library not loaded, skipping lightbox initialization');
+            return;
+        }
 
         const lightbox = GLightbox({
             selector: '.glightbox',

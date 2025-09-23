@@ -218,24 +218,32 @@ class Cart {
         const cartTotalAmount = document.getElementById('cartTotalAmount');
         
         if (this.items.length === 0) {
-            cartItemsList.innerHTML = '<p class="cart-empty-message">Корзина пуста</p>';
-            cartTotalAmount.textContent = '0 ₫';
+            if (cartItemsList) {
+                cartItemsList.innerHTML = '<p class="cart-empty-message">Корзина пуста</p>';
+            }
+            if (cartTotalAmount) {
+                cartTotalAmount.textContent = '0 ₫';
+            }
             return;
         }
 
-        cartItemsList.innerHTML = this.items.map(item => `
-            <div class="cart-item">
-                <div class="cart-item-name">${item.name}</div>
-                <div class="cart-item-price">${this.formatNumber(item.price)} ₫</div>
-                <div class="cart-item-quantity">
-                    <a href="#" class="quantity-btn" onclick="cart.updateQuantity('${item.id}', ${item.quantity - 1}); return false;">-</a>
-                    <span>${item.quantity}</span>
-                    <a href="#" class="quantity-btn" onclick="cart.updateQuantity('${item.id}', ${item.quantity + 1}); return false;">+</a>
+        if (cartItemsList) {
+            cartItemsList.innerHTML = this.items.map(item => `
+                <div class="cart-item">
+                    <div class="cart-item-name">${item.name}</div>
+                    <div class="cart-item-price">${this.formatNumber(item.price)} ₫</div>
+                    <div class="cart-item-quantity">
+                        <a href="#" class="quantity-btn" onclick="cart.updateQuantity('${item.id}', ${item.quantity - 1}); return false;">-</a>
+                        <span>${item.quantity}</span>
+                        <a href="#" class="quantity-btn" onclick="cart.updateQuantity('${item.id}', ${item.quantity + 1}); return false;">+</a>
+                    </div>
                 </div>
-            </div>
-        `).join('');
+            `).join('');
+        }
 
-        cartTotalAmount.textContent = `${this.formatNumber(this.getTotal())} ₫`;
+        if (cartTotalAmount) {
+            cartTotalAmount.textContent = `${this.formatNumber(this.getTotal())} ₫`;
+        }
     }
 
     showModal() {
