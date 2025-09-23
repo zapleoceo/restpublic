@@ -102,13 +102,14 @@ try {
     foreach ($cursor as $user) {
         $guests[] = [
             'id' => (string)$user['_id'],
-            'firstname' => $user['firstname'] ?? '',
-            'lastname' => $user['lastname'] ?? '',
+            'firstname' => $user['name'] ?? $user['firstname'] ?? '',
+            'lastname' => $user['lastName'] ?? $user['lastname'] ?? '',
             'phone' => $user['phone'] ?? '',
             'email' => $user['email'] ?? '',
-            'poster_client_id' => $user['poster_client_id'] ?? null,
+            'poster_client_id' => $user['client_id'] ?? $user['poster_client_id'] ?? null,
             'date_activale' => isset($user['date_activale']) ? 
-                $user['date_activale']->toDateTime()->format('Y-m-d H:i:s') : '',
+                $user['date_activale']->toDateTime()->format('Y-m-d H:i:s') : 
+                (isset($user['updatedAt']) ? $user['updatedAt']->toDateTime()->format('Y-m-d H:i:s') : ''),
             'total_payed_sum' => $user['total_payed_sum'] ?? 0,
             'bonus' => $user['bonus'] ?? 0,
             'discount_per' => $user['discount_per'] ?? 0
