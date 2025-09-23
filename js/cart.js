@@ -202,6 +202,9 @@ class Cart {
         if (window.authSystem && window.authSystem.isAuthenticated && window.authSystem.userData) {
             this.fillFieldsFromProfile(window.authSystem.userData);
             this.checkAndApplyDiscount(window.authSystem.userData);
+        } else {
+            // Если пользователь не авторизован, но есть данные в localStorage, пытаемся их использовать
+            this.tryFillFromStoredData();
         }
     }
 
@@ -509,6 +512,25 @@ class Cart {
             comment: this.getOrderComment(orderType)
         };
 
+        // Если пользователь авторизован, пытаемся найти его client_id в Poster
+        if (window.authSystem && window.authSystem.isAuthenticated && window.authSystem.userData) {
+            try {
+                const apiUrl = window.location.hostname === 'localhost' ? 'http://localhost:3002' : 'https://northrepublic.me';
+                const response = await fetch(`${apiUrl}/api/poster/clients.getClients?phone=${encodeURIComponent(phone)}&token=${window.API_TOKEN}`);
+                
+                if (response.ok) {
+                    const clientsData = await response.json();
+                    if (clientsData && clientsData.length > 0) {
+                        // Берем первого найденного клиента
+                        orderData.client_id = clientsData[0].client_id;
+                        console.log('Found client_id:', orderData.client_id);
+                    }
+                }
+            } catch (error) {
+                console.warn('Could not find client_id:', error);
+            }
+        }
+
         // Добавляем promotion_id если есть скидка
         if (this.promotionId) {
             orderData.promotion_id = this.promotionId;
@@ -569,6 +591,10 @@ class Cart {
             if (response.ok) {
                 const result = await response.json();
                 this.showToast('Заказ успешно отправлен!', 'success');
+                
+                // Сохраняем данные клиента для будущих заказов
+                this.saveCustomerData(name, phone);
+                
                 this.clearCart();
                 this.hideModal();
                 console.log('Order created:', result);
@@ -650,6 +676,34 @@ class Cart {
         
         if (phoneField && userData.phone) {
             phoneField.value = userData.phone;
+        }
+    }
+
+    tryFillFromStoredData() {
+        // Пытаемся заполнить поля из localStorage (для неавторизованных пользователей)
+        const nameField = document.getElementById('customerName');
+        const phoneField = document.getElementById('customerPhone');
+        
+        // Проверяем, есть ли сохраненные данные
+        const storedName = localStorage.getItem('last_customer_name');
+        const storedPhone = localStorage.getItem('last_customer_phone');
+        
+        if (nameField && storedName && !nameField.value) {
+            nameField.value = storedName;
+        }
+        
+        if (phoneField && storedPhone && !phoneField.value) {
+            phoneField.value = storedPhone;
+        }
+    }
+
+    saveCustomerData(name, phone) {
+        // Сохраняем данные клиента в localStorage для будущих заказов
+        if (name) {
+            localStorage.setItem('last_customer_name', name);
+        }
+        if (phone) {
+            localStorage.setItem('last_customer_phone', phone);
         }
     }
 
