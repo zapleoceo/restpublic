@@ -4,6 +4,9 @@
  * Complete UI refactoring with includes structure
  */
 
+// Define layout loaded constant
+define('ADMIN_LAYOUT_LOADED', true);
+
 // Session and authentication check
 require_once __DIR__ . '/auth-check.php';
 

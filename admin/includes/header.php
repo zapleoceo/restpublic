@@ -6,6 +6,7 @@
 
 // This file should only be included from layout.php
 if (!defined('ADMIN_LAYOUT_LOADED')) {
+    define('ADMIN_LAYOUT_LOADED', true);
     header('Location: /admin/');
     exit;
 }
