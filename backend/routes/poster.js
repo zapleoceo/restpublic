@@ -237,4 +237,28 @@ router.post('/transactions.updateTransaction', requireAuth, async (req, res) => 
   }
 });
 
+// Change transaction product count
+router.post('/transactions.changeTransactionProductCount', requireAuth, async (req, res) => {
+  try {
+    console.log('📡 Changing transaction product count...');
+    const { transaction_id, product_id, count } = req.body;
+    
+    if (!transaction_id || !product_id || count === undefined) {
+      return res.status(400).json({
+        error: 'Invalid request',
+        message: 'transaction_id, product_id, and count are required'
+      });
+    }
+    
+    const result = await posterService.changeTransactionProductCount(transaction_id, product_id, count);
+    res.json(result);
+  } catch (error) {
+    console.error('Change transaction product count error:', error);
+    res.status(500).json({
+      error: 'Failed to change product count',
+      message: error.message
+    });
+  }
+});
+
 module.exports = router;

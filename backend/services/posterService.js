@@ -597,6 +597,54 @@ class PosterService {
       throw new Error(`Failed to update transaction: ${error.message}`);
     }
   }
+
+  // Change transaction product count
+  async changeTransactionProductCount(transactionId, productId, count) {
+    console.log(`🔍 changeTransactionProductCount() called with transactionId: ${transactionId}, productId: ${productId}, count: ${count}`);
+    
+    try {
+      if (!this.token) {
+        throw new Error('Poster API token not configured');
+      }
+
+      const url = `${this.baseURL}/transactions.changeTransactionProductCount?token=${this.token}`;
+      
+      // Валидация обязательных полей
+      if (!transactionId || !productId || count === undefined) {
+        throw new Error('transaction_id, product_id, and count are required');
+      }
+
+      // Подготавливаем данные для изменения количества продукта
+      const processedData = {
+        transaction_id: parseInt(transactionId),
+        product_id: parseInt(productId),
+        count: parseFloat(count)
+      };
+
+      console.log(`📡 Poster API Request: ${url}`);
+      console.log(`🔄 Change product count data:`, processedData);
+
+      const response = await this.api.post(url, processedData, {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
+      });
+      
+      console.log(`📥 Poster API Response:`, response.data);
+      
+      // Проверяем, есть ли ошибка в ответе Poster API
+      if (response.data.error) {
+        console.error(`❌ Poster API returned error:`, response.data.error);
+        throw new Error(`Poster API error: ${response.data.error.message || 'Unknown error'}`);
+      }
+      
+      console.log(`✅ Product count changed successfully:`, response.data);
+      return response.data;
+    } catch (error) {
+      console.error(`❌ Poster API Error (changeTransactionProductCount):`, error.message);
+      throw new Error(`Failed to change product count: ${error.message}`);
+    }
+  }
 }
 
 module.exports = new PosterService();

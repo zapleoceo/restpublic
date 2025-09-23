@@ -5,12 +5,67 @@ class Cart {
         if (!Array.isArray(this.items)) {
             this.items = [];
         }
+        
+        // Защита от флуда - не более одного запроса в секунду
+        this.lastApiCall = 0;
+        this.apiCallQueue = [];
+        this.isProcessingQueue = false;
+        
         this.init();
     }
     
     // Функция для форматирования чисел с пробелами
     formatNumber(num) {
         return num.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+    }
+
+    // Защита от флуда - throttle механизм
+    async throttleApiCall(apiCall) {
+        const now = Date.now();
+        const timeSinceLastCall = now - this.lastApiCall;
+        
+        // Если прошло меньше секунды, добавляем в очередь
+        if (timeSinceLastCall < 1000) {
+            return new Promise((resolve, reject) => {
+                this.apiCallQueue.push({ apiCall, resolve, reject });
+                this.processQueue();
+            });
+        }
+        
+        // Если прошла секунда, выполняем сразу
+        this.lastApiCall = now;
+        return await apiCall();
+    }
+
+    // Обработка очереди запросов
+    async processQueue() {
+        if (this.isProcessingQueue || this.apiCallQueue.length === 0) {
+            return;
+        }
+        
+        this.isProcessingQueue = true;
+        
+        while (this.apiCallQueue.length > 0) {
+            const now = Date.now();
+            const timeSinceLastCall = now - this.lastApiCall;
+            
+            // Ждем до следующей секунды
+            if (timeSinceLastCall < 1000) {
+                await new Promise(resolve => setTimeout(resolve, 1000 - timeSinceLastCall));
+            }
+            
+            const { apiCall, resolve, reject } = this.apiCallQueue.shift();
+            this.lastApiCall = Date.now();
+            
+            try {
+                const result = await apiCall();
+                resolve(result);
+            } catch (error) {
+                reject(error);
+            }
+        }
+        
+        this.isProcessingQueue = false;
     }
     
     init() {
@@ -25,7 +80,7 @@ class Cart {
         });
 
         // Quantity buttons (delegated event handling)
-        document.addEventListener('click', (e) => {
+        document.addEventListener('click', async (e) => {
             if (e.target.classList.contains('quantity-btn')) {
                 e.preventDefault();
                 const btn = e.target;
@@ -36,7 +91,7 @@ class Cart {
                 if (productId) {
                     const currentQuantity = parseInt(cartItem.querySelector('.cart-item-quantity span').textContent);
                     const newQuantity = isIncrease ? currentQuantity + 1 : currentQuantity - 1;
-                    this.updateQuantity(productId, newQuantity);
+                    await this.updateQuantity(productId, newQuantity);
                 }
             }
         });
@@ -82,15 +137,19 @@ class Cart {
         this.updateCartDisplay();
     }
 
-    updateQuantity(productId, quantity) {
+    async updateQuantity(productId, quantity) {
         const item = this.items.find(item => item.id === productId);
         if (item) {
             if (quantity <= 0) {
                 this.removeItem(productId);
             } else {
+                const oldQuantity = item.quantity;
                 item.quantity = quantity;
                 this.saveCart();
                 this.updateCartDisplay();
+                
+                // Отправляем изменение на сервер если есть открытая транзакция
+                await this.syncQuantityChange(productId, oldQuantity, quantity);
             }
         }
     }
@@ -99,6 +158,57 @@ class Cart {
         this.items = [];
         this.saveCart();
         this.updateCartDisplay();
+    }
+
+    // Синхронизация изменения количества с сервером
+    async syncQuantityChange(productId, oldQuantity, newQuantity) {
+        // Проверяем, есть ли открытая транзакция для авторизованного пользователя
+        if (window.authSystem && window.authSystem.isAuthenticated && window.authSystem.userData) {
+            try {
+                const phone = window.authSystem.userData.phone;
+                if (phone) {
+                    // Получаем client_id
+                    const apiUrl = window.location.hostname === 'localhost' ? 'http://localhost:3002' : 'https://northrepublic.me';
+                    const clientsResponse = await fetch(`${apiUrl}/api/poster/clients.getClients?phone=${encodeURIComponent(phone)}&token=${window.API_TOKEN}`);
+                    
+                    if (clientsResponse.ok) {
+                        const clientsData = await clientsResponse.json();
+                        if (clientsData && clientsData.length > 0) {
+                            const clientId = clientsData[0].client_id;
+                            
+                            // Проверяем открытые транзакции
+                            const openTransaction = await this.checkOpenTransactions(clientId);
+                            if (openTransaction) {
+                                // Отправляем изменение количества с защитой от флуда
+                                await this.throttleApiCall(async () => {
+                                    const response = await fetch(`${apiUrl}/api/poster/transactions.changeTransactionProductCount`, {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json',
+                                            'X-API-Token': window.API_TOKEN
+                                        },
+                                        body: JSON.stringify({
+                                            transaction_id: openTransaction.transaction_id,
+                                            product_id: parseInt(productId),
+                                            count: newQuantity
+                                        })
+                                    });
+                                    
+                                    if (!response.ok) {
+                                        throw new Error(`Failed to update product count: ${response.statusText}`);
+                                    }
+                                    
+                                    console.log(`✅ Product count synced: ${productId} = ${newQuantity}`);
+                                    return await response.json();
+                                });
+                            }
+                        }
+                    }
+                }
+            } catch (error) {
+                console.warn('Failed to sync quantity change:', error);
+            }
+        }
     }
 
     getTotal() {
