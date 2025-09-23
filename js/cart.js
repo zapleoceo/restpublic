@@ -363,7 +363,7 @@ class Cart {
         if (!select) return;
 
         // Clear existing options except the first one
-        select.innerHTML = '<option value="">Выберите стол</option>';
+        select.innerHTML = '<option value=""></option>';
         
         if (tables && tables.length > 0) {
             tables.forEach(table => {
@@ -461,7 +461,7 @@ class Cart {
             const table = document.getElementById('tableNumber').value;
             
             if (!table) {
-                this.showToast('Выберите стол', 'error');
+                this.showToast('Выберите номер стола', 'error');
                 return false;
             }
         } else if (orderType === 'takeaway') {
