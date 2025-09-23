@@ -166,10 +166,10 @@ router.get('/clients.getClient', requireAuth, async (req, res) => {
 });
 
 // Get transactions
-router.post('/transactions.getTransactions', requireAuth, async (req, res) => {
+router.get('/transactions.getTransactions', requireAuth, async (req, res) => {
   try {
     console.log('📡 Getting transactions...');
-    const { client_id } = req.body;
+    const { client_id } = req.query;
     
     if (!client_id) {
       return res.status(400).json({

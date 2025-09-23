@@ -954,27 +954,29 @@ class Cart {
         // Проверяем незакрытые заказы клиента
         try {
             const apiUrl = window.location.hostname === 'localhost' ? 'http://localhost:3002' : 'https://northrepublic.me';
-            const response = await fetch(`${apiUrl}/api/poster/transactions.getTransactions`, {
-                method: 'POST',
+            const response = await fetch(`${apiUrl}/api/poster/transactions.getTransactions?client_id=${clientId}&token=${window.API_TOKEN}`, {
+                method: 'GET',
                 headers: {
-                    'Content-Type': 'application/json',
                     'X-API-Token': window.API_TOKEN
-                },
-                body: JSON.stringify({
-                    client_id: clientId
-                })
+                }
             });
             
             if (response.ok) {
                 const transactions = await response.json();
                 console.log('All transactions:', transactions);
                 
-                // Ищем незакрытые заказы (date_close пустое или null)
-                const openTransaction = transactions.find(transaction => 
-                    !transaction.date_close || transaction.date_close === '' || transaction.date_close === '0000-00-00 00:00:00'
-                );
-                
-                return openTransaction || null;
+                // Проверяем, что это массив, а не объект ошибки
+                if (Array.isArray(transactions)) {
+                    // Ищем незакрытые заказы (date_close пустое или null)
+                    const openTransaction = transactions.find(transaction => 
+                        !transaction.date_close || transaction.date_close === '' || transaction.date_close === '0000-00-00 00:00:00'
+                    );
+                    
+                    return openTransaction || null;
+                } else if (transactions.error) {
+                    console.warn('Poster API error:', transactions.message);
+                    return null;
+                }
             }
         } catch (error) {
             console.warn('Error checking open transactions:', error);

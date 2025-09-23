@@ -463,8 +463,6 @@ class PosterService {
         throw new Error('Poster API token not configured');
       }
 
-      const url = `${this.baseURL}/transactions.getTransactions?token=${this.token}`;
-      
       // Валидация обязательных полей
       if (!clientId) {
         throw new Error('client_id is required');
@@ -477,14 +475,13 @@ class PosterService {
         date_to: new Date().toISOString().slice(0, 19).replace('T', ' ') // Текущая дата
       };
 
+      // Строим URL с параметрами
+      const url = `${this.baseURL}/transactions.getTransactions?token=${this.token}&client_id=${processedData.client_id}&date_from=${encodeURIComponent(processedData.date_from)}&date_to=${encodeURIComponent(processedData.date_to)}`;
+
       console.log(`📡 Poster API Request: ${url}`);
       console.log(`📋 Get transactions data:`, processedData);
 
-      const response = await this.api.post(url, processedData, {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-        }
-      });
+      const response = await this.api.get(url);
       
       console.log(`📥 Poster API Response:`, response.data);
       
