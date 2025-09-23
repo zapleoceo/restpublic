@@ -1,0 +1,49 @@
+# Явно учитываем основные языки проекта
+*.php linguist-language=PHP
+*.js linguist-language=JavaScript
+*.ts linguist-language=TypeScript
+*.json linguist-language=JSON
+*.css linguist-language=CSS
+*.html linguist-language=HTML
+*.md linguist-language=Markdown
+
+# Отключаем сторонние библиотеки и зависимости
+vendor/** linguist-vendored
+node_modules/** linguist-vendored
+backend/node_modules/** linguist-vendored
+telegram-bot/node_modules/** linguist-vendored
+
+# Отключаем сгенерированные файлы
+backend/dist/** linguist-vendored
+telegram-bot/dist/** linguist-vendored
+cache/** linguist-vendored
+logs/** linguist-vendored
+
+# Отключаем шаблоны и резервные копии
+template/** linguist-vendored
+*.backup linguist-vendored
+*_backup* linguist-vendored
+*_old* linguist-vendored
+
+# Отключаем конфигурационные файлы IDE
+.vscode/** linguist-vendored
+.cursor/** linguist-vendored
+*.log linguist-vendored
+
+# Отключаем изображения и медиа
+*.jpg linguist-vendored
+*.jpeg linguist-vendored
+*.png linguist-vendored
+*.gif linguist-vendored
+*.webp linguist-vendored
+*.ico linguist-vendored
+*.svg linguist-vendored
+*.ttf linguist-vendored
+*.woff linguist-vendored
+*.woff2 linguist-vendored
+
+# Отключаем архивы и бинарные файлы
+*.zip linguist-vendored
+*.tar linguist-vendored
+*.gz linguist-vendored
+*.rar linguist-vendored
