@@ -213,4 +213,28 @@ router.post('/transactions.addTransactionProduct', requireAuth, async (req, res)
   }
 });
 
+// Update transaction
+router.post('/transactions.updateTransaction', requireAuth, async (req, res) => {
+  try {
+    console.log('📡 Updating transaction...');
+    const { transaction_id, comment } = req.body;
+    
+    if (!transaction_id) {
+      return res.status(400).json({
+        error: 'Invalid request',
+        message: 'transaction_id is required'
+      });
+    }
+    
+    const result = await posterService.updateTransaction(transaction_id, comment);
+    res.json(result);
+  } catch (error) {
+    console.error('Update transaction error:', error);
+    res.status(500).json({
+      error: 'Failed to update transaction',
+      message: error.message
+    });
+  }
+});
+
 module.exports = router;

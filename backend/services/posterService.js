@@ -550,6 +550,53 @@ class PosterService {
       throw new Error(`Failed to add product to transaction: ${error.message}`);
     }
   }
+
+  // Update transaction
+  async updateTransaction(transactionId, comment) {
+    console.log(`🔍 updateTransaction() called with transactionId: ${transactionId}`);
+    
+    try {
+      if (!this.token) {
+        throw new Error('Poster API token not configured');
+      }
+
+      const url = `${this.baseURL}/transactions.updateTransaction?token=${this.token}`;
+      
+      // Валидация обязательных полей
+      if (!transactionId) {
+        throw new Error('transaction_id is required');
+      }
+
+      // Подготавливаем данные для обновления транзакции
+      const processedData = {
+        transaction_id: parseInt(transactionId),
+        comment: comment || ''
+      };
+
+      console.log(`📡 Poster API Request: ${url}`);
+      console.log(`✏️ Update transaction data:`, processedData);
+
+      const response = await this.api.post(url, processedData, {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
+      });
+      
+      console.log(`📥 Poster API Response:`, response.data);
+      
+      // Проверяем, есть ли ошибка в ответе Poster API
+      if (response.data.error) {
+        console.error(`❌ Poster API returned error:`, response.data.error);
+        throw new Error(`Poster API error: ${response.data.error.message || 'Unknown error'}`);
+      }
+      
+      console.log(`✅ Transaction updated successfully:`, response.data);
+      return response.data;
+    } catch (error) {
+      console.error(`❌ Poster API Error (updateTransaction):`, error.message);
+      throw new Error(`Failed to update transaction: ${error.message}`);
+    }
+  }
 }
 
 module.exports = new PosterService();

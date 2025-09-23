@@ -817,6 +817,37 @@ class Cart {
             
             const apiUrl = window.location.hostname === 'localhost' ? 'http://localhost:3002' : 'https://northrepublic.me';
             
+            // Обновляем номер стола в существующем заказе, если новый заказ на столик
+            const orderType = document.querySelector('input[name="orderType"]:checked').value;
+            if (orderType === 'table') {
+                const tableSelect = document.getElementById('tableNumber');
+                const selectedTableId = tableSelect.value;
+                if (selectedTableId) {
+                    const selectedOption = tableSelect.options[tableSelect.selectedIndex];
+                    const tableName = selectedOption.text;
+                    const newComment = `Стол: ${tableName}`;
+                    
+                    // Обновляем комментарий заказа с новым номером стола
+                    const updateResponse = await fetch(`${apiUrl}/api/poster/transactions.updateTransaction`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-API-Token': window.API_TOKEN
+                        },
+                        body: JSON.stringify({
+                            transaction_id: transactionId,
+                            comment: newComment
+                        })
+                    });
+                    
+                    if (updateResponse.ok) {
+                        console.log('Table number updated in existing order');
+                    } else {
+                        console.warn('Failed to update table number in existing order');
+                    }
+                }
+            }
+            
             // Добавляем каждый товар к существующему заказу
             for (const item of this.items) {
                 const response = await fetch(`${apiUrl}/api/poster/transactions.addTransactionProduct`, {
