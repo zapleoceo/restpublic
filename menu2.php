@@ -507,15 +507,15 @@ if ($menu_loaded) {
                 <div class="order-type-options">
                     <label class="order-type-option">
                         <input type="radio" name="orderType" value="table" checked>
-                        <span class="order-type-label">Заказ на столик</span>
+                        <span class="order-type-label">На столик</span>
                     </label>
                     <label class="order-type-option">
                         <input type="radio" name="orderType" value="takeaway">
-                        <span class="order-type-label">Заказать с собой</span>
+                        <span class="order-type-label">С собой</span>
                     </label>
                     <label class="order-type-option">
                         <input type="radio" name="orderType" value="delivery">
-                        <span class="order-type-label">Заказать доставку</span>
+                        <span class="order-type-label">Доставка</span>
                     </label>
                 </div>
                 <button class="modal-close" id="cartModalClose">&times;</button>
