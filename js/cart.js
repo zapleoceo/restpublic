@@ -371,9 +371,20 @@ class Cart {
         this.showGuestFields();
         
         // Заполняем поля данными из профиля, если пользователь авторизован
-        if (window.authSystem && window.authSystem.isAuthenticated && window.authSystem.userData) {
-            this.fillFieldsFromProfile(window.authSystem.userData);
-            await this.checkAndApplyDiscount(window.authSystem.userData);
+        if (window.authSystem && window.authSystem.isAuthenticated) {
+            // Загружаем данные пользователя если их нет
+            if (!window.authSystem.userData) {
+                console.log('🔄 Loading user data for cart...');
+                await window.authSystem.loadUserData();
+            }
+            
+            if (window.authSystem.userData) {
+                this.fillFieldsFromProfile(window.authSystem.userData);
+                await this.checkAndApplyDiscount(window.authSystem.userData);
+            } else {
+                // Если не удалось загрузить данные, используем localStorage
+                this.tryFillFromStoredData();
+            }
         } else {
             // Если пользователь не авторизован, но есть данные в localStorage, пытаемся их использовать
             this.tryFillFromStoredData();

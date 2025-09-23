@@ -830,6 +830,7 @@ if ($menu_loaded) {
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
+                            this.userData = data.user; // Сохраняем данные для корзины
                             this.displayProfileData(data.user);
                             this.fillCartFields(data.user);
                         } else {
@@ -840,6 +841,30 @@ if ($menu_loaded) {
                         console.error('Profile load failed:', error);
                         this.showNotification('Ошибка загрузки профиля', 'error');
                     });
+            }
+
+            async loadUserData() {
+                if (!this.isAuthenticated || !this.sessionToken) return null;
+
+                try {
+                    const response = await fetch('/api/user/profile', {
+                        headers: {
+                            'X-Session-Token': this.sessionToken
+                        }
+                    });
+                    
+                    const data = await response.json();
+                    if (data.success) {
+                        this.userData = data.user; // Сохраняем данные для корзины
+                        return data.user;
+                    } else {
+                        console.error('Failed to load user data:', data.message);
+                        return null;
+                    }
+                } catch (error) {
+                    console.error('User data load failed:', error);
+                    return null;
+                }
             }
 
             fillCartFields(user) {
