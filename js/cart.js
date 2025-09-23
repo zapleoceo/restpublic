@@ -658,8 +658,8 @@ class Cart {
         const totalPaidSum = userData.total_payed_sum || 0;
         
         if (totalPaidSum === 0) {
-            // Новый клиент - применяем скидку 20% (акция ID 1)
-            this.applyDiscount(1, 'Скидка 20% для новых клиентов');
+            // Новый клиент - применяем скидку 20% (акция ID 1) без уведомления
+            this.applyDiscount(1, '');
         } else {
             // Существующий клиент - показываем информацию о скидке
             this.showDiscountInfo();
@@ -674,8 +674,10 @@ class Cart {
         // Обновляем отображение корзины с учетом скидки
         this.updateCartDisplay();
         
-        // Показываем уведомление о примененной скидке
-        this.showToast(description, 'info');
+        // Показываем уведомление о примененной скидке только если есть описание
+        if (description && description.trim() !== '') {
+            this.showToast(description, 'info');
+        }
     }
 
     showDiscountInfo() {
