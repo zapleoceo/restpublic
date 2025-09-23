@@ -20,6 +20,8 @@ if ($current_page === 'index' && $current_dir === 'admin') {
     $current_section = 'pages';
 } elseif ($current_dir === 'users') {
     $current_section = 'users';
+} elseif ($current_dir === 'guests') {
+    $current_section = 'guests';
 } elseif ($current_dir === 'database') {
     $current_section = 'database';
 } elseif ($current_dir === 'events') {
