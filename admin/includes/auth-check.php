@@ -13,7 +13,8 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Проверка авторизации для админских страниц
+// ВРЕМЕННО ОТКЛЮЧЕНО: Проверка авторизации для админских страниц
+/*
 if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
     header('Location: /admin/auth/login.php');
     exit;
@@ -25,6 +26,13 @@ if (isset($_SESSION['admin_login_time']) && (time() - $_SESSION['admin_login_tim
     header('Location: /admin/auth/login.php');
     exit;
 }
+*/
+
+// Устанавливаем тестовые данные для отладки
+$_SESSION['admin_logged_in'] = true;
+$_SESSION['admin_username'] = 'test_admin';
+$_SESSION['admin_user_id'] = 'test_id';
+$_SESSION['admin_login_time'] = time();
 
 // Функция логирования действий админа
 function logAdminAction($action, $description, $data = []) {

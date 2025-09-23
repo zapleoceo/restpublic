@@ -106,6 +106,13 @@ $stats = [
                     </a>
                 </li>
                 
+                <li class="menu-item <?php echo ($current_section === 'guests') ? 'active' : ''; ?>">
+                    <a href="/admin/guests/">
+                        <span class="menu-icon">👤</span>
+                        <span class="menu-text">Гости</span>
+                    </a>
+                </li>
+                
                 <li class="menu-item <?php echo ($current_section === 'database') ? 'active' : ''; ?>">
                     <a href="/admin/database/">
                         <span class="menu-icon">🗄️</span>
