@@ -453,6 +453,103 @@ class PosterService {
       throw new Error(`Failed to remove client: ${error.message}`);
     }
   }
+
+  // Get transactions for client
+  async getTransactions(clientId) {
+    console.log(`🔍 getTransactions() called with clientId: ${clientId}`);
+    
+    try {
+      if (!this.token) {
+        throw new Error('Poster API token not configured');
+      }
+
+      const url = `${this.baseURL}/transactions.getTransactions?token=${this.token}`;
+      
+      // Валидация обязательных полей
+      if (!clientId) {
+        throw new Error('client_id is required');
+      }
+
+      // Подготавливаем данные для запроса транзакций
+      const processedData = {
+        client_id: parseInt(clientId),
+        date_from: '2020-01-01 00:00:00', // Начальная дата для поиска всех транзакций
+        date_to: new Date().toISOString().slice(0, 19).replace('T', ' ') // Текущая дата
+      };
+
+      console.log(`📡 Poster API Request: ${url}`);
+      console.log(`📋 Get transactions data:`, processedData);
+
+      const response = await this.api.post(url, processedData, {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
+      });
+      
+      console.log(`📥 Poster API Response:`, response.data);
+      
+      // Проверяем, есть ли ошибка в ответе Poster API
+      if (response.data.error) {
+        console.error(`❌ Poster API returned error:`, response.data.error);
+        throw new Error(`Poster API error: ${response.data.error.message || 'Unknown error'}`);
+      }
+      
+      console.log(`✅ Transactions retrieved successfully:`, response.data);
+      return response.data;
+    } catch (error) {
+      console.error(`❌ Poster API Error (getTransactions):`, error.message);
+      throw new Error(`Failed to get transactions: ${error.message}`);
+    }
+  }
+
+  // Add product to transaction
+  async addTransactionProduct(transactionId, productId, count, price) {
+    console.log(`🔍 addTransactionProduct() called with transactionId: ${transactionId}, productId: ${productId}`);
+    
+    try {
+      if (!this.token) {
+        throw new Error('Poster API token not configured');
+      }
+
+      const url = `${this.baseURL}/transactions.addTransactionProduct?token=${this.token}`;
+      
+      // Валидация обязательных полей
+      if (!transactionId || !productId || !count || !price) {
+        throw new Error('transaction_id, product_id, count, and price are required');
+      }
+
+      // Подготавливаем данные для добавления продукта
+      const processedData = {
+        transaction_id: parseInt(transactionId),
+        product_id: parseInt(productId),
+        count: parseFloat(count),
+        price: parseFloat(price)
+      };
+
+      console.log(`📡 Poster API Request: ${url}`);
+      console.log(`➕ Add product data:`, processedData);
+
+      const response = await this.api.post(url, processedData, {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
+      });
+      
+      console.log(`📥 Poster API Response:`, response.data);
+      
+      // Проверяем, есть ли ошибка в ответе Poster API
+      if (response.data.error) {
+        console.error(`❌ Poster API returned error:`, response.data.error);
+        throw new Error(`Poster API error: ${response.data.error.message || 'Unknown error'}`);
+      }
+      
+      console.log(`✅ Product added to transaction successfully:`, response.data);
+      return response.data;
+    } catch (error) {
+      console.error(`❌ Poster API Error (addTransactionProduct):`, error.message);
+      throw new Error(`Failed to add product to transaction: ${error.message}`);
+    }
+  }
 }
 
 module.exports = new PosterService();

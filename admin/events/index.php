@@ -1,8 +1,13 @@
 <?php
-// Страница управления событиями в админке
-$page_title = 'Управление событиями - Админка';
+// Настройки страницы для layout
+$page_title = 'Управление событиями - North Republic';
 $page_header = 'Управление событиями';
 $page_description = 'Администрирование событий ресторана';
+
+// Breadcrumbs для навигации
+$breadcrumb = [
+    ['title' => 'Управление событиями']
+];
 
 require_once __DIR__ . '/../../vendor/autoload.php';
 

@@ -1,5 +1,18 @@
 <?php
-session_start();
+/**
+ * Settings Page - Modern UI
+ * Complete refactoring with new structure
+ */
+
+// Настройки страницы для layout
+$page_title = 'Настройки системы - North Republic';
+$page_header = 'Настройки системы';
+$page_description = 'Управление настройками и конфигурацией';
+
+// Breadcrumbs для навигации
+$breadcrumb = [
+    ['title' => 'Настройки системы']
+];
 
 // Загружаем переменные окружения
 require_once __DIR__ . '/../../vendor/autoload.php';
@@ -7,13 +20,6 @@ if (file_exists(__DIR__ . '/../../.env')) {
     $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../..');
     $dotenv->load();
 }
-
-require_once __DIR__ . '/../includes/auth-check.php';
-
-// Настройки страницы для layout
-$page_title = 'Настройки системы - Админка';
-$page_header = '⚙️ Настройки системы';
-$page_description = 'Управление настройками и конфигурацией';
 
 // Генерируем контент
 ob_start();

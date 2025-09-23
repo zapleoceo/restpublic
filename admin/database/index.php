@@ -1,8 +1,13 @@
 <?php
-// Страница базы данных
-$page_title = 'База данных - Админка';
+// Настройки страницы для layout
+$page_title = 'База данных - North Republic';
 $page_header = 'База данных';
 $page_description = 'Просмотр содержимого MongoDB и статистики системы';
+
+// Breadcrumbs для навигации
+$breadcrumb = [
+    ['title' => 'База данных']
+];
 
 $error = '';
 $success = '';

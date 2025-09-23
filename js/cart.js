@@ -185,15 +185,15 @@ class Cart {
         }
     }
 
-    toggleCart() {
+    async toggleCart() {
         if (this.items.length === 0) {
             this.showToast('Корзина пуста', 'info');
             return;
         }
-        this.showCartModal();
+        await this.showCartModal();
     }
 
-    showCartModal() {
+    async showCartModal() {
         this.populateCartModal();
         this.showModal();
         this.showGuestFields();
@@ -201,7 +201,7 @@ class Cart {
         // Заполняем поля данными из профиля, если пользователь авторизован
         if (window.authSystem && window.authSystem.isAuthenticated && window.authSystem.userData) {
             this.fillFieldsFromProfile(window.authSystem.userData);
-            this.checkAndApplyDiscount(window.authSystem.userData);
+            await this.checkAndApplyDiscount(window.authSystem.userData);
         } else {
             // Если пользователь не авторизован, но есть данные в localStorage, пытаемся их использовать
             this.tryFillFromStoredData();
@@ -524,6 +524,15 @@ class Cart {
                         // Берем первого найденного клиента
                         orderData.client_id = clientsData[0].client_id;
                         console.log('Found client_id:', orderData.client_id);
+                        
+                        // Проверяем незакрытые заказы
+                        const openTransaction = await this.checkOpenTransactions(orderData.client_id);
+                        if (openTransaction) {
+                            console.log('Found open transaction:', openTransaction);
+                            // Добавляем товары к существующему заказу
+                            await this.addToExistingOrder(openTransaction.transaction_id);
+                            return;
+                        }
                     }
                 }
             } catch (error) {
@@ -707,16 +716,17 @@ class Cart {
         }
     }
 
-    checkAndApplyDiscount(userData) {
+    async checkAndApplyDiscount(userData) {
         // Проверяем сумму предыдущих заказов
         const totalPaidSum = userData.total_payed_sum || 0;
         
         if (totalPaidSum === 0) {
-            // Новый клиент - применяем скидку 20% (акция ID 1) без уведомления
-            this.applyDiscount(1, '');
+            // Новый клиент - применяем скидку 20% (акция ID 1)
+            this.applyDiscount(1, '-20% на первый заказ при регистрации нового гостя');
+            this.showDiscountText(true);
         } else {
-            // Существующий клиент - показываем информацию о скидке
-            this.showDiscountInfo();
+            // Существующий клиент - скрываем текст скидки
+            this.showDiscountText(false);
         }
     }
 
@@ -731,6 +741,110 @@ class Cart {
         // Показываем уведомление о примененной скидке только если есть описание
         if (description && description.trim() !== '') {
             this.showToast(description, 'info');
+        }
+    }
+
+    showDiscountText(show) {
+        // Показываем или скрываем текст скидки в футере модалки
+        let discountTextElement = document.getElementById('discountText');
+        
+        if (!discountTextElement) {
+            // Создаем элемент если его нет
+            const cartModal = document.getElementById('cartModal');
+            if (cartModal) {
+                const footer = cartModal.querySelector('.modal-footer');
+                if (footer) {
+                    discountTextElement = document.createElement('div');
+                    discountTextElement.id = 'discountText';
+                    discountTextElement.style.cssText = `
+                        color: #366b5b;
+                        font-size: 14px;
+                        text-align: center;
+                        margin-top: 10px;
+                        font-weight: 500;
+                    `;
+                    footer.appendChild(discountTextElement);
+                }
+            }
+        }
+        
+        if (discountTextElement) {
+            if (show) {
+                discountTextElement.textContent = '-20% на первый заказ при регистрации нового гостя';
+                discountTextElement.style.display = 'block';
+            } else {
+                discountTextElement.style.display = 'none';
+            }
+        }
+    }
+
+    async checkOpenTransactions(clientId) {
+        // Проверяем незакрытые заказы клиента
+        try {
+            const apiUrl = window.location.hostname === 'localhost' ? 'http://localhost:3002' : 'https://northrepublic.me';
+            const response = await fetch(`${apiUrl}/api/poster/transactions.getTransactions`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-API-Token': window.API_TOKEN
+                },
+                body: JSON.stringify({
+                    client_id: clientId
+                })
+            });
+            
+            if (response.ok) {
+                const transactions = await response.json();
+                console.log('All transactions:', transactions);
+                
+                // Ищем незакрытые заказы (date_close пустое или null)
+                const openTransaction = transactions.find(transaction => 
+                    !transaction.date_close || transaction.date_close === '' || transaction.date_close === '0000-00-00 00:00:00'
+                );
+                
+                return openTransaction || null;
+            }
+        } catch (error) {
+            console.warn('Error checking open transactions:', error);
+        }
+        return null;
+    }
+
+    async addToExistingOrder(transactionId) {
+        // Добавляем товары к существующему заказу
+        try {
+            this.showToast('Добавляем товары к существующему заказу...', 'info');
+            
+            const apiUrl = window.location.hostname === 'localhost' ? 'http://localhost:3002' : 'https://northrepublic.me';
+            
+            // Добавляем каждый товар к существующему заказу
+            for (const item of this.items) {
+                const response = await fetch(`${apiUrl}/api/poster/transactions.addTransactionProduct`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-API-Token': window.API_TOKEN
+                    },
+                    body: JSON.stringify({
+                        transaction_id: transactionId,
+                        product_id: parseInt(item.id),
+                        count: item.quantity,
+                        price: Math.round(item.price * 100) // Convert to minor units
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`Failed to add product ${item.name} to transaction`);
+                }
+            }
+            
+            this.showToast('Товары успешно добавлены к существующему заказу!', 'success');
+            this.clearCart();
+            this.hideModal();
+            
+        } catch (error) {
+            console.error('Error adding to existing order:', error);
+            this.showToast('Ошибка при добавлении товаров к заказу', 'error');
         }
     }
 

@@ -12,9 +12,14 @@ if (file_exists(__DIR__ . '/../../.env')) {
 }
 
 // Настройки страницы для layout
-$page_title = 'Управление страницами - Админка';
+$page_title = 'Управление страницами - North Republic';
 $page_header = 'Управление страницами';
 $page_description = 'Редактирование контента страниц сайта с WYSIWYG редактором';
+
+// Breadcrumbs для навигации
+$breadcrumb = [
+    ['title' => 'Управление страницами']
+];
 
 $error = '';
 $success = '';

@@ -1,8 +1,13 @@
 <?php
 // Настройки страницы для layout
-$page_title = 'Управление - Админка';
-$page_header = '👥 Гости';
-$page_description = 'Управление гостями ресторана';
+$page_title = 'Управление гостями - North Republic';
+$page_header = 'Управление гостями';
+$page_description = 'Управление гостями ресторана и их данными';
+
+// Breadcrumbs для навигации
+$breadcrumb = [
+    ['title' => 'Управление гостями']
+];
 
 // Загружаем переменные окружения
 require_once __DIR__ . '/../../vendor/autoload.php';
@@ -155,218 +160,191 @@ try {
     $error = 'Ошибка загрузки гостей: ' . $e->getMessage();
 }
 
-// Подключаем layout
-include __DIR__ . '/../includes/layout.php';
+// Generate page content
+ob_start();
 ?>
 
-<div class="admin-content">
-    <div class="admin-header">
-        <h1><?php echo $page_header; ?></h1>
-        <p><?php echo $page_description; ?></p>
+<?php if ($error || $success): ?>
+<div class="page-notifications">
+<?php if ($error): ?>
+<div class="notification notification-error">
+    <div class="notification-content">
+        <span class="notification-message"><?php echo htmlspecialchars($error); ?></span>
+        <button class="notification-close" onclick="adminPanel.hideNotification(this.parentNode.parentNode)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+        </button>
+    </div>
+</div>
+<?php endif; ?>
+
+<?php if ($success): ?>
+<div class="notification notification-success">
+    <div class="notification-content">
+        <span class="notification-message"><?php echo htmlspecialchars($success); ?></span>
+        <button class="notification-close" onclick="adminPanel.hideNotification(this.parentNode.parentNode)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+        </button>
+    </div>
+</div>
+<?php endif; ?>
+</div>
+<?php endif; ?>
+<div class="guests-section">
+    <div class="section-header">
+        <div class="section-header-info">
+            <h2 class="section-title">Список гостей</h2>
+            <p class="section-subtitle">Всего: <?php echo count($guests); ?> гостей</p>
+        </div>
+        <div class="section-actions">
+            <button class="btn btn-primary" onclick="location.reload()" title="Обновить список">
+                <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                </svg>
+                Обновить
+            </button>
+        </div>
     </div>
 
-    <?php if ($error): ?>
-        <div class="alert alert-error">
-            <strong>Ошибка:</strong> <?php echo htmlspecialchars($error); ?>
+    <?php if (empty($guests)): ?>
+    <div class="empty-state">
+        <div class="empty-state-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+            </svg>
         </div>
+        <h3>Гости не найдены</h3>
+        <p>В системе пока нет зарегистрированных гостей</p>
+    </div>
+    <?php else: ?>
+    <div class="table-container">
+        <table class="admin-table" id="guests-table">
+            <thead>
+                <tr>
+                    <th data-sort="name">Имя (MongoDB)</th>
+                    <th data-sort="poster_name">Имя (Poster)</th>
+                    <th data-sort="phone">Телефон</th>
+                    <th data-sort="email">Email</th>
+                    <th data-sort="poster_id">Poster ID</th>
+                    <th data-sort="date">Дата регистрации</th>
+                    <th data-sort="spent">Потрачено</th>
+                    <th data-sort="bonus">Бонусы</th>
+                    <th data-sort="discount">Скидка</th>
+                    <th>Действия</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($guests as $guest): ?>
+                <tr>
+                    <td data-sort="name">
+                        <div class="guest-name">
+                            <strong><?php echo htmlspecialchars($guest['firstname'] . ' ' . $guest['lastname']); ?></strong>
+                        </div>
+                    </td>
+                    <td data-sort="poster_name">
+                        <?php if ($guest['poster_name']): ?>
+                            <div class="guest-poster-name">
+                                <strong><?php echo htmlspecialchars($guest['poster_name']); ?></strong>
+                                <span class="poster-indicator">📋</span>
+                            </div>
+                        <?php else: ?>
+                            <span class="no-data">Нет данных</span>
+                        <?php endif; ?>
+                    </td>
+                    <td data-sort="phone">
+                        <div class="guest-contact">
+                            <span class="phone-number"><?php echo htmlspecialchars($guest['phone']); ?></span>
+                        </div>
+                    </td>
+                    <td data-sort="email">
+                        <div class="guest-contact">
+                            <span class="email-address"><?php echo htmlspecialchars($guest['email']); ?></span>
+                        </div>
+                    </td>
+                    <td data-sort="poster_id">
+                        <?php if ($guest['poster_client_id']): ?>
+                            <span class="badge badge-success" title="Привязан к Poster API">
+                                <?php echo htmlspecialchars($guest['poster_client_id']); ?>
+                            </span>
+                        <?php else: ?>
+                            <span class="badge badge-warning" title="Не привязан к Poster API">
+                                Не привязан
+                            </span>
+                        <?php endif; ?>
+                    </td>
+                    <td data-sort="date">
+                        <div class="guest-date">
+                            <time datetime="<?php echo date('c', strtotime($guest['date_activale'])); ?>">
+                                <?php echo date('d.m.Y H:i', strtotime($guest['date_activale'])); ?>
+                            </time>
+                        </div>
+                    </td>
+                    <td data-sort="spent">
+                        <div class="guest-amount">
+                            <span class="currency-amount">
+                                <?php echo number_format($guest['total_payed_sum'] / 100, 0, ',', ' '); ?> ₫
+                            </span>
+                        </div>
+                    </td>
+                    <td data-sort="bonus">
+                        <div class="guest-amount">
+                            <span class="currency-amount bonus-amount">
+                                <?php echo number_format($guest['bonus'], 0, ',', ' '); ?> ₫
+                            </span>
+                        </div>
+                    </td>
+                    <td data-sort="discount">
+                        <div class="guest-discount">
+                            <span class="discount-percentage">
+                                <?php echo $guest['discount_per']; ?>%
+                            </span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="guest-actions">
+                            <form method="POST" class="delete-form" onsubmit="return confirm('Вы уверены, что хотите удалить этого гостя? Это действие нельзя отменить.');">
+                                <input type="hidden" name="action" value="delete_guest">
+                                <input type="hidden" name="user_id" value="<?php echo htmlspecialchars($guest['id']); ?>">
+                                <input type="hidden" name="poster_client_id" value="<?php echo htmlspecialchars($guest['poster_client_id'] ?? ''); ?>">
+                                <button type="submit" class="btn btn-danger btn-sm" title="Удалить гостя">
+                                    <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="3,6 5,6 21,6"></polyline>
+                                        <path d="M19,6v14a2,2 0 0,1-2,2H7a2,2 0 0,1-2-2V6m3,0V4a2,2 0 0,1,2-2h4a2,2 0 0,1,2,2v2"></path>
+                                    </svg>
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
     <?php endif; ?>
+</div>
 
-    <?php if ($success): ?>
-        <div class="alert alert-success">
-            <strong>Успех:</strong> <?php echo htmlspecialchars($success); ?>
-        </div>
-    <?php endif; ?>
-
-    <div class="guests-section">
-        <div class="section-header">
-            <h2>Список гостей (<?php echo count($guests); ?>)</h2>
-            <div class="section-actions">
-                <button class="btn btn-primary" onclick="location.reload()">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
-                    </svg>
-                    Обновить
-                </button>
-            </div>
-        </div>
-
-        <?php if (empty($guests)): ?>
-            <div class="empty-state">
-                <p>Гости не найдены</p>
-            </div>
-        <?php else: ?>
-            <div class="table-container">
-                <table class="admin-table">
-                    <thead>
-                        <tr>
-                            <th>Имя (MongoDB)</th>
-                            <th>Имя (Poster)</th>
-                            <th>Телефон</th>
-                            <th>Email</th>
-                            <th>Poster ID</th>
-                            <th>Дата регистрации</th>
-                            <th>Потрачено</th>
-                            <th>Бонусы</th>
-                            <th>Скидка</th>
-                            <th>Действия</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($guests as $guest): ?>
-                            <tr>
-                                <td>
-                                    <strong><?php echo htmlspecialchars($guest['firstname'] . ' ' . $guest['lastname']); ?></strong>
-                                </td>
-                                <td>
-                                    <?php if ($guest['poster_name']): ?>
-                                        <strong><?php echo htmlspecialchars($guest['poster_name']); ?></strong>
-                                    <?php else: ?>
-                                        <span class="text-muted">Нет данных</span>
-                                    <?php endif; ?>
-                                </td>
-                                <td><?php echo htmlspecialchars($guest['phone']); ?></td>
-                                <td><?php echo htmlspecialchars($guest['email']); ?></td>
-                                <td>
-                                    <?php if ($guest['poster_client_id']): ?>
-                                        <span class="badge badge-success"><?php echo $guest['poster_client_id']; ?></span>
-                                    <?php else: ?>
-                                        <span class="badge badge-warning">Не привязан</span>
-                                    <?php endif; ?>
-                                </td>
-                                <td><?php echo $guest['date_activale']; ?></td>
-                                <td><?php echo number_format($guest['total_payed_sum'] / 100, 0, ',', ' '); ?> ₫</td>
-                                <td><?php echo number_format($guest['bonus'], 0, ',', ' '); ?> ₫</td>
-                                <td><?php echo $guest['discount_per']; ?>%</td>
-                                <td>
-                                    <form method="POST" style="display: inline;" onsubmit="return confirm('Вы уверены, что хотите удалить этого гостя? Это действие нельзя отменить.');">
-                                        <input type="hidden" name="action" value="delete_guest">
-                                        <input type="hidden" name="user_id" value="<?php echo htmlspecialchars($guest['id']); ?>">
-                                        <input type="hidden" name="poster_client_id" value="<?php echo htmlspecialchars($guest['poster_client_id'] ?? ''); ?>">
-                                        <button type="submit" class="btn btn-danger btn-sm" title="Удалить гостя">
-                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                                                <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
-                                            </svg>
-                                        </button>
-                                    </form>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-            </div>
-        <?php endif; ?>
+<!-- Search functionality -->
+<div class="table-search-container">
+    <div class="search-box">
+        <input type="search" class="table-search" placeholder="Поиск гостей по имени, телефону или email..." aria-label="Поиск гостей">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.35-4.35"></path>
+        </svg>
     </div>
 </div>
 
-<style>
-.guests-section {
-    background: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    overflow: hidden;
-}
+<?php
+$content = ob_get_clean();
 
-.section-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px;
-    border-bottom: 1px solid #e0e0e0;
-    background: #f8f9fa;
-}
-
-.section-header h2 {
-    margin: 0;
-    color: #2c2c2c;
-}
-
-.section-actions {
-    display: flex;
-    gap: 10px;
-}
-
-.table-container {
-    overflow-x: auto;
-}
-
-.admin-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.admin-table th,
-.admin-table td {
-    padding: 12px 16px;
-    text-align: left;
-    border-bottom: 1px solid #e0e0e0;
-}
-
-.admin-table th {
-    background: #f8f9fa;
-    font-weight: 600;
-    color: #2c2c2c;
-}
-
-.admin-table tr:hover {
-    background: #f8f9fa;
-}
-
-.badge {
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 12px;
-    font-weight: 500;
-}
-
-.badge-success {
-    background: #d4edda;
-    color: #155724;
-}
-
-.badge-warning {
-    background: #fff3cd;
-    color: #856404;
-}
-
-.btn-sm {
-    padding: 6px 8px;
-    font-size: 12px;
-}
-
-.btn-danger {
-    background: #dc3545;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background 0.2s;
-}
-
-.btn-danger:hover {
-    background: #c82333;
-}
-
-.empty-state {
-    padding: 40px;
-    text-align: center;
-    color: #666;
-}
-
-.alert {
-    padding: 12px 16px;
-    border-radius: 4px;
-    margin-bottom: 20px;
-}
-
-.alert-error {
-    background: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
-}
-
-.alert-success {
-    background: #d4edda;
-    color: #155724;
-    border: 1px solid #c3e6cb;
-}
-</style>
+// Load layout
+require_once __DIR__ . '/../includes/layout.php';
+?>

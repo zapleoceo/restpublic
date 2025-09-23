@@ -165,4 +165,52 @@ router.get('/clients.getClient', requireAuth, async (req, res) => {
   }
 });
 
+// Get transactions
+router.post('/transactions.getTransactions', requireAuth, async (req, res) => {
+  try {
+    console.log('📡 Getting transactions...');
+    const { client_id } = req.body;
+    
+    if (!client_id) {
+      return res.status(400).json({
+        error: 'Invalid request',
+        message: 'client_id is required'
+      });
+    }
+    
+    const result = await posterService.getTransactions(client_id);
+    res.json(result);
+  } catch (error) {
+    console.error('Transactions get error:', error);
+    res.status(500).json({
+      error: 'Failed to get transactions',
+      message: error.message
+    });
+  }
+});
+
+// Add product to transaction
+router.post('/transactions.addTransactionProduct', requireAuth, async (req, res) => {
+  try {
+    console.log('📡 Adding product to transaction...');
+    const { transaction_id, product_id, count, price } = req.body;
+    
+    if (!transaction_id || !product_id || !count || !price) {
+      return res.status(400).json({
+        error: 'Invalid request',
+        message: 'transaction_id, product_id, count, and price are required'
+      });
+    }
+    
+    const result = await posterService.addTransactionProduct(transaction_id, product_id, count, price);
+    res.json(result);
+  } catch (error) {
+    console.error('Add transaction product error:', error);
+    res.status(500).json({
+      error: 'Failed to add product to transaction',
+      message: error.message
+    });
+  }
+});
+
 module.exports = router;

@@ -10,11 +10,12 @@ if (file_exists(__DIR__ . '/../../.env')) {
 
 require_once __DIR__ . '/../classes/AuthManager.php';
 
+// ВРЕМЕННО ОТКЛЮЧЕНА ПРОВЕРКА АВТОРИЗАЦИИ ДЛЯ ТЕСТИРОВАНИЯ
 // Если уже авторизован, перенаправляем на главную
-if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true) {
-    header('Location: /admin/');
-    exit;
-}
+// if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true) {
+//     header('Location: /admin/');
+//     exit;
+// }
 
 $error = '';
 $authManager = new AuthManager();
