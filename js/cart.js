@@ -24,6 +24,23 @@ class Cart {
             this.toggleCart();
         });
 
+        // Quantity buttons (delegated event handling)
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('quantity-btn')) {
+                e.preventDefault();
+                const btn = e.target;
+                const cartItem = btn.closest('.cart-item');
+                const productId = cartItem.dataset.productId;
+                const isIncrease = btn.textContent === '+';
+                
+                if (productId) {
+                    const currentQuantity = parseInt(cartItem.querySelector('.cart-item-quantity span').textContent);
+                    const newQuantity = isIncrease ? currentQuantity + 1 : currentQuantity - 1;
+                    this.updateQuantity(productId, newQuantity);
+                }
+            }
+        });
+
         // Add to cart buttons
         document.addEventListener('click', (e) => {
             if (e.target.closest('.add-to-cart-btn')) {
@@ -169,13 +186,13 @@ class Cart {
         // Обновляем содержимое корзины
         if (cartItemsList && cartTotalAmount) {
             cartItemsList.innerHTML = this.items.map(item => `
-                <div class="cart-item">
+                <div class="cart-item" data-product-id="${item.id}">
                     <div class="cart-item-name">${item.name}</div>
                     <div class="cart-item-price">${this.formatNumber(item.price)} ₫</div>
                     <div class="cart-item-quantity">
-                        <a href="#" class="quantity-btn" onclick="cart.updateQuantity('${item.id}', ${item.quantity - 1}); return false;">-</a>
+                        <a href="#" class="quantity-btn">-</a>
                         <span>${item.quantity}</span>
-                        <a href="#" class="quantity-btn" onclick="cart.updateQuantity('${item.id}', ${item.quantity + 1}); return false;">+</a>
+                        <a href="#" class="quantity-btn">+</a>
                     </div>
                 </div>
             `).join('');
@@ -232,13 +249,13 @@ class Cart {
 
         if (cartItemsList) {
             cartItemsList.innerHTML = this.items.map(item => `
-                <div class="cart-item">
+                <div class="cart-item" data-product-id="${item.id}">
                     <div class="cart-item-name">${item.name}</div>
                     <div class="cart-item-price">${this.formatNumber(item.price)} ₫</div>
                     <div class="cart-item-quantity">
-                        <a href="#" class="quantity-btn" onclick="cart.updateQuantity('${item.id}', ${item.quantity - 1}); return false;">-</a>
+                        <a href="#" class="quantity-btn">-</a>
                         <span>${item.quantity}</span>
-                        <a href="#" class="quantity-btn" onclick="cart.updateQuantity('${item.id}', ${item.quantity + 1}); return false;">+</a>
+                        <a href="#" class="quantity-btn">+</a>
                     </div>
                 </div>
             `).join('');
