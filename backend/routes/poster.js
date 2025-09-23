@@ -261,4 +261,27 @@ router.post('/transactions.changeTransactionProductCount', requireAuth, async (r
   }
 });
 
+router.post('/transactions.changeFiscalStatus', requireAuth, async (req, res) => {
+  try {
+    console.log('📡 Changing fiscal status...');
+    const { transaction_id, fiscal_status } = req.body;
+    
+    if (!transaction_id || fiscal_status === undefined) {
+      return res.status(400).json({
+        error: 'Invalid request',
+        message: 'transaction_id and fiscal_status are required'
+      });
+    }
+    
+    const result = await posterService.changeFiscalStatus(transaction_id, fiscal_status);
+    res.json(result);
+  } catch (error) {
+    console.error('Change fiscal status error:', error);
+    res.status(500).json({
+      error: 'Failed to change fiscal status',
+      message: error.message
+    });
+  }
+});
+
 module.exports = router;

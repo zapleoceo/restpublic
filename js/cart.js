@@ -191,9 +191,37 @@ class Cart {
                         if (clientsData && clientsData.length > 0) {
                             const clientId = clientsData[0].client_id;
                             
+                            // Проверяем total_payed_sum клиента
+                            const clientData = clientsData[0];
+                            const totalPaidSum = clientData.total_payed_sum || 0;
+                            
                             // Проверяем открытые транзакции
                             const openTransaction = await this.checkOpenTransactions(clientId);
                             if (openTransaction) {
+                                // Если новый клиент (total_payed_sum = 0), применяем скидку
+                                if (totalPaidSum === 0) {
+                                    await this.throttleApiCall(async () => {
+                                        const response = await fetch(`${apiUrl}/api/poster/transactions.changeFiscalStatus`, {
+                                            method: 'POST',
+                                            headers: {
+                                                'Content-Type': 'application/json',
+                                                'X-API-Token': window.API_TOKEN
+                                            },
+                                            body: JSON.stringify({
+                                                transaction_id: openTransaction.transaction_id,
+                                                fiscal_status: 1 // Применяем скидку 20%
+                                            })
+                                        });
+                                        
+                                        if (!response.ok) {
+                                            throw new Error(`Failed to apply discount: ${response.statusText}`);
+                                        }
+                                        
+                                        console.log(`✅ Discount applied for new client: ${clientId}`);
+                                        return await response.json();
+                                    });
+                                }
+                                
                                 // Отправляем изменение количества с защитой от флуда
                                 await this.throttleApiCall(async () => {
                                     const response = await fetch(`${apiUrl}/api/poster/transactions.changeTransactionProductCount`, {
@@ -949,6 +977,42 @@ class Cart {
             this.showToast('Добавляем товары к существующему заказу...', 'info');
             
             const apiUrl = window.location.hostname === 'localhost' ? 'http://localhost:3002' : 'https://northrepublic.me';
+            
+            // Проверяем total_payed_sum клиента и применяем скидку если нужно
+            if (window.authSystem && window.authSystem.isAuthenticated && window.authSystem.userData) {
+                const phone = window.authSystem.userData.phone;
+                if (phone) {
+                    const clientsResponse = await fetch(`${apiUrl}/api/poster/clients.getClients?phone=${encodeURIComponent(phone)}&token=${window.API_TOKEN}`);
+                    if (clientsResponse.ok) {
+                        const clientsData = await clientsResponse.json();
+                        if (clientsData && clientsData.length > 0) {
+                            const clientData = clientsData[0];
+                            const totalPaidSum = clientData.total_payed_sum || 0;
+                            
+                            // Если новый клиент (total_payed_sum = 0), применяем скидку
+                            if (totalPaidSum === 0) {
+                                const discountResponse = await fetch(`${apiUrl}/api/poster/transactions.changeFiscalStatus`, {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'X-API-Token': window.API_TOKEN
+                                    },
+                                    body: JSON.stringify({
+                                        transaction_id: transactionId,
+                                        fiscal_status: 1 // Применяем скидку 20%
+                                    })
+                                });
+                                
+                                if (discountResponse.ok) {
+                                    console.log('✅ Discount applied for new client in existing order');
+                                } else {
+                                    console.warn('Failed to apply discount to existing order');
+                                }
+                            }
+                        }
+                    }
+                }
+            }
             
             // Обновляем номер стола в существующем заказе, если новый заказ на столик
             const orderType = document.querySelector('input[name="orderType"]:checked').value;

@@ -645,6 +645,33 @@ class PosterService {
       throw new Error(`Failed to change product count: ${error.message}`);
     }
   }
+
+  // Change fiscal status of transaction
+  async changeFiscalStatus(transactionId, fiscalStatus) {
+    console.log(`🔍 changeFiscalStatus() called with transactionId: ${transactionId}, fiscalStatus: ${fiscalStatus}`);
+    
+    try {
+      const processedData = {
+        transaction_id: parseInt(transactionId),
+        fiscal_status: parseInt(fiscalStatus)
+      };
+      
+      console.log(`📤 Sending changeFiscalStatus request:`, processedData);
+      
+      const url = `${this.baseURL}/transactions.changeFiscalStatus?token=${this.token}`;
+      const response = await this.api.post(url, processedData, {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
+      });
+      
+      console.log(`✅ Fiscal status changed successfully:`, response.data);
+      return response.data;
+    } catch (error) {
+      console.error(`❌ Poster API Error (changeFiscalStatus):`, error.message);
+      throw new Error(`Failed to change fiscal status: ${error.message}`);
+    }
+  }
 }
 
 module.exports = new PosterService();
