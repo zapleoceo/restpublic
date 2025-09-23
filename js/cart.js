@@ -146,6 +146,11 @@ class Cart {
                 const oldQuantity = item.quantity;
                 item.quantity = quantity;
                 this.saveCart();
+                
+                // Обновляем визуальное отображение счетчика
+                this.updateQuantityDisplay(productId, quantity);
+                
+                // Обновляем общее отображение корзины
                 this.updateCartDisplay();
                 
                 // Отправляем изменение на сервер если есть открытая транзакция
@@ -158,6 +163,20 @@ class Cart {
         this.items = [];
         this.saveCart();
         this.updateCartDisplay();
+    }
+
+    // Обновление визуального отображения счетчика
+    updateQuantityDisplay(productId, quantity) {
+        const cartItem = document.querySelector(`[data-product-id="${productId}"]`);
+        if (cartItem) {
+            const quantitySpan = cartItem.querySelector('.cart-item-quantity span');
+            if (quantitySpan) {
+                quantitySpan.textContent = quantity;
+            }
+            
+            // Обновляем общую сумму корзины
+            this.updateTotalDisplay();
+        }
     }
 
     // Синхронизация изменения количества с сервером
