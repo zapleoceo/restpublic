@@ -114,4 +114,31 @@ router.post('/orders/create', requireAuth, async (req, res) => {
   }
 });
 
+// Remove client
+router.post('/clients.removeClient', requireAuth, async (req, res) => {
+  try {
+    console.log('📡 Removing client...');
+    const { client_id } = req.body;
+    
+    if (!client_id) {
+      return res.status(400).json({
+        error: 'Invalid request',
+        message: 'client_id is required'
+      });
+    }
+    
+    const result = await posterService.removeClient(client_id);
+    res.json({
+      success: true,
+      result: result
+    });
+  } catch (error) {
+    console.error('Client removal error:', error);
+    res.status(500).json({
+      error: 'Failed to remove client',
+      message: error.message
+    });
+  }
+});
+
 module.exports = router;

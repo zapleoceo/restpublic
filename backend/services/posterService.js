@@ -407,6 +407,52 @@ class PosterService {
       throw new Error(`Failed to get client: ${error.message}`);
     }
   }
+
+  // Remove client
+  async removeClient(clientId) {
+    console.log(`🔍 removeClient() called with clientId: ${clientId}`);
+    
+    try {
+      if (!this.token) {
+        throw new Error('Poster API token not configured');
+      }
+
+      const url = `${this.baseURL}/clients.removeClient?token=${this.token}`;
+      
+      // Валидация обязательных полей
+      if (!clientId) {
+        throw new Error('client_id is required');
+      }
+
+      // Подготавливаем данные для удаления клиента
+      const processedData = {
+        client_id: parseInt(clientId)
+      };
+
+      console.log(`📡 Poster API Request: ${url}`);
+      console.log(`🗑️ Remove client data:`, processedData);
+
+      const response = await this.api.post(url, processedData, {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
+      });
+      
+      console.log(`📥 Poster API Response:`, response.data);
+      
+      // Проверяем, есть ли ошибка в ответе Poster API
+      if (response.data.error) {
+        console.error(`❌ Poster API returned error:`, response.data.error);
+        throw new Error(`Poster API error: ${response.data.error.message || 'Unknown error'}`);
+      }
+      
+      console.log(`✅ Client removed successfully:`, response.data);
+      return response.data;
+    } catch (error) {
+      console.error(`❌ Poster API Error (removeClient):`, error.message);
+      throw new Error(`Failed to remove client: ${error.message}`);
+    }
+  }
 }
 
 module.exports = new PosterService();

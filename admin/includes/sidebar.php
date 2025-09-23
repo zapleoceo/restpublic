@@ -11,6 +11,8 @@ if ($current_page === 'index' && $current_dir === 'admin') {
     $current_section = 'pages';
 } elseif ($current_dir === 'users') {
     $current_section = 'users';
+} elseif ($current_dir === 'guests') {
+    $current_section = 'guests';
 } elseif ($current_dir === 'database') {
     $current_section = 'database';
 } elseif ($current_dir === 'events') {
@@ -45,6 +47,13 @@ if ($current_page === 'index' && $current_dir === 'admin') {
             <a href="/admin/users/">
                 <span class="menu-icon">👥</span>
                 <span class="menu-text">Пользователи</span>
+            </a>
+        </li>
+        
+        <li class="menu-item <?php echo ($current_section === 'guests') ? 'active' : ''; ?>">
+            <a href="/admin/guests/">
+                <span class="menu-icon">👤</span>
+                <span class="menu-text">Гости</span>
             </a>
         </li>
         
