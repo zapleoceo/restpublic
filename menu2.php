@@ -547,7 +547,7 @@ if ($menu_loaded) {
                         <div class="form-group form-group-table" id="tableFieldGroup">
                             <label for="tableNumber">Стол</label>
                             <select id="tableNumber" name="tableNumber" required>
-                                <option value="">Стол</option>
+                                <option value=""></option>
                                 <!-- Table options will be populated here -->
                             </select>
                         </div>
