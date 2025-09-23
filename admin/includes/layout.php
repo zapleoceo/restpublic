@@ -1,201 +1,156 @@
 <?php
-// Единый layout для всех страниц админки
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+/**
+ * Modern Admin Layout
+ * Complete UI refactoring with includes structure
+ */
 
-// Проверка авторизации
+// Session and authentication check
 require_once __DIR__ . '/auth-check.php';
 
-// Определяем текущий раздел для активного пункта меню
-$current_page = basename($_SERVER['PHP_SELF'], '.php');
-$current_dir = basename(dirname($_SERVER['PHP_SELF']));
-$current_section = '';
-
-// Определяем текущий раздел
-if ($current_page === 'index' && $current_dir === 'admin') {
-    // Главная страница админки
-    $current_section = 'dashboard';
-} elseif ($current_dir === 'pages') {
-    $current_section = 'pages';
-} elseif ($current_dir === 'users') {
-    $current_section = 'users';
-} elseif ($current_dir === 'guests') {
-    $current_section = 'guests';
-} elseif ($current_dir === 'database') {
-    $current_section = 'database';
-} elseif ($current_dir === 'events') {
-    $current_section = 'events';
-} elseif ($current_dir === 'sepay') {
-    $current_section = 'sepay';
-} elseif ($current_dir === 'settings') {
-    $current_section = 'settings';
-} elseif ($current_dir === 'logs') {
-    $current_section = 'logs';
-} elseif ($current_dir === 'health') {
-    $current_section = 'health';
-}
-
-// Получаем заголовок страницы
+// Define page variables with defaults
 $page_title = $page_title ?? 'Админка - North Republic';
-$page_description = $page_description ?? '';
+$page_header = $page_header ?? 'Панель управления';
+$page_description = $page_description ?? 'Добро пожаловать в панель управления North Republic';
 
-// Статистика для дашборда
-$stats = [
-    'admin_user' => $_SESSION['admin_username'] ?? 'Unknown'
-];
+// Determine current section for active menu item
+$current_section = getCurrentSection();
+
+// Helper function to get current section
+function getCurrentSection() {
+    $script_path = $_SERVER['SCRIPT_NAME'];
+    $path_parts = explode('/', trim($script_path, '/'));
+
+    // Remove 'admin' from path parts if present
+    if ($path_parts[0] === 'admin') {
+        array_shift($path_parts);
+    }
+
+    $section = $path_parts[0] ?? 'dashboard';
+
+    // Map specific pages to sections
+    $section_map = [
+        '' => 'dashboard',
+        'index.php' => 'dashboard',
+        'pages' => 'pages',
+        'users' => 'users',
+        'guests' => 'guests',
+        'database' => 'database',
+        'events' => 'events',
+        'sepay' => 'sepay',
+        'settings' => 'settings',
+        'logs' => 'logs',
+        'health' => 'health'
+    ];
+
+    return $section_map[$section] ?? 'dashboard';
+}
 ?>
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" class="admin-html">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="theme-color" content="#667eea">
+
     <title><?php echo htmlspecialchars($page_title); ?></title>
-    <meta name="description" content="<?php echo htmlspecialchars($page_description); ?>">
+
+    <!-- Critical CSS -->
     <link rel="stylesheet" href="/admin/assets/css/admin.css">
-    <link rel="icon" type="image/png" href="../template/favicon-32x32.png">
-    <?php if (isset($additional_css)): ?>
-        <?php foreach ($additional_css as $css): ?>
-            <link rel="stylesheet" href="<?php echo htmlspecialchars($css); ?>">
+
+    <!-- Preload critical resources -->
+    <link rel="preload" href="/admin/assets/css/admin.css" as="style">
+    <link rel="preload" href="/images/logo.png" as="image">
+    <link rel="preload" href="/admin/assets/js/admin.js" as="script">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/template/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/template/favicon-16x16.png">
+    <link rel="apple-touch-icon" href="/template/apple-touch-icon.png">
+
+    <!-- Additional CSS files -->
+    <?php if (isset($additional_css) && is_array($additional_css)): ?>
+        <?php foreach ($additional_css as $css_file): ?>
+            <link rel="stylesheet" href="<?php echo htmlspecialchars($css_file); ?>">
         <?php endforeach; ?>
     <?php endif; ?>
+
+    <!-- Page-specific meta tags -->
+    <meta name="description" content="<?php echo htmlspecialchars($page_description); ?>">
+    <meta name="author" content="North Republic Team">
 </head>
-<body>
-    <!-- Header -->
-    <header class="admin-header">
-        <div class="header-content">
-            <div class="header-left">
-                <button class="mobile-menu-btn">☰</button>
-                <a href="/admin/" class="logo">
-                    <img src="/images/logo.png" alt="North Republic" style="height: 40px;">
-                </a>
-                <h1>Админка</h1>
-            </div>
-            
-            <div class="header-right">
-                <div class="user-info">
-                    <span class="username"><?php echo htmlspecialchars($_SESSION['admin_username'] ?? 'Admin'); ?></span>
-                    <a href="/admin/auth/logout.php" class="logout-btn">Выйти</a>
-                </div>
-            </div>
-        </div>
-    </header>
-    
-    <div class="admin-container">
-        <!-- Sidebar -->
-        <nav class="admin-sidebar">
-            <ul class="sidebar-menu">
-                <li class="menu-item <?php echo ($current_section === 'dashboard') ? 'active' : ''; ?>">
-                    <a href="/admin/">
-                        <span class="menu-icon">🏠</span>
-                        <span class="menu-text">Главная</span>
-                    </a>
-                </li>
-                
-                <li class="menu-item <?php echo ($current_section === 'pages') ? 'active' : ''; ?>">
-                    <a href="/admin/pages/">
-                        <span class="menu-icon">📄</span>
-                        <span class="menu-text">Страницы</span>
-                    </a>
-                </li>
-                
-                <li class="menu-item <?php echo ($current_section === 'users') ? 'active' : ''; ?>">
-                    <a href="/admin/users/">
-                        <span class="menu-icon">👥</span>
-                        <span class="menu-text">Пользователи</span>
-                    </a>
-                </li>
-                
-                <li class="menu-item <?php echo ($current_section === 'guests') ? 'active' : ''; ?>">
-                    <a href="/admin/guests/">
-                        <span class="menu-icon">👤</span>
-                        <span class="menu-text">Гости</span>
-                    </a>
-                </li>
-                
-                <li class="menu-item <?php echo ($current_section === 'database') ? 'active' : ''; ?>">
-                    <a href="/admin/database/">
-                        <span class="menu-icon">🗄️</span>
-                        <span class="menu-text">База данных</span>
-                    </a>
-                </li>
-                
-                <li class="menu-item <?php echo ($current_section === 'events') ? 'active' : ''; ?>">
-                    <a href="/admin/events/">
-                        <span class="menu-icon">📅</span>
-                        <span class="menu-text">События</span>
-                    </a>
-                </li>
-                
-                <li class="menu-item <?php echo ($current_section === 'sepay') ? 'active' : ''; ?>">
-                    <a href="/admin/sepay/">
-                        <span class="menu-icon">💳</span>
-                        <span class="menu-text">SePay</span>
-                    </a>
-                </li>
-                
-                <li class="menu-item <?php echo ($current_section === 'settings') ? 'active' : ''; ?>">
-                    <a href="/admin/settings/">
-                        <span class="menu-icon">⚙️</span>
-                        <span class="menu-text">Настройки</span>
-                    </a>
-                </li>
-                
-                <li class="menu-item <?php echo ($current_section === 'logs') ? 'active' : ''; ?>">
-                    <a href="/admin/logs/">
-                        <span class="menu-icon">📊</span>
-                        <span class="menu-text">Логи</span>
-                    </a>
-                </li>
-                
-                <li class="menu-item <?php echo ($current_section === 'health') ? 'active' : ''; ?>">
-                    <a href="/admin/health/">
-                        <span class="menu-icon">🏥</span>
-                        <span class="menu-text">Здоровье</span>
-                    </a>
-                </li>
-            </ul>
-        </nav>
-        
-        <!-- Оверлей для мобильного меню -->
-        <div class="sidebar-overlay"></div>
-        
-        <!-- Main Content -->
-        <main class="admin-main">
-            <?php if (isset($page_header) && $page_header): ?>
+<body class="admin-body">
+    <div class="admin-layout">
+        <!-- Sidebar (included) -->
+        <?php require_once __DIR__ . '/sidebar.php'; ?>
+
+        <!-- Main Content Area -->
+        <div class="admin-main">
+            <!-- Header (included) -->
+            <?php require_once __DIR__ . '/header.php'; ?>
+
+            <!-- Content Area -->
+            <main class="admin-content">
+                <!-- Page Header -->
+                <?php if (isset($page_header) || isset($page_description)): ?>
                 <div class="page-header">
-                    <h1><?php echo htmlspecialchars($page_header); ?></h1>
-                    <?php if (isset($page_description) && $page_description): ?>
-                        <p><?php echo htmlspecialchars($page_description); ?></p>
-                    <?php endif; ?>
+                    <div class="page-header-content">
+                        <div class="page-header-text">
+                            <h1 class="page-title"><?php echo htmlspecialchars($page_header); ?></h1>
+                            <?php if (isset($page_description)): ?>
+                                <p class="page-description"><?php echo htmlspecialchars($page_description); ?></p>
+                            <?php endif; ?>
+                        </div>
+                        <?php if (isset($page_actions) && is_array($page_actions)): ?>
+                        <div class="page-actions">
+                            <?php foreach ($page_actions as $action): ?>
+                                <?php echo $action; ?>
+                            <?php endforeach; ?>
+                        </div>
+                        <?php endif; ?>
+                    </div>
                 </div>
-            <?php endif; ?>
-            
-            <!-- Content будет вставлен здесь -->
-            <?php echo $content ?? ''; ?>
-        </main>
-    </div>
-    
-    <!-- Footer -->
-    <footer class="admin-footer">
-        <div class="footer-content">
-            <p>&copy; <?php echo date('Y'); ?> North Republic Admin Panel</p>
-            <p>Developed by <a href="https://zapleo.com" target="_blank">zapleo.com</a></p>
-            <div class="footer-links">
-                <a href="/admin/auth/logout.php">Выйти</a>
-                <span class="footer-separator">|</span>
-                <span class="footer-user">Пользователь: <?php echo htmlspecialchars($_SESSION['admin_username'] ?? 'Admin'); ?></span>
-            </div>
+                <?php endif; ?>
+
+                <!-- Page Content -->
+                <div class="page-content">
+                    <?php echo $content ?? ''; ?>
+                </div>
+            </main>
+
+            <!-- Footer -->
+            <footer class="admin-footer">
+                <div class="footer-content">
+                    <div class="footer-left">
+                        <p>&copy; <?php echo date('Y'); ?> North Republic Admin Panel</p>
+                        <p>Version 2.0 - Complete UI Refactoring</p>
+                    </div>
+                    <div class="footer-right">
+                        <div class="footer-user">
+                            <span class="user-name"><?php echo htmlspecialchars($_SESSION['admin_username'] ?? 'Admin'); ?></span>
+                            <a href="/admin/auth/logout.php" class="footer-logout">Выйти</a>
+                        </div>
+                    </div>
+                </div>
+            </footer>
         </div>
-    </footer>
-    
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="/admin/assets/js/admin.js"></script>
-    <?php if (isset($additional_js)): ?>
-        <?php foreach ($additional_js as $js): ?>
-            <script src="<?php echo htmlspecialchars($js); ?>"></script>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="/admin/assets/js/admin.js" defer></script>
+
+    <!-- Additional JS files -->
+    <?php if (isset($additional_js) && is_array($additional_js)): ?>
+        <?php foreach ($additional_js as $js_file): ?>
+            <script src="<?php echo htmlspecialchars($js_file); ?>" defer></script>
         <?php endforeach; ?>
+    <?php endif; ?>
+
+    <!-- Inline scripts for current page -->
+    <?php if (isset($inline_scripts)): ?>
+        <script>
+            <?php echo $inline_scripts; ?>
+        </script>
     <?php endif; ?>
 </body>
 </html>

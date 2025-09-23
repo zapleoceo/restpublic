@@ -100,19 +100,55 @@ try {
     ]);
     
     foreach ($cursor as $user) {
+        $posterClientId = $user['client_id'] ?? $user['poster_client_id'] ?? null;
+        $posterData = null;
+        
+        // Получаем данные из Poster API если есть client_id
+        if ($posterClientId) {
+            try {
+                $apiUrl = 'http://localhost:3002/api/poster/clients.getClient?client_id=' . urlencode($posterClientId);
+                
+                $ch = curl_init();
+                curl_setopt($ch, CURLOPT_URL, $apiUrl);
+                curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                    'X-API-Token: ' . ($_ENV['API_AUTH_TOKEN'] ?? '')
+                ]);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($ch, CURLOPT_TIMEOUT, 5);
+                
+                $response = curl_exec($ch);
+                $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                curl_close($ch);
+                
+                if ($httpCode === 200 && $response) {
+                    $posterResponse = json_decode($response, true);
+                    // API возвращает массив, берем первый элемент
+                    if (is_array($posterResponse) && count($posterResponse) > 0) {
+                        $posterData = $posterResponse[0];
+                        // Данные успешно получены из Poster API
+                    }
+                } else {
+                    error_log("Poster API error for client $posterClientId: HTTP $httpCode, Response: $response");
+                }
+            } catch (Exception $e) {
+                // Игнорируем ошибки API
+            }
+        }
+        
         $guests[] = [
             'id' => (string)$user['_id'],
             'firstname' => $user['name'] ?? $user['firstname'] ?? '',
             'lastname' => $user['lastName'] ?? $user['lastname'] ?? '',
             'phone' => $user['phone'] ?? '',
             'email' => $user['email'] ?? '',
-            'poster_client_id' => $user['client_id'] ?? $user['poster_client_id'] ?? null,
+            'poster_client_id' => $posterClientId,
+            'poster_name' => $posterData ? ($posterData['firstname'] . ' ' . $posterData['lastname']) : '',
             'date_activale' => isset($user['date_activale']) ? 
                 $user['date_activale']->toDateTime()->format('Y-m-d H:i:s') : 
                 (isset($user['updatedAt']) ? $user['updatedAt']->toDateTime()->format('Y-m-d H:i:s') : ''),
-            'total_payed_sum' => $user['total_payed_sum'] ?? 0,
-            'bonus' => $user['bonus'] ?? 0,
-            'discount_per' => $user['discount_per'] ?? 0
+            'total_payed_sum' => isset($posterData['total_payed_sum']) ? (float)$posterData['total_payed_sum'] : 0,
+            'bonus' => isset($posterData['bonus']) ? (float)$posterData['bonus'] : 0,
+            'discount_per' => isset($posterData['discount_per']) ? (float)$posterData['discount_per'] : 0
         ];
     }
 } catch (Exception $e) {
@@ -163,7 +199,8 @@ include __DIR__ . '/../includes/layout.php';
                 <table class="admin-table">
                     <thead>
                         <tr>
-                            <th>Имя</th>
+                            <th>Имя (MongoDB)</th>
+                            <th>Имя (Poster)</th>
                             <th>Телефон</th>
                             <th>Email</th>
                             <th>Poster ID</th>
@@ -179,6 +216,13 @@ include __DIR__ . '/../includes/layout.php';
                             <tr>
                                 <td>
                                     <strong><?php echo htmlspecialchars($guest['firstname'] . ' ' . $guest['lastname']); ?></strong>
+                                </td>
+                                <td>
+                                    <?php if ($guest['poster_name']): ?>
+                                        <strong><?php echo htmlspecialchars($guest['poster_name']); ?></strong>
+                                    <?php else: ?>
+                                        <span class="text-muted">Нет данных</span>
+                                    <?php endif; ?>
                                 </td>
                                 <td><?php echo htmlspecialchars($guest['phone']); ?></td>
                                 <td><?php echo htmlspecialchars($guest['email']); ?></td>

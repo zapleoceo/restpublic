@@ -1,17 +1,349 @@
-// Admin Panel JavaScript
+/**
+ * North Republic Admin Panel - Modern JavaScript
+ * Complete UI refactoring with modern interactions
+ */
 
-document.addEventListener('DOMContentLoaded', function() {
-    // Инициализация
-    initAdminPanel();
-});
+class AdminPanel {
+    constructor() {
+        this.sidebarOpen = false;
+        this.userMenuOpen = false;
+        this.init();
+    }
 
-function initAdminPanel() {
-    // Добавляем обработчики событий
-    addEventListeners();
-    
-    // Инициализируем компоненты
-    initComponents();
+    init() {
+        this.bindEvents();
+        this.setupAccessibility();
+        this.initTheme();
+        this.initNotifications();
+    }
+
+    bindEvents() {
+        // Sidebar toggle
+        const sidebarToggle = document.getElementById('sidebar-toggle');
+        if (sidebarToggle) {
+            sidebarToggle.addEventListener('click', () => this.toggleSidebar());
+        }
+
+        // User menu toggle
+        const userMenuToggle = document.getElementById('user-menu-toggle');
+        if (userMenuToggle) {
+            userMenuToggle.addEventListener('click', (e) => this.toggleUserMenu(e));
+        }
+
+        // Sidebar overlay
+        const sidebarOverlay = document.getElementById('sidebar-overlay');
+        if (sidebarOverlay) {
+            sidebarOverlay.addEventListener('click', () => this.closeSidebar());
+        }
+
+        // Close user menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (this.userMenuOpen && !e.target.closest('.user-dropdown')) {
+                this.closeUserMenu();
+            }
+        });
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                this.closeAllMenus();
+            }
+        });
+
+        // Window resize
+        window.addEventListener('resize', () => this.handleResize());
+
+        // Form enhancements
+        this.enhanceForms();
+
+        // Table enhancements
+        this.enhanceTables();
+    }
+
+    toggleSidebar() {
+        this.sidebarOpen = !this.sidebarOpen;
+        const sidebar = document.getElementById('admin-sidebar');
+        const overlay = document.getElementById('sidebar-overlay');
+
+        if (sidebar && overlay) {
+            sidebar.classList.toggle('open', this.sidebarOpen);
+            overlay.classList.toggle('active', this.sidebarOpen);
+
+            // Update ARIA attributes
+            sidebar.setAttribute('aria-hidden', !this.sidebarOpen);
+            document.body.style.overflow = this.sidebarOpen ? 'hidden' : '';
+        }
+    }
+
+    closeSidebar() {
+        this.sidebarOpen = false;
+        const sidebar = document.getElementById('admin-sidebar');
+        const overlay = document.getElementById('sidebar-overlay');
+
+        if (sidebar && overlay) {
+            sidebar.classList.remove('open');
+            overlay.classList.remove('active');
+            sidebar.setAttribute('aria-hidden', 'true');
+            document.body.style.overflow = '';
+        }
+    }
+
+    toggleUserMenu(e) {
+        e.stopPropagation();
+        this.userMenuOpen = !this.userMenuOpen;
+        const userMenu = document.getElementById('user-menu');
+        const userMenuToggle = document.getElementById('user-menu-toggle');
+
+        if (userMenu && userMenuToggle) {
+            userMenu.setAttribute('aria-hidden', !this.userMenuOpen);
+            userMenuToggle.setAttribute('aria-expanded', this.userMenuOpen);
+        }
+    }
+
+    closeUserMenu() {
+        this.userMenuOpen = false;
+        const userMenu = document.getElementById('user-menu');
+        const userMenuToggle = document.getElementById('user-menu-toggle');
+
+        if (userMenu && userMenuToggle) {
+            userMenu.setAttribute('aria-hidden', 'true');
+            userMenuToggle.setAttribute('aria-expanded', 'false');
+        }
+    }
+
+    closeAllMenus() {
+        this.closeSidebar();
+        this.closeUserMenu();
+    }
+
+    handleResize() {
+        // Close mobile sidebar on desktop
+        if (window.innerWidth > 768 && this.sidebarOpen) {
+            this.closeSidebar();
+        }
+    }
+
+    setupAccessibility() {
+        // Add ARIA attributes
+        const sidebar = document.getElementById('admin-sidebar');
+        if (sidebar) {
+            sidebar.setAttribute('aria-hidden', 'false');
+        }
+
+        // Focus management
+        const focusableElements = 'a, button, input, select, textarea, [tabindex]:not([tabindex="-1"])';
+        this.focusableElements = document.querySelectorAll(focusableElements);
+    }
+
+    initTheme() {
+        // Check for saved theme preference
+        const savedTheme = localStorage.getItem('admin-theme');
+        if (savedTheme) {
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        }
+
+        // Listen for system theme changes
+        if (window.matchMedia) {
+            const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+            mediaQuery.addEventListener('change', (e) => {
+                if (!localStorage.getItem('admin-theme')) {
+                    document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+                }
+            });
+        }
+    }
+
+    initNotifications() {
+        // Auto-hide notifications after 5 seconds
+        const notifications = document.querySelectorAll('.notification');
+        notifications.forEach(notification => {
+            setTimeout(() => {
+                this.hideNotification(notification);
+            }, 5000);
+        });
+    }
+
+    enhanceForms() {
+        // Add loading states to forms
+        const forms = document.querySelectorAll('form');
+        forms.forEach(form => {
+            form.addEventListener('submit', (e) => {
+                const submitButton = form.querySelector('button[type="submit"]');
+                if (submitButton) {
+                    this.setButtonLoading(submitButton, true);
+                    setTimeout(() => {
+                        this.setButtonLoading(submitButton, false);
+                    }, 3000);
+                }
+            });
+        });
+
+        // Form validation
+        const inputs = document.querySelectorAll('input[required], textarea[required], select[required]');
+        inputs.forEach(input => {
+            input.addEventListener('blur', () => this.validateField(input));
+            input.addEventListener('input', () => this.clearFieldError(input));
+        });
+    }
+
+    enhanceTables() {
+        // Add sorting to tables
+        const sortableHeaders = document.querySelectorAll('th[data-sort]');
+        sortableHeaders.forEach(header => {
+            header.style.cursor = 'pointer';
+            header.addEventListener('click', () => this.sortTable(header));
+        });
+
+        // Add search functionality
+        const searchInputs = document.querySelectorAll('.table-search');
+        searchInputs.forEach(input => {
+            input.addEventListener('input', (e) => this.searchTable(e.target));
+        });
+    }
+
+    setButtonLoading(button, loading) {
+        if (loading) {
+            button.disabled = true;
+            button.dataset.originalText = button.textContent;
+            button.textContent = 'Загрузка...';
+            button.classList.add('loading');
+        } else {
+            button.disabled = false;
+            button.textContent = button.dataset.originalText;
+            button.classList.remove('loading');
+        }
+    }
+
+    validateField(field) {
+        const isValid = field.checkValidity();
+        field.classList.toggle('error', !isValid);
+
+        // Remove existing error message
+        const existingError = field.parentNode.querySelector('.field-error');
+        if (existingError) {
+            existingError.remove();
+        }
+
+        // Add error message if invalid
+        if (!isValid) {
+            const errorMsg = document.createElement('div');
+            errorMsg.className = 'field-error';
+            errorMsg.textContent = field.validationMessage;
+            field.parentNode.appendChild(errorMsg);
+        }
+
+        return isValid;
+    }
+
+    clearFieldError(field) {
+        field.classList.remove('error');
+        const errorMsg = field.parentNode.querySelector('.field-error');
+        if (errorMsg) {
+            errorMsg.remove();
+        }
+    }
+
+    sortTable(header) {
+        const table = header.closest('table');
+        const tbody = table.querySelector('tbody');
+        const column = header.dataset.sort;
+        const rows = Array.from(tbody.querySelectorAll('tr'));
+
+        // Determine sort direction
+        const isAscending = header.classList.contains('sort-asc');
+
+        // Update header classes
+        table.querySelectorAll('th').forEach(th => {
+            th.classList.remove('sort-asc', 'sort-desc');
+        });
+        header.classList.add(isAscending ? 'sort-desc' : 'sort-asc');
+
+        // Sort rows
+        rows.sort((a, b) => {
+            const aValue = a.querySelector(`[data-sort="${column}"]`)?.textContent || '';
+            const bValue = b.querySelector(`[data-sort="${column}"]`)?.textContent || '';
+
+            const comparison = aValue.localeCompare(bValue, undefined, { numeric: true });
+            return isAscending ? -comparison : comparison;
+        });
+
+        // Rebuild table
+        rows.forEach(row => tbody.appendChild(row));
+    }
+
+    searchTable(searchInput) {
+        const table = searchInput.closest('.card')?.querySelector('.table');
+        if (!table) return;
+
+        const searchTerm = searchInput.value.toLowerCase();
+        const rows = table.querySelectorAll('tbody tr');
+
+        rows.forEach(row => {
+            const text = row.textContent.toLowerCase();
+            row.style.display = text.includes(searchTerm) ? '' : 'none';
+        });
+    }
+
+    showNotification(message, type = 'info', duration = 5000) {
+        const notification = document.createElement('div');
+        notification.className = `notification notification-${type}`;
+        notification.innerHTML = `
+            <div class="notification-content">
+                <span class="notification-message">${message}</span>
+                <button class="notification-close" onclick="adminPanel.hideNotification(this.parentNode.parentNode)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+        `;
+
+        const container = document.querySelector('.admin-main');
+        if (container) {
+            container.insertBefore(notification, container.firstChild);
+
+            // Auto-hide
+            setTimeout(() => {
+                this.hideNotification(notification);
+            }, duration);
+        }
+    }
+
+    hideNotification(notification) {
+        notification.classList.add('hiding');
+        setTimeout(() => {
+            notification.remove();
+        }, 300);
+    }
+
+    formatDate(dateString) {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('ru-RU', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    }
+
+    formatCurrency(amount, currency = 'VND') {
+        return new Intl.NumberFormat('vi-VN', {
+            style: 'currency',
+            currency: currency
+        }).format(amount);
+    }
 }
+
+// Initialize admin panel when DOM is loaded
+let adminPanel;
+document.addEventListener('DOMContentLoaded', function() {
+    adminPanel = new AdminPanel();
+
+    // Make admin panel globally available
+    window.adminPanel = adminPanel;
+});
 
 function addEventListeners() {
     // Обработчик для мобильного меню

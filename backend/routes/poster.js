@@ -141,4 +141,28 @@ router.post('/clients.removeClient', requireAuth, async (req, res) => {
   }
 });
 
+// Get client by ID
+router.get('/clients.getClient', requireAuth, async (req, res) => {
+  try {
+    console.log('📡 Getting client...');
+    const { client_id } = req.query;
+    
+    if (!client_id) {
+      return res.status(400).json({
+        error: 'Invalid request',
+        message: 'client_id is required'
+      });
+    }
+    
+    const result = await posterService.getClientById(client_id);
+    res.json(result);
+  } catch (error) {
+    console.error('Client get error:', error);
+    res.status(500).json({
+      error: 'Failed to get client',
+      message: error.message
+    });
+  }
+});
+
 module.exports = router;
