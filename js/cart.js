@@ -140,22 +140,18 @@ class Cart {
     async updateQuantity(productId, quantity) {
         const item = this.items.find(item => item.id === productId);
         if (item) {
-            if (quantity <= 0) {
-                this.removeItem(productId);
-            } else {
-                const oldQuantity = item.quantity;
-                item.quantity = quantity;
-                this.saveCart();
-                
-                // Обновляем визуальное отображение счетчика
-                this.updateQuantityDisplay(productId, quantity);
-                
-                // Обновляем общее отображение корзины
-                this.updateCartDisplay();
-                
-                // Отправляем изменение на сервер если есть открытая транзакция
-                await this.syncQuantityChange(productId, oldQuantity, quantity);
-            }
+            const oldQuantity = item.quantity;
+            item.quantity = quantity;
+            this.saveCart();
+            
+            // Обновляем визуальное отображение счетчика
+            this.updateQuantityDisplay(productId, quantity);
+            
+            // Обновляем общее отображение корзины
+            this.updateCartDisplay();
+            
+            // Отправляем изменение на сервер если есть открытая транзакция
+            await this.syncQuantityChange(productId, oldQuantity, quantity);
         }
     }
 
@@ -231,7 +227,9 @@ class Cart {
     }
 
     getTotal() {
-        const subtotal = this.items.reduce((total, item) => total + (item.price * item.quantity), 0);
+        const subtotal = this.items
+            .filter(item => item.quantity > 0)
+            .reduce((total, item) => total + (item.price * item.quantity), 0);
         
         // Применяем скидку если есть
         if (this.promotionId === 1) {
@@ -366,7 +364,10 @@ class Cart {
         const cartItemsList = document.getElementById('cartItemsList');
         const cartTotalAmount = document.getElementById('cartTotalAmount');
         
-        if (this.items.length === 0) {
+        // Фильтруем товары с количеством > 0
+        const visibleItems = this.items.filter(item => item.quantity > 0);
+        
+        if (visibleItems.length === 0) {
             if (cartItemsList) {
                 cartItemsList.innerHTML = '<p class="cart-empty-message">Корзина пуста</p>';
             }
@@ -377,7 +378,7 @@ class Cart {
         }
 
         if (cartItemsList) {
-            cartItemsList.innerHTML = this.items.map(item => `
+            cartItemsList.innerHTML = visibleItems.map(item => `
                 <div class="cart-item" data-product-id="${item.id}">
                     <div class="cart-item-name">${item.name}</div>
                     <div class="cart-item-price">${this.formatNumber(item.price)} ₫</div>
@@ -868,7 +869,7 @@ class Cart {
         
         if (totalPaidSum === 0) {
             // Новый клиент - применяем скидку 20% (акция ID 1)
-            this.applyDiscount(1, '-20% на первый заказ при регистрации нового гостя');
+            this.applyDiscount(1, '-20% на первый заказ каждому новому гостю');
             this.showDiscountText(true);
         } else {
             // Существующий клиент - скрываем текст скидки
@@ -1019,7 +1020,7 @@ class Cart {
             discountInfo.className = 'discount-info';
             discountInfo.innerHTML = `
                 <div style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 4px; padding: 8px; margin-top: 8px; font-size: 12px; color: #856404;">
-                    💡 -20% на первый заказ при регистрации нового гостя
+                    💡 -20% на первый заказ каждому новому гостю
                 </div>
             `;
             cartTotal.appendChild(discountInfo);
