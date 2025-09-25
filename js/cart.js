@@ -161,8 +161,8 @@ class Cart {
             this.items.forEach(item => {
                 console.log(`Looking for product ID: ${item.id} (type: ${typeof item.id})`);
                 
-                // Ищем элемент по ID (приводим к строке для сравнения)
-                const cartItem = document.querySelector(`[data-product-id="${String(item.id)}"]`);
+                // Ищем элемент по ID ТОЛЬКО в модалке корзины (приводим к строке для сравнения)
+                const cartItem = cartItemsList.querySelector(`[data-product-id="${String(item.id)}"]`);
                 console.log(`Cart item found for ${item.id}:`, !!cartItem);
                 
                 if (cartItem) {
