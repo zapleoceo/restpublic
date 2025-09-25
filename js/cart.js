@@ -67,6 +67,7 @@ class Cart {
 
     addItem(product) {
         const existingItem = this.items.find(item => item.id === product.id);
+        const wasNewItem = !existingItem;
         
         if (existingItem) {
             existingItem.quantity += 1;
@@ -81,7 +82,14 @@ class Cart {
         }
         
         this.saveCart();
-        this.updateCartDisplay();
+        
+        // Если добавили новый товар - нужна полная перерисовка
+        if (wasNewItem) {
+            this.updateCartDisplay();
+        } else {
+            // Если обновили существующий - только обновляем элементы
+            this.updateAllCartElements();
+        }
     }
 
     removeItem(productId) {
@@ -105,14 +113,8 @@ class Cart {
             item.quantity = quantity;
             this.saveCart();
             
-            // Обновляем визуальное отображение счетчика
-            this.updateQuantityDisplay(productId, quantity);
-            
-            // Обновляем только счетчик товаров в иконке корзины
-            this.updateCartIcon();
-            
-            // Обновляем общую сумму
-            this.updateTotalDisplay();
+            // Обновляем все элементы корзины
+            this.updateAllCartElements();
             
             // Синхронизируем с сервером только если количество > 0
             if (quantity > 0) {
@@ -127,15 +129,24 @@ class Cart {
         this.updateCartDisplay();
     }
 
-    // Обновление визуального отображения счетчика
-    updateQuantityDisplay(productId, quantity) {
-        const cartItem = document.querySelector(`[data-product-id="${productId}"]`);
-        if (cartItem) {
-            const quantitySpan = cartItem.querySelector('.cart-item-quantity span');
-            if (quantitySpan) {
-                quantitySpan.textContent = quantity;
+    // Обновление всех элементов корзины без перезаписи HTML
+    updateAllCartElements() {
+        // 1. Обновляем счетчики товаров в корзине
+        this.items.forEach(item => {
+            const cartItem = document.querySelector(`[data-product-id="${item.id}"]`);
+            if (cartItem) {
+                const quantitySpan = cartItem.querySelector('.cart-item-quantity span');
+                if (quantitySpan) {
+                    quantitySpan.textContent = item.quantity;
+                }
             }
-        }
+        });
+
+        // 2. Обновляем счетчик в иконке корзины
+        this.updateCartIcon();
+
+        // 3. Обновляем общую сумму
+        this.updateTotalDisplay();
     }
 
     // Обновление только иконки корзины (счетчик товаров)
