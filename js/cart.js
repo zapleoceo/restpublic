@@ -99,9 +99,13 @@ class Cart {
     }
 
     async updateQuantity(productId, quantity) {
-        const item = this.items.find(item => item.id === productId);
+        console.log(`updateQuantity called: productId=${productId}, quantity=${quantity}`);
+        const item = this.items.find(item => item.id == productId); // Используем == для сравнения строки и числа
+        console.log(`Found item:`, item);
+        
         if (item) {
             const oldQuantity = item.quantity;
+            console.log(`Old quantity: ${oldQuantity}, new quantity: ${quantity}`);
             
             // Если количество отрицательное - удаляем товар
             if (quantity < 0) {
@@ -113,6 +117,8 @@ class Cart {
             item.quantity = quantity;
             this.saveCart();
             
+            console.log(`Item quantity updated to: ${item.quantity}`);
+            
             // Обновляем все элементы корзины
             this.updateAllCartElements();
             
@@ -120,6 +126,8 @@ class Cart {
             if (quantity > 0) {
                 await this.syncQuantityChange(productId, oldQuantity, quantity);
             }
+        } else {
+            console.log(`Item not found for productId: ${productId}`);
         }
     }
 
@@ -131,22 +139,32 @@ class Cart {
 
     // Обновление всех элементов корзины без перезаписи HTML
     updateAllCartElements() {
-        // 1. Обновляем счетчики товаров в корзине
-        this.items.forEach(item => {
-            const cartItem = document.querySelector(`[data-product-id="${item.id}"]`);
-            if (cartItem) {
-                const quantitySpan = cartItem.querySelector('.cart-item-quantity span');
-                if (quantitySpan) {
-                    quantitySpan.textContent = item.quantity;
+        // 1. Обновляем счетчики товаров в корзине (только если модалка открыта)
+        const cartItemsList = document.getElementById('cartItemsList');
+        if (cartItemsList) {
+            this.items.forEach(item => {
+                // Ищем элемент по ID (приводим к строке для сравнения)
+                const cartItem = document.querySelector(`[data-product-id="${String(item.id)}"]`);
+                if (cartItem) {
+                    const quantitySpan = cartItem.querySelector('.cart-item-quantity span');
+                    if (quantitySpan) {
+                        quantitySpan.textContent = item.quantity;
+                        console.log(`Updated quantity for product ${item.id}: ${item.quantity}`);
+                    }
+                } else {
+                    console.log(`Cart item not found for product ID: ${item.id}`);
                 }
-            }
-        });
+            });
+        }
 
         // 2. Обновляем счетчик в иконке корзины
         this.updateCartIcon();
 
-        // 3. Обновляем общую сумму
-        this.updateTotalDisplay();
+        // 3. Обновляем общую сумму (только если модалка открыта)
+        const cartTotal = document.querySelector('.cart-total');
+        if (cartTotal) {
+            this.updateTotalDisplay();
+        }
     }
 
     // Обновление только иконки корзины (счетчик товаров)
