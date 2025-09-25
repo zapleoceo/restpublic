@@ -13,6 +13,11 @@ class Cart {
     
     // Функция для форматирования чисел с пробелами
     formatNumber(num) {
+        // Обрабатываем null, undefined и NaN
+        if (num === null || num === undefined || isNaN(num)) {
+            console.warn('⚠️ formatNumber received invalid value:', num);
+            return '0';
+        }
         return num.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
     }
 
@@ -1007,13 +1012,14 @@ class Cart {
                         
                         // Безопасное преобразование цены
                         const newPrice = parseFloat(productFromAPI.price);
-                        if (!isNaN(newPrice) && newPrice !== item.price) {
+                        if (!isNaN(newPrice) && newPrice > 0 && newPrice !== item.price) {
                             const oldPrice = item.price;
                             item.price = newPrice;
                             console.log(`💰 Price updated for ${item.name}: ${oldPrice} -> ${item.price}`);
                             pricesUpdated = true;
-                        } else if (isNaN(newPrice)) {
-                            console.warn(`⚠️ Invalid price for ${item.name}: ${productFromAPI.price}`);
+                        } else if (isNaN(newPrice) || newPrice <= 0) {
+                            console.warn(`⚠️ Invalid price for ${item.name}: ${productFromAPI.price} (parsed: ${newPrice})`);
+                            // Не обновляем цену, если она невалидна
                         } else {
                             console.log(`✅ Price for ${item.name} is already up to date: ${item.price}`);
                         }
