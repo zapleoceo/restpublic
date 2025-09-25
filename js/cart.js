@@ -120,7 +120,13 @@ class Cart {
             console.log(`Item quantity updated to: ${item.quantity}`);
             
             // Обновляем все элементы корзины
-            this.updateAllCartElements();
+            try {
+                console.log('About to call updateAllCartElements()');
+                this.updateAllCartElements();
+                console.log('updateAllCartElements() completed successfully');
+            } catch (error) {
+                console.error('Error in updateAllCartElements():', error);
+            }
             
             // Синхронизируем с сервером только если количество > 0
             if (quantity > 0) {
@@ -139,20 +145,42 @@ class Cart {
 
     // Обновление всех элементов корзины без перезаписи HTML
     updateAllCartElements() {
+        try {
+            console.log('updateAllCartElements called');
+            console.log('Current items:', this.items);
+        
         // 1. Обновляем счетчики товаров в корзине (только если модалка открыта)
         const cartItemsList = document.getElementById('cartItemsList');
+        console.log('cartItemsList found:', !!cartItemsList);
+        
         if (cartItemsList) {
+            // Находим все элементы корзины
+            const allCartItems = cartItemsList.querySelectorAll('.cart-item');
+            console.log('Found cart items in DOM:', allCartItems.length);
+            
             this.items.forEach(item => {
+                console.log(`Looking for product ID: ${item.id} (type: ${typeof item.id})`);
+                
                 // Ищем элемент по ID (приводим к строке для сравнения)
                 const cartItem = document.querySelector(`[data-product-id="${String(item.id)}"]`);
+                console.log(`Cart item found for ${item.id}:`, !!cartItem);
+                
                 if (cartItem) {
                     const quantitySpan = cartItem.querySelector('.cart-item-quantity span');
+                    console.log(`Quantity span found for ${item.id}:`, !!quantitySpan);
+                    
                     if (quantitySpan) {
+                        const oldValue = quantitySpan.textContent;
                         quantitySpan.textContent = item.quantity;
-                        console.log(`Updated quantity for product ${item.id}: ${item.quantity}`);
+                        console.log(`Updated quantity for product ${item.id}: ${oldValue} -> ${item.quantity}`);
+                    } else {
+                        console.log(`Quantity span not found for product ${item.id}`);
                     }
                 } else {
                     console.log(`Cart item not found for product ID: ${item.id}`);
+                    // Попробуем найти по другому селектору
+                    const alternativeItem = cartItemsList.querySelector(`[data-product-id="${item.id}"]`);
+                    console.log(`Alternative search for ${item.id}:`, !!alternativeItem);
                 }
             });
         }
@@ -164,6 +192,9 @@ class Cart {
         const cartTotal = document.querySelector('.cart-total');
         if (cartTotal) {
             this.updateTotalDisplay();
+        }
+        } catch (error) {
+            console.error('Error in updateAllCartElements:', error);
         }
     }
 
