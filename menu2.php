@@ -1041,9 +1041,40 @@ if ($menu_loaded) {
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', () => {
                 window.authSystem = new AuthSystem();
+                // Check for auth success in URL
+                checkAuthSuccessInURL();
             });
         } else {
             window.authSystem = new AuthSystem();
+            // Check for auth success in URL
+            checkAuthSuccessInURL();
+        }
+
+        // Function to check for auth success in URL and move session to localStorage
+        function checkAuthSuccessInURL() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const authSuccess = urlParams.get('auth');
+            const sessionToken = urlParams.get('session');
+            
+            if (authSuccess === 'success' && sessionToken) {
+                console.log('🔐 Auth success detected in URL, moving session to localStorage');
+                
+                // Save session token to localStorage
+                localStorage.setItem('auth_session_token', sessionToken);
+                
+                // Clean URL by removing auth parameters
+                const newUrl = window.location.origin + window.location.pathname;
+                window.history.replaceState({}, document.title, newUrl);
+                
+                // Show success notification
+                if (window.authSystem) {
+                    window.authSystem.showNotification('Авторизация успешна!', 'success');
+                    // Check auth status to update UI
+                    window.authSystem.checkAuthStatus();
+                }
+                
+                console.log('✅ Session moved to localStorage and URL cleaned');
+            }
         }
     </script>
 
