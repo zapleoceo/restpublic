@@ -941,15 +941,33 @@ class Cart {
 
     fillFieldsFromProfile(userData) {
         // Заполняем поля корзины данными из профиля
+        console.log('🔍 fillFieldsFromProfile called with userData:', userData);
+        
         const nameField = document.getElementById('customerName');
         const phoneField = document.getElementById('customerPhone');
         
+        console.log('🔍 Name field found:', !!nameField);
+        console.log('🔍 Phone field found:', !!phoneField);
+        console.log('🔍 userData.firstname:', userData.firstname);
+        console.log('🔍 userData.lastname:', userData.lastname);
+        console.log('🔍 userData.phone:', userData.phone);
+        
         if (nameField && userData.firstname && userData.lastname) {
-            nameField.value = `${userData.firstname} ${userData.lastname}`.trim();
+            const fullName = `${userData.firstname} ${userData.lastname}`.trim();
+            nameField.value = fullName;
+            console.log('✅ Name field filled with:', fullName);
+        } else if (nameField && userData.client_name) {
+            nameField.value = userData.client_name;
+            console.log('✅ Name field filled with client_name:', userData.client_name);
+        } else {
+            console.log('❌ Name field not filled - missing data');
         }
         
         if (phoneField && userData.phone) {
             phoneField.value = userData.phone;
+            console.log('✅ Phone field filled with:', userData.phone);
+        } else {
+            console.log('❌ Phone field not filled - missing data');
         }
     }
 
