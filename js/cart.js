@@ -166,6 +166,8 @@ class Cart {
                 console.log(`Cart item found for ${item.id}:`, !!cartItem);
                 
                 if (cartItem) {
+                    console.log(`Cart item HTML structure for ${item.id}:`, cartItem.outerHTML);
+                    
                     const quantitySpan = cartItem.querySelector('.cart-item-quantity span');
                     console.log(`Quantity span found for ${item.id}:`, !!quantitySpan);
                     
@@ -175,6 +177,22 @@ class Cart {
                         console.log(`Updated quantity for product ${item.id}: ${oldValue} -> ${item.quantity}`);
                     } else {
                         console.log(`Quantity span not found for product ${item.id}`);
+                        // Попробуем найти другие возможные селекторы
+                        const altSelectors = [
+                            '.cart-item-quantity',
+                            '.quantity',
+                            '.qty',
+                            '[class*="quantity"]',
+                            '[class*="qty"]'
+                        ];
+                        
+                        for (const selector of altSelectors) {
+                            const element = cartItem.querySelector(selector);
+                            if (element) {
+                                console.log(`Found alternative element with selector "${selector}":`, element);
+                                console.log(`Element HTML:`, element.outerHTML);
+                            }
+                        }
                     }
                 } else {
                     console.log(`Cart item not found for product ID: ${item.id}`);
