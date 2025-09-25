@@ -1002,11 +1002,23 @@ class Cart {
                 let pricesUpdated = false;
                 this.items.forEach(item => {
                     const productFromAPI = productsData.find(p => p.product_id == item.id);
-                    if (productFromAPI && productFromAPI.price !== item.price) {
-                        const oldPrice = item.price;
-                        item.price = parseFloat(productFromAPI.price);
-                        console.log(`💰 Price updated for ${item.name}: ${oldPrice} -> ${item.price}`);
-                        pricesUpdated = true;
+                    if (productFromAPI) {
+                        console.log(`🔍 Product ${item.name} (ID: ${item.id}) - API price:`, productFromAPI.price, 'Type:', typeof productFromAPI.price);
+                        
+                        // Безопасное преобразование цены
+                        const newPrice = parseFloat(productFromAPI.price);
+                        if (!isNaN(newPrice) && newPrice !== item.price) {
+                            const oldPrice = item.price;
+                            item.price = newPrice;
+                            console.log(`💰 Price updated for ${item.name}: ${oldPrice} -> ${item.price}`);
+                            pricesUpdated = true;
+                        } else if (isNaN(newPrice)) {
+                            console.warn(`⚠️ Invalid price for ${item.name}: ${productFromAPI.price}`);
+                        } else {
+                            console.log(`✅ Price for ${item.name} is already up to date: ${item.price}`);
+                        }
+                    } else {
+                        console.warn(`⚠️ Product not found in API for ID: ${item.id}`);
                     }
                 });
                 
