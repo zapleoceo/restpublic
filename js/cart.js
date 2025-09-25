@@ -434,6 +434,9 @@ class Cart {
         this.showModal();
         this.showGuestFields();
         
+        // Загружаем актуальные цены от Poster API
+        await this.loadCurrentPricesFromPoster();
+        
         // Заполняем поля данными из профиля, если пользователь авторизован
         if (window.authSystem && window.authSystem.isAuthenticated) {
             // Загружаем данные пользователя если их нет
@@ -443,6 +446,12 @@ class Cart {
             }
             
             if (window.authSystem.userData) {
+                // Проверяем, есть ли полные данные клиента (firstname, lastname)
+                if (!window.authSystem.userData.firstname || !window.authSystem.userData.lastname) {
+                    console.log('🔄 Loading full client data from Poster API...');
+                    await this.loadClientDataFromPoster();
+                }
+                
                 this.fillFieldsFromProfile(window.authSystem.userData);
                 await this.checkAndApplyDiscount(window.authSystem.userData);
             } else {
@@ -968,6 +977,95 @@ class Cart {
             console.log('✅ Phone field filled with:', userData.phone);
         } else {
             console.log('❌ Phone field not filled - missing data');
+        }
+    }
+
+    async loadCurrentPricesFromPoster() {
+        // Загружаем актуальные цены товаров из Poster API
+        try {
+            if (this.items.length === 0) {
+                console.log('🛒 Cart is empty, no need to load prices');
+                return;
+            }
+            
+            console.log('💰 Loading current prices from Poster API...');
+            const apiUrl = window.location.hostname === 'localhost' ? 'http://localhost:3002' : 'https://northrepublic.me';
+            
+            // Получаем все продукты из Poster API
+            const productsResponse = await fetch(`${apiUrl}/api/poster/menu.getProducts?token=${window.API_TOKEN}`);
+            
+            if (productsResponse.ok) {
+                const productsData = await productsResponse.json();
+                console.log('📥 Products data from Poster API:', productsData);
+                
+                // Обновляем цены в корзине
+                let pricesUpdated = false;
+                this.items.forEach(item => {
+                    const productFromAPI = productsData.find(p => p.product_id == item.id);
+                    if (productFromAPI && productFromAPI.price !== item.price) {
+                        const oldPrice = item.price;
+                        item.price = parseFloat(productFromAPI.price);
+                        console.log(`💰 Price updated for ${item.name}: ${oldPrice} -> ${item.price}`);
+                        pricesUpdated = true;
+                    }
+                });
+                
+                if (pricesUpdated) {
+                    // Сохраняем обновленные данные корзины
+                    this.saveCart();
+                    // Обновляем отображение
+                    this.updateTotalDisplay();
+                    console.log('✅ Cart prices updated from Poster API');
+                } else {
+                    console.log('✅ All prices are up to date');
+                }
+            } else {
+                console.error('❌ Failed to fetch products from Poster API:', productsResponse.statusText);
+            }
+        } catch (error) {
+            console.error('❌ Error loading prices from Poster API:', error);
+        }
+    }
+
+    async loadClientDataFromPoster() {
+        // Загружаем полные данные клиента из Poster API
+        try {
+            const phone = window.authSystem.userData.phone;
+            if (!phone) {
+                console.log('❌ No phone number available for client lookup');
+                return;
+            }
+            
+            const apiUrl = window.location.hostname === 'localhost' ? 'http://localhost:3002' : 'https://northrepublic.me';
+            const clientsResponse = await fetch(`${apiUrl}/api/poster/clients.getClients?phone=${encodeURIComponent(phone)}&token=${window.API_TOKEN}`);
+            
+            if (clientsResponse.ok) {
+                const clientsData = await clientsResponse.json();
+                if (clientsData && clientsData.length > 0) {
+                    const clientData = clientsData[0];
+                    console.log('📥 Full client data from Poster API:', clientData);
+                    
+                    // Обновляем данные пользователя
+                    window.authSystem.userData = {
+                        ...window.authSystem.userData,
+                        firstname: clientData.firstname,
+                        lastname: clientData.lastname,
+                        client_name: clientData.client_name,
+                        total_payed_sum: clientData.total_payed_sum || 0
+                    };
+                    
+                    // Сохраняем в localStorage для кеширования
+                    localStorage.setItem('user_client_data', JSON.stringify(clientData));
+                    
+                    console.log('✅ Client data updated and cached');
+                } else {
+                    console.log('❌ No client found in Poster API');
+                }
+            } else {
+                console.error('❌ Failed to fetch client data from Poster API:', clientsResponse.statusText);
+            }
+        } catch (error) {
+            console.error('❌ Error loading client data from Poster API:', error);
         }
     }
 
