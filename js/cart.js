@@ -6,10 +6,7 @@ class Cart {
             this.items = [];
         }
         
-        // Защита от флуда - не более одного запроса в секунду
-        this.lastApiCall = 0;
-        this.apiCallQueue = [];
-        this.isProcessingQueue = false;
+        // Защита от флуда удалена - мгновенные обновления
         
         this.init();
     }
@@ -19,53 +16,9 @@ class Cart {
         return num.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
     }
 
-    // Защита от флуда - throttle механизм
-    async throttleApiCall(apiCall) {
-        const now = Date.now();
-        const timeSinceLastCall = now - this.lastApiCall;
-        
-        // Если прошло меньше секунды, добавляем в очередь
-        if (timeSinceLastCall < 1000) {
-            return new Promise((resolve, reject) => {
-                this.apiCallQueue.push({ apiCall, resolve, reject });
-                this.processQueue();
-            });
-        }
-        
-        // Если прошла секунда, выполняем сразу
-        this.lastApiCall = now;
+    // Мгновенные API запросы без ограничений
+    async executeApiCall(apiCall) {
         return await apiCall();
-    }
-
-    // Обработка очереди запросов
-    async processQueue() {
-        if (this.isProcessingQueue || this.apiCallQueue.length === 0) {
-            return;
-        }
-        
-        this.isProcessingQueue = true;
-        
-        while (this.apiCallQueue.length > 0) {
-            const now = Date.now();
-            const timeSinceLastCall = now - this.lastApiCall;
-            
-            // Ждем до следующей секунды
-            if (timeSinceLastCall < 1000) {
-                await new Promise(resolve => setTimeout(resolve, 1000 - timeSinceLastCall));
-            }
-            
-            const { apiCall, resolve, reject } = this.apiCallQueue.shift();
-            this.lastApiCall = Date.now();
-            
-            try {
-                const result = await apiCall();
-                resolve(result);
-            } catch (error) {
-                reject(error);
-            }
-        }
-        
-        this.isProcessingQueue = false;
     }
     
     init() {
@@ -200,31 +153,7 @@ class Cart {
                             if (openTransaction) {
                                 // Если новый клиент (total_payed_sum = 0), применяем скидку
                                 if (totalPaidSum === 0) {
-                                    await this.throttleApiCall(async () => {
-                                        const response = await fetch(`${apiUrl}/api/poster/transactions.changeFiscalStatus`, {
-                                            method: 'POST',
-                                            headers: {
-                                                'Content-Type': 'application/json',
-                                                'X-API-Token': window.API_TOKEN
-                                            },
-                                            body: JSON.stringify({
-                                                transaction_id: openTransaction.transaction_id,
-                                                fiscal_status: 1 // Применяем скидку 20%
-                                            })
-                                        });
-                                        
-                                        if (!response.ok) {
-                                            throw new Error(`Failed to apply discount: ${response.statusText}`);
-                                        }
-                                        
-                                        console.log(`✅ Discount applied for new client: ${clientId}`);
-                                        return await response.json();
-                                    });
-                                }
-                                
-                                // Отправляем изменение количества с защитой от флуда
-                                await this.throttleApiCall(async () => {
-                                    const response = await fetch(`${apiUrl}/api/poster/transactions.changeTransactionProductCount`, {
+                                    const discountResponse = await fetch(`${apiUrl}/api/poster/transactions.changeFiscalStatus`, {
                                         method: 'POST',
                                         headers: {
                                             'Content-Type': 'application/json',
@@ -232,18 +161,36 @@ class Cart {
                                         },
                                         body: JSON.stringify({
                                             transaction_id: openTransaction.transaction_id,
-                                            product_id: parseInt(productId),
-                                            count: newQuantity
+                                            fiscal_status: 1 // Применяем скидку 20%
                                         })
                                     });
                                     
-                                    if (!response.ok) {
-                                        throw new Error(`Failed to update product count: ${response.statusText}`);
+                                    if (!discountResponse.ok) {
+                                        throw new Error(`Failed to apply discount: ${discountResponse.statusText}`);
                                     }
                                     
-                                    console.log(`✅ Product count synced: ${productId} = ${newQuantity}`);
-                                    return await response.json();
+                                    console.log(`✅ Discount applied for new client: ${clientId}`);
+                                }
+                                
+                                // Отправляем изменение количества мгновенно
+                                const response = await fetch(`${apiUrl}/api/poster/transactions.changeTransactionProductCount`, {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'X-API-Token': window.API_TOKEN
+                                    },
+                                    body: JSON.stringify({
+                                        transaction_id: openTransaction.transaction_id,
+                                        product_id: parseInt(productId),
+                                        count: newQuantity
+                                    })
                                 });
+                                
+                                if (!response.ok) {
+                                    throw new Error(`Failed to update product count: ${response.statusText}`);
+                                }
+                                
+                                console.log(`✅ Product count synced: ${productId} = ${newQuantity}`);
                             }
                         }
                     }
