@@ -108,8 +108,11 @@ class Cart {
             // Обновляем визуальное отображение счетчика
             this.updateQuantityDisplay(productId, quantity);
             
-            // Обновляем общее отображение корзины
-            this.updateCartDisplay();
+            // Обновляем только счетчик товаров в иконке корзины
+            this.updateCartIcon();
+            
+            // Обновляем общую сумму
+            this.updateTotalDisplay();
             
             // Синхронизируем с сервером только если количество > 0
             if (quantity > 0) {
@@ -132,9 +135,35 @@ class Cart {
             if (quantitySpan) {
                 quantitySpan.textContent = quantity;
             }
-            
-            // Обновляем общую сумму корзины
-            this.updateTotalDisplay();
+        }
+    }
+
+    // Обновление только иконки корзины (счетчик товаров)
+    updateCartIcon() {
+        const cartCount = document.getElementById('cartCount');
+        const cartIcon = document.getElementById('cartIcon');
+        const cartIconImg = document.querySelector('.cart-icon-img');
+
+        const totalItems = this.items.reduce((sum, item) => sum + item.quantity, 0);
+        
+        // Обновляем иконку корзины
+        if (cartCount) {
+            cartCount.textContent = totalItems;
+            if (totalItems > 0) {
+                cartCount.classList.remove('cart-count-hidden');
+            } else {
+                cartCount.classList.add('cart-count-hidden');
+            }
+        }
+
+        if (cartIcon && cartIconImg) {
+            if (totalItems > 0) {
+                cartIcon.classList.add('has-items');
+                cartIconImg.src = 'images/icons/cart green.png';
+            } else {
+                cartIcon.classList.remove('has-items');
+                cartIconImg.src = 'images/icons/cart gray.png';
+            }
         }
     }
 
