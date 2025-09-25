@@ -94,6 +94,14 @@ class Cart {
         const item = this.items.find(item => item.id === productId);
         if (item) {
             const oldQuantity = item.quantity;
+            
+            // Если количество отрицательное - удаляем товар
+            if (quantity < 0) {
+                this.removeItem(productId);
+                return;
+            }
+            
+            // Если количество 0 - оставляем товар, но не синхронизируем с сервером
             item.quantity = quantity;
             this.saveCart();
             
@@ -103,8 +111,10 @@ class Cart {
             // Обновляем общее отображение корзины
             this.updateCartDisplay();
             
-            // Отправляем изменение на сервер если есть открытая транзакция
-            await this.syncQuantityChange(productId, oldQuantity, quantity);
+            // Синхронизируем с сервером только если количество > 0
+            if (quantity > 0) {
+                await this.syncQuantityChange(productId, oldQuantity, quantity);
+            }
         }
     }
 
@@ -285,7 +295,7 @@ class Cart {
             }
         }
 
-        // Обновляем содержимое корзины
+        // Обновляем содержимое корзины (показываем все товары, включая с количеством 0)
         if (cartItemsList && cartTotalAmount) {
             cartItemsList.innerHTML = this.items.map(item => `
                 <div class="cart-item" data-product-id="${item.id}">
@@ -399,6 +409,9 @@ class Cart {
         
         modal.classList.add('modal-hidden');
         overlay.classList.add('overlay-hidden');
+        
+        // Удаляем товары с количеством 0 при закрытии корзины
+        this.cleanupZeroQuantityItems();
     }
 
     bindModalEvents() {
@@ -799,6 +812,18 @@ class Cart {
         this.items = [];
         this.saveCart();
         this.updateCartDisplay();
+    }
+
+    // Удаление товаров с количеством 0 при закрытии корзины
+    cleanupZeroQuantityItems() {
+        const initialLength = this.items.length;
+        this.items = this.items.filter(item => item.quantity > 0);
+        
+        // Если что-то удалили, сохраняем изменения
+        if (this.items.length !== initialLength) {
+            this.saveCart();
+            this.updateCartDisplay();
+        }
     }
 
     showAuthModal() {
