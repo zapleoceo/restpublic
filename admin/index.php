@@ -42,9 +42,9 @@ function getDashboardStats() {
                 'php_version' => PHP_VERSION,
                 'server_software' => $_SERVER['SERVER_SOFTWARE'] ?? 'Unknown',
                 'server_time' => date('Y-m-d H:i:s'),
-                'memory_usage' => 'Unknown',
-                'uptime' => 'Unknown',
-                'admin_user' => $_SESSION['admin_username'] ?? 'Unknown'
+                'memory_usage' => formatBytes(memory_get_peak_usage(true)),
+                'uptime' => formatUptime(),
+                'admin_user' => $_SESSION['admin_username'] ?? 'TestUser'
             ]
         ];
     }
