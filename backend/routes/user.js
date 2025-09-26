@@ -93,11 +93,11 @@ router.get('/orders', requireAuth, async (req, res) => {
   try {
     const posterService = require('../services/posterService');
     
-    // Получаем заказы клиента за последние 30 дней
-    const thirtyDaysAgo = new Date();
-    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    // Получаем заказы клиента за последние 7 дней
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
     
-    const dateFrom = thirtyDaysAgo.toISOString().split('T')[0]; // YYYY-MM-DD
+    const dateFrom = sevenDaysAgo.toISOString().split('T')[0]; // YYYY-MM-DD
     const dateTo = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
     
     const orders = await posterService.getClientTransactions(req.user.client_id, dateFrom, dateTo);
