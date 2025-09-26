@@ -1175,9 +1175,13 @@ class Cart {
         // Проверяем незакрытые заказы клиента
         try {
             const apiUrl = window.location.hostname === 'localhost' ? 'http://localhost:3002' : 'https://northrepublic.me';
-            // Добавляем date_from для корректного запроса
+            // Добавляем date_from и date_to для корректного запроса
             const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
-            const response = await fetch(`${apiUrl}/api/poster/transactions.getTransactions?client_id=${clientId}&date_from=${today}&token=${window.API_TOKEN}`, {
+            const weekAgo = new Date();
+            weekAgo.setDate(weekAgo.getDate() - 7);
+            const weekAgoStr = weekAgo.toISOString().split('T')[0]; // YYYY-MM-DD
+            
+            const response = await fetch(`${apiUrl}/api/poster/transactions.getTransactions?client_id=${clientId}&date_from=${weekAgoStr}&date_to=${today}&token=${window.API_TOKEN}`, {
                 method: 'GET',
                 headers: {
                     'X-API-Token': window.API_TOKEN
