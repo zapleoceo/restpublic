@@ -1056,6 +1056,13 @@ class Cart {
             }
             
             console.log('💰 Loading current prices from Poster API...');
+            
+            // Убеждаемся, что данные пользователя загружены
+            if (window.authSystem && window.authSystem.isAuthenticated && !window.authSystem.userData) {
+                console.log('🔄 Loading user data before price calculation...');
+                await window.authSystem.loadUserData();
+            }
+            
             const apiUrl = window.location.hostname === 'localhost' ? 'http://localhost:3002' : 'https://northrepublic.me';
             
             // Получаем все продукты из Poster API
@@ -1092,13 +1099,25 @@ class Cart {
                         let newPrice = originalPrice;
                         
                         // Применяем скидку клиента, если он авторизован
+                        console.log('🔍 Auth system check:', {
+                            hasAuthSystem: !!window.authSystem,
+                            isAuthenticated: window.authSystem?.isAuthenticated,
+                            hasUserData: !!window.authSystem?.userData,
+                            userData: window.authSystem?.userData
+                        });
+                        
                         if (window.authSystem && window.authSystem.isAuthenticated && window.authSystem.userData) {
                             const clientDiscount = window.authSystem.userData.max_discount || 0;
+                            console.log(`🎯 Client discount: ${clientDiscount}%`);
                             if (clientDiscount > 0) {
                                 const discountAmount = originalPrice * (clientDiscount / 100);
                                 newPrice = originalPrice - discountAmount;
                                 console.log(`🎯 Applied ${clientDiscount}% discount to ${item.name}: ${originalPrice} -> ${newPrice}`);
+                            } else {
+                                console.log(`🎯 No discount applied to ${item.name} (discount: ${clientDiscount}%)`);
                             }
+                        } else {
+                            console.log(`🎯 No discount applied to ${item.name} (user not authenticated or no user data)`);
                         }
                         
                         // Сохраняем оригинальную цену для отображения
