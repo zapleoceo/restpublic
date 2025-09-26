@@ -1,5 +1,12 @@
 /* SePay Admin Styles */
 
+/* Stats Grid */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 16px;
+}
+
 /* Stats Cards */
 .stats-card {
     background: #fff;
@@ -12,6 +19,11 @@
     display: flex;
     align-items: center;
     gap: 16px;
+}
+
+.stats-card--compact {
+    padding: 16px;
+    gap: 12px;
 }
 
 .stats-card:hover {
@@ -28,6 +40,12 @@
     justify-content: center;
     font-size: 24px;
     flex-shrink: 0;
+}
+
+.stats-card--compact .stats-card__icon {
+    width: 48px;
+    height: 48px;
+    font-size: 20px;
 }
 
 .stats-card__icon--primary {
@@ -66,6 +84,14 @@
     font-weight: 700;
     color: #2c3e50;
     line-height: 1.2;
+}
+
+.stats-card--compact .stats-card__value {
+    font-size: 24px;
+}
+
+.stats-card--compact .stats-card__label {
+    font-size: 13px;
 }
 
 /* Filters Section */
@@ -183,9 +209,19 @@
 
 /* Responsive */
 @media (max-width: 768px) {
+    .stats-grid {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 12px;
+    }
+    
     .stats-card {
         padding: 16px;
         gap: 12px;
+    }
+    
+    .stats-card--compact {
+        padding: 12px;
+        gap: 10px;
     }
     
     .stats-card__icon {
@@ -194,8 +230,18 @@
         font-size: 20px;
     }
     
+    .stats-card--compact .stats-card__icon {
+        width: 40px;
+        height: 40px;
+        font-size: 18px;
+    }
+    
     .stats-card__value {
         font-size: 24px;
+    }
+    
+    .stats-card--compact .stats-card__value {
+        font-size: 20px;
     }
     
     .filters-content {
@@ -230,10 +276,21 @@
 }
 
 @media (max-width: 576px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+    
     .stats-card {
         flex-direction: column;
         text-align: center;
         gap: 8px;
+    }
+    
+    .stats-card--compact {
+        flex-direction: row;
+        text-align: left;
+        gap: 10px;
     }
     
     .stats-card__icon {
@@ -242,8 +299,18 @@
         font-size: 18px;
     }
     
+    .stats-card--compact .stats-card__icon {
+        width: 36px;
+        height: 36px;
+        font-size: 16px;
+    }
+    
     .stats-card__value {
         font-size: 20px;
+    }
+    
+    .stats-card--compact .stats-card__value {
+        font-size: 18px;
     }
     
     .quick-filters {

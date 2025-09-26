@@ -100,52 +100,44 @@ ob_start();
     <?php endif; ?>
 
     <!-- Статистика -->
-    <div class="row g-4 mb-4">
-        <div class="col-xl-3 col-md-6">
-            <div class="stats-card">
-                <div class="stats-card__icon stats-card__icon--primary">
-                    <i class="fas fa-credit-card"></i>
-                </div>
-                <div class="stats-card__content">
-                    <div class="stats-card__label">Всего транзакций</div>
-                    <div class="stats-card__value"><?php echo number_format($stats['total_transactions'] ?? 0); ?></div>
-                </div>
+    <div class="stats-grid mb-4">
+        <div class="stats-card stats-card--compact">
+            <div class="stats-card__icon stats-card__icon--primary">
+                <i class="fas fa-credit-card"></i>
+            </div>
+            <div class="stats-card__content">
+                <div class="stats-card__label">Всего транзакций</div>
+                <div class="stats-card__value"><?php echo number_format($stats['total_transactions'] ?? 0); ?></div>
             </div>
         </div>
         
-        <div class="col-xl-3 col-md-6">
-            <div class="stats-card">
-                <div class="stats-card__icon stats-card__icon--success">
-                    <i class="fas fa-dollar-sign"></i>
-                </div>
-                <div class="stats-card__content">
-                    <div class="stats-card__label">Общая сумма</div>
-                    <div class="stats-card__value"><?php echo number_format($stats['total_amount'] ?? 0, 0, ',', ' '); ?> ₫</div>
-                </div>
+        <div class="stats-card stats-card--compact">
+            <div class="stats-card__icon stats-card__icon--success">
+                <i class="fas fa-dollar-sign"></i>
+            </div>
+            <div class="stats-card__content">
+                <div class="stats-card__label">Общая сумма</div>
+                <div class="stats-card__value"><?php echo number_format($stats['total_amount'] ?? 0, 0, ',', ' '); ?> ₫</div>
             </div>
         </div>
         
-        <div class="col-xl-3 col-md-6">
-            <div class="stats-card">
-                <div class="stats-card__icon stats-card__icon--info">
-                    <i class="fas fa-chart-line"></i>
-                </div>
-                <div class="stats-card__content">
-                    <div class="stats-card__label">Средняя сумма</div>
-                    <div class="stats-card__value"><?php echo number_format(($stats['total_amount'] ?? 0) / max(1, $stats['total_transactions'] ?? 1), 0, ',', ' '); ?> ₫</div>
-                </div>
+        <div class="stats-card stats-card--compact">
+            <div class="stats-card__icon stats-card__icon--info">
+                <i class="fas fa-chart-line"></i>
+            </div>
+            <div class="stats-card__content">
+                <div class="stats-card__label">Средняя сумма</div>
+                <div class="stats-card__value"><?php echo number_format(($stats['total_amount'] ?? 0) / max(1, $stats['total_transactions'] ?? 1), 0, ',', ' '); ?> ₫</div>
             </div>
         </div>
         
-        <div class="col-xl-3 col-md-6">
-            <div class="stats-card">
-                <div class="stats-card__icon stats-card__icon--warning">
-                    <i class="fas fa-clock"></i>
-                </div>
-                <div class="stats-card__content">
-                    <div class="stats-card__label">Сегодня</div>
-                    <div class="stats-card__value"><?php echo number_format($stats['today_transactions'] ?? 0); ?></div>
-                </div>
+        <div class="stats-card stats-card--compact">
+            <div class="stats-card__icon stats-card__icon--warning">
+                <i class="fas fa-clock"></i>
+            </div>
+            <div class="stats-card__content">
+                <div class="stats-card__label">Сегодня</div>
+                <div class="stats-card__value"><?php echo number_format($stats['today_transactions'] ?? 0); ?></div>
             </div>
         </div>
     </div>
