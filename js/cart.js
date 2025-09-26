@@ -200,6 +200,13 @@ class Cart {
                             }
                         }
                     }
+                    
+                    // Обновляем цену товара
+                    const priceElement = cartItem.querySelector('.cart-item-price');
+                    if (priceElement) {
+                        priceElement.textContent = `${this.formatNumber(item.price)} ₫`;
+                        console.log(`Updated price for product ${item.id}: ${item.price}`);
+                    }
                 } else {
                     console.log(`Cart item not found for product ID: ${item.id}`);
                     // Попробуем найти по другому селектору
@@ -1047,8 +1054,8 @@ class Cart {
                 if (pricesUpdated) {
                     // Сохраняем обновленные данные корзины
                     this.saveCart();
-                    // Обновляем отображение
-                    this.updateTotalDisplay();
+                    // Обновляем отображение цен и общей суммы
+                    this.updateAllCartElements();
                     console.log('✅ Cart prices updated from Poster API');
                 } else {
                     console.log('✅ All prices are up to date');
