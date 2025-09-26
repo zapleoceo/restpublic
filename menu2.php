@@ -518,8 +518,8 @@ if ($menu_loaded) {
                         <span class="order-type-label">Доставка</span>
                     </label>
                 </div>
-                <button class="modal-close" id="cartModalClose">&times;</button>
             </div>
+            <button class="modal-close" id="cartModalClose">&times;</button>
             
             <div class="modal-body">
                 <div class="cart-items-list" id="cartItemsList">
