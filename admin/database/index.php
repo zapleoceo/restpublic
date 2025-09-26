@@ -177,19 +177,25 @@ ob_start();
             border-radius: 8px;
             padding: 1.5rem;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            min-width: 0; /* Allow card to shrink */
         }
         
         .info-card h3 {
             margin: 0 0 1rem 0;
             color: #333;
+            font-size: 1.1rem;
+            word-wrap: break-word;
         }
         
         .info-item {
             display: flex;
             justify-content: space-between;
+            align-items: flex-start;
             margin-bottom: 0.5rem;
             padding: 0.5rem 0;
             border-bottom: 1px solid #f0f0f0;
+            flex-wrap: wrap;
+            gap: 0.5rem;
         }
         
         .info-item:last-child {
@@ -199,10 +205,68 @@ ob_start();
         .info-label {
             font-weight: 500;
             color: #666;
+            flex-shrink: 0;
+            min-width: 120px;
         }
         
         .info-value {
             color: #333;
+            text-align: right;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            hyphens: auto;
+        }
+        
+        /* Mobile responsive adjustments */
+        @media (max-width: 768px) {
+            .info-grid {
+                grid-template-columns: 1fr;
+                gap: 0.75rem;
+            }
+            
+            .info-card {
+                padding: 1rem;
+            }
+            
+            .info-card h3 {
+                font-size: 1rem;
+            }
+            
+            .info-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.25rem;
+            }
+            
+            .info-label {
+                min-width: auto;
+                font-size: 0.9rem;
+            }
+            
+            .info-value {
+                text-align: left;
+                font-size: 0.9rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .info-card {
+                padding: 0.75rem;
+            }
+            
+            .info-card h3 {
+                font-size: 0.95rem;
+                margin-bottom: 0.75rem;
+            }
+            
+            .info-item {
+                padding: 0.4rem 0;
+            }
+            
+            .info-label,
+            .info-value {
+                font-size: 0.85rem;
+            }
         }
         
         .json-viewer {
