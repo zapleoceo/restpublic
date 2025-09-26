@@ -2134,73 +2134,63 @@ body {
     font-size: 0.875rem;
 }
 
-/* Dark Mode Support */
+/* Force white backgrounds for admin panel - disable dark mode */
+.admin-layout,
+.admin-main,
+.page-content,
+.guests-section,
+.section-header,
+.admin-table,
+.admin-table th,
+.admin-table td,
+.search-box .table-search,
+.table-search-container {
+    background: var(--color-white) !important;
+    color: var(--color-gray-800) !important;
+}
+
+.admin-table th {
+    background: var(--color-gray-50) !important;
+    color: var(--color-gray-700) !important;
+    border-color: var(--color-gray-200) !important;
+}
+
+.admin-table td {
+    border-color: var(--color-gray-200) !important;
+}
+
+.admin-table tr:hover {
+    background: var(--color-gray-50) !important;
+}
+
+.section-title {
+    color: var(--color-gray-800) !important;
+}
+
+.section-subtitle {
+    color: var(--color-gray-600) !important;
+}
+
+.table-search-container {
+    background: var(--color-gray-50) !important;
+    border-color: var(--color-gray-200) !important;
+}
+
+.search-box .table-search {
+    background: var(--color-white) !important;
+    border-color: var(--color-gray-300) !important;
+    color: var(--color-gray-800) !important;
+}
+
+.search-box .table-search:focus {
+    border-color: var(--color-primary) !important;
+    box-shadow: 0 0 0 3px rgb(102 126 234 / 0.1) !important;
+}
+
+/* Dark Mode Support - DISABLED for admin panel */
 @media (prefers-color-scheme: dark) {
-    .notification {
-        background: var(--color-gray-800);
-        border-color: var(--color-gray-700);
-        color: var(--color-gray-200);
-    }
-
-    .field-error {
-        background: #7f1d1d;
-        color: #fca5a5;
-        border-color: #991b1b;
-    }
-
-    .table-search {
-        background: var(--color-gray-700);
-        border-color: var(--color-gray-600);
-        color: var(--color-gray-200);
-    }
-
-    .table-search:focus {
-        border-color: var(--color-primary);
-        box-shadow: 0 0 0 3px rgb(102 126 234 / 0.2);
-    }
-
-    .guests-section {
-        background: var(--color-gray-800);
-        border-color: var(--color-gray-700);
-    }
-
-    .section-header {
-        background: linear-gradient(135deg, var(--color-gray-700), var(--color-gray-800));
-        border-color: var(--color-gray-600);
-    }
-
-    .section-title {
-        color: var(--color-gray-100);
-    }
-
-    .section-subtitle {
-        color: var(--color-gray-300);
-    }
-
-    .admin-table th {
-        background: var(--color-gray-700);
-        color: var(--color-gray-200);
-        border-color: var(--color-gray-600);
-    }
-
-    .admin-table td {
-        border-color: var(--color-gray-600);
-    }
-
-    .admin-table tr:hover {
-        background: var(--color-gray-700);
-    }
-
-    .search-box .table-search {
-        background: var(--color-gray-600);
-        border-color: var(--color-gray-500);
-        color: var(--color-gray-100);
-    }
-
-    .search-box .table-search:focus {
-        border-color: var(--color-primary);
-        box-shadow: 0 0 0 3px rgb(102 126 234 / 0.3);
-    }
+    /* All dark mode styles disabled to maintain white background */
+    /* Admin panel always uses light theme */
 
     .search-box .search-icon {
         color: var(--color-gray-400);
