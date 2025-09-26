@@ -142,11 +142,24 @@ router.post('/telegram-callback', async (req, res) => {
     };
     
     console.log(`💾 Сохраняем пользователя в MongoDB:`, userData);
-    await db.collection('users').updateOne(
+    console.log(`🔍 Проверяем существование client_id ${client_id} в MongoDB...`);
+    
+    // Проверяем, есть ли уже запись
+    const existingUser = await db.collection('users').findOne({ client_id: client_id });
+    console.log(`📋 Существующая запись:`, existingUser);
+    
+    const result = await db.collection('users').updateOne(
       { client_id: client_id },
       { $set: userData },
       { upsert: true }
     );
+    
+    console.log(`✅ Результат upsert:`, {
+      matchedCount: result.matchedCount,
+      modifiedCount: result.modifiedCount,
+      upsertedCount: result.upsertedCount,
+      upsertedId: result.upsertedId
+    });
 
     // Save session to MongoDB
     const expiresAt = new Date();
