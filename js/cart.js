@@ -77,10 +77,11 @@ class Cart {
         if (existingItem) {
             existingItem.quantity += 1;
         } else {
+            // Устанавливаем цену 0 - она будет загружена из Poster API с учетом персональных скидок
             this.items.push({
                 id: product.id,
                 name: product.name,
-                price: product.price,
+                price: 0, // Цена будет загружена из Poster API
                 quantity: 1,
                 image: product.image
             });
@@ -1010,17 +1011,24 @@ class Cart {
                     if (productFromAPI) {
                         console.log(`🔍 Product ${item.name} (ID: ${item.id}) - API price:`, productFromAPI.price, 'Type:', typeof productFromAPI.price);
                         
-                        // Безопасное преобразование цены
+                        // Безопасное преобразование цены из Poster API
                         let priceValue = productFromAPI.price;
                         
-                        // Если цена - объект, пытаемся извлечь числовое значение
+                        // Если цена - объект (формат {"1":"7000000"}), извлекаем первое значение
                         if (typeof priceValue === 'object' && priceValue !== null) {
-                            // Пробуем разные поля объекта
-                            priceValue = priceValue.price || priceValue.value || priceValue.amount || priceValue.cost || 0;
+                            const keys = Object.keys(priceValue);
+                            if (keys.length > 0) {
+                                priceValue = priceValue[keys[0]]; // Берем первое значение (обычно spot ID)
+                                console.log(`💰 Extracted price from spot ${keys[0]}: ${priceValue}`);
+                            } else {
+                                priceValue = 0;
+                            }
                         }
                         
-                        const newPrice = parseFloat(priceValue);
-                        if (!isNaN(newPrice) && newPrice > 0 && newPrice !== item.price) {
+                        // Нормализация: деление на 100 (из копеек в донги)
+                        const rawPrice = parseFloat(priceValue);
+                        const newPrice = rawPrice / 100;
+                        if (!isNaN(newPrice) && newPrice > 0) {
                             const oldPrice = item.price;
                             item.price = newPrice;
                             console.log(`💰 Price updated for ${item.name}: ${oldPrice} -> ${item.price}`);
