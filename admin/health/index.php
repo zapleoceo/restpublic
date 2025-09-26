@@ -11,109 +11,127 @@ if (file_exists(__DIR__ . '/../../.env')) {
     $dotenv->load();
 }
 
-// Список всех API endpoints для проверки
+// Список всех API endpoints для проверки (только существующие)
 $api_endpoints = [
     'menu' => [
         'url' => '/api/menu.php',
         'method' => 'GET',
         'description' => 'Получение меню',
-        'auth_required' => true
+        'auth_required' => true,
+        'info' => 'API для получения меню ресторана. Требует авторизации через API токен.'
     ],
     'events' => [
         'url' => '/api/events.php',
         'method' => 'GET',
         'description' => 'Получение событий',
-        'auth_required' => false
+        'auth_required' => false,
+        'info' => 'API для получения списка событий. Публичный endpoint, не требует авторизации.'
     ],
     'events_calendar' => [
         'url' => '/api/events-calendar.php',
         'method' => 'GET',
         'description' => 'Получение календаря событий',
-        'auth_required' => false
+        'auth_required' => false,
+        'info' => 'API для получения календаря событий на неделю. Используется в виджете событий.'
     ],
     'tables' => [
         'url' => '/api/tables.php',
         'method' => 'GET',
         'description' => 'Получение столов',
-        'auth_required' => false
+        'auth_required' => false,
+        'info' => 'API для получения списка доступных столов для бронирования.'
     ],
     'check_phone' => [
         'url' => '/api/check-phone.php',
         'method' => 'POST',
         'description' => 'Проверка телефона',
-        'auth_required' => true
+        'auth_required' => true,
+        'info' => 'API для проверки номера телефона при авторизации. Требует API токен.'
     ],
     'orders' => [
         'url' => '/api/orders.php',
         'method' => 'POST',
         'description' => 'Создание заказа',
-        'auth_required' => true
+        'auth_required' => true,
+        'info' => 'API для создания новых заказов. Требует авторизации и валидных данных заказа.'
     ],
     'image' => [
         'url' => '/api/image.php',
         'method' => 'GET',
         'description' => 'Получение изображений',
-        'auth_required' => false
+        'auth_required' => false,
+        'info' => 'API для получения изображений из GridFS. Используется для отображения изображений событий.'
     ],
     'language_change' => [
         'url' => '/api/language/change.php',
         'method' => 'POST',
         'description' => 'Смена языка',
-        'auth_required' => false
+        'auth_required' => false,
+        'info' => 'API для смены языка интерфейса. Сохраняет выбор в сессии и cookie.'
     ]
 ];
 
-// Системные компоненты для проверки
+// Системные компоненты для проверки (только актуальные)
 $system_components = [
     'mongodb' => [
         'name' => 'MongoDB',
         'description' => 'База данных MongoDB',
-        'check_function' => 'checkMongoDB'
+        'check_function' => 'checkMongoDB',
+        'info' => 'Основная база данных проекта. Хранит события, контент страниц, переводы и другую информацию.'
     ],
     'page_content' => [
         'name' => 'Page Content Service',
         'description' => 'Сервис контента страниц',
-        'check_function' => 'checkPageContent'
+        'check_function' => 'checkPageContent',
+        'info' => 'Сервис для работы с HTML контентом страниц. Заменяет старый TranslationService для новой архитектуры.'
     ],
     'translations' => [
         'name' => 'Translation Service',
         'description' => 'Сервис переводов',
-        'check_function' => 'checkTranslations'
+        'check_function' => 'checkTranslations',
+        'info' => 'Сервис для работы с переводами текстов. Поддерживает русский, английский и вьетнамский языки.'
     ],
     'menu_cache' => [
         'name' => 'Menu Cache',
         'description' => 'Кэш меню',
-        'check_function' => 'checkMenuCache'
+        'check_function' => 'checkMenuCache',
+        'info' => 'Сервис кэширования меню ресторана. Автоматически обновляется каждые 30 минут.'
     ],
     'events_service' => [
         'name' => 'Events Service',
         'description' => 'Сервис событий',
-        'check_function' => 'checkEventsService'
+        'check_function' => 'checkEventsService',
+        'info' => 'Сервис для работы с событиями. Получает события из MongoDB и форматирует их для виджетов.'
     ],
     'image_service' => [
         'name' => 'Image Service',
         'description' => 'Сервис изображений',
-        'check_function' => 'checkImageService'
+        'check_function' => 'checkImageService',
+        'info' => 'Сервис для работы с изображениями в GridFS. Используется для хранения изображений событий.'
     ],
     'tables_cache' => [
         'name' => 'Tables Cache',
         'description' => 'Кэш столов',
-        'check_function' => 'checkTablesCache'
+        'check_function' => 'checkTablesCache',
+        'info' => 'Сервис для работы со столами ресторана. Получает данные о доступных столах из MongoDB.'
     ],
     'sepay_service' => [
         'name' => 'SePay Service',
         'description' => 'Сервис SePay',
-        'check_function' => 'checkSePayService'
+        'check_function' => 'checkSePayService',
+        'info' => 'Сервис для работы с платежной системой SePay. Обрабатывает транзакции и webhook уведомления.'
     ],
     'telegram_service' => [
         'name' => 'Telegram Service',
         'description' => 'Сервис Telegram',
-        'check_function' => 'checkTelegramService'
+        'check_function' => 'checkTelegramService',
+        'info' => 'Сервис для отправки уведомлений в Telegram. Используется для уведомлений о платежах и событиях.'
     ],
     'rate_limiter' => [
         'name' => 'Rate Limiter',
         'description' => 'Ограничитель запросов',
-        'check_function' => 'checkRateLimiter'
+        'check_function' => 'checkRateLimiter',
+        'info' => 'Сервис для ограничения частоты запросов. Защищает от спама и DDoS атак.'
     ]
 ];
 
@@ -123,11 +141,21 @@ function checkMongoDB() {
         require_once __DIR__ . '/../../classes/PageContentService.php';
         $service = new PageContentService();
         $content = $service->getPageContent('home');
-        return [
-            'status' => 'success',
-            'message' => 'MongoDB подключение работает',
-            'details' => 'Успешно получен контент главной страницы'
-        ];
+        
+        // Проверяем, что контент получен
+        if ($content && isset($content['content'])) {
+            return [
+                'status' => 'success',
+                'message' => 'MongoDB подключение работает',
+                'details' => 'Успешно получен контент главной страницы. Размер контента: ' . strlen($content['content']) . ' символов.'
+            ];
+        } else {
+            return [
+                'status' => 'warning',
+                'message' => 'MongoDB подключение работает, но контент пуст',
+                'details' => 'Подключение к базе данных установлено, но контент главной страницы не найден.'
+            ];
+        }
     } catch (Exception $e) {
         return [
             'status' => 'error',
@@ -142,10 +170,12 @@ function checkPageContent() {
         require_once __DIR__ . '/../../classes/PageContentService.php';
         $service = new PageContentService();
         $content = $service->getPageContent('home');
+        $pages = $service->getAllPages();
+        
         return [
             'status' => 'success',
             'message' => 'Page Content Service работает',
-            'details' => 'Контент получен успешно'
+            'details' => 'Контент получен успешно. Доступно страниц: ' . count($pages) . '. Текущий язык: ' . $service->getLanguage()
         ];
     } catch (Exception $e) {
         return [
@@ -161,10 +191,12 @@ function checkTranslations() {
         require_once __DIR__ . '/../../classes/TranslationService.php';
         $service = new TranslationService();
         $testTranslation = $service->get('site_title', 'Test');
+        $languages = $service->getAvailableLanguages();
+        
         return [
             'status' => 'success',
             'message' => 'Translation Service работает',
-            'details' => 'Переводы получены успешно'
+            'details' => 'Переводы получены успешно. Поддерживаемые языки: ' . implode(', ', array_keys($languages)) . '. Текущий язык: ' . $service->getLanguage()
         ];
     } catch (Exception $e) {
         return [
@@ -180,11 +212,24 @@ function checkMenuCache() {
         require_once __DIR__ . '/../../classes/MenuCache.php';
         $cache = new MenuCache();
         $menu = $cache->getMenu();
-        return [
-            'status' => 'success',
-            'message' => 'Menu Cache работает',
-            'details' => 'Меню получено из кэша'
-        ];
+        
+        if ($menu) {
+            $categoriesCount = count($menu['categories'] ?? []);
+            $productsCount = count($menu['products'] ?? []);
+            $lastUpdate = $menu['updated_at'] ?? 'неизвестно';
+            
+            return [
+                'status' => 'success',
+                'message' => 'Menu Cache работает',
+                'details' => "Меню получено из кэша. Категорий: {$categoriesCount}, продуктов: {$productsCount}. Последнее обновление: {$lastUpdate}"
+            ];
+        } else {
+            return [
+                'status' => 'warning',
+                'message' => 'Menu Cache работает, но кэш пуст',
+                'details' => 'Сервис работает, но кэш меню не содержит данных. Возможно, требуется обновление.'
+            ];
+        }
     } catch (Exception $e) {
         return [
             'status' => 'error',
@@ -199,10 +244,11 @@ function checkEventsService() {
         require_once __DIR__ . '/../../classes/EventsService.php';
         $service = new EventsService();
         $events = $service->getEventsForWidget();
+        
         return [
             'status' => 'success',
             'message' => 'Events Service работает',
-            'details' => 'События получены успешно'
+            'details' => 'События получены успешно. Найдено событий: ' . count($events)
         ];
     } catch (Exception $e) {
         return [
@@ -217,11 +263,14 @@ function checkImageService() {
     try {
         require_once __DIR__ . '/../../classes/ImageService.php';
         $service = new ImageService();
-        // Проверяем существование класса
+        
+        // Проверяем подключение к GridFS
+        $testMetadata = $service->getImageMetadata('507f1f77bcf86cd799439011'); // Тестовый ObjectId
+        
         return [
             'status' => 'success',
             'message' => 'Image Service работает',
-            'details' => 'Класс ImageService загружен успешно'
+            'details' => 'Класс ImageService загружен успешно. Подключение к GridFS установлено.'
         ];
     } catch (Exception $e) {
         return [
@@ -237,10 +286,11 @@ function checkTablesCache() {
         require_once __DIR__ . '/../../classes/TablesCache.php';
         $cache = new TablesCache();
         $tables = $cache->getTables();
+        
         return [
             'status' => 'success',
             'message' => 'Tables Cache работает',
-            'details' => 'Столы получены из кэша'
+            'details' => 'Столы получены из кэша. Найдено столов: ' . count($tables)
         ];
     } catch (Exception $e) {
         return [
@@ -255,10 +305,22 @@ function checkSePayService() {
     try {
         require_once __DIR__ . '/../../classes/SePayApiService.php';
         $service = new SePayApiService();
+        
+        // Проверяем кэш
+        $cacheFile = __DIR__ . '/../../cache/sepay_transactions.json';
+        $cacheExists = file_exists($cacheFile);
+        $cacheInfo = '';
+        
+        if ($cacheExists) {
+            $cacheData = json_decode(file_get_contents($cacheFile), true);
+            $cacheAge = time() - ($cacheData['timestamp'] ?? 0);
+            $cacheInfo = " Кэш существует, возраст: " . round($cacheAge / 60) . " минут.";
+        }
+        
         return [
             'status' => 'success',
             'message' => 'SePay Service работает',
-            'details' => 'Класс SePayApiService загружен успешно'
+            'details' => 'Класс SePayApiService загружен успешно.' . $cacheInfo
         ];
     } catch (Exception $e) {
         return [
@@ -273,10 +335,15 @@ function checkTelegramService() {
     try {
         require_once __DIR__ . '/../../classes/TelegramService.php';
         $service = new TelegramService();
+        
+        // Проверяем наличие токена
+        $botToken = $_ENV['TELEGRAM_BOT_TOKEN'] ?? null;
+        $tokenInfo = $botToken ? 'Токен настроен.' : 'Токен не настроен.';
+        
         return [
             'status' => 'success',
             'message' => 'Telegram Service работает',
-            'details' => 'Класс TelegramService загружен успешно'
+            'details' => 'Класс TelegramService загружен успешно. ' . $tokenInfo
         ];
     } catch (Exception $e) {
         return [
@@ -291,10 +358,14 @@ function checkRateLimiter() {
     try {
         require_once __DIR__ . '/../../classes/RateLimiter.php';
         $limiter = new RateLimiter();
+        
+        // Проверяем подключение к коллекции
+        $testInfo = $limiter->getLimitInfo('test_health_check', 1);
+        
         return [
             'status' => 'success',
             'message' => 'Rate Limiter работает',
-            'details' => 'Класс RateLimiter загружен успешно'
+            'details' => 'Класс RateLimiter загружен успешно. Подключение к коллекции rate_limits установлено.'
         ];
     } catch (Exception $e) {
         return [
@@ -323,9 +394,19 @@ ob_start();
                 <div class="health-card">
                     <div class="health-header">
                         <h3><?php echo htmlspecialchars($component['name']); ?></h3>
-                        <span class="health-status <?php echo $system_results[$key]['status']; ?>">
-                            <?php echo $system_results[$key]['status'] === 'success' ? '✅' : '❌'; ?>
-                        </span>
+                        <div class="health-header-right">
+                            <button class="info-btn" onclick="showInfo('<?php echo $key; ?>', '<?php echo htmlspecialchars($component['info'], ENT_QUOTES); ?>')" title="Подробная информация">
+                                <i class="fas fa-info-circle"></i>
+                            </button>
+                            <span class="health-status <?php echo $system_results[$key]['status']; ?>">
+                                <?php 
+                                $status = $system_results[$key]['status'];
+                                if ($status === 'success') echo '✅';
+                                elseif ($status === 'warning') echo '⚠️';
+                                else echo '❌';
+                                ?>
+                            </span>
+                        </div>
                     </div>
                     <p class="health-description"><?php echo htmlspecialchars($component['description']); ?></p>
                     <div class="health-result">
@@ -344,9 +425,14 @@ ob_start();
                 <div class="api-endpoint">
                     <div class="endpoint-header">
                         <h3><?php echo htmlspecialchars($endpoint['description']); ?></h3>
-                        <span class="endpoint-method <?php echo strtolower($endpoint['method']); ?>">
-                            <?php echo htmlspecialchars($endpoint['method']); ?>
-                        </span>
+                        <div class="endpoint-header-right">
+                            <button class="info-btn" onclick="showInfo('<?php echo $key; ?>', '<?php echo htmlspecialchars($endpoint['info'], ENT_QUOTES); ?>')" title="Подробная информация">
+                                <i class="fas fa-info-circle"></i>
+                            </button>
+                            <span class="endpoint-method <?php echo strtolower($endpoint['method']); ?>">
+                                <?php echo htmlspecialchars($endpoint['method']); ?>
+                            </span>
+                        </div>
                     </div>
                     <div class="endpoint-url"><?php echo htmlspecialchars($endpoint['url']); ?></div>
                     <div class="endpoint-auth">
@@ -393,6 +479,47 @@ ob_start();
 </div>
 
 <script>
+// Функция для показа информации о компоненте
+function showInfo(key, info) {
+    // Создаем модальное окно
+    const modal = document.createElement('div');
+    modal.className = 'info-modal';
+    modal.innerHTML = `
+        <div class="info-modal-content">
+            <div class="info-modal-header">
+                <h3>Подробная информация</h3>
+                <button class="info-modal-close" onclick="closeInfoModal()">&times;</button>
+            </div>
+            <div class="info-modal-body">
+                <p>${info}</p>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    // Закрытие по клику вне модального окна
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            closeInfoModal();
+        }
+    });
+    
+    // Закрытие по Escape
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeInfoModal();
+        }
+    });
+}
+
+function closeInfoModal() {
+    const modal = document.querySelector('.info-modal');
+    if (modal) {
+        modal.remove();
+    }
+}
+
 // Функция для тестирования API endpoints
 function testEndpoint(key, url, method, authRequired) {
     const resultDiv = document.getElementById('result-' + key);
@@ -502,6 +629,31 @@ document.addEventListener('DOMContentLoaded', function() {
     color: #333;
 }
 
+.health-header-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.info-btn {
+    background: #007cba;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    transition: background-color 0.2s;
+}
+
+.info-btn:hover {
+    background: #005a8b;
+}
+
 .health-status {
     font-size: 20px;
 }
@@ -553,6 +705,12 @@ document.addEventListener('DOMContentLoaded', function() {
 .endpoint-header h3 {
     margin: 0;
     color: #333;
+}
+
+.endpoint-header-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
 .endpoint-method {
@@ -700,6 +858,76 @@ document.addEventListener('DOMContentLoaded', function() {
 .stat-description {
     color: #666;
     font-size: 14px;
+}
+
+/* Модальное окно для информации */
+.info-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.info-modal-content {
+    background: white;
+    border-radius: 8px;
+    max-width: 500px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.info-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid #ddd;
+}
+
+.info-modal-header h3 {
+    margin: 0;
+    color: #333;
+}
+
+.info-modal-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #666;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.info-modal-close:hover {
+    color: #333;
+}
+
+.info-modal-body {
+    padding: 20px;
+}
+
+.info-modal-body p {
+    margin: 0;
+    line-height: 1.6;
+    color: #555;
+}
+
+/* Стили для warning статуса */
+.health-status.warning {
+    color: #ffc107;
 }
 </style>
 
