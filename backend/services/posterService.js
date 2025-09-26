@@ -5,6 +5,10 @@ class PosterService {
     this.baseURL = process.env.POSTER_API_BASE_URL || 'https://joinposter.com/api';
     this.token = process.env.POSTER_API_TOKEN;
     
+    // Simple in-memory cache
+    this.cache = new Map();
+    this.cacheTimeout = 5 * 60 * 1000; // 5 minutes
+    
     console.log('🔧 PosterService constructor - Environment variables:');
     console.log('  POSTER_API_TOKEN:', this.token ? '***configured***' : 'NOT CONFIGURED');
     console.log('  POSTER_API_URL:', this.baseURL || 'NOT CONFIGURED');
@@ -84,7 +88,25 @@ class PosterService {
   // Get all products
   async getProducts() {
     console.log(`🔍 getProducts() called`);
+    
+    // Check cache first
+    const cacheKey = 'menu.getProducts';
+    const cached = this.cache.get(cacheKey);
+    
+    if (cached && (Date.now() - cached.timestamp) < this.cacheTimeout) {
+      console.log(`📦 Using cached products (${cached.data.length} items)`);
+      return cached.data;
+    }
+    
+    console.log(`🌐 Fetching fresh products from Poster API...`);
     const products = await this.makeRequest('menu.getProducts');
+    
+    // Cache the result
+    this.cache.set(cacheKey, {
+      data: products,
+      timestamp: Date.now()
+    });
+    
     console.log(`📥 Raw products from Poster API:`, products);
     console.log(`📋 Retrieved ${products.length} products`);
     console.log('Sample products:', products.slice(0, 3));
