@@ -78,12 +78,24 @@ const apiLimiter = rateLimit({
   legacyHeaders: false,
 });
 
+// More lenient rate limiting for auth endpoints
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 200, // limit each IP to 200 requests per windowMs for auth
+  message: {
+    error: 'Auth API rate limit exceeded, please try again later.',
+    retryAfter: '15 minutes'
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 // API Routes with stricter rate limiting
 app.use('/api/poster', apiLimiter, posterRoutes);
 app.use('/api/menu', apiLimiter, menuRoutes);
 app.use('/api/cache', apiLimiter, cacheRoutes);
 app.use('/api/tables', apiLimiter, tablesRoutes);
-app.use('/api/auth', apiLimiter, authRoutes);
+app.use('/api/auth', authLimiter, authRoutes); // Более мягкий лимит для auth
 app.use('/api/user', apiLimiter, userRoutes);
 
 // Error handling middleware
