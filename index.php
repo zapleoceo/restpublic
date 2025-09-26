@@ -551,6 +551,8 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
     <script src="js/plugins.js" defer></script>
     <script src="js/main.js" defer></script>
     <script src="https://unpkg.com/swiper/swiper-bundle.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/gh/mcstudios/glightbox/dist/js/glightbox.min.js" defer></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/mcstudios/glightbox/dist/css/glightbox.css">
     
     <script>
         // Tab switching for menu categories (исправлено для предотвращения скачков)

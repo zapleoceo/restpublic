@@ -1011,14 +1011,22 @@ class Cart {
                         console.log(`🔍 Product ${item.name} (ID: ${item.id}) - API price:`, productFromAPI.price, 'Type:', typeof productFromAPI.price);
                         
                         // Безопасное преобразование цены
-                        const newPrice = parseFloat(productFromAPI.price);
+                        let priceValue = productFromAPI.price;
+                        
+                        // Если цена - объект, пытаемся извлечь числовое значение
+                        if (typeof priceValue === 'object' && priceValue !== null) {
+                            // Пробуем разные поля объекта
+                            priceValue = priceValue.price || priceValue.value || priceValue.amount || priceValue.cost || 0;
+                        }
+                        
+                        const newPrice = parseFloat(priceValue);
                         if (!isNaN(newPrice) && newPrice > 0 && newPrice !== item.price) {
                             const oldPrice = item.price;
                             item.price = newPrice;
                             console.log(`💰 Price updated for ${item.name}: ${oldPrice} -> ${item.price}`);
                             pricesUpdated = true;
                         } else if (isNaN(newPrice) || newPrice <= 0) {
-                            console.warn(`⚠️ Invalid price for ${item.name}: ${productFromAPI.price} (parsed: ${newPrice})`);
+                            console.warn(`⚠️ Invalid price for ${item.name}:`, productFromAPI.price, `(extracted: ${priceValue}, parsed: ${newPrice})`);
                             // Не обновляем цену, если она невалидна
                         } else {
                             console.log(`✅ Price for ${item.name} is already up to date: ${item.price}`);
@@ -1167,7 +1175,9 @@ class Cart {
         // Проверяем незакрытые заказы клиента
         try {
             const apiUrl = window.location.hostname === 'localhost' ? 'http://localhost:3002' : 'https://northrepublic.me';
-            const response = await fetch(`${apiUrl}/api/poster/transactions.getTransactions?client_id=${clientId}&token=${window.API_TOKEN}`, {
+            // Добавляем date_from для корректного запроса
+            const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+            const response = await fetch(`${apiUrl}/api/poster/transactions.getTransactions?client_id=${clientId}&date_from=${today}&token=${window.API_TOKEN}`, {
                 method: 'GET',
                 headers: {
                     'X-API-Token': window.API_TOKEN
