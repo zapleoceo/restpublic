@@ -854,14 +854,14 @@ class Cart {
                         orderData.client_id = clientsData[0].client_id;
                         console.log('Found client_id:', orderData.client_id);
                         
-                        // Проверяем незакрытые заказы
-                        const openTransaction = await this.checkOpenTransactions(orderData.client_id);
-                        if (openTransaction) {
-                            console.log('Found open transaction:', openTransaction);
-                            // Добавляем товары к существующему заказу
-                            await this.addToExistingOrder(openTransaction.transaction_id);
-                            return;
-                        }
+                        // ОТКЛЮЧЕНО: Проверяем незакрытые заказы
+                        // const openTransaction = await this.checkOpenTransactions(orderData.client_id);
+                        // if (openTransaction) {
+                        //     console.log('Found open transaction:', openTransaction);
+                        //     // Добавляем товары к существующему заказу
+                        //     await this.addToExistingOrder(openTransaction.transaction_id);
+                        //     return;
+                        // }
                     }
                 }
             } catch (error) {
