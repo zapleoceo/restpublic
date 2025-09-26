@@ -612,6 +612,23 @@ if ($menu_loaded) {
     </script>
     <script src="js/cart.js"></script>
     <script src="js/menu.js"></script>
+    
+    <style>
+        /* Стили для оригинальной цены */
+        .original-price {
+            display: block;
+            font-size: 0.85em;
+            color: #999;
+            text-decoration: line-through;
+            margin-top: 2px;
+        }
+        
+        .cart-item-price {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+    </style>
 
     <!-- Auth System JavaScript -->
     <script>

@@ -204,8 +204,13 @@ class Cart {
                     // Обновляем цену товара
                     const priceElement = cartItem.querySelector('.cart-item-price');
                     if (priceElement) {
-                        priceElement.textContent = `${this.formatNumber(item.price)} ₫`;
-                        console.log(`Updated price for product ${item.id}: ${item.price}`);
+                        // Проверяем, есть ли скидка (оригинальная цена больше текущей)
+                        const hasDiscount = item.originalPrice && item.originalPrice > item.price;
+                        
+                        priceElement.innerHTML = `${this.formatNumber(item.price)} ₫${
+                            hasDiscount ? `<span class="original-price">${this.formatNumber(item.originalPrice)} ₫</span>` : ''
+                        }`;
+                        console.log(`Updated price for product ${item.id}: ${item.price}${hasDiscount ? ` (original: ${item.originalPrice})` : ''}`);
                     }
                 } else {
                     console.log(`Cart item not found for product ID: ${item.id}`);
@@ -224,8 +229,32 @@ class Cart {
         if (cartTotal) {
             this.updateTotalDisplay();
         }
+        
+        // 4. Обновляем информацию о скидке
+        this.updateDiscountInfo();
         } catch (error) {
             console.error('Error in updateAllCartElements:', error);
+        }
+    }
+
+    // Обновление информации о скидке
+    updateDiscountInfo() {
+        const discountInfo = document.querySelector('.discount-info .discount-text');
+        if (!discountInfo) return;
+        
+        // Проверяем, есть ли авторизованный пользователь со скидкой
+        if (window.authSystem && window.authSystem.isAuthenticated && window.authSystem.userData) {
+            const clientDiscount = window.authSystem.userData.max_discount || 0;
+            if (clientDiscount > 0) {
+                discountInfo.textContent = `-${clientDiscount}% скидка для вас`;
+                discountInfo.style.color = '#4CAF50'; // Зеленый цвет для активной скидки
+            } else {
+                discountInfo.textContent = '-20% на первый заказ каждому новому гостю';
+                discountInfo.style.color = '#666'; // Серый цвет для стандартной скидки
+            }
+        } else {
+            discountInfo.textContent = '-20% на первый заказ каждому новому гостю';
+            discountInfo.style.color = '#666';
         }
     }
 
@@ -475,6 +504,9 @@ class Cart {
             // Если пользователь не авторизован, но есть данные в localStorage, пытаемся их использовать
             this.tryFillFromStoredData();
         }
+        
+        // Обновляем информацию о скидке
+        this.updateDiscountInfo();
     }
 
     showGuestFields() {
@@ -503,17 +535,25 @@ class Cart {
         }
 
         if (cartItemsList) {
-            cartItemsList.innerHTML = visibleItems.map(item => `
-                <div class="cart-item" data-product-id="${item.id}">
-                    <div class="cart-item-name">${item.name}</div>
-                    <div class="cart-item-price">${this.formatNumber(item.price)} ₫</div>
-                    <div class="cart-item-quantity">
-                        <a href="#" class="quantity-btn">-</a>
-                        <span>${item.quantity}</span>
-                        <a href="#" class="quantity-btn">+</a>
+            cartItemsList.innerHTML = visibleItems.map(item => {
+                // Проверяем, есть ли скидка (оригинальная цена больше текущей)
+                const hasDiscount = item.originalPrice && item.originalPrice > item.price;
+                
+                return `
+                    <div class="cart-item" data-product-id="${item.id}">
+                        <div class="cart-item-name">${item.name}</div>
+                        <div class="cart-item-price">
+                            ${this.formatNumber(item.price)} ₫
+                            ${hasDiscount ? `<span class="original-price">${this.formatNumber(item.originalPrice)} ₫</span>` : ''}
+                        </div>
+                        <div class="cart-item-quantity">
+                            <a href="#" class="quantity-btn">-</a>
+                            <span>${item.quantity}</span>
+                            <a href="#" class="quantity-btn">+</a>
+                        </div>
                     </div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
         }
 
         if (cartTotalAmount) {
@@ -1034,17 +1074,21 @@ class Cart {
                         
                         // Нормализация: деление на 100 (из копеек в донги)
                         const rawPrice = parseFloat(priceValue);
-                        let newPrice = rawPrice / 100;
+                        const originalPrice = rawPrice / 100;
+                        let newPrice = originalPrice;
                         
                         // Применяем скидку клиента, если он авторизован
                         if (window.authSystem && window.authSystem.isAuthenticated && window.authSystem.userData) {
                             const clientDiscount = window.authSystem.userData.max_discount || 0;
                             if (clientDiscount > 0) {
-                                const discountAmount = newPrice * (clientDiscount / 100);
-                                newPrice = newPrice - discountAmount;
-                                console.log(`🎯 Applied ${clientDiscount}% discount to ${item.name}: ${rawPrice / 100} -> ${newPrice}`);
+                                const discountAmount = originalPrice * (clientDiscount / 100);
+                                newPrice = originalPrice - discountAmount;
+                                console.log(`🎯 Applied ${clientDiscount}% discount to ${item.name}: ${originalPrice} -> ${newPrice}`);
                             }
                         }
+                        
+                        // Сохраняем оригинальную цену для отображения
+                        item.originalPrice = originalPrice;
                         
                         if (!isNaN(newPrice) && newPrice > 0) {
                             const oldPrice = item.price;
