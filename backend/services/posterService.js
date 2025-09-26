@@ -430,18 +430,23 @@ class PosterService {
     }
   }
 
-  // Get client transactions with date range
+  // Get client transactions with date range (only open transactions)
   async getClientTransactions(clientId, dateFrom, dateTo) {
     console.log(`🔍 getClientTransactions() called with clientId: ${clientId}, dateFrom: ${dateFrom}, dateTo: ${dateTo}`);
     try {
-      const transactions = await this.makeRequest('transactions.getTransactions', {
-        client_id: clientId,
+      const transactions = await this.makeRequest('dash.getTransactions', {
         date_from: dateFrom,
         date_to: dateTo
       });
       console.log(`📥 Raw transactions from Poster API:`, transactions);
-      console.log(`📋 Retrieved ${transactions?.data?.length || 0} transactions`);
-      return transactions?.data || [];
+      
+      // Filter only open transactions (status = 1) for the specific client
+      const openTransactions = (transactions || []).filter(transaction => 
+        transaction.client_id == clientId && transaction.status == "1"
+      );
+      
+      console.log(`📋 Retrieved ${openTransactions.length} open transactions for client ${clientId}`);
+      return openTransactions;
     } catch (error) {
       console.error('Error getting client transactions:', error);
       throw new Error(`Failed to get client transactions: ${error.message}`);

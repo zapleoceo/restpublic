@@ -1016,40 +1016,37 @@ if ($menu_loaded) {
                 const ordersList = document.getElementById('ordersList');
                 
                 if (!orders || orders.length === 0) {
-                    ordersList.innerHTML = '<p>У вас пока нет заказов</p>';
+                    ordersList.innerHTML = '<p>У вас нет открытых заказов</p>';
                     return;
                 }
 
                 ordersList.innerHTML = orders.map(order => {
-                    // Форматируем дату
-                    const orderDate = new Date(order.date_close).toLocaleDateString('ru-RU', {
-                        year: 'numeric',
-                        month: '2-digit',
-                        day: '2-digit',
-                        hour: '2-digit',
-                        minute: '2-digit'
-                    });
+                    // Форматируем дату создания заказа (для открытых заказов date_close = 0)
+                    const orderDate = order.date_close_date ? 
+                        new Date(order.date_close_date).toLocaleDateString('ru-RU', {
+                            year: 'numeric',
+                            month: '2-digit',
+                            day: '2-digit',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        }) : 
+                        'Заказ открыт';
                     
-                    // Форматируем сумму (из копеек в донги)
-                    const totalSum = (parseFloat(order.sum) / 100).toFixed(0);
-                    const paidSum = (parseFloat(order.payed_sum) / 100).toFixed(0);
+                    // Форматируем сумму (уже в донгах для dash.getTransactions)
+                    const totalSum = parseFloat(order.sum).toFixed(0);
+                    const paidSum = parseFloat(order.payed_sum).toFixed(0);
                     
-                    // Определяем статус заказа
-                    let status = 'Оплачен';
-                    let statusClass = 'status-paid';
+                    // Для открытых заказов статус всегда "Не оплачен"
+                    const status = 'Не оплачен';
+                    const statusClass = 'status-unpaid';
                     
-                    if (parseFloat(order.payed_sum) === 0) {
-                        status = 'Не оплачен';
-                        statusClass = 'status-unpaid';
-                    } else if (parseFloat(order.payed_sum) < parseFloat(order.sum)) {
-                        status = 'Частично оплачен';
-                        statusClass = 'status-partial';
-                    }
+                    // Получаем информацию о столе
+                    const tableInfo = order.table_name ? `Стол: ${order.table_name}` : 
+                                    order.table_id ? `Стол: ${order.table_id}` : 'Доставка';
                     
-                    // Формируем список товаров
-                    const productsList = order.products ? order.products.map(product => 
-                        `<li>${product.product_name || 'Товар'} x${product.num} - ${(parseFloat(product.product_sum) / 100).toFixed(0)} ₫</li>`
-                    ).join('') : '';
+                    // Получаем комментарий к заказу
+                    const comment = order.transaction_comment ? 
+                        `<p><strong>Комментарий:</strong> ${order.transaction_comment}</p>` : '';
                     
                     return `
                         <div class="order-item">
@@ -1059,8 +1056,9 @@ if ($menu_loaded) {
                                 <p><strong>Сумма:</strong> ${totalSum} ₫</p>
                                 <p><strong>Оплачено:</strong> ${paidSum} ₫</p>
                                 <p><strong>Статус:</strong> <span class="${statusClass}">${status}</span></p>
+                                <p><strong>${tableInfo}</strong></p>
                                 ${order.discount > 0 ? `<p><strong>Скидка:</strong> ${order.discount}%</p>` : ''}
-                                ${productsList ? `<div class="order-products"><strong>Товары:</strong><ul>${productsList}</ul></div>` : ''}
+                                ${comment}
                             </div>
                             <div class="order-actions">
                                 <button class="btn btn--primary" onclick="authSystem.repeatOrder(${order.transaction_id})">
