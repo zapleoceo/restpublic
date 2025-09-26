@@ -614,12 +614,6 @@ if ($menu_loaded) {
     <script src="js/menu.js"></script>
     
     <style>
-        /* Увеличиваем ширину модального окна корзины на 4% */
-        .modal-content {
-            width: calc(100% + 4%);
-            max-width: calc(100% + 4%);
-        }
-        
         /* Стили для оригинальной цены в cart-total (зачеркнутая) */
         .cart-total .original-price {
             color: #999;
