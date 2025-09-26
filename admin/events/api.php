@@ -429,7 +429,7 @@ try {
                 'time' => $input['time'],
                 'image' => $imageData ? $imageData['file_id'] : null,
                 'link' => !empty($input['link']) ? trim($input['link']) : null,
-                'category' => !empty($input['category']) ? trim($input['category']) : 'general',
+                'category' => !empty($input['category']) ? trim($input['category']) : 'Музыкальное',
                 'is_active' => $isActive,
                 'created_at' => new MongoDB\BSON\UTCDateTime()
             ];

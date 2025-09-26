@@ -1031,12 +1031,11 @@ ob_start();
                     <div class="form-group">
                         <label for="eventCategory">Категория события</label>
                         <select id="eventCategory" name="category">
-                            <option value="general">Общее</option>
-                            <option value="entertainment">Развлечения</option>
-                            <option value="food">Еда и напитки</option>
-                            <option value="music">Музыка</option>
-                            <option value="sports">Спорт</option>
-                            <option value="cultural">Культурные мероприятия</option>
+                            <option value="Музыкальное">Музыкальное</option>
+                            <option value="Детское">Детское</option>
+                            <option value="Игровое">Игровое</option>
+                            <option value="Настольные игры">Настольные игры</option>
+                            <option value="Авторское">Авторское</option>
                         </select>
                         <small>Категория для группировки событий</small>
                     </div>
@@ -1262,7 +1261,7 @@ ob_start();
                             document.getElementById('eventDate').value = event.date || '';
                             document.getElementById('eventTime').value = event.time || '';
                             document.getElementById('eventLink').value = event.link || event.description_link || '';
-                            document.getElementById('eventCategory').value = event.category || 'general';
+                            document.getElementById('eventCategory').value = event.category || 'Музыкальное';
                             document.getElementById('eventDescriptionRu').value = event.description_ru || '';
                             document.getElementById('eventIsActive').checked = event.is_active !== false;
                             
@@ -1616,7 +1615,7 @@ ob_start();
                             document.getElementById('eventDate').value = event.date || '';
                             document.getElementById('eventTime').value = event.time || '';
                             document.getElementById('eventLink').value = event.link || event.description_link || '';
-                            document.getElementById('eventCategory').value = event.category || 'general';
+                            document.getElementById('eventCategory').value = event.category || 'Музыкальное';
                             document.getElementById('eventDescriptionRu').value = event.description_ru || '';
                             document.getElementById('eventIsActive').checked = event.is_active !== false;
                             
