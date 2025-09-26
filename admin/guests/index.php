@@ -32,140 +32,133 @@ $usersCollection = $database->selectCollection('users');
 
 // Обработка удаления гостя
 if ($_POST['action'] ?? '' === 'delete_guest') {
-    $userId = $_POST['user_id'] ?? '';
+    $clientId = $_POST['user_id'] ?? ''; // Теперь это client_id
     $posterClientId = $_POST['poster_client_id'] ?? '';
     
-    if ($userId) {
+    if ($clientId) {
         try {
-            // Удаляем из MongoDB
-            $result = $usersCollection->deleteOne(['_id' => new MongoDB\BSON\ObjectId($userId)]);
+            // Удаляем из MongoDB по client_id
+            $result = $usersCollection->deleteOne(['client_id' => $clientId]);
             
-            if ($result->getDeletedCount() > 0) {
-                // Удаляем из Poster API если есть client_id
-                if ($posterClientId) {
-                    $apiUrl = 'https://northrepublic.me:3002/api/poster/clients.removeClient';
-                    $postData = [
-                        'client_id' => $posterClientId
-                    ];
-                    
-                    $ch = curl_init();
-                    curl_setopt($ch, CURLOPT_URL, $apiUrl);
-                    curl_setopt($ch, CURLOPT_POST, true);
-                    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($postData));
-                    curl_setopt($ch, CURLOPT_HTTPHEADER, [
-                        'Content-Type: application/json',
-                        'X-API-Token: ' . ($_ENV['API_AUTH_TOKEN'] ?? '')
+            // Удаляем из Poster API
+            if ($posterClientId) {
+                $apiUrl = 'http://localhost:3002/api/poster/clients.removeClient';
+                $postData = [
+                    'client_id' => $posterClientId
+                ];
+                
+                $ch = curl_init();
+                curl_setopt($ch, CURLOPT_URL, $apiUrl);
+                curl_setopt($ch, CURLOPT_POST, true);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($postData));
+                curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                    'Content-Type: application/json',
+                    'X-API-Token: ' . ($_ENV['API_AUTH_TOKEN'] ?? '')
+                ]);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+                
+                $response = curl_exec($ch);
+                $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                curl_close($ch);
+                
+                if ($httpCode === 200) {
+                    $logger->log('guest_deleted', 'Гость удален из MongoDB и Poster API', [
+                        'client_id' => $clientId,
+                        'poster_client_id' => $posterClientId
                     ]);
-                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-                    
-                    $response = curl_exec($ch);
-                    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-                    curl_close($ch);
-                    
-                    if ($httpCode === 200) {
-                        $logger->log('guest_deleted', 'Гость удален из MongoDB и Poster API', [
-                            'user_id' => $userId,
-                            'poster_client_id' => $posterClientId
-                        ]);
-                        $success = 'Гость успешно удален из системы и Poster API';
-                    } else {
-                        $logger->log('guest_deleted_partial', 'Гость удален из MongoDB, но ошибка при удалении из Poster API', [
-                            'user_id' => $userId,
-                            'poster_client_id' => $posterClientId,
-                            'poster_error' => $response
-                        ]);
-                        $success = 'Гость удален из системы, но произошла ошибка при удалении из Poster API';
-                    }
+                    $success = 'Гость успешно удален из системы и Poster API';
                 } else {
-                    $logger->log('guest_deleted', 'Гость удален из MongoDB', [
-                        'user_id' => $userId
+                    $logger->log('guest_deleted_partial', 'Гость удален из MongoDB, но ошибка при удалении из Poster API', [
+                        'client_id' => $clientId,
+                        'poster_client_id' => $posterClientId,
+                        'poster_error' => $response
                     ]);
-                    $success = 'Гость успешно удален из системы';
+                    $success = 'Гость удален из системы, но произошла ошибка при удалении из Poster API';
                 }
             } else {
-                $error = 'Гость не найден';
+                $logger->log('guest_deleted', 'Гость удален из MongoDB', [
+                    'client_id' => $clientId
+                ]);
+                $success = 'Гость успешно удален из системы';
             }
         } catch (Exception $e) {
             $error = 'Ошибка при удалении: ' . $e->getMessage();
             $logger->log('guest_delete_error', 'Ошибка при удалении гостя', [
-                'user_id' => $userId,
+                'client_id' => $clientId,
                 'error' => $e->getMessage()
             ]);
         }
     }
 }
 
-// Получаем всех гостей с дедупликацией по номеру телефона
+// Получаем всех гостей из Poster API
 $guests = [];
-$seenPhones = [];
 try {
-    $cursor = $usersCollection->find([], [
-        'sort' => ['date_activale' => -1],
-        'limit' => 100
-    ]);
+    // Получаем всех клиентов из Poster API
+    $apiUrl = 'http://localhost:3002/api/poster/clients.getClients';
+    $authToken = $_ENV['API_AUTH_TOKEN'] ?? '';
     
-    foreach ($cursor as $user) {
-        $phone = $user['phone'] ?? '';
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $apiUrl);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        'X-API-Token: ' . $authToken
+    ]);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+    
+    $response = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+    
+    if ($httpCode === 200 && $response) {
+        $posterClients = json_decode($response, true);
         
-        // Пропускаем дубликаты по номеру телефона
-        if ($phone && isset($seenPhones[$phone])) {
-            continue;
-        }
-        
-        if ($phone) {
-            $seenPhones[$phone] = true;
-        }
-        $posterClientId = $user['client_id'] ?? $user['poster_client_id'] ?? null;
-        $posterData = null;
-        
-        // Получаем данные из Poster API если есть client_id
-        if ($posterClientId) {
-            try {
-                $apiUrl = 'http://localhost:3002/api/poster/clients.getClient?client_id=' . urlencode($posterClientId);
-                
-                $ch = curl_init();
-                curl_setopt($ch, CURLOPT_URL, $apiUrl);
-                curl_setopt($ch, CURLOPT_HTTPHEADER, [
-                    'X-API-Token: ' . ($_ENV['API_AUTH_TOKEN'] ?? '')
-                ]);
-                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                curl_setopt($ch, CURLOPT_TIMEOUT, 5);
-                
-                $response = curl_exec($ch);
-                $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-                curl_close($ch);
-                
-                if ($httpCode === 200 && $response) {
-                    $posterResponse = json_decode($response, true);
-                    // API возвращает массив, берем первый элемент
-                    if (is_array($posterResponse) && count($posterResponse) > 0) {
-                        $posterData = $posterResponse[0];
-                        // Данные успешно получены из Poster API
-                    }
-                } else {
-                    error_log("Poster API error for client $posterClientId: HTTP $httpCode, Response: $response");
+        if (is_array($posterClients)) {
+            // Получаем все client_id из MongoDB для связи
+            $mongoClientIds = [];
+            $cursor = $usersCollection->find([], ['projection' => ['client_id' => 1]]);
+            foreach ($cursor as $user) {
+                if (isset($user['client_id'])) {
+                    $mongoClientIds[] = (string)$user['client_id'];
                 }
-            } catch (Exception $e) {
-                // Игнорируем ошибки API
             }
+            
+            // Обрабатываем клиентов из Poster API
+            foreach ($posterClients as $client) {
+                $clientId = (string)$client['client_id'];
+                $isInMongoDB = in_array($clientId, $mongoClientIds);
+                
+                $guests[] = [
+                    'id' => $clientId, // Используем client_id как ID
+                    'firstname' => $client['firstname'] ?? '',
+                    'lastname' => $client['lastname'] ?? '',
+                    'phone' => $client['phone'] ?? '',
+                    'email' => $client['email'] ?? '',
+                    'poster_client_id' => $clientId,
+                    'poster_name' => trim(($client['firstname'] ?? '') . ' ' . ($client['lastname'] ?? '')),
+                    'date_activale' => $client['date_activale'] ?? '',
+                    'total_payed_sum' => isset($client['total_payed_sum']) ? (float)$client['total_payed_sum'] : 0,
+                    'bonus' => isset($client['bonus']) ? (float)$client['bonus'] : 0,
+                    'discount_per' => isset($client['discount_per']) ? (float)$client['discount_per'] : 0,
+                    'client_groups_name' => $client['client_groups_name'] ?? '',
+                    'is_in_mongodb' => $isInMongoDB
+                ];
+            }
+            
+            // Сортируем по дате активности (новые сначала)
+            usort($guests, function($a, $b) {
+                $dateA = strtotime($a['date_activale']);
+                $dateB = strtotime($b['date_activale']);
+                return $dateB - $dateA;
+            });
+            
+        } else {
+            $error = 'Неверный формат ответа от Poster API';
         }
-        
-        $guests[] = [
-            'id' => (string)$user['_id'],
-            'firstname' => $user['name'] ?? $user['firstname'] ?? '',
-            'lastname' => $user['lastName'] ?? $user['lastname'] ?? '',
-            'phone' => $user['phone'] ?? '',
-            'email' => $user['email'] ?? '',
-            'poster_client_id' => $posterClientId,
-            'poster_name' => $posterData ? ($posterData['firstname'] . ' ' . $posterData['lastname']) : '',
-            'date_activale' => isset($user['date_activale']) ? 
-                $user['date_activale']->toDateTime()->format('Y-m-d H:i:s') : 
-                (isset($user['updatedAt']) ? $user['updatedAt']->toDateTime()->format('Y-m-d H:i:s') : ''),
-            'total_payed_sum' => isset($posterData['total_payed_sum']) ? (float)$posterData['total_payed_sum'] : 0,
-            'bonus' => isset($posterData['bonus']) ? (float)$posterData['bonus'] : 0,
-            'discount_per' => isset($posterData['discount_per']) ? (float)$posterData['discount_per'] : 0
-        ];
+    } else {
+        $error = 'Ошибка получения данных из Poster API: HTTP ' . $httpCode;
+        error_log("Poster API error: HTTP $httpCode, Response: $response");
     }
 } catch (Exception $e) {
     $error = 'Ошибка загрузки гостей: ' . $e->getMessage();
@@ -240,15 +233,16 @@ ob_start();
         <table class="admin-table" id="guests-table">
             <thead>
                 <tr>
-                    <th data-sort="name">Имя (MongoDB)</th>
-                    <th data-sort="poster_name">Имя (Poster)</th>
+                    <th data-sort="name">Имя</th>
                     <th data-sort="phone">Телефон</th>
                     <th data-sort="email">Email</th>
                     <th data-sort="poster_id">Poster ID</th>
-                    <th data-sort="date">Дата регистрации</th>
+                    <th data-sort="group">Группа</th>
+                    <th data-sort="date">Дата активности</th>
                     <th data-sort="spent">Потрачено</th>
                     <th data-sort="bonus">Бонусы</th>
                     <th data-sort="discount">Скидка</th>
+                    <th>Статус</th>
                     <th>Действия</th>
                 </tr>
             </thead>
@@ -257,18 +251,8 @@ ob_start();
                 <tr>
                     <td data-sort="name">
                         <div class="guest-name">
-                            <strong><?php echo htmlspecialchars($guest['firstname'] . ' ' . $guest['lastname']); ?></strong>
+                            <strong><?php echo htmlspecialchars(trim($guest['firstname'] . ' ' . $guest['lastname'])); ?></strong>
                         </div>
-                    </td>
-                    <td data-sort="poster_name">
-                        <?php if ($guest['poster_name']): ?>
-                            <div class="guest-poster-name">
-                                <strong><?php echo htmlspecialchars($guest['poster_name']); ?></strong>
-                                <span class="poster-indicator">📋</span>
-                            </div>
-                        <?php else: ?>
-                            <span class="no-data">Нет данных</span>
-                        <?php endif; ?>
                     </td>
                     <td data-sort="phone">
                         <div class="guest-contact">
@@ -281,15 +265,14 @@ ob_start();
                         </div>
                     </td>
                     <td data-sort="poster_id">
-                        <?php if ($guest['poster_client_id']): ?>
-                            <span class="badge badge-success" title="Привязан к Poster API">
-                                <?php echo htmlspecialchars($guest['poster_client_id']); ?>
-                            </span>
-                        <?php else: ?>
-                            <span class="badge badge-warning" title="Не привязан к Poster API">
-                                Не привязан
-                            </span>
-                        <?php endif; ?>
+                        <span class="badge badge-success" title="ID в Poster API">
+                            <?php echo htmlspecialchars($guest['poster_client_id']); ?>
+                        </span>
+                    </td>
+                    <td data-sort="group">
+                        <div class="guest-group">
+                            <span class="group-name"><?php echo htmlspecialchars($guest['client_groups_name'] ?: 'Не указана'); ?></span>
+                        </div>
                     </td>
                     <td data-sort="date">
                         <div class="guest-date">
@@ -317,6 +300,15 @@ ob_start();
                             <span class="discount-percentage">
                                 <?php echo $guest['discount_per']; ?>%
                             </span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="guest-status">
+                            <?php if ($guest['is_in_mongodb']): ?>
+                                <span class="badge badge-success" title="Есть в MongoDB">Связан</span>
+                            <?php else: ?>
+                                <span class="badge badge-warning" title="Только в Poster API">Только Poster</span>
+                            <?php endif; ?>
                         </div>
                     </td>
                     <td>

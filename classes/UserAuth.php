@@ -41,41 +41,152 @@ class UserAuth {
     }
     
     /**
-     * Сохранить пользователя в MongoDB
+     * Сохранить пользователя в MongoDB (только client_id)
+     * Сначала проверяем Poster API на наличие пользователя
      */
-    public function saveUser($clientId, $phone, $name, $additionalData = []) {
+    public function saveUser($phone, $name, $lastName = '', $additionalData = []) {
         try {
             if (!$this->useMongoDB) {
                 return false;
             }
             
-            $userData = [
-                'client_id' => $clientId,
+            // Сначала проверяем, есть ли пользователь в Poster API
+            $existingClientId = $this->findClientInPoster($phone);
+            
+            if ($existingClientId) {
+                // Пользователь уже существует в Poster API - используем его
+                error_log("User already exists in Poster API with client_id: $existingClientId");
+                return $this->saveUserToMongoDB($existingClientId);
+            } else {
+                // Создаем нового пользователя в Poster API
+                $clientId = $this->createClientInPoster($phone, $name, $lastName, $additionalData);
+                
+                if ($clientId) {
+                    // Сохраняем связь в MongoDB
+                    return $this->saveUserToMongoDB($clientId);
+                } else {
+                    error_log('Failed to create client in Poster API');
+                    return false;
+                }
+            }
+        } catch (Exception $e) {
+            error_log('Error saving user: ' . $e->getMessage());
+            return false;
+        }
+    }
+    
+    /**
+     * Найти клиента в Poster API по телефону
+     */
+    private function findClientInPoster($phone) {
+        try {
+            $apiUrl = ($_ENV['BACKEND_URL'] ?? 'http://localhost:3002') . '/api/poster/clients.getClients';
+            $authToken = $_ENV['API_AUTH_TOKEN'] ?? '';
+            
+            $url = $apiUrl . '?phone=' . urlencode($phone) . '&token=' . urlencode($authToken);
+            
+            $context = stream_context_create([
+                'http' => [
+                    'timeout' => 10,
+                    'method' => 'GET',
+                    'header' => 'Content-Type: application/json'
+                ]
+            ]);
+            
+            $response = @file_get_contents($url, false, $context);
+            
+            if ($response === false) {
+                error_log('Failed to fetch clients from Poster API');
+                return null;
+            }
+            
+            $clients = json_decode($response, true);
+            
+            if (is_array($clients) && count($clients) > 0) {
+                return $clients[0]['client_id'] ?? null;
+            }
+            
+            return null;
+        } catch (Exception $e) {
+            error_log('Error finding client in Poster API: ' . $e->getMessage());
+            return null;
+        }
+    }
+    
+    /**
+     * Создать нового клиента в Poster API
+     */
+    private function createClientInPoster($phone, $name, $lastName, $additionalData) {
+        try {
+            $apiUrl = ($_ENV['BACKEND_URL'] ?? 'http://localhost:3002') . '/api/poster/clients.createClient';
+            $authToken = $_ENV['API_AUTH_TOKEN'] ?? '';
+            
+            $clientData = [
+                'firstname' => $lastName ?: 'Пользователь',
+                'lastname' => $name ?: '',
+                'client_groups_id_client' => 1, // Default group
                 'phone' => $phone,
-                'name' => $name,
-                'created_at' => new MongoDB\BSON\UTCDateTime(),
-                'updated_at' => new MongoDB\BSON\UTCDateTime(),
-                ...$additionalData
+                'email' => $additionalData['email'] ?? '',
+                'comment' => $additionalData['comment'] ?? ''
             ];
             
+            $postData = json_encode($clientData);
+            
+            $context = stream_context_create([
+                'http' => [
+                    'timeout' => 10,
+                    'method' => 'POST',
+                    'header' => [
+                        'Content-Type: application/json',
+                        'X-API-Token: ' . $authToken
+                    ],
+                    'content' => $postData
+                ]
+            ]);
+            
+            $response = @file_get_contents($apiUrl . '?token=' . urlencode($authToken), false, $context);
+            
+            if ($response === false) {
+                error_log('Failed to create client in Poster API');
+                return null;
+            }
+            
+            $result = json_decode($response, true);
+            
+            if (isset($result['response'])) {
+                return $result['response'];
+            }
+            
+            error_log('Invalid response from Poster API: ' . $response);
+            return null;
+        } catch (Exception $e) {
+            error_log('Error creating client in Poster API: ' . $e->getMessage());
+            return null;
+        }
+    }
+    
+    /**
+     * Сохранить пользователя в MongoDB (только client_id)
+     */
+    private function saveUserToMongoDB($clientId) {
+        try {
             // Проверяем, существует ли уже пользователь
             $existingUser = $this->usersCollection->findOne(['client_id' => $clientId]);
             
             if ($existingUser) {
-                // Обновляем существующего пользователя
-                $userData['updated_at'] = new MongoDB\BSON\UTCDateTime();
-                $result = $this->usersCollection->updateOne(
-                    ['client_id' => $clientId],
-                    ['$set' => $userData]
-                );
-                return $result->getModifiedCount() > 0;
+                // Пользователь уже существует - ничего не делаем
+                return true;
             } else {
-                // Создаем нового пользователя
+                // Создаем нового пользователя только с client_id
+                $userData = [
+                    'client_id' => $clientId
+                ];
+                
                 $result = $this->usersCollection->insertOne($userData);
                 return $result->getInsertedCount() > 0;
             }
         } catch (Exception $e) {
-            error_log('Error saving user: ' . $e->getMessage());
+            error_log('Error saving user to MongoDB: ' . $e->getMessage());
             return false;
         }
     }

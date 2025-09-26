@@ -136,13 +136,9 @@ router.post('/telegram-callback', async (req, res) => {
       console.log(`✅ Клиент создан в Poster API: client_id = ${client_id}`);
     }
 
-    // Save user to MongoDB
+    // Save user to MongoDB (только client_id)
     const userData = {
-      client_id: client_id,
-      phone: phone,
-      name: name,
-      lastName: lastName,
-      updatedAt: new Date()
+      client_id: client_id
     };
     
     console.log(`💾 Сохраняем пользователя в MongoDB:`, userData);
