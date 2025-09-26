@@ -35,10 +35,15 @@ if ($_POST['action'] ?? '' === 'delete_guest') {
     $clientId = $_POST['user_id'] ?? ''; // client_id из Poster API
     $posterClientId = $_POST['poster_client_id'] ?? '';
     
+    // Отладочная информация
+    error_log("DELETE GUEST DEBUG: action=" . ($_POST['action'] ?? 'NONE') . ", clientId=" . $clientId . ", posterClientId=" . $posterClientId);
+    
     if ($clientId) {
         try {
             // Удаляем только связь из MongoDB (клиент остается в Poster API)
             $result = $usersCollection->deleteOne(['client_id' => $clientId]);
+            
+            error_log("DELETE RESULT: deletedCount=" . $result->getDeletedCount());
             
             if ($result->getDeletedCount() > 0) {
                 $logger->log('guest_connection_removed', 'Связь с гостем разорвана (удален из MongoDB)', [
@@ -51,11 +56,15 @@ if ($_POST['action'] ?? '' === 'delete_guest') {
             }
         } catch (Exception $e) {
             $error = 'Ошибка при разрыве связи: ' . $e->getMessage();
+            error_log("DELETE ERROR: " . $e->getMessage());
             $logger->log('guest_connection_remove_error', 'Ошибка при разрыве связи с гостем', [
                 'client_id' => $clientId,
                 'error' => $e->getMessage()
             ]);
         }
+    } else {
+        $error = 'Не указан ID клиента для удаления';
+        error_log("DELETE ERROR: No client ID provided");
     }
 }
 
