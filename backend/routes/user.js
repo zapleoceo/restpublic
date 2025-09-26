@@ -91,11 +91,20 @@ router.get('/profile', requireAuth, async (req, res) => {
 // Get user orders
 router.get('/orders', requireAuth, async (req, res) => {
   try {
-    // For now, return empty orders array
-    // TODO: Implement orders fetching from Poster API when available
+    const posterService = require('../services/posterService');
+    
+    // Получаем заказы клиента за последние 30 дней
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    
+    const dateFrom = thirtyDaysAgo.toISOString().split('T')[0]; // YYYY-MM-DD
+    const dateTo = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+    
+    const orders = await posterService.getClientTransactions(req.user.client_id, dateFrom, dateTo);
+    
     res.json({
       success: true,
-      orders: []
+      orders: orders || []
     });
 
   } catch (error) {

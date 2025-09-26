@@ -430,6 +430,24 @@ class PosterService {
     }
   }
 
+  // Get client transactions with date range
+  async getClientTransactions(clientId, dateFrom, dateTo) {
+    console.log(`🔍 getClientTransactions() called with clientId: ${clientId}, dateFrom: ${dateFrom}, dateTo: ${dateTo}`);
+    try {
+      const transactions = await this.makeRequest('transactions.getTransactions', {
+        client_id: clientId,
+        date_from: dateFrom,
+        date_to: dateTo
+      });
+      console.log(`📥 Raw transactions from Poster API:`, transactions);
+      console.log(`📋 Retrieved ${transactions?.data?.length || 0} transactions`);
+      return transactions?.data || [];
+    } catch (error) {
+      console.error('Error getting client transactions:', error);
+      throw new Error(`Failed to get client transactions: ${error.message}`);
+    }
+  }
+
   // Remove client
   async removeClient(clientId) {
     console.log(`🔍 removeClient() called with clientId: ${clientId}`);

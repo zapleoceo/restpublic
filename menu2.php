@@ -518,8 +518,8 @@ if ($menu_loaded) {
                         <span class="order-type-label">Доставка</span>
                     </label>
                 </div>
+                <button class="modal-close" id="cartModalClose">&times;</button>
             </div>
-            <button class="modal-close" id="cartModalClose">&times;</button>
             
             <div class="modal-body">
                 <div class="cart-items-list" id="cartItemsList">
@@ -630,6 +630,54 @@ if ($menu_loaded) {
         .cart-total .total-final {
             font-weight: bold;
             font-size: 1.1em;
+        }
+
+        /* Стили для заказов */
+        .order-item {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+            background: #fff;
+        }
+
+        .order-info h4 {
+            margin: 0 0 12px 0;
+            color: #333;
+        }
+
+        .order-info p {
+            margin: 4px 0;
+            color: #666;
+        }
+
+        .order-products {
+            margin-top: 12px;
+        }
+
+        .order-products ul {
+            margin: 8px 0 0 0;
+            padding-left: 20px;
+        }
+
+        .order-products li {
+            margin: 4px 0;
+            color: #666;
+        }
+
+        .status-paid {
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .status-unpaid {
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        .status-partial {
+            color: #ffc107;
+            font-weight: bold;
         }
     </style>
 
@@ -972,21 +1020,56 @@ if ($menu_loaded) {
                     return;
                 }
 
-                ordersList.innerHTML = orders.map(order => `
-                    <div class="order-item">
-                        <div class="order-info">
-                            <h4>Заказ #${order.id}</h4>
-                            <p>Дата: ${new Date(order.date).toLocaleDateString('ru-RU')}</p>
-                            <p>Сумма: ${order.total} ₫</p>
-                            <p>Статус: ${order.status}</p>
+                ordersList.innerHTML = orders.map(order => {
+                    // Форматируем дату
+                    const orderDate = new Date(order.date_close).toLocaleDateString('ru-RU', {
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+                    
+                    // Форматируем сумму (из копеек в донги)
+                    const totalSum = (parseFloat(order.sum) / 100).toFixed(0);
+                    const paidSum = (parseFloat(order.payed_sum) / 100).toFixed(0);
+                    
+                    // Определяем статус заказа
+                    let status = 'Оплачен';
+                    let statusClass = 'status-paid';
+                    
+                    if (parseFloat(order.payed_sum) === 0) {
+                        status = 'Не оплачен';
+                        statusClass = 'status-unpaid';
+                    } else if (parseFloat(order.payed_sum) < parseFloat(order.sum)) {
+                        status = 'Частично оплачен';
+                        statusClass = 'status-partial';
+                    }
+                    
+                    // Формируем список товаров
+                    const productsList = order.products ? order.products.map(product => 
+                        `<li>${product.product_name || 'Товар'} x${product.num} - ${(parseFloat(product.product_sum) / 100).toFixed(0)} ₫</li>`
+                    ).join('') : '';
+                    
+                    return `
+                        <div class="order-item">
+                            <div class="order-info">
+                                <h4>Заказ #${order.transaction_id}</h4>
+                                <p><strong>Дата:</strong> ${orderDate}</p>
+                                <p><strong>Сумма:</strong> ${totalSum} ₫</p>
+                                <p><strong>Оплачено:</strong> ${paidSum} ₫</p>
+                                <p><strong>Статус:</strong> <span class="${statusClass}">${status}</span></p>
+                                ${order.discount > 0 ? `<p><strong>Скидка:</strong> ${order.discount}%</p>` : ''}
+                                ${productsList ? `<div class="order-products"><strong>Товары:</strong><ul>${productsList}</ul></div>` : ''}
+                            </div>
+                            <div class="order-actions">
+                                <button class="btn btn--primary" onclick="authSystem.repeatOrder(${order.transaction_id})">
+                                    Повторить заказ
+                                </button>
+                            </div>
                         </div>
-                        <div class="order-actions">
-                            <button class="btn btn--primary" onclick="authSystem.repeatOrder(${order.id})">
-                                Повторить заказ
-                            </button>
-                        </div>
-                    </div>
-                `).join('');
+                    `;
+                }).join('');
             }
 
             logout() {
