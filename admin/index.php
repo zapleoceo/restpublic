@@ -28,7 +28,7 @@ function getDashboardStats() {
             'server_time' => date('Y-m-d H:i:s'),
             'memory_usage' => formatBytes(memory_get_peak_usage(true)),
             'uptime' => formatUptime(),
-            'admin_user' => $_SESSION['admin_username'] ?? 'Unknown'
+            'admin_user' => $_SESSION['admin_username'] ?? 'TestUser'
         ];
 
         return [
