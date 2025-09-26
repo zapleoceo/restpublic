@@ -59,10 +59,10 @@ function getCurrentSection() {
     <title><?php echo htmlspecialchars($page_title); ?></title>
 
     <!-- Critical CSS -->
-    <link rel="stylesheet" href="/admin/assets/css/admin.css">
+    <link rel="stylesheet" href="/admin/assets/css/admin.css?v=<?php echo filemtime(__DIR__ . '/../assets/css/admin.css'); ?>">
 
     <!-- Preload critical resources -->
-    <link rel="preload" href="/admin/assets/css/admin.css" as="style">
+    <link rel="preload" href="/admin/assets/css/admin.css?v=<?php echo filemtime(__DIR__ . '/../assets/css/admin.css'); ?>" as="style">
     <link rel="preload" href="/images/logo.png" as="image">
     <link rel="preload" href="/admin/assets/js/admin.js" as="script">
 
