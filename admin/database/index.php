@@ -178,6 +178,7 @@ ob_start();
             padding: 1.5rem;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             min-width: 0; /* Allow card to shrink */
+            overflow: hidden; /* Prevent content overflow */
         }
         
         .info-card h3 {
@@ -215,6 +216,8 @@ ob_start();
             word-wrap: break-word;
             overflow-wrap: break-word;
             hyphens: auto;
+            flex: 1;
+            min-width: 0;
         }
         
         /* Mobile responsive adjustments */
@@ -226,46 +229,70 @@ ob_start();
             
             .info-card {
                 padding: 1rem;
+                margin: 0;
             }
             
             .info-card h3 {
                 font-size: 1rem;
+                margin-bottom: 0.75rem;
+                word-wrap: break-word;
             }
             
             .info-item {
                 flex-direction: column;
                 align-items: flex-start;
                 gap: 0.25rem;
+                padding: 0.5rem 0;
             }
             
             .info-label {
                 min-width: auto;
                 font-size: 0.9rem;
+                font-weight: 600;
             }
             
             .info-value {
                 text-align: left;
                 font-size: 0.9rem;
+                width: 100%;
+                word-break: break-word;
             }
         }
         
         @media (max-width: 480px) {
+            .info-grid {
+                gap: 0.5rem;
+            }
+            
             .info-card {
                 padding: 0.75rem;
+                margin: 0;
             }
             
             .info-card h3 {
                 font-size: 0.95rem;
                 margin-bottom: 0.75rem;
+                line-height: 1.3;
             }
             
             .info-item {
                 padding: 0.4rem 0;
+                border-bottom: 1px solid #f0f0f0;
             }
             
-            .info-label,
+            .info-item:last-child {
+                border-bottom: none;
+            }
+            
+            .info-label {
+                font-size: 0.85rem;
+                font-weight: 600;
+                color: #555;
+            }
+            
             .info-value {
                 font-size: 0.85rem;
+                line-height: 1.4;
             }
         }
         

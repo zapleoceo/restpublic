@@ -89,9 +89,21 @@ class SePayApiService {
             
         } while (count($response['transactions']) === $limit);
         
+        // Дедупликация транзакций по ID
+        $uniqueTransactions = [];
+        $seenIds = [];
+        
+        foreach ($allTransactions as $transaction) {
+            $id = $transaction['id'] ?? $transaction['transaction_id'] ?? null;
+            if ($id && !in_array($id, $seenIds)) {
+                $uniqueTransactions[] = $transaction;
+                $seenIds[] = $id;
+            }
+        }
+        
         $result = [
-            'transactions' => $allTransactions,
-            'total' => count($allTransactions)
+            'transactions' => $uniqueTransactions,
+            'total' => count($uniqueTransactions)
         ];
         
         // Сохраняем в кэш
