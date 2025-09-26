@@ -902,7 +902,7 @@ if ($menu_loaded) {
                     </div>
                     <div class="profile-field">
                         <label>Скидка:</label>
-                        <span>${user.discount_per || 0}%</span>
+                        <span>${user.max_discount || Math.max(user.discount_per || 0, user.client_groups_discount || 0)}%</span>
                     </div>
                     <div class="profile-field">
                         <label>Бонусы:</label>

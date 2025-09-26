@@ -66,6 +66,14 @@ router.get('/profile', requireAuth, async (req, res) => {
       });
     }
 
+    // Вычисляем максимальную скидку
+    const personalDiscount = parseFloat(user.discount_per || 0);
+    const groupDiscount = parseFloat(user.client_groups_discount || 0);
+    const maxDiscount = Math.max(personalDiscount, groupDiscount);
+    
+    // Добавляем максимальную скидку к данным пользователя
+    user.max_discount = maxDiscount;
+
     res.json({
       success: true,
       user: user

@@ -1034,7 +1034,18 @@ class Cart {
                         
                         // Нормализация: деление на 100 (из копеек в донги)
                         const rawPrice = parseFloat(priceValue);
-                        const newPrice = rawPrice / 100;
+                        let newPrice = rawPrice / 100;
+                        
+                        // Применяем скидку клиента, если он авторизован
+                        if (window.authSystem && window.authSystem.isAuthenticated && window.authSystem.userData) {
+                            const clientDiscount = window.authSystem.userData.max_discount || 0;
+                            if (clientDiscount > 0) {
+                                const discountAmount = newPrice * (clientDiscount / 100);
+                                newPrice = newPrice - discountAmount;
+                                console.log(`🎯 Applied ${clientDiscount}% discount to ${item.name}: ${rawPrice / 100} -> ${newPrice}`);
+                            }
+                        }
+                        
                         if (!isNaN(newPrice) && newPrice > 0) {
                             const oldPrice = item.price;
                             item.price = newPrice;
@@ -1068,6 +1079,19 @@ class Cart {
         }
     }
 
+    // Получить максимальную скидку клиента
+    getClientDiscount(clientData) {
+        if (!clientData) return 0;
+        
+        const personalDiscount = parseFloat(clientData.discount_per || 0);
+        const groupDiscount = parseFloat(clientData.client_groups_discount || 0);
+        
+        const maxDiscount = Math.max(personalDiscount, groupDiscount);
+        console.log(`🎯 Client discounts - Personal: ${personalDiscount}%, Group: ${groupDiscount}%, Max: ${maxDiscount}%`);
+        
+        return maxDiscount;
+    }
+
     async loadClientDataFromPoster() {
         // Загружаем полные данные клиента из Poster API
         try {
@@ -1086,13 +1110,19 @@ class Cart {
                     const clientData = clientsData[0];
                     console.log('📥 Full client data from Poster API:', clientData);
                     
+                    // Получаем максимальную скидку
+                    const maxDiscount = this.getClientDiscount(clientData);
+                    
                     // Обновляем данные пользователя
                     window.authSystem.userData = {
                         ...window.authSystem.userData,
                         firstname: clientData.firstname,
                         lastname: clientData.lastname,
                         client_name: clientData.client_name,
-                        total_payed_sum: clientData.total_payed_sum || 0
+                        total_payed_sum: clientData.total_payed_sum || 0,
+                        discount_per: clientData.discount_per || 0,
+                        client_groups_discount: clientData.client_groups_discount || 0,
+                        max_discount: maxDiscount
                     };
                     
                     // Сохраняем в localStorage для кеширования
