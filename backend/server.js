@@ -66,25 +66,25 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// Stricter rate limiting for API endpoints
+// Stricter rate limiting for API endpoints - 5 requests per second
 const apiLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 50, // limit each IP to 50 requests per windowMs for API
+  windowMs: 1000, // 1 second
+  max: 5, // limit each IP to 5 requests per second for API
   message: {
     error: 'API rate limit exceeded, please try again later.',
-    retryAfter: '15 minutes'
+    retryAfter: '1 second'
   },
   standardHeaders: true,
   legacyHeaders: false,
 });
 
-// More lenient rate limiting for auth endpoints
+// More lenient rate limiting for auth endpoints - 2 requests per second
 const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 200, // limit each IP to 200 requests per windowMs for auth
+  windowMs: 1000, // 1 second
+  max: 2, // limit each IP to 2 requests per second
   message: {
     error: 'Auth API rate limit exceeded, please try again later.',
-    retryAfter: '15 minutes'
+    retryAfter: '1 second'
   },
   standardHeaders: true,
   legacyHeaders: false,
