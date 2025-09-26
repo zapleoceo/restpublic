@@ -96,8 +96,9 @@ if ($_POST['action'] ?? '' === 'delete_guest') {
     }
 }
 
-// Получаем всех гостей
+// Получаем всех гостей с дедупликацией по номеру телефона
 $guests = [];
+$seenPhones = [];
 try {
     $cursor = $usersCollection->find([], [
         'sort' => ['date_activale' => -1],
@@ -105,6 +106,16 @@ try {
     ]);
     
     foreach ($cursor as $user) {
+        $phone = $user['phone'] ?? '';
+        
+        // Пропускаем дубликаты по номеру телефона
+        if ($phone && isset($seenPhones[$phone])) {
+            continue;
+        }
+        
+        if ($phone) {
+            $seenPhones[$phone] = true;
+        }
         $posterClientId = $user['client_id'] ?? $user['poster_client_id'] ?? null;
         $posterData = null;
         
