@@ -493,10 +493,7 @@ class Cart {
         this.showModal();
         this.showGuestFields();
         
-        // Загружаем актуальные цены от Poster API
-        await this.loadCurrentPricesFromPoster();
-        
-        // Заполняем поля данными из профиля, если пользователь авторизован
+        // Сначала загружаем данные пользователя, если он авторизован
         if (window.authSystem && window.authSystem.isAuthenticated) {
             // Загружаем данные пользователя если их нет
             if (!window.authSystem.userData) {
@@ -521,6 +518,9 @@ class Cart {
             // Если пользователь не авторизован, но есть данные в localStorage, пытаемся их использовать
             this.tryFillFromStoredData();
         }
+        
+        // Теперь загружаем актуальные цены от Poster API (с учетом скидки)
+        await this.loadCurrentPricesFromPoster();
         
         // Обновляем информацию о скидке
         this.updateDiscountInfo();
