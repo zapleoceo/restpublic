@@ -30,61 +30,28 @@ $dbName = $_ENV['MONGODB_DB_NAME'] ?? 'northrepublic';
 $database = $client->selectDatabase($dbName);
 $usersCollection = $database->selectCollection('users');
 
-// Обработка удаления гостя
+// Обработка удаления гостя (только разрыв связи с MongoDB)
 if ($_POST['action'] ?? '' === 'delete_guest') {
-    $clientId = $_POST['user_id'] ?? ''; // Теперь это client_id
+    $clientId = $_POST['user_id'] ?? ''; // client_id из Poster API
     $posterClientId = $_POST['poster_client_id'] ?? '';
     
     if ($clientId) {
         try {
-            // Удаляем из MongoDB по client_id
+            // Удаляем только связь из MongoDB (клиент остается в Poster API)
             $result = $usersCollection->deleteOne(['client_id' => $clientId]);
             
-            // Удаляем из Poster API
-            if ($posterClientId) {
-                $apiUrl = 'http://localhost:3002/api/poster/clients.removeClient';
-                $postData = [
-                    'client_id' => $posterClientId
-                ];
-                
-                $ch = curl_init();
-                curl_setopt($ch, CURLOPT_URL, $apiUrl);
-                curl_setopt($ch, CURLOPT_POST, true);
-                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($postData));
-                curl_setopt($ch, CURLOPT_HTTPHEADER, [
-                    'Content-Type: application/json',
-                    'X-API-Token: ' . ($_ENV['API_AUTH_TOKEN'] ?? '')
+            if ($result->getDeletedCount() > 0) {
+                $logger->log('guest_connection_removed', 'Связь с гостем разорвана (удален из MongoDB)', [
+                    'client_id' => $clientId,
+                    'poster_client_id' => $posterClientId
                 ]);
-                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-                
-                $response = curl_exec($ch);
-                $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-                curl_close($ch);
-                
-                if ($httpCode === 200) {
-                    $logger->log('guest_deleted', 'Гость удален из MongoDB и Poster API', [
-                        'client_id' => $clientId,
-                        'poster_client_id' => $posterClientId
-                    ]);
-                    $success = 'Гость успешно удален из системы и Poster API';
-                } else {
-                    $logger->log('guest_deleted_partial', 'Гость удален из MongoDB, но ошибка при удалении из Poster API', [
-                        'client_id' => $clientId,
-                        'poster_client_id' => $posterClientId,
-                        'poster_error' => $response
-                    ]);
-                    $success = 'Гость удален из системы, но произошла ошибка при удалении из Poster API';
-                }
+                $success = 'Связь с гостем разорвана. Клиент остался в Poster API с сохранением истории заказов.';
             } else {
-                $logger->log('guest_deleted', 'Гость удален из MongoDB', [
-                    'client_id' => $clientId
-                ]);
-                $success = 'Гость успешно удален из системы';
+                $error = 'Связь с гостем не найдена в системе';
             }
         } catch (Exception $e) {
-            $error = 'Ошибка при удалении: ' . $e->getMessage();
-            $logger->log('guest_delete_error', 'Ошибка при удалении гостя', [
+            $error = 'Ошибка при разрыве связи: ' . $e->getMessage();
+            $logger->log('guest_connection_remove_error', 'Ошибка при разрыве связи с гостем', [
                 'client_id' => $clientId,
                 'error' => $e->getMessage()
             ]);
@@ -313,11 +280,11 @@ ob_start();
                     </td>
                     <td>
                         <div class="guest-actions">
-                            <form method="POST" class="delete-form" onsubmit="return confirm('Вы уверены, что хотите удалить этого гостя? Это действие нельзя отменить.');">
+                            <form method="POST" class="delete-form" onsubmit="return confirm('Вы уверены, что хотите разорвать связь с этим гостем? Клиент останется в Poster API с сохранением истории заказов.');">
                                 <input type="hidden" name="action" value="delete_guest">
                                 <input type="hidden" name="user_id" value="<?php echo htmlspecialchars($guest['id']); ?>">
                                 <input type="hidden" name="poster_client_id" value="<?php echo htmlspecialchars($guest['poster_client_id'] ?? ''); ?>">
-                                <button type="submit" class="btn btn-danger btn-sm" title="Удалить гостя">
+                                <button type="submit" class="btn btn-danger btn-sm" title="Разорвать связь с гостем">
                                     <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <polyline points="3,6 5,6 21,6"></polyline>
                                         <path d="M19,6v14a2,2 0 0,1-2,2H7a2,2 0 0,1-2-2V6m3,0V4a2,2 0 0,1,2-2h4a2,2 0 0,1,2,2v2"></path>
