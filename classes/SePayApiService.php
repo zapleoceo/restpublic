@@ -3,6 +3,8 @@
 class SePayApiService {
     private $apiToken;
     private $apiUrl = 'https://my.sepay.vn/userapi';
+    private $cacheFile;
+    private $cacheTimeout = 300; // 5 минут кэш
     
     public function __construct() {
         // Загружаем переменные окружения из .env файла
@@ -22,15 +24,34 @@ class SePayApiService {
         if (empty($this->apiToken)) {
             throw new Exception('SEPAY_API_TOKEN не установлен в переменных окружения');
         }
+        
+        // Инициализируем кэш
+        $this->cacheFile = __DIR__ . '/../cache/sepay_transactions.json';
+        $this->ensureCacheDir();
+    }
+    
+    private function ensureCacheDir() {
+        $cacheDir = dirname($this->cacheFile);
+        if (!is_dir($cacheDir)) {
+            mkdir($cacheDir, 0755, true);
+        }
     }
     
     /**
-     * Получить все транзакции из SePay API
+     * Получить все транзакции из SePay API с кэшированием
      */
     public function getAllTransactions() {
+        // Проверяем кэш
+        $cached = $this->getCachedTransactions();
+        if ($cached !== null) {
+            return $cached;
+        }
+        
+        // Если кэш устарел, получаем данные из API
         $allTransactions = [];
         $page = 1;
         $limit = 100; // Максимальный лимит на страницу
+        $maxPages = 10; // Ограничиваем количество страниц для предотвращения rate limit
         
         do {
             $response = $this->makeApiRequest('/transactions/list', [
@@ -39,6 +60,13 @@ class SePayApiService {
             ]);
             
             if (isset($response['error'])) {
+                // Если rate limit, возвращаем кэшированные данные если есть
+                if ($response['error'] === 'Rate limit exceeded') {
+                    $cached = $this->getCachedTransactions(true); // Принудительно берем старый кэш
+                    if ($cached !== null) {
+                        return $cached;
+                    }
+                }
                 throw new Exception('Ошибка API SePay: ' . $response['error']);
             }
             
@@ -49,17 +77,67 @@ class SePayApiService {
             $allTransactions = array_merge($allTransactions, $response['transactions']);
             $page++;
             
-            // Защита от бесконечного цикла
-            if ($page > 1000) {
+            // Защита от rate limit - ограничиваем количество страниц
+            if ($page > $maxPages) {
                 break;
+            }
+            
+            // Задержка между запросами для предотвращения rate limit
+            if ($page <= $maxPages) {
+                sleep(1); // 1 секунда между запросами
             }
             
         } while (count($response['transactions']) === $limit);
         
-        return [
+        $result = [
             'transactions' => $allTransactions,
             'total' => count($allTransactions)
         ];
+        
+        // Сохраняем в кэш
+        $this->saveCachedTransactions($result);
+        
+        return $result;
+    }
+    
+    private function getCachedTransactions($forceOld = false) {
+        if (!file_exists($this->cacheFile)) {
+            return null;
+        }
+        
+        $cacheData = json_decode(file_get_contents($this->cacheFile), true);
+        if (!$cacheData) {
+            return null;
+        }
+        
+        $cacheTime = $cacheData['timestamp'] ?? 0;
+        $currentTime = time();
+        
+        // Если кэш не устарел или принудительно берем старый кэш
+        if ($forceOld || ($currentTime - $cacheTime) < $this->cacheTimeout) {
+            return $cacheData['data'] ?? null;
+        }
+        
+        return null;
+    }
+    
+    private function saveCachedTransactions($data) {
+        $cacheData = [
+            'timestamp' => time(),
+            'data' => $data
+        ];
+        
+        file_put_contents($this->cacheFile, json_encode($cacheData, JSON_PRETTY_PRINT));
+    }
+    
+    /**
+     * Принудительно обновить кэш
+     */
+    public function refreshCache() {
+        if (file_exists($this->cacheFile)) {
+            unlink($this->cacheFile);
+        }
+        return $this->getAllTransactions();
     }
     
     /**

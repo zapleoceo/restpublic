@@ -90,6 +90,17 @@ try {
             ]);
             break;
             
+        case 'refresh_cache':
+            require_once '../../classes/SePayApiService.php';
+            $apiService = new SePayApiService();
+            $result = $apiService->refreshCache();
+            echo json_encode([
+                'success' => true,
+                'message' => 'Кэш успешно обновлен',
+                'total_transactions' => $result['total']
+            ]);
+            break;
+            
         default:
             throw new Exception('Unknown action');
     }

@@ -111,6 +111,7 @@ temp/
 .parcel-cache
 .cache
 .rollup.cache
+cache/
 
 # ===========================================
 # TypeScript

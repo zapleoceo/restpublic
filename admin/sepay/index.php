@@ -268,9 +268,14 @@ ob_start();
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="card-title">Транзакции (<?php echo number_format($total); ?>)</h5>
-                    <button class="btn btn-success" onclick="location.reload()">
-                        <i class="fas fa-sync-alt"></i> Обновить
-                    </button>
+                    <div class="btn-group">
+                        <button class="btn btn-success" onclick="location.reload()">
+                            <i class="fas fa-sync-alt"></i> Обновить
+                        </button>
+                        <button class="btn btn-warning" onclick="refreshCache()" title="Принудительно обновить кэш">
+                            <i class="fas fa-database"></i> Обновить кэш
+                        </button>
+                    </div>
                 </div>
                 <div class="card-body">
                     <?php if (empty($transactions)): ?>
@@ -476,6 +481,39 @@ function loadSavedFilters() {
             if (input) {
                 input.value = filters[key];
             }
+        });
+    }
+}
+
+function refreshCache() {
+    if (confirm('Принудительно обновить кэш? Это может занять некоторое время и сделать несколько запросов к API.')) {
+        const button = event.target;
+        const originalText = button.innerHTML;
+        
+        button.disabled = true;
+        button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Обновление...';
+        
+        fetch('api.php?action=refresh_cache', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Кэш успешно обновлен!');
+                location.reload();
+            } else {
+                alert('Ошибка обновления кэша: ' + data.error);
+            }
+        })
+        .catch(error => {
+            alert('Ошибка: ' + error.message);
+        })
+        .finally(() => {
+            button.disabled = false;
+            button.innerHTML = originalText;
         });
     }
 }
