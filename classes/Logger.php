@@ -41,7 +41,9 @@ class Logger {
             'data' => $data,
             'metadata' => $metadata,
             'timestamp' => $this->getCurrentTimestamp(),
-            'level' => $this->getLogLevel($action)
+            'level' => $this->getLogLevel($action),
+            'user' => $this->getCurrentUser(),
+            'ip' => $this->getClientIP()
         ];
         
         try {
@@ -222,6 +224,54 @@ class Logger {
         }
         
         return [];
+    }
+    
+    /**
+     * Получение текущего пользователя
+     */
+    private function getCurrentUser() {
+        // Проверяем сессию админки
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+        
+        if (isset($_SESSION['admin_username'])) {
+            return $_SESSION['admin_username'];
+        }
+        
+        // Проверяем другие возможные источники
+        if (isset($_SESSION['user_id'])) {
+            return $_SESSION['user_id'];
+        }
+        
+        if (isset($_SESSION['username'])) {
+            return $_SESSION['username'];
+        }
+        
+        // Если пользователь не авторизован, возвращаем IP
+        return 'anonymous_' . $this->getClientIP();
+    }
+    
+    /**
+     * Получение IP адреса клиента
+     */
+    private function getClientIP() {
+        $ipKeys = ['HTTP_CF_CONNECTING_IP', 'HTTP_X_FORWARDED_FOR', 'HTTP_X_FORWARDED', 'HTTP_X_CLUSTER_CLIENT_IP', 'HTTP_FORWARDED_FOR', 'HTTP_FORWARDED', 'REMOTE_ADDR'];
+        
+        foreach ($ipKeys as $key) {
+            if (array_key_exists($key, $_SERVER) === true) {
+                $ip = $_SERVER[$key];
+                if (strpos($ip, ',') !== false) {
+                    $ip = explode(',', $ip)[0];
+                }
+                $ip = trim($ip);
+                if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
+                    return $ip;
+                }
+            }
+        }
+        
+        return $_SERVER['REMOTE_ADDR'] ?? 'unknown';
     }
     
     /**

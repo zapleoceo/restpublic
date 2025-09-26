@@ -42,7 +42,7 @@ if ($filterAction) {
 }
 if ($filterUser) {
     $filteredLogs = array_filter($filteredLogs, function($log) use ($filterUser) {
-        return strpos($log['username'] ?? '', $filterUser) !== false;
+        return strpos($log['user'] ?? $log['username'] ?? '', $filterUser) !== false;
     });
 }
 
@@ -64,7 +64,9 @@ if ($viewLogIndex !== '') {
 
 // Получаем уникальные действия и пользователей для фильтров
 $actions = array_unique(array_column($logs, 'action'));
-$users = array_unique(array_column($logs, 'username'));
+$users = array_unique(array_filter(array_map(function($log) {
+    return $log['user'] ?? $log['username'] ?? null;
+}, $logs)));
 
 // Функция для форматирования уровня логирования
 function getLogLevelClass($level) {
@@ -430,7 +432,7 @@ ob_start();
                                         <?php echo formatAction($log['action'] ?? ''); ?>
                                     </td>
                                     <td>
-                                        <span class="log-user"><?php echo htmlspecialchars($log['username'] ?? 'unknown'); ?></span>
+                                        <span class="log-user"><?php echo htmlspecialchars($log['user'] ?? $log['username'] ?? 'unknown'); ?></span>
                                     </td>
                                     <td class="log-description">
                                         <?php 
@@ -509,7 +511,7 @@ ob_start();
                         <div class="log-detail-item">
                             <div class="log-detail-label">Пользователь</div>
                             <div class="log-detail-value">
-                                <span class="log-user"><?php echo htmlspecialchars($viewLog['username'] ?? 'unknown'); ?></span>
+                                <span class="log-user"><?php echo htmlspecialchars($viewLog['user'] ?? $viewLog['username'] ?? 'unknown'); ?></span>
                             </div>
                         </div>
                         
