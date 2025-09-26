@@ -622,8 +622,9 @@ if ($menu_loaded) {
         
         /* Стили для скидки в cart-total */
         .cart-total .discount-row {
-            color: #4CAF50;
+            color: #366b5b;
             font-weight: 500;
+            font-size: 14px;
         }
         
         .cart-total .total-final {
