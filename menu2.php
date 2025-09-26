@@ -614,19 +614,21 @@ if ($menu_loaded) {
     <script src="js/menu.js"></script>
     
     <style>
-        /* Стили для оригинальной цены */
-        .original-price {
-            display: block;
-            font-size: 0.85em;
+        /* Стили для оригинальной цены в cart-total (зачеркнутая) */
+        .cart-total .original-price {
             color: #999;
             text-decoration: line-through;
-            margin-top: 2px;
         }
         
-        .cart-item-price {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
+        /* Стили для скидки в cart-total */
+        .cart-total .discount-row {
+            color: #4CAF50;
+            font-weight: 500;
+        }
+        
+        .cart-total .total-final {
+            font-weight: bold;
+            font-size: 1.1em;
         }
     </style>
 

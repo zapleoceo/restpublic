@@ -201,16 +201,12 @@ class Cart {
                         }
                     }
                     
-                    // Обновляем цену товара
+                    // Обновляем цену товара (показываем оригинальную цену)
                     const priceElement = cartItem.querySelector('.cart-item-price');
                     if (priceElement) {
-                        // Проверяем, есть ли скидка (оригинальная цена больше текущей)
-                        const hasDiscount = item.originalPrice && item.originalPrice > item.price;
-                        
-                        priceElement.innerHTML = `${this.formatNumber(item.price)} ₫${
-                            hasDiscount ? `<span class="original-price">${this.formatNumber(item.originalPrice)} ₫</span>` : ''
-                        }`;
-                        console.log(`Updated price for product ${item.id}: ${item.price}${hasDiscount ? ` (original: ${item.originalPrice})` : ''}`);
+                        const displayPrice = item.originalPrice || item.price;
+                        priceElement.textContent = `${this.formatNumber(displayPrice)} ₫`;
+                        console.log(`Updated price for product ${item.id}: ${displayPrice} (original price displayed)`);
                     }
                 } else {
                     console.log(`Cart item not found for product ID: ${item.id}`);
@@ -380,12 +376,33 @@ class Cart {
     updateTotalDisplay() {
         const cartTotal = document.querySelector('.cart-total');
         if (!cartTotal) return;
-
+        
         const subtotal = this.getSubtotal();
         const total = this.getTotal();
         
-        if (this.promotionId === 1 && subtotal > 0) {
-            // Показываем субтотал, скидку и итого
+        // Проверяем, есть ли скидка клиента
+        let clientDiscount = 0;
+        if (window.authSystem && window.authSystem.isAuthenticated && window.authSystem.userData) {
+            clientDiscount = window.authSystem.userData.max_discount || 0;
+        }
+        
+        // Вычисляем оригинальную сумму (без скидки клиента)
+        const originalTotal = clientDiscount > 0 ? total / (1 - clientDiscount / 100) : total;
+        
+        if (clientDiscount > 0 && originalTotal > total) {
+            // Показываем скидку клиента и зачеркнутую оригинальную цену
+            cartTotal.innerHTML = `
+                <div class="total-row discount-row">
+                    <span>Скидка ${clientDiscount}%:</span>
+                    <span class="original-price">${this.formatNumber(originalTotal)} ₫</span>
+                </div>
+                <div class="total-row total-final">
+                    <span>Итого:</span>
+                    <span class="total-amount">${this.formatNumber(total)} ₫</span>
+                </div>
+            `;
+        } else if (this.promotionId === 1 && subtotal > 0) {
+            // Показываем субтотал, скидку и итого (старая логика для промо)
             cartTotal.innerHTML = `
                 <div class="total-row">
                     <span>Субтотал:</span>
@@ -536,16 +553,13 @@ class Cart {
 
         if (cartItemsList) {
             cartItemsList.innerHTML = visibleItems.map(item => {
-                // Проверяем, есть ли скидка (оригинальная цена больше текущей)
-                const hasDiscount = item.originalPrice && item.originalPrice > item.price;
+                // Показываем оригинальную цену в cart-item-price
+                const displayPrice = item.originalPrice || item.price;
                 
                 return `
                     <div class="cart-item" data-product-id="${item.id}">
                         <div class="cart-item-name">${item.name}</div>
-                        <div class="cart-item-price">
-                            ${this.formatNumber(item.price)} ₫
-                            ${hasDiscount ? `<span class="original-price">${this.formatNumber(item.originalPrice)} ₫</span>` : ''}
-                        </div>
+                        <div class="cart-item-price">${this.formatNumber(displayPrice)} ₫</div>
                         <div class="cart-item-quantity">
                             <a href="#" class="quantity-btn">-</a>
                             <span>${item.quantity}</span>
