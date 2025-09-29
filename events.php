@@ -209,7 +209,9 @@ $pageKeywords = $pageMeta['keywords'] ?? 'события, календарь, р
             getWeekStart(date) {
                 const d = new Date(date);
                 const day = d.getDay();
-                const diff = d.getDate() - day; // Понедельник = 1, Воскресенье = 0
+                // Преобразуем: 0=Вс, 1=Пн, 2=Вт... в 0=Пн, 1=Вт, 2=Ср...
+                const mondayDay = day === 0 ? 6 : day - 1;
+                const diff = d.getDate() - mondayDay;
                 return new Date(d.setDate(diff));
             }
 
@@ -278,9 +280,9 @@ $pageKeywords = $pageMeta['keywords'] ?? 'события, календарь, р
                 dayHeader.className = 'calendar-day__header';
                 
                 const dayNames = {
-                    'ru': ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'],
-                    'en': ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-                    'vi': ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN']
+                    'ru': ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'],
+                    'en': ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+                    'vi': ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7']
                 };
                 
                 const dayName = (dayNames[this.language] || dayNames['ru'])[date.getDay()];
