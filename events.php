@@ -350,9 +350,6 @@ $pageKeywords = $pageMeta['keywords'] ?? 'события, календарь, р
                     <div class="calendar-event__overlay">
                         <div class="calendar-event__title">${event.title}</div>
                         <div class="calendar-event__date">${dateWithDay} ${event.time || '19:00'}</div>
-                        <div class="calendar-event__description">
-                            ${event.description || ''}
-                        </div>
                         <div class="calendar-event__conditions">
                             <strong>${conditionsLabel}</strong><br>
                             ${event.conditions || ''}
@@ -403,9 +400,6 @@ $pageKeywords = $pageMeta['keywords'] ?? 'события, календарь, р
                     <div class="calendar-event__overlay">
                         <div class="calendar-event__title">${msg.title}</div>
                         <div class="calendar-event__date">${dateWithDay}</div>
-                        <div class="calendar-event__description">
-                            ${msg.text}
-                        </div>
                         <div class="calendar-event__conditions">
                             <a href="#footer" class="contact-link">${msg.link}</a>
                         </div>
