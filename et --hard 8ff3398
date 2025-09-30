@@ -1,0 +1,23 @@
+[33mcommit 8ff339816fea1800bab6aa370b1347e32d88f620[m
+Author: TG3 Developer <developer@tg3.com>
+Date:   Wed Oct 1 00:09:59 2025 +0700
+
+    Replace color #366b5b with #b88746ff across entire site
+    
+    - Updated CSS color variable --color-1-600 in styles.css
+    - Replaced all instances in cart-modal.css (12 occurrences)
+    - Replaced all instances in events-widget.css (4 occurrences)
+    - Replaced all instances in menu.css (1 occurrence)
+    - Replaced all instances in menu.php (1 occurrence)
+    - Replaced all instances in menu2.php (1 occurrence)
+    - Replaced all instances in cart.js (2 occurrences)
+    - Total: 22 color replacements across 7 files
+
+ css/cart-modal.css    | 24 [32m++++++++++++[m[31m------------[m
+ css/events-widget.css |  8 [32m++++[m[31m----[m
+ css/menu.css          |  2 [32m+[m[31m-[m
+ css/styles.css        |  2 [32m+[m[31m-[m
+ js/cart.js            |  4 [32m++[m[31m--[m
+ menu.php              |  2 [32m+[m[31m-[m
+ menu2.php             |  2 [32m+[m[31m-[m
+ 7 files changed, 22 insertions(+), 22 deletions(-)

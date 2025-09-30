@@ -200,8 +200,8 @@
 }
 
 .cart-item-quantity .quantity-btn:hover {
-    background: #2a5a4a;
-    border-color: #2a5a4a;
+    background: #b88746;
+    border-color: #b88746;
 }
 
 .cart-item-quantity span {
@@ -436,7 +436,7 @@
 }
 
 .btn-primary:hover {
-    background: #2d5a4d;
+    background: #b88746;
 }
 
 .btn-secondary {

@@ -23,11 +23,16 @@
     cursor: pointer;
 }
 
-.category-btn:hover,
-.category-btn.active {
-    background: #1c1e1d;
+.category-btn:hover {
+    background: #252322;
     color: var(--color-white);
-    border-color: #1c1e1d;
+    border-color: #252322;
+}
+
+.category-btn.active {
+    background: #252322;
+    color: var(--color-white);
+    border-color: #b88746ff;
 }
 
 .s-header__content {
@@ -400,6 +405,9 @@
 .menu-list__item-desc {
     max-width: min(100%, 90rem);
     padding-right: calc(var(--gutter) * 2);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .menu-list__item-price {

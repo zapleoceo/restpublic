@@ -93,20 +93,28 @@
  * ------------------------------------------------------------------- */
 @import url("https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght@8..144,300;8..144,400;8..144,500;8..144,600;8..144,700&display=swap");
 
-/* Local HeiseiMin font faces */
+/* Local MinionPro font faces */
 @font-face {
-    font-family: 'HeiseiMin';
-    src: url('../fonts/heiseiminstd-w7.otf') format('opentype');
-    font-weight: 700;
+    font-family: 'MinionPro';
+    src: url('../fonts/MinionPro-Regular.otf') format('opentype');
+    font-weight: 400;
     font-style: normal;
     font-display: swap;
+    font-feature-settings: "kern" 1;
+}
+
+/* Enable kerning for MinionPro font */
+.font-2,
+[style*="font-family: 'MinionPro'"],
+[style*="font-family: MinionPro"] {
+    font-feature-settings: "kern" 1;
 }
 
 :root {    
    /* font-families
    */
     --font-1   : "Roboto Flex", Sans-Serif;
-    --font-2   : "HeiseiMin", serif;
+    --font-2   : "MinionPro", serif;
     --font-mono: Consolas, "Andale Mono", Courier, "Courier New", monospace;
 }
 
@@ -122,17 +130,17 @@
    * color-1 (#C73E1D)
    * color-2 (#D1C1B3)
    */
-    --color-1-50                  : #f4f9f7;
-    --color-1-100                 : #daede5;
-    --color-1-200                 : #b5dacb;
-    --color-1-300                 : #89bfac;
-    --color-1-400                 : #65a48f;
-    --color-1-500                 : #468672;
+    --color-1-50                  : #f9f9f9;
+    --color-1-100                 : #f0f0f0;
+    --color-1-200                 : #e0e0e0;
+    --color-1-300                 : #d0d0d0;
+    --color-1-400                 : #b8b8b8;
+    --color-1-500                 : #a0a0a0;
     --color-1-600                 : #b88746ff;
-    --color-1-700                 : #2e574a;
-    --color-1-800                 : #29463f;
-    --color-1-900                 : #253c35;
-    --color-1-950                 : #11221d;
+    --color-1-700                 : #b88746;
+    --color-1-800                 : #1a1a1a;
+    --color-1-900                 : #0f0f0f;
+    --color-1-950                 : #0a0a0a;
     --color-1                     : var(--color-1-500);
 
     --color-2-50                  : #f9f7f3;
@@ -3762,7 +3770,7 @@ td:last-child {
 }
 
 .intro-block-content__social a:hover {
-    color: #468672;
+    color: #b88746;
 }
 
 .intro-block-content__social svg {
@@ -4368,6 +4376,9 @@ td:last-child {
 .menu-list__item-desc {
     max-width    : min(100%, 90rem);
     padding-right: calc(var(--gutter) * 2);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .menu-list__item-price {
@@ -4481,7 +4492,7 @@ td:last-child {
 }
 
 .intro-block-content__social a:hover {
-    color: #468672;
+    color: #b88746;
 }
 
 .intro-block-content__social svg {

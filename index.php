@@ -192,7 +192,7 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
     <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
     
     <!-- Preload critical resources -->
-    <link rel="preload" href="fonts/heiseiminstd-w7.otf" as="font" type="font/otf" crossorigin>
+    <link rel="preload" href="fonts/MinionPro-Regular.otf" as="font" type="font/otf" crossorigin>
     <link rel="preload" href="js/main.js" as="script">
     
     <style>
@@ -211,6 +211,7 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
 
     <!-- favicons
     ================================================== -->
+    <link rel="icon" type="image/svg+xml" href="template/favicon.svg">
     <link rel="apple-touch-icon" sizes="180x180" href="template/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="template/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="template/favicon-16x16.png">
@@ -221,14 +222,14 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
     <meta property="og:url" content="https://northrepublic.me/">
     <meta property="og:title" content="<?php echo safeHtml($pageTitle); ?>">
     <meta property="og:description" content="<?php echo safeHtml($pageDescription); ?>">
-    <meta property="og:image" content="https://northrepublic.me/images/logo.png">
+    <meta property="og:image" content="https://northrepublic.me/images/logo_2_options.svg">
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="https://northrepublic.me/">
     <meta property="twitter:title" content="<?php echo safeHtml($pageTitle); ?>">
     <meta property="twitter:description" content="<?php echo safeHtml($pageDescription); ?>">
-    <meta property="twitter:image" content="https://northrepublic.me/images/logo.png">
+    <meta property="twitter:image" content="https://northrepublic.me/images/logo_2_options.svg">
 </head>
 
 <body id="top">

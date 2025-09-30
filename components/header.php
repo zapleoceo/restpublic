@@ -15,7 +15,7 @@ if (!isset($translationService)) {
         <div class="s-header__block">
             <div class="header-logo">
                 <a class="logo" href="/">
-                    <img src="images/logo.png" alt="North Republic">
+                    <img src="images/logo_2_options.svg" alt="Veranda - restaurant & bar in Nha Trang">
                 </a>
             </div>
             <a class="header-menu-toggle" href="#0"><span>Menu</span></a>
