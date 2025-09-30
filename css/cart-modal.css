@@ -125,7 +125,7 @@
 }
 
 .radio-label input[type="radio"]:checked + .radio-custom {
-    border-color: #366b5b;
+    border-color: #b88746ff;
 }
 
 .radio-label input[type="radio"]:checked + .radio-custom::after {
@@ -136,7 +136,7 @@
     transform: translate(-50%, -50%);
     width: 10px;
     height: 10px;
-    background: #366b5b;
+    background: #b88746ff;
     border-radius: 50%;
 }
 
@@ -169,7 +169,7 @@
 }
 
 .cart-item-price {
-    color: #366b5b;
+    color: #b88746ff;
     font-weight: 600;
     margin-right: 12px;
 }
@@ -183,8 +183,8 @@
 .cart-item-quantity .quantity-btn {
     width: 20px;
     height: 20px;
-    border: 1px solid #366b5b;
-    background: #366b5b;
+    border: 1px solid #b88746ff;
+    background: #b88746ff;
     border-radius: 3px;
     cursor: pointer;
     display: flex;
@@ -247,7 +247,7 @@
 
 .order-type-option input[type="radio"] {
     margin-right: 8px;
-    accent-color: #366b5b;
+    accent-color: #b88746ff;
     width: 20px;
     height: 20px;
     transform: scale(1.2);
@@ -334,7 +334,7 @@
 .form-group select:focus,
 .form-group textarea:focus {
     outline: none;
-    border-color: #366b5b;
+    border-color: #b88746ff;
     box-shadow: 0 0 0 2px rgba(54, 107, 91, 0.1);
 }
 
@@ -387,7 +387,7 @@
 
 .cart-total {
     margin-top: 8px;
-    border-bottom: 2px solid #366b5b;
+    border-bottom: 2px solid #b88746ff;
     margin-bottom: 10px;
 }
 
@@ -413,7 +413,7 @@
 }
 
 .total-amount {
-    color: #366b5b;
+    color: #b88746ff;
 }
 
 /* Buttons */
@@ -431,7 +431,7 @@
 }
 
 .btn-primary {
-    background: #366b5b;
+    background: #b88746ff;
     color: white;
 }
 
@@ -486,11 +486,11 @@
     
     .modal-header .order-type-option:hover {
         background: #e9ecef;
-        border-color: #366b5b;
+        border-color: #b88746ff;
     }
     
     .modal-header .order-type-option input[type="radio"]:checked + .order-type-label {
-        color: #366b5b;
+        color: #b88746ff;
         font-weight: 600;
     }
     

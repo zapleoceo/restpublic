@@ -57,9 +57,9 @@
 }
 
 .dates-swiper .swiper-slide.active {
-    background: #366b5b;
+    background: #b88746ff;
     color: white;
-    border-color: #366b5b;
+    border-color: #b88746ff;
     font-weight: 600;
     font-size: 15px;
     transform: scale(1.05);
@@ -170,7 +170,7 @@
 /* Выделенные постеры после клика на дату */
 .poster-card.selected {
     transform: scale(1.05);
-    border: 3px solid #366b5b;
+    border: 3px solid #b88746ff;
     border-radius: 12px;
     box-shadow: 0 8px 20px rgba(54, 107, 91, 0.3);
     transition: all 0.3s ease;
@@ -441,7 +441,7 @@
     width: 40px;
     height: 40px;
     border: 3px solid #f3f3f3;
-    border-top: 3px solid #366b5b;
+    border-top: 3px solid #b88746ff;
     border-radius: 50%;
     animation: spin 1s linear infinite;
 }

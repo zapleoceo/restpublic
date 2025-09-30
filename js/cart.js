@@ -1286,7 +1286,7 @@ class Cart {
         if (discountInfoElement) {
             if (show) {
                 discountInfoElement.style.display = 'block';
-                discountInfoElement.style.backgroundColor = '#366b5b';
+                discountInfoElement.style.backgroundColor = '#b88746ff';
             } else {
                 discountInfoElement.style.display = 'none';
             }
@@ -1461,7 +1461,7 @@ class Cart {
             position: fixed;
             top: 20px;
             right: 20px;
-            background: ${type === 'success' ? '#366b5b' : type === 'error' ? '#f44336' : type === 'warning' ? '#ff9800' : '#366b5b'};
+            background: ${type === 'success' ? '#b88746ff' : type === 'error' ? '#f44336' : type === 'warning' ? '#ff9800' : '#b88746ff'};
             color: white;
             padding: 12px 20px;
             border-radius: 4px;

@@ -453,7 +453,7 @@ if ($menu_loaded) {
         
         .header-nav__links .current a {
             color: var(--color-white);
-            background-color: #366b5b;
+            background-color: #b88746ff;
         }
         
         /* Menu open animations (like header-nav) */
