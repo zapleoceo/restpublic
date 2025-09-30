@@ -137,7 +137,7 @@ echo "</div>";
 
 // Test external links
 $external_links = [
-    ['url' => '/menu.php', 'text' => 'Основной сайт - Меню'],
+    ['url' => '/menu2.php', 'text' => 'Основной сайт - Меню'],
     ['url' => '/events.php', 'text' => 'Основной сайт - События'],
     ['url' => '/', 'text' => 'Главная страница'],
 ];

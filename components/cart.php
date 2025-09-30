@@ -20,7 +20,7 @@
         
         <div class="cart-empty" id="cart-empty">
             <p>Ваша корзина пуста</p>
-            <a href="/menu.php" class="btn btn--primary">Посмотреть меню</a>
+            <a href="/menu2.php" class="btn btn--primary">Посмотреть меню</a>
         </div>
     </div>
     
