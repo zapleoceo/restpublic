@@ -209,7 +209,10 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
             font-weight: 400;
             letter-spacing: 2px;
             text-transform: uppercase;
-            margin-top: -10px;
+            margin-top: -5px;
+            margin-left: 0;
+            text-align: left;
+            color: var(--color-text-bold);
             opacity: var(--intro-text-opacity);
             font-family: "Roboto Flex", sans-serif;
         }
