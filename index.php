@@ -204,6 +204,16 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
             opacity: var(--intro-text-opacity);
         }
         
+        .intro-header__subtitle {
+            font-size: 14px;
+            font-weight: 400;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-top: -10px;
+            opacity: var(--intro-text-opacity);
+            font-family: "Roboto Flex", sans-serif;
+        }
+        
         .intro-header__overline {
             font-family: "Roboto Flex", sans-serif;
         }
@@ -260,6 +270,7 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                     <h1 class="intro-header__big-type">
                         <?php echo $pageMeta['intro_title'] ?? 'Veranda'; ?>
                     </h1>
+                    <div class="intro-header__subtitle">BAR & RESTAURANT</div>
                 </div> <!-- end intro-header -->
 
                 <figure class="intro-pic-primary">
