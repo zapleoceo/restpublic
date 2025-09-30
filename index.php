@@ -258,7 +258,7 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                 <div class="intro-header">
                     <div class="intro-header__overline"><?php echo $pageMeta['intro_welcome'] ?? ''; ?></div>
                     <h1 class="intro-header__big-type">
-                        <?php echo $pageMeta['intro_title'] ?? 'North <br>Republic'; ?>
+                        <?php echo $pageMeta['intro_title'] ?? 'Veranda'; ?>
                     </h1>
                 </div> <!-- end intro-header -->
 
@@ -266,7 +266,7 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                     <img src="<?php echo $pageMeta['intro_image_primary'] ?? 'template/images/shawa.png'; ?>" 
                          srcset="<?php echo $pageMeta['intro_image_primary'] ?? 'template/images/shawa.png'; ?> 1x, 
                          <?php echo $pageMeta['intro_image_primary'] ?? 'template/images/shawa.png'; ?> 2x" 
-                         alt="<?php echo getImageAlt('intro_image_primary_alt', 'Главное изображение ресторана North Republic'); ?>">  
+                         alt="<?php echo getImageAlt('intro_image_primary_alt', 'Главное изображение ресторана Veranda'); ?>">  
                 </figure> <!-- end intro-pic-primary -->    
                     
                 <div class="intro-block-content">
@@ -336,7 +336,7 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                         <img src="<?php echo $pageMeta['about_image_primary'] ?? 'template/images/about-pic-primary.jpg'; ?>" 
                              srcset="<?php echo $pageMeta['about_image_primary'] ?? 'template/images/about-pic-primary.jpg'; ?> 1x, 
                              <?php echo $pageMeta['about_image_primary_2x'] ?? 'template/images/about-pic-primary@2x.jpg'; ?> 2x" 
-                             alt="<?php echo getImageAlt('about_image_primary_alt', 'Фотография интерьера ресторана North Republic'); ?>"> 
+                             alt="<?php echo getImageAlt('about_image_primary_alt', 'Фотография интерьера ресторана Veranda'); ?>"> 
                     </figure>
                 </div> <!-- end s-about__content-start -->
 

@@ -33,7 +33,7 @@ function safeHtml($value, $default = '') {
 
 // Set page title and meta tags
 $pageTitle = $pageMeta['title'] ?? 'Календарь событий';
-$pageDescription = $pageMeta['description'] ?? 'Календарь событий ресторана North Republic';
+$pageDescription = $pageMeta['description'] ?? 'Календарь событий ресторана Veranda';
 $pageKeywords = $pageMeta['keywords'] ?? 'события, календарь, ресторан';
 ?>
 

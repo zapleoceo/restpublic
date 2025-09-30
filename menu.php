@@ -236,10 +236,10 @@ if ($menu_loaded) {
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Меню - Республика Север</title>
-    <meta name="description" content="Полное меню ресторана Республика Север - изысканные блюда и напитки">
-    <meta name="keywords" content="меню, ресторан, блюда, напитки, Нячанг, Вьетнам">
-    <meta name="author" content="Республика Север">
+    <title>Меню - Veranda - restaurant & bar in Nha Trang</title>
+    <meta name="description" content="Меню ресторана Veranda - изысканные блюда и напитки в Нячанге">
+    <meta name="keywords" content="меню, ресторан, блюда, напитки, Нячанг, Вьетнам, Veranda">
+    <meta name="author" content="Veranda">
 
     <script>
         document.documentElement.classList.remove('no-js');
@@ -252,6 +252,7 @@ if ($menu_loaded) {
     <link rel="stylesheet" href="css/custom.css">
 
     <!-- Favicons -->
+    <link rel="icon" type="image/svg+xml" href="template/favicon.svg">
     <link rel="apple-touch-icon" sizes="180x180" href="template/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="template/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="template/favicon-16x16.png">
@@ -283,11 +284,16 @@ if ($menu_loaded) {
             cursor: pointer;
         }
         
-        .category-btn:hover,
-        .category-btn.active {
-            background: #1c1e1d;
+        .category-btn:hover {
+            background: #252322;
             color: var(--color-white);
-            border-color: #1c1e1d;
+            border-color: #252322;
+        }
+
+        .category-btn.active {
+            background: #252322;
+            color: var(--color-white);
+            border-color: #b88746ff;
         }
         
         .s-header__content {
@@ -634,7 +640,7 @@ if ($menu_loaded) {
                 <div class="s-header__block">
                     <div class="header-logo">
                         <a class="logo" href="/">
-                            <img src="images/logo.png" alt="North Republic">
+                            <img src="images/logo_2_options.svg" alt="Veranda - restaurant & bar in Nha Trang">
                         </a>
                     </div>
                 </div>
@@ -882,9 +888,9 @@ if ($menu_loaded) {
         }
         
         .sort-dropdown__trigger:hover {
-            background: #1c1e1d;
+            background: #252322;
             color: var(--color-white);
-            border-color: #1c1e1d;
+            border-color: #252322;
         }
         
         .sort-dropdown__icon {
