@@ -64,7 +64,7 @@ $pageKeywords = $pageMeta['keywords'] ?? 'события, календарь, р
     <link rel="stylesheet" href="css/events-calendar.css?v=<?php echo time(); ?>">
     
     <!-- Preload critical resources -->
-    <link rel="preload" href="fonts/Serati.ttf" as="font" type="font/ttf" crossorigin>
+    <link rel="preload" href="fonts/heiseiminstd-w7.otf" as="font" type="font/otf" crossorigin>
     <link rel="preload" href="js/main.js" as="script">
     
     <!-- favicons

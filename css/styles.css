@@ -93,20 +93,12 @@
  * ------------------------------------------------------------------- */
 @import url("https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght@8..144,300;8..144,400;8..144,500;8..144,600;8..144,700&display=swap");
 
-/* Local Serati font faces */
+/* Local HeiseiMin font faces */
 @font-face {
-    font-family: 'Serati';
-    src: url('../fonts/Serati.ttf') format('truetype');
-    font-weight: normal;
+    font-family: 'HeiseiMin';
+    src: url('../fonts/heiseiminstd-w7.otf') format('opentype');
+    font-weight: 700;
     font-style: normal;
-    font-display: swap;
-}
-
-@font-face {
-    font-family: 'Serati';
-    src: url('../fonts/SeratiItalic.ttf') format('truetype');
-    font-weight: normal;
-    font-style: italic;
     font-display: swap;
 }
 
@@ -114,7 +106,7 @@
    /* font-families
    */
     --font-1   : "Roboto Flex", Sans-Serif;
-    --font-2   : "Serati", Serif;
+    --font-2   : "HeiseiMin", serif;
     --font-mono: Consolas, "Andale Mono", Courier, "Courier New", monospace;
 }
 

@@ -192,7 +192,7 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
     <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
     
     <!-- Preload critical resources -->
-    <link rel="preload" href="fonts/Serati.ttf" as="font" type="font/ttf" crossorigin>
+    <link rel="preload" href="fonts/heiseiminstd-w7.otf" as="font" type="font/otf" crossorigin>
     <link rel="preload" href="js/main.js" as="script">
     
     <style>
