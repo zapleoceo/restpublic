@@ -11,9 +11,9 @@ define('ADMIN_LAYOUT_LOADED', true);
 require_once __DIR__ . '/auth-check.php';
 
 // Define page variables with defaults
-$page_title = $page_title ?? 'Админка - North Republic';
+$page_title = $page_title ?? 'Админка - Veranda';
 $page_header = $page_header ?? 'Панель управления';
-$page_description = $page_description ?? 'Добро пожаловать в панель управления North Republic';
+$page_description = $page_description ?? 'Добро пожаловать в панель управления Veranda';
 
 // Determine current section for active menu item
 $current_section = getCurrentSection();
@@ -63,10 +63,11 @@ function getCurrentSection() {
 
     <!-- Preload critical resources -->
     <link rel="preload" href="/admin/assets/css/admin.css?v=<?php echo filemtime(__DIR__ . '/../assets/css/admin.css'); ?>" as="style">
-    <link rel="preload" href="/images/logo.png" as="image">
+    <link rel="preload" href="/images/logo_2_options.svg" as="image">
     <link rel="preload" href="/admin/assets/js/admin.js" as="script">
 
     <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/template/favicon.svg">
     <link rel="icon" type="image/png" sizes="32x32" href="/template/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/template/favicon-16x16.png">
     <link rel="apple-touch-icon" href="/template/apple-touch-icon.png">
@@ -80,7 +81,7 @@ function getCurrentSection() {
 
     <!-- Page-specific meta tags -->
     <meta name="description" content="<?php echo htmlspecialchars($page_description); ?>">
-    <meta name="author" content="North Republic Team">
+    <meta name="author" content="Veranda Team">
 </head>
 <body class="admin-body">
     <div class="admin-layout">
@@ -125,7 +126,7 @@ function getCurrentSection() {
             <footer class="admin-footer">
                 <div class="footer-content">
                     <div class="footer-left">
-                        <p>&copy; <?php echo date('Y'); ?> North Republic Admin Panel</p>
+                        <p>&copy; <?php echo date('Y'); ?> Veranda Admin Panel</p>
                         <p>Version 2.0 - Complete UI Refactoring</p>
                     </div>
                     <div class="footer-right">

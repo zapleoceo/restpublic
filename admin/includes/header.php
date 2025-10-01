@@ -28,7 +28,7 @@ if (!defined('ADMIN_LAYOUT_LOADED')) {
             <!-- Brand -->
             <div class="admin-header-brand">
                 <a href="/admin/" class="brand-link">
-                    <img src="/images/logo.png" alt="North Republic" class="brand-logo" loading="lazy">
+                    <img src="/images/logo_2_options.svg" alt="Veranda - restaurant & bar in Nha Trang" class="brand-logo" loading="lazy">
                     <span class="brand-text">Админка</span>
                 </a>
             </div>

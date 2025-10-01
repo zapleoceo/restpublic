@@ -62,7 +62,7 @@ function getSystemSettings() {
         if (!$settings) {
             // Возвращаем настройки по умолчанию
             return [
-                'site_name' => 'North Republic',
+                'site_name' => 'Veranda',
                 'site_description' => 'Ресторан в Нячанге',
                 'default_language' => 'ru',
                 'session_timeout' => 6,

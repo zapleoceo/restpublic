@@ -102,8 +102,8 @@ $menu_items = [
         <!-- Brand -->
         <div class="admin-sidebar-brand">
             <a href="/admin/" class="brand-link">
-                <img src="/images/logo.png" alt="North Republic" class="brand-logo" loading="lazy">
-                <span class="brand-title">North Republic</span>
+                <img src="/images/logo_2_options.svg" alt="Veranda - restaurant & bar in Nha Trang" class="brand-logo" loading="lazy">
+                <span class="brand-title">Veranda</span>
                 <span class="brand-subtitle">Admin Panel</span>
             </a>
         </div>

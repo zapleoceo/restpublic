@@ -5,9 +5,9 @@
  */
 
 // Page configuration
-$page_title = 'Панель управления - North Republic';
+$page_title = 'Панель управления - Veranda';
 $page_header = 'Добро пожаловать!';
-$page_description = 'Центральная панель управления North Republic с современным интерфейсом';
+$page_description = 'Центральная панель управления Veranda с современным интерфейсом';
 
 // Get dashboard statistics
 $stats = getDashboardStats();
