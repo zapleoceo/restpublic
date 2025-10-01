@@ -41,6 +41,22 @@ try {
     
     echo "Найдено событий: " . count($events) . "\n";
     
+    // Фильтруем события, которые уже прошли
+    $currentTime = $today->format('H:i');
+    $filteredEvents = [];
+    
+    foreach ($events as $event) {
+        $eventTime = $event['time'] ?? '00:00';
+        if ($eventTime > $currentTime) {
+            $filteredEvents[] = $event;
+        } else {
+            echo "⏰ Событие '$event[title_ru]' в $eventTime уже прошло, пропускаем\n";
+        }
+    }
+    
+    $events = $filteredEvents;
+    echo "Событий после фильтрации: " . count($events) . "\n";
+    
     // Случайные приветствия
     $greetings = [
         "🎉 Сегодня будет интересно!",
@@ -55,7 +71,8 @@ try {
     $randomGreeting = $greetings[array_rand($greetings)];
     
     if (empty($events)) {
-        $message = "$randomGreeting\n\n❌ На сегодня событий не запланировано";
+        echo "❌ Нет активных событий на сегодня, отправка отменена\n";
+        exit;
     } else {
         $message = "$randomGreeting\n\n";
         

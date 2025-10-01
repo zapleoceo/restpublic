@@ -60,6 +60,30 @@ try {
     
     echo "Найдено событий: " . count($events) . "\n";
     
+    // Фильтруем события, которые уже прошли
+    $currentDateTime = new DateTime();
+    $filteredEvents = [];
+    
+    foreach ($events as $event) {
+        $eventDate = new DateTime($event['date']);
+        $eventTime = $event['time'] ?? '00:00';
+        
+        // Создаем полную дату и время события
+        $eventDateTime = clone $eventDate;
+        $timeParts = explode(':', $eventTime);
+        $eventDateTime->setTime((int)$timeParts[0], (int)$timeParts[1]);
+        
+        // Если событие в будущем - включаем
+        if ($eventDateTime > $currentDateTime) {
+            $filteredEvents[] = $event;
+        } else {
+            echo "⏰ Событие '$event[title_ru]' $event[date] $eventTime уже прошло, пропускаем\n";
+        }
+    }
+    
+    $events = $filteredEvents;
+    echo "Событий после фильтрации: " . count($events) . "\n";
+    
     // Формируем сообщение
     $message = "=======\n";
     $message .= "Оля, это тебе рыба сообщения\n";
@@ -68,7 +92,8 @@ try {
     $message .= "С " . $monday->format('d.m.Y') . " по " . $sunday->format('d.m.Y') . "\n\n";
     
     if (empty($events)) {
-        $message .= "❌ На следующую неделю событий не запланировано";
+        echo "❌ Нет активных событий на следующую неделю, отправка отменена\n";
+        exit;
     } else {
         $currentDate = null;
         
