@@ -353,6 +353,20 @@ class PosterService {
     }
   }
 
+  // Get all clients
+  async getAllClients() {
+    console.log(`🔍 getAllClients() called`);
+    try {
+      const clients = await this.makeRequest('clients.getClients');
+      console.log(`📥 Raw clients from Poster API:`, clients);
+      console.log(`📋 Retrieved ${clients.length} clients`);
+      return clients;
+    } catch (error) {
+      console.error('Error getting all clients:', error);
+      throw new Error(`Failed to get all clients: ${error.message}`);
+    }
+  }
+
   // Create new client
   async createClient(clientData) {
     console.log(`🔍 createClient() called with data:`, clientData);

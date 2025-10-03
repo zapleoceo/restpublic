@@ -141,6 +141,21 @@ router.post('/clients.removeClient', requireAuth, async (req, res) => {
   }
 });
 
+// Get all clients
+router.get('/clients.getClients', requireAuth, async (req, res) => {
+  try {
+    console.log('📡 Getting all clients...');
+    const clients = await posterService.getAllClients();
+    res.json(clients);
+  } catch (error) {
+    console.error('All clients get error:', error);
+    res.status(500).json({
+      error: 'Failed to get all clients',
+      message: error.message
+    });
+  }
+});
+
 // Get client by ID
 router.get('/clients.getClient', requireAuth, async (req, res) => {
   try {

@@ -26,7 +26,7 @@ $logger = new Logger();
 // Подключаемся к MongoDB
 $mongodbUrl = $_ENV['MONGODB_URL'] ?? 'mongodb://localhost:27017';
 $client = new MongoDB\Client($mongodbUrl);
-$dbName = $_ENV['MONGODB_DB_NAME'] ?? 'northrepublic';
+$dbName = $_ENV['MONGODB_DB_NAME'] ?? 'veranda';
 $database = $client->selectDatabase($dbName);
 $usersCollection = $database->selectCollection('users');
 
@@ -72,7 +72,7 @@ if ($_POST['action'] ?? '' === 'delete_guest') {
 $guests = [];
 try {
     // Получаем всех клиентов из Poster API
-    $apiUrl = 'http://localhost:3002/api/poster/clients.getClients';
+    $apiUrl = 'http://localhost:3003/api/poster/clients.getClients';
     $authToken = $_ENV['API_AUTH_TOKEN'] ?? '';
     
     $ch = curl_init();
