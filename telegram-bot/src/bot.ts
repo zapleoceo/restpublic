@@ -130,8 +130,8 @@ bot.on('contact', async (ctx) => {
   // Проверяем, что контакт получен и сессия существует (авторизация через любой путь)
   if (session && session.returnUrl) {
     try {
-      // Отправляем данные на backend
-      const backendUrl = process.env.BACKEND_URL || 'http://localhost:3003';
+      // Отправляем данные на веб-сервер
+      const backendUrl = process.env.WEB_URL || 'https://veranda.my';
       
       // Используем sessionToken из сессии или генерируем новый
       let sessionToken = session.returnUrl;
