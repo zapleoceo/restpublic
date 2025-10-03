@@ -1397,7 +1397,12 @@ if ($menu_loaded) {
                 <div class="auth-providers">
                     <div class="telegram-widget-container">
                         <!-- Telegram авторизация виджет -->
-                        <script async src="https://telegram.org/js/telegram-widget.js?22" data-telegram-login="RestPublic_bot" data-size="medium" data-onauth="onTelegramAuth(user)" data-request-access="write"></script>
+                        <button class="auth-provider-btn" onclick="showTelegramAuth()">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="m20.665 3.717-17.73 6.837c-1.21.486-1.203 1.161-.222 1.462l4.552 1.42 10.532-6.645c.498-.303.953-.14.579.192l-8.533 7.701h-.002l.002.001-.314 4.692c.46 0 .663-.211.921-.46l2.211-2.15 4.599 3.397c.848.467 1.457.227 1.668-.785l3.019-14.228c.309-1.239-.473-1.8-1.282-1.434z"/>
+                            </svg>
+                            <span>Авторизация через Telegram</span>
+                        </button>
                     </div>
                     
                     <button class="auth-provider-btn auth-provider-btn--disabled" disabled>
@@ -1502,7 +1507,29 @@ if ($menu_loaded) {
         }
     });
 
-    // Telegram авторизация
+    // Показать инструкции телеграм авторизации
+    function showTelegramAuth() {
+        // Закрываем модальное окно авторизации
+        document.getElementById('authModal').classList.add('modal-hidden');
+        document.getElementById('modalOverlay').classList.add('overlay-hidden');
+        document.body.style.overflow = '';
+
+        // Показываем инструкции
+        const instructions = `
+            Для авторизации через Telegram:
+
+            1. Напишите боту @RestPublic_bot
+            2. Отправьте команду /start
+            3. Выберите "Авторизоваться"
+            4. Подтвердите авторизацию
+
+            После авторизации вы получите персональные скидки и сможете отслеживать заказы.
+        `;
+
+        alert(instructions);
+    }
+
+    // Старая функция телеграм виджета (оставляем для совместимости)
     function onTelegramAuth(user) {
         console.log('Telegram auth data:', user);
 
