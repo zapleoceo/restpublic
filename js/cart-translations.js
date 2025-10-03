@@ -12,7 +12,9 @@ class CartTranslations {
         }
 
         try {
-            const response = await fetch('/api/cart/translations.php');
+            // Получаем текущий язык из URL или cookie
+            const currentLang = this.getCurrentLanguage();
+            const response = await fetch(`/api/cart/translations.php?lang=${currentLang}`);
             const data = await response.json();
             
             if (data.success) {
@@ -63,6 +65,35 @@ class CartTranslations {
             await this.load();
         }
         return this.get(key, fallback);
+    }
+
+    getCurrentLanguage() {
+        // 1. Проверяем параметр lang в URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const langFromUrl = urlParams.get('lang');
+        if (langFromUrl && ['ru', 'en', 'vi'].includes(langFromUrl)) {
+            return langFromUrl;
+        }
+        
+        // 2. Проверяем cookie
+        const langFromCookie = document.cookie
+            .split('; ')
+            .find(row => row.startsWith('language='))
+            ?.split('=')[1];
+        if (langFromCookie && ['ru', 'en', 'vi'].includes(langFromCookie)) {
+            return langFromCookie;
+        }
+        
+        // 3. Проверяем Accept-Language заголовок
+        const acceptLang = navigator.language || navigator.userLanguage;
+        if (acceptLang) {
+            if (acceptLang.startsWith('en')) return 'en';
+            if (acceptLang.startsWith('vi')) return 'vi';
+            if (acceptLang.startsWith('ru')) return 'ru';
+        }
+        
+        // По умолчанию русский
+        return 'ru';
     }
 }
 

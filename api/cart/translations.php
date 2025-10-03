@@ -14,18 +14,28 @@ require_once __DIR__ . '/../../classes/TranslationService.php';
 try {
     $translationService = new TranslationService();
     
-    // Принудительно получаем язык из сессии или cookie
-    if (session_status() === PHP_SESSION_NONE) {
+    // Получаем язык из параметра запроса, сессии или cookie
+    $currentLanguage = 'ru'; // По умолчанию
+    
+    // 1. Проверяем параметр lang в URL
+    if (isset($_GET['lang']) && in_array($_GET['lang'], ['ru', 'en', 'vi'])) {
+        $currentLanguage = $_GET['lang'];
+    }
+    // 2. Проверяем сессию
+    elseif (session_status() === PHP_SESSION_NONE) {
         session_start();
     }
     
-    // Проверяем язык из сессии
     if (isset($_SESSION['language'])) {
         $currentLanguage = $_SESSION['language'];
-        $translationService->currentLanguage = $currentLanguage;
-    } else {
-        $currentLanguage = $translationService->getLanguage();
     }
+    // 3. Проверяем cookie
+    elseif (isset($_COOKIE['language'])) {
+        $currentLanguage = $_COOKIE['language'];
+    }
+    
+    // Устанавливаем язык в TranslationService
+    $translationService->currentLanguage = $currentLanguage;
     
     // Логируем текущий язык для отладки
     error_log("Cart translations API: Current language = " . $currentLanguage);
