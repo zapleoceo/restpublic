@@ -72,6 +72,9 @@ try {
         // Получаем текущий язык для перевода блюд
         $currentLanguage = $translationService->getLanguage();
         
+        // Логируем текущий язык для отладки
+        error_log("Menu2: Current language = " . $currentLanguage);
+        
         if ($menuData) {
             $categories = $menuData['categories'] ?? [];
             $products = $menuData['products'] ?? [];

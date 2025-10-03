@@ -35,6 +35,7 @@ class TranslationService {
                 session_start();
             }
             $_SESSION['language'] = $_GET['lang'];
+            $this->currentLanguage = $_GET['lang'];
             return $_GET['lang'];
         }
         
@@ -44,6 +45,7 @@ class TranslationService {
         }
         
         if (isset($_SESSION['language'])) {
+            $this->currentLanguage = $_SESSION['language'];
             return $_SESSION['language'];
         }
         
@@ -52,6 +54,7 @@ class TranslationService {
             $lang = $_COOKIE['language'];
             if (in_array($lang, ['ru', 'en', 'vi'])) {
                 $_SESSION['language'] = $lang;
+                $this->currentLanguage = $lang;
                 return $lang;
             }
         }
@@ -84,16 +87,20 @@ class TranslationService {
             // Ищем поддерживаемые языки
             foreach ($languages as $lang => $q) {
                 if (strpos($lang, 'en') === 0) {
+                    $this->currentLanguage = 'en';
                     return 'en';
                 } elseif (strpos($lang, 'vi') === 0) {
+                    $this->currentLanguage = 'vi';
                     return 'vi';
                 } elseif (strpos($lang, 'ru') === 0) {
+                    $this->currentLanguage = 'ru';
                     return 'ru';
                 }
             }
         }
         
         // По умолчанию русский
+        $this->currentLanguage = 'ru';
         return 'ru';
     }
     
@@ -111,6 +118,9 @@ class TranslationService {
         
         $_SESSION['language'] = $language;
         setcookie('language', $language, time() + (365 * 24 * 60 * 60), '/'); // 1 год
+        $this->currentLanguage = $language;
+        
+        // Обновляем язык в текущем экземпляре
         $this->currentLanguage = $language;
         
         return true;

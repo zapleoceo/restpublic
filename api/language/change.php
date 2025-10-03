@@ -42,10 +42,14 @@ try {
     $result = $translationService->setLanguage($language);
     
     if ($result) {
+        // Проверяем, что язык действительно установлен
+        $currentLanguage = $translationService->getLanguage();
+        
         echo json_encode([
             'success' => true, 
             'message' => 'Language changed successfully',
-            'language' => $language
+            'language' => $language,
+            'current_language' => $currentLanguage
         ]);
     } else {
         http_response_code(500);
