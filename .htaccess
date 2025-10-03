@@ -16,6 +16,7 @@ RewriteRule ^api/auth/telegram-widget$ api/auth/telegram-widget.php [L]
 
 # Обработка auth запросов через PHP прокси
 RewriteRule ^auth/status$ auth/status.php [L]
+RewriteRule ^auth/telegram-callback$ auth/telegram-callback.php [L]
 
 # Универсальное проксирование API запросов на Node.js backend
 RewriteCond %{REQUEST_URI} ^/api/(poster|menu|cache|tables)/.*$
