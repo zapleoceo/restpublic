@@ -36,18 +36,37 @@ class Cart {
         await this.loadTranslations();
         this.bindEvents();
         this.updateCartDisplay();
+        
+        // Принудительно обновляем переводы при инициализации
+        setTimeout(async () => {
+            await this.reloadTranslations();
+        }, 100);
     }
 
     async loadTranslations() {
         if (window.cartTranslations) {
             this.translations = await window.cartTranslations.load();
+            console.log('🛒 Cart: Loaded translations:', this.translations);
+            console.log('🛒 Cart: Current language:', window.cartTranslations.language);
+        }
+    }
+
+    // Метод для обновления переводов при смене языка
+    async reloadTranslations() {
+        if (window.cartTranslations) {
+            this.translations = await window.cartTranslations.reload();
+            console.log('🛒 Cart: Reloaded translations:', this.translations);
+            // Обновляем отображение корзины с новыми переводами
+            this.updateCartDisplay();
         }
     }
 
     t(key, fallback = null) {
         if (this.translations && this.translations[key]) {
+            console.log(`🛒 Cart: Translation for '${key}':`, this.translations[key]);
             return this.translations[key];
         }
+        console.warn(`🛒 Cart: Missing translation for '${key}', using fallback:`, fallback || key);
         return fallback || key;
     }
 

@@ -245,6 +245,11 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
+                // Обновляем переводы корзины перед перезагрузкой страницы
+                if (window.updateCartTranslations) {
+                    window.updateCartTranslations();
+                }
+                
                 // Reload page to apply new language
                 window.location.reload();
             } else {

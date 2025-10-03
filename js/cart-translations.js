@@ -14,13 +14,18 @@ class CartTranslations {
         try {
             // Получаем текущий язык из URL или cookie
             const currentLang = this.getCurrentLanguage();
+            console.log('🌐 CartTranslations: Loading translations for language:', currentLang);
+            
             const response = await fetch(`/api/cart/translations.php?lang=${currentLang}`);
             const data = await response.json();
+            
+            console.log('🌐 CartTranslations: API response:', data);
             
             if (data.success) {
                 this.translations = data.translations;
                 this.language = data.language;
                 this.loaded = true;
+                console.log('🌐 CartTranslations: Loaded', Object.keys(this.translations).length, 'translations for', this.language);
             } else {
                 console.error('Failed to load cart translations:', data.error);
                 this.setDefaultTranslations();
@@ -95,7 +100,28 @@ class CartTranslations {
         // По умолчанию русский
         return 'ru';
     }
+
+    // Метод для принудительного обновления переводов при смене языка
+    async reload() {
+        this.loaded = false;
+        this.translations = {};
+        return await this.load();
+    }
 }
 
 // Глобальный экземпляр
 window.cartTranslations = new CartTranslations();
+
+// Автоматическая загрузка переводов при инициализации
+document.addEventListener('DOMContentLoaded', async function() {
+    console.log('🌐 CartTranslations: Auto-loading translations...');
+    await window.cartTranslations.load();
+    console.log('🌐 CartTranslations: Auto-loaded translations:', window.cartTranslations.translations);
+});
+
+// Глобальная функция для обновления переводов корзины
+window.updateCartTranslations = async function() {
+    if (window.cart && window.cart.reloadTranslations) {
+        await window.cart.reloadTranslations();
+    }
+};

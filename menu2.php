@@ -706,6 +706,49 @@ if ($menu_loaded) {
     <script src="js/cart.js"></script>
     <script src="js/menu.js"></script>
     
+    <script>
+    // Отладочная информация для переводов корзины
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('🌐 Page loaded, checking language and translations...');
+        
+        // Проверяем текущий язык
+        const urlParams = new URLSearchParams(window.location.search);
+        const langFromUrl = urlParams.get('lang');
+        console.log('🌐 Language from URL:', langFromUrl);
+        
+        // Проверяем cookie
+        const langFromCookie = document.cookie
+            .split('; ')
+            .find(row => row.startsWith('language='))
+            ?.split('=')[1];
+        console.log('🌐 Language from cookie:', langFromCookie);
+        
+        // Проверяем переводы корзины
+        if (window.cartTranslations) {
+            console.log('🌐 CartTranslations available');
+            setTimeout(async () => {
+                const currentLang = window.cartTranslations.getCurrentLanguage();
+                console.log('🌐 CartTranslations current language:', currentLang);
+                
+                await window.cartTranslations.reload();
+                console.log('🌐 CartTranslations reloaded, language:', window.cartTranslations.language);
+                console.log('🌐 CartTranslations translations:', window.cartTranslations.translations);
+            }, 500);
+        }
+        
+        // Проверяем корзину
+        if (window.cart) {
+            console.log('🛒 Cart available');
+            setTimeout(async () => {
+                if (window.cart.reloadTranslations) {
+                    await window.cart.reloadTranslations();
+                    console.log('🛒 Cart translations reloaded');
+                }
+            }, 1000);
+        }
+    });
+    </script>
+    
     <style>
     /* Стили для подсветки полей при ошибке валидации */
     .validation-error {
