@@ -1072,9 +1072,16 @@ class Cart {
                 const productsData = await productsResponse.json();
                 console.log('📥 Products data from Poster API:', productsData);
                 
+                // Диагностика: проверяем тип и структуру данных
+                console.log('🔍 DEBUG: productsData type:', typeof productsData);
+                console.log('🔍 DEBUG: productsData is Array:', Array.isArray(productsData));
+                console.log('🔍 DEBUG: productsData keys:', productsData ? Object.keys(productsData) : 'null/undefined');
+                console.log('🔍 DEBUG: productsData value:', productsData);
+
                 // Обновляем цены в корзине
                 let pricesUpdated = false;
                 this.items.forEach(item => {
+                    console.log('🔍 DEBUG: Calling productsData.find on:', productsData);
                     const productFromAPI = productsData.find(p => p.product_id == item.id);
                     if (productFromAPI) {
                         console.log(`🔍 Product ${item.name} (ID: ${item.id}) - API price:`, productFromAPI.price, 'Type:', typeof productFromAPI.price);
