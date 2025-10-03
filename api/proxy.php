@@ -25,8 +25,8 @@ if (empty($path)) {
 // Определяем backend URL
 $backend_url = ($_ENV['BACKEND_URL'] ?? 'http://localhost:3003') . '/api/' . $path;
 
-// Получаем токен авторизации
-$api_token = $_ENV['API_AUTH_TOKEN'] ?? '';
+// Получаем токен авторизации из заголовка запроса или из окружения
+$api_token = $_SERVER['HTTP_X_API_TOKEN'] ?? ($_ENV['API_AUTH_TOKEN'] ?? '');
 
 // Определяем метод запроса
 $method = $_SERVER['REQUEST_METHOD'];
