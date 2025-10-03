@@ -37,9 +37,14 @@ class Cart {
         this.bindEvents();
         this.updateCartDisplay();
         
+        // Обновляем переводы модального окна корзины
+        this.updateCartModalTranslations();
+        
         // Принудительно обновляем переводы при инициализации
         setTimeout(async () => {
             await this.reloadTranslations();
+            // Повторно обновляем переводы модального окна после перезагрузки
+            this.updateCartModalTranslations();
         }, 100);
     }
 
@@ -58,11 +63,8 @@ class Cart {
             console.log('🛒 Cart: Reloaded translations:', this.translations);
             // Обновляем отображение корзины с новыми переводами
             this.updateCartDisplay();
-            // Обновляем переводы модального окна корзины, если оно открыто
-            const cartModal = document.getElementById('cartModal');
-            if (cartModal && !cartModal.classList.contains('modal-hidden')) {
-                this.updateCartModalTranslations();
-            }
+            // Всегда обновляем переводы модального окна корзины
+            this.updateCartModalTranslations();
         }
     }
 
@@ -638,6 +640,14 @@ class Cart {
 
     // Обновление переводов в модальном окне корзины
     updateCartModalTranslations() {
+        // Убеждаемся, что переводы загружены
+        if (!this.translations) {
+            console.log('🛒 Cart: Translations not loaded yet, skipping modal translation update');
+            return;
+        }
+        
+        console.log('🛒 Cart: Updating cart modal translations with:', this.translations);
+        
         // Заголовок модального окна
         const modalTitle = document.querySelector('#cartModal .modal-header h2');
         if (modalTitle) {
@@ -728,6 +738,9 @@ class Cart {
         
         modal.classList.remove('modal-hidden');
         overlay.classList.remove('overlay-hidden');
+        
+        // Обновляем переводы модального окна при открытии
+        this.updateCartModalTranslations();
         
         // Bind modal events
         this.bindModalEvents();
