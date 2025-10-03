@@ -40,17 +40,16 @@ bot.command('start', async (ctx) => {
 
   // Проверяем тип чата
   if (ctx.chat?.type === 'private') {
-    if (startPayload && startPayload.startsWith('auth_')) {
+    if (startPayload === 'auth') {
       // Режим авторизации из приложения
-      const returnUrl = startPayload.replace('auth_', '');
-      console.log(`🔐 Авторизация через Telegram. Return URL: ${returnUrl}`);      
+      console.log(`🔐 Авторизация через Telegram`);
 
       await ctx.reply(
         '🔐 Для авторизации в приложении, пожалуйста, поделитесь своим контактом:',
         authKeyboard
       );
 
-      ctx.session = { ...ctx.session, returnUrl, authMode: true };
+      ctx.session = { ...ctx.session, authMode: true, returnUrl: 'auth' };
     } else {
       // Обычный режим
       await ctx.reply(
