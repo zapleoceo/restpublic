@@ -1,7 +1,0 @@
-RewriteEngine On
-
-# Redirect main page
-RewriteRule ^$ https://veranda.my/ [R=301,L]
-
-# Redirect all other pages with path preservation
-RewriteRule ^(.*)$ https://veranda.my/$1 [R=301,L]
