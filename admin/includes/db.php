@@ -17,8 +17,9 @@ function get_db_connection() {
             }
 
             $mongoUri = $_ENV['MONGODB_URL'] ?? 'mongodb://localhost:27017';
+            $dbName = $_ENV['MONGODB_DB_NAME'] ?? 'veranda';
             $client = new MongoDB\Client($mongoUri);
-            $db = $client->northrepublic; // Используем название базы данных из проекта
+            $db = $client->$dbName;
         } catch (Exception $e) {
             error_log("MongoDB connection error: " . $e->getMessage());
             die("Ошибка подключения к базе данных.");

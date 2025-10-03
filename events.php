@@ -48,7 +48,7 @@ $pageKeywords = $pageMeta['keywords'] ?? 'события, календарь, р
     <meta name="description" content="<?php echo safeHtml($pageDescription); ?>">
     <meta name="keywords" content="<?php echo safeHtml($pageKeywords); ?>">
     <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://northrepublic.me/events">
+    <link rel="canonical" href="https://veranda.my/events">
 
     <script>
         document.documentElement.classList.remove('no-js');
@@ -76,17 +76,17 @@ $pageKeywords = $pageMeta['keywords'] ?? 'события, календарь, р
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://northrepublic.me/events">
+    <meta property="og:url" content="https://veranda.my/events">
     <meta property="og:title" content="<?php echo safeHtml($pageTitle); ?>">
     <meta property="og:description" content="<?php echo safeHtml($pageDescription); ?>">
-    <meta property="og:image" content="https://northrepublic.me/images/logo.png">
+    <meta property="og:image" content="https://veranda.my/images/logo.png">
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://northrepublic.me/events">
+    <meta property="twitter:url" content="https://veranda.my/events">
     <meta property="twitter:title" content="<?php echo safeHtml($pageTitle); ?>">
     <meta property="twitter:description" content="<?php echo safeHtml($pageDescription); ?>">
-    <meta property="twitter:image" content="https://northrepublic.me/images/logo.png">
+    <meta property="twitter:image" content="https://veranda.my/images/logo.png">
 </head>
 
 <body id="top">

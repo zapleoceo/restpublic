@@ -5,7 +5,7 @@ const { MongoClient } = require('mongodb');
 
 // Подключение к MongoDB
 const mongoUrl = process.env.MONGODB_URL || 'mongodb://localhost:27017';
-const dbName = process.env.MONGODB_DB_NAME || 'northrepublic';
+const dbName = process.env.MONGODB_DB_NAME || 'veranda';
 const collectionName = 'menu';
 const API_PORT = process.env.PORT || 3002;
 

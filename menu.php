@@ -140,7 +140,7 @@ try {
     error_log("MongoDB not available, trying API fallback: " . $e->getMessage());
     
     // Fallback to API if MongoDB fails
-    $api_base_url = 'https://northrepublic.me:3002/api';
+    $api_base_url = 'http://localhost:3003/api';
     
 function fetchFromAPI($endpoint) {
     global $api_base_url;

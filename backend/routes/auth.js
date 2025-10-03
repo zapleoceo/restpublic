@@ -3,8 +3,8 @@ const router = express.Router();
 const { MongoClient } = require('mongodb');
 
 // MongoDB connection
-const MONGODB_URL = process.env.MONGODB_URL || 'mongodb://localhost:27018';
-const DB_NAME = process.env.MONGODB_DB_NAME || 'northrepublic';
+const MONGODB_URL = process.env.MONGODB_URL || 'mongodb://localhost:27017';
+const DB_NAME = process.env.MONGODB_DB_NAME || 'veranda';
 
 let db;
 MongoClient.connect(MONGODB_URL)
