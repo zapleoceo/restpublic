@@ -291,7 +291,7 @@ class Cart {
                 const phone = window.authSystem.userData.phone;
                 if (phone) {
                     // Получаем client_id
-                    const apiUrl = 'http://localhost:3003'; // Прямое обращение к backend
+                    const apiUrl = window.location.hostname === 'localhost' ? 'http://localhost:3003' : 'https://veranda.my:3003';
                     const clientsResponse = await fetch(`${apiUrl}/api/poster/clients.getClients?phone=${encodeURIComponent(phone)}&token=${window.API_TOKEN}`);
                     
                     if (clientsResponse.ok) {
@@ -844,7 +844,7 @@ class Cart {
         // Если пользователь авторизован, пытаемся найти его client_id в Poster
         if (window.authSystem && window.authSystem.isAuthenticated && window.authSystem.userData) {
             try {
-                const apiUrl = 'http://localhost:3003'; // Прямое обращение к backend
+                const apiUrl = window.location.hostname === 'localhost' ? 'http://localhost:3003' : 'https://veranda.my:3003';
                 const response = await fetch(`${apiUrl}/api/poster/clients.getClients?phone=${encodeURIComponent(phone)}&token=${window.API_TOKEN}`);
                 
                 if (response.ok) {
@@ -916,7 +916,7 @@ class Cart {
             this.showToast('Отправляем заказ...', 'info');
             
             // Используем основной домен для API запросов
-            const apiUrl = 'http://localhost:3003'; // Прямое обращение к backend
+            const apiUrl = window.location.hostname === 'localhost' ? 'http://localhost:3003' : 'https://veranda.my:3003';
             const response = await fetch(`${apiUrl}/api/poster/orders/create`, {
                 method: 'POST',
                 headers: {
@@ -1063,7 +1063,7 @@ class Cart {
                 await window.authSystem.loadUserData();
             }
             
-            const apiUrl = 'http://localhost:3003'; // Прямое обращение к backend
+            const apiUrl = window.location.hostname === 'localhost' ? 'http://localhost:3003' : 'https://veranda.my:3003';
             
             // Получаем все продукты из Poster API
             const productsResponse = await fetch(`${apiUrl}/api/menu`);
@@ -1178,7 +1178,7 @@ class Cart {
                 return;
             }
             
-            const apiUrl = 'http://localhost:3003'; // Прямое обращение к backend
+            const apiUrl = window.location.hostname === 'localhost' ? 'http://localhost:3003' : 'https://veranda.my:3003';
             const clientsResponse = await fetch(`${apiUrl}/api/poster/clients.getClients?phone=${encodeURIComponent(phone)}&token=${window.API_TOKEN}`);
             
             if (clientsResponse.ok) {
@@ -1295,7 +1295,7 @@ class Cart {
     async checkOpenTransactions(clientId) {
         // Проверяем незакрытые заказы клиента
         try {
-            const apiUrl = 'http://localhost:3003'; // Прямое обращение к backend
+            const apiUrl = window.location.hostname === 'localhost' ? 'http://localhost:3003' : 'https://veranda.my:3003';
             // Добавляем date_from и date_to для корректного запроса
             const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
             const weekAgo = new Date();
@@ -1337,7 +1337,7 @@ class Cart {
         try {
             this.showToast('Добавляем товары к существующему заказу...', 'info');
             
-            const apiUrl = 'http://localhost:3003'; // Прямое обращение к backend
+            const apiUrl = window.location.hostname === 'localhost' ? 'http://localhost:3003' : 'https://veranda.my:3003';
             
             // Проверяем total_payed_sum клиента и применяем скидку если нужно
             if (window.authSystem && window.authSystem.isAuthenticated && window.authSystem.userData) {
