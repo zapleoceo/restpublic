@@ -9,6 +9,7 @@ module.exports = {
       PORT: 3003
     },
     instances: 1,
+    exec_mode: 'fork',
     autorestart: true,
     watch: false,
     max_memory_restart: '1G',
