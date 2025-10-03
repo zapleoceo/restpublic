@@ -1078,11 +1078,23 @@ class Cart {
                 console.log('🔍 DEBUG: productsData keys:', productsData ? Object.keys(productsData) : 'null/undefined');
                 console.log('🔍 DEBUG: productsData value:', productsData);
 
+                // Исправление: API возвращает объект с полем products, а не массив продуктов
+                const productsArray = productsData.products || productsData;
+
+                console.log('🔍 DEBUG: productsArray type:', typeof productsArray);
+                console.log('🔍 DEBUG: productsArray is Array:', Array.isArray(productsArray));
+
+                if (!Array.isArray(productsArray)) {
+                    console.error('❌ productsArray is not an array:', productsArray);
+                    this.showToast('Ошибка загрузки цен товаров', 'error');
+                    return;
+                }
+
                 // Обновляем цены в корзине
                 let pricesUpdated = false;
                 this.items.forEach(item => {
-                    console.log('🔍 DEBUG: Calling productsData.find on:', productsData);
-                    const productFromAPI = productsData.find(p => p.product_id == item.id);
+                    console.log('🔍 DEBUG: Looking for product ID:', item.id, 'in products array');
+                    const productFromAPI = productsArray.find(p => p.product_id == item.id);
                     if (productFromAPI) {
                         console.log(`🔍 Product ${item.name} (ID: ${item.id}) - API price:`, productFromAPI.price, 'Type:', typeof productFromAPI.price);
                         
