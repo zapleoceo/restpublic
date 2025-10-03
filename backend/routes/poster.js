@@ -4,7 +4,7 @@ const posterService = require('../services/posterService');
 
 // Middleware для проверки авторизации
 const requireAuth = (req, res, next) => {
-  const authToken = req.headers['x-api-token'] || req.query.token;
+  const authToken = req.headers['x-api-token'] || req.headers['X-API-Token'] || req.query.token;
   const expectedToken = process.env.API_AUTH_TOKEN;
   
   if (!authToken || !expectedToken || authToken !== expectedToken) {
