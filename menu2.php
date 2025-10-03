@@ -1087,31 +1087,35 @@ if ($menu_loaded) {
                     return;
                 }
 
-                // Check if user is authenticated
-                fetch('/auth_status.php', {
-                    headers: {
-                        'X-Session-Token': this.sessionToken
-                    }
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success && data.authenticated) {
-                            this.isAuthenticated = true;
-                            this.userData = data.user;
-                            this.updateAuthUI();
-                        } else {
-                            this.isAuthenticated = false;
-                            this.userData = null;
-                            this.sessionToken = null;
-                            localStorage.removeItem('auth_session_token');
-                            this.updateAuthUI();
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Auth status check failed:', error);
-                        this.isAuthenticated = false;
-                        this.updateAuthUI();
-                    });
+                // Check if user is authenticated - DISABLED
+                // fetch('/auth_status.php', {
+                //     headers: {
+                //         'X-Session-Token': this.sessionToken
+                //     }
+                // })
+                //     .then(response => response.json())
+                //     .then(data => {
+                //         if (data.success && data.authenticated) {
+                //             this.isAuthenticated = true;
+                //             this.userData = data.user;
+                //             this.updateAuthUI();
+                //         } else {
+                //             this.isAuthenticated = false;
+                //             this.userData = null;
+                //             this.sessionToken = null;
+                //             localStorage.removeItem('auth_session_token');
+                //             this.updateAuthUI();
+                //         }
+                //     })
+                //     .catch(error => {
+                //         console.error('Auth status check failed:', error);
+                //         this.isAuthenticated = false;
+                //         this.updateAuthUI();
+                //     });
+                
+                // Set as not authenticated since auth is disabled
+                this.isAuthenticated = false;
+                this.updateAuthUI();
             }
 
             updateAuthUI() {
@@ -1432,7 +1436,7 @@ if ($menu_loaded) {
             
             <div class="modal-body">
                 <div class="auth-providers">
-                    <div class="telegram-auth-container">
+                    <div class="telegram-auth-container" style="display: none;">
                         <!-- Кнопка авторизации через Telegram -->
                         <button class="auth-provider-btn" onclick="window.authSystem.authenticateWithTelegram()">
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
