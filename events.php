@@ -174,9 +174,10 @@ $pageKeywords = $pageMeta['keywords'] ?? 'события, календарь, р
 
             async loadEvents() {
                 try {
-                    // Загружаем события на 2 недели (текущая + следующая)
+                    // Загружаем события на 2 недели с начала текущей недели
                     const today = new Date();
-                    const startDate = today.toISOString().split('T')[0];
+                    const weekStart = this.getWeekStart(today);
+                    const startDate = weekStart.toISOString().split('T')[0];
                     
                     const response = await fetch(`/api/events.php?start_date=${startDate}&days=14&language=${this.language}`);
                     const events = await response.json();
