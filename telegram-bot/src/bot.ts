@@ -43,13 +43,15 @@ bot.command('start', async (ctx) => {
     if (startPayload === 'auth') {
       // Режим авторизации из приложения
       console.log(`🔐 Авторизация через Telegram`);
+      console.log(`🔐 Текущая сессия перед установкой:`, ctx.session);
 
       await ctx.reply(
         '🔐 Для авторизации в приложении, пожалуйста, поделитесь своим контактом:',
         authKeyboard
       );
 
-      ctx.session = { ...ctx.session, authMode: true, returnUrl: 'auth' };
+      ctx.session = { authMode: true, returnUrl: 'auth' };
+      console.log(`🔐 Сессия после установки:`, ctx.session);
     } else {
       // Обычный режим
       await ctx.reply(
@@ -89,7 +91,7 @@ bot.on('contact', async (ctx) => {
   const contact = ctx.message.contact;
   const session = ctx.session;
 
-  console.log(`📱 Получен контакт: ${contact.phone_number}, ${contact.first_name} ${contact.last_name || ''}`);                                                   
+  console.log(`📱 Получен контакт: ${contact.phone_number}, ${contact.first_name} ${contact.last_name || ''}`);
   console.log(`📋 Полные данные контакта:`, {
     phone_number: contact.phone_number,
     first_name: contact.first_name,
@@ -97,6 +99,7 @@ bot.on('contact', async (ctx) => {
     user_id: contact.user_id,
     vcard: contact.vcard
   });
+  console.log(`🔐 Данные сессии:`, session);
   console.log(`🔐 Данные сессии:`, {
     authMode: session?.authMode,
     returnUrl: session?.returnUrl
