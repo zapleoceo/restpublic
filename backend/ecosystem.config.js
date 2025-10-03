@@ -1,20 +1,20 @@
 module.exports = {
   apps: [{
-    name: 'northrepublic-backend',
+    name: 'veranda-backend',
     script: 'server.js',
-    cwd: '/var/www/northrepubli_usr/data/www/northrepublic.me/backend',
+    cwd: '/var/www/veranda_my_usr/data/www/veranda.my/backend',
     env_file: '../.env',
     env: {
       NODE_ENV: 'production',
-      PORT: 3002
+      PORT: 3003
     },
     instances: 1,
     autorestart: true,
     watch: false,
     max_memory_restart: '1G',
-    error_file: '/var/www/northrepubli_usr/data/.pm2/logs/northrepublic-backend-error.log',
-    out_file: '/var/www/northrepubli_usr/data/.pm2/logs/northrepublic-backend-out.log',
-    log_file: '/var/www/northrepubli_usr/data/.pm2/logs/northrepublic-backend-combined.log',
+    error_file: '/var/www/veranda_my_usr/data/.pm2/logs/veranda-backend-error.log',
+    out_file: '/var/www/veranda_my_usr/data/.pm2/logs/veranda-backend-out.log',
+    log_file: '/var/www/veranda_my_usr/data/.pm2/logs/veranda-backend-combined.log',
     time: true
   }]
 };
