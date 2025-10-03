@@ -1066,11 +1066,7 @@ class Cart {
             const apiUrl = window.location.hostname === 'localhost' ? 'http://localhost:3003' : 'https://veranda.my';
             
             // Получаем все продукты из Poster API
-            const productsResponse = await fetch(`${apiUrl}/api/poster/menu.getProducts`, {
-                headers: {
-                    'X-API-Token': window.API_TOKEN
-                }
-            });
+            const productsResponse = await fetch(`${apiUrl}/api/menu`);
             
             if (productsResponse.ok) {
                 const productsData = await productsResponse.json();
