@@ -291,8 +291,8 @@ class Cart {
                 const phone = window.authSystem.userData.phone;
                 if (phone) {
                     // Получаем client_id
-                    const apiUrl = window.location.hostname === 'localhost' ? 'http://localhost:3003' : 'https://veranda.my';
-                    const clientsResponse = await fetch(`${apiUrl}/api/poster/clients.getClients?phone=${encodeURIComponent(phone)}&token=${window.API_TOKEN}`);
+                    const apiUrl = window.location.hostname === 'localhost' ? 'http://localhost:3003' : '';
+                    const clientsResponse = await fetch(`${apiUrl}/api/proxy.php?path=poster/clients.getClients&phone=${encodeURIComponent(phone)}&token=${window.API_TOKEN}`);
                     
                     if (clientsResponse.ok) {
                         const clientsData = await clientsResponse.json();
@@ -308,7 +308,7 @@ class Cart {
                             if (openTransaction) {
                                 // Если новый клиент (total_payed_sum = 0), применяем скидку
                                 if (totalPaidSum === 0) {
-                                    const discountResponse = await fetch(`${apiUrl}/api/poster/transactions.changeFiscalStatus`, {
+                                    const discountResponse = await fetch(`${apiUrl}/api/proxy.php?path=poster/transactions.changeFiscalStatus`, {
                                         method: 'POST',
                                         headers: {
                                             'Content-Type': 'application/json',
@@ -328,7 +328,7 @@ class Cart {
                                 }
                                 
                                 // Отправляем изменение количества мгновенно
-                                const response = await fetch(`${apiUrl}/api/poster/transactions.changeTransactionProductCount`, {
+                                const response = await fetch(`${apiUrl}/api/proxy.php?path=poster/transactions.changeTransactionProductCount`, {
                                     method: 'POST',
                                     headers: {
                                         'Content-Type': 'application/json',
@@ -844,8 +844,8 @@ class Cart {
         // Если пользователь авторизован, пытаемся найти его client_id в Poster
         if (window.authSystem && window.authSystem.isAuthenticated && window.authSystem.userData) {
             try {
-                const apiUrl = window.location.hostname === 'localhost' ? 'http://localhost:3003' : 'https://veranda.my';
-                const response = await fetch(`${apiUrl}/api/poster/clients.getClients?phone=${encodeURIComponent(phone)}&token=${window.API_TOKEN}`);
+                const apiUrl = window.location.hostname === 'localhost' ? 'http://localhost:3003' : '';
+                const response = await fetch(`${apiUrl}/api/proxy.php?path=poster/clients.getClients&phone=${encodeURIComponent(phone)}&token=${window.API_TOKEN}`);
                 
                 if (response.ok) {
                     const clientsData = await response.json();
@@ -916,8 +916,8 @@ class Cart {
             this.showToast('Отправляем заказ...', 'info');
             
             // Используем основной домен для API запросов
-            const apiUrl = window.location.hostname === 'localhost' ? 'http://localhost:3003' : 'https://veranda.my';
-            const response = await fetch(`${apiUrl}/api/poster/orders/create`, {
+            const apiUrl = window.location.hostname === 'localhost' ? 'http://localhost:3003' : '';
+            const response = await fetch(`${apiUrl}/api/proxy.php?path=poster/orders/create`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -1066,7 +1066,7 @@ class Cart {
             const apiUrl = window.location.hostname === 'localhost' ? 'http://localhost:3003' : 'https://veranda.my';
             
             // Получаем все продукты из Poster API
-            const productsResponse = await fetch(`${apiUrl}/api/menu`);
+            const productsResponse = await fetch(`${apiUrl}/api/proxy.php?path=menu`);
             
             if (productsResponse.ok) {
                 const productsData = await productsResponse.json();
@@ -1178,8 +1178,8 @@ class Cart {
                 return;
             }
             
-            const apiUrl = window.location.hostname === 'localhost' ? 'http://localhost:3003' : 'https://veranda.my';
-            const clientsResponse = await fetch(`${apiUrl}/api/poster/clients.getClients?phone=${encodeURIComponent(phone)}&token=${window.API_TOKEN}`);
+            const apiUrl = window.location.hostname === 'localhost' ? 'http://localhost:3003' : '';
+            const clientsResponse = await fetch(`${apiUrl}/api/proxy.php?path=poster/clients.getClients&phone=${encodeURIComponent(phone)}&token=${window.API_TOKEN}`);
             
             if (clientsResponse.ok) {
                 const clientsData = await clientsResponse.json();
@@ -1302,7 +1302,7 @@ class Cart {
             weekAgo.setDate(weekAgo.getDate() - 7);
             const weekAgoStr = weekAgo.toISOString().split('T')[0]; // YYYY-MM-DD
             
-            const response = await fetch(`${apiUrl}/api/poster/transactions.getTransactions?client_id=${clientId}&date_from=${weekAgoStr}&date_to=${today}&token=${window.API_TOKEN}`, {
+            const response = await fetch(`${apiUrl}/api/proxy.php?path=poster/transactions.getTransactions&client_id=${clientId}&date_from=${weekAgoStr}&date_to=${today}&token=${window.API_TOKEN}`, {
                 method: 'GET',
                 headers: {
                     'X-API-Token': window.API_TOKEN
@@ -1343,7 +1343,7 @@ class Cart {
             if (window.authSystem && window.authSystem.isAuthenticated && window.authSystem.userData) {
                 const phone = window.authSystem.userData.phone;
                 if (phone) {
-                    const clientsResponse = await fetch(`${apiUrl}/api/poster/clients.getClients?phone=${encodeURIComponent(phone)}&token=${window.API_TOKEN}`);
+                    const clientsResponse = await fetch(`${apiUrl}/api/proxy.php?path=poster/clients.getClients&phone=${encodeURIComponent(phone)}&token=${window.API_TOKEN}`);
                     if (clientsResponse.ok) {
                         const clientsData = await clientsResponse.json();
                         if (clientsData && clientsData.length > 0) {
@@ -1352,7 +1352,7 @@ class Cart {
                             
                             // Если новый клиент (total_payed_sum = 0), применяем скидку
                             if (totalPaidSum === 0) {
-                                const discountResponse = await fetch(`${apiUrl}/api/poster/transactions.changeFiscalStatus`, {
+                                const discountResponse = await fetch(`${apiUrl}/api/proxy.php?path=poster/transactions.changeFiscalStatus`, {
                                     method: 'POST',
                                     headers: {
                                         'Content-Type': 'application/json',
@@ -1386,7 +1386,7 @@ class Cart {
                     const newComment = `Стол: ${tableName}`;
                     
                     // Обновляем комментарий заказа с новым номером стола
-                    const updateResponse = await fetch(`${apiUrl}/api/poster/transactions.updateTransaction`, {
+                    const updateResponse = await fetch(`${apiUrl}/api/proxy.php?path=poster/transactions.updateTransaction`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -1408,7 +1408,7 @@ class Cart {
             
             // Добавляем каждый товар к существующему заказу
             for (const item of this.items) {
-                const response = await fetch(`${apiUrl}/api/poster/transactions.addTransactionProduct`, {
+                const response = await fetch(`${apiUrl}/api/proxy.php?path=poster/transactions.addTransactionProduct`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
