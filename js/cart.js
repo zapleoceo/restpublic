@@ -49,11 +49,44 @@ class Cart {
     }
 
     async loadTranslations() {
+        // Ждем, пока CartTranslations будет доступен
+        let attempts = 0;
+        while (!window.cartTranslations && attempts < 10) {
+            await new Promise(resolve => setTimeout(resolve, 100));
+            attempts++;
+        }
+        
         if (window.cartTranslations) {
             this.translations = await window.cartTranslations.load();
             console.log('🛒 Cart: Loaded translations:', this.translations);
             console.log('🛒 Cart: Current language:', window.cartTranslations.language);
+        } else {
+            console.error('🛒 Cart: CartTranslations not available after 1 second');
+            this.setDefaultTranslations();
         }
+    }
+    
+    setDefaultTranslations() {
+        this.translations = {
+            'your_order': 'Ваш заказ',
+            'for_table': 'На столик',
+            'takeaway': 'С собой',
+            'delivery': 'Доставка',
+            'total': 'Итого:',
+            'enter_name': 'Ваше имя',
+            'phone': 'Телефон',
+            'table': 'Стол',
+            'delivery_address': 'Адрес доставки (ссылка на Google карту)',
+            'delivery_address_placeholder': 'https://maps.google.com/...',
+            'delivery_time': 'Время доставки',
+            'comment': 'Комментарий',
+            'comment_placeholder': 'Сюда можно написать все, что вы хотели бы, чтобы мы учли',
+            'cancel': 'Отмена',
+            'place_order': 'Оформить заказ',
+            'enter_name_placeholder': 'Введите ваше имя',
+            'phone_placeholder': '+'
+        };
+        console.log('🛒 Cart: Using default translations');
     }
 
     // Метод для обновления переводов при смене языка
@@ -641,7 +674,7 @@ class Cart {
     // Обновление переводов в модальном окне корзины
     updateCartModalTranslations() {
         // Убеждаемся, что переводы загружены
-        if (!this.translations) {
+        if (!this.translations || Object.keys(this.translations).length === 0) {
             console.log('🛒 Cart: Translations not loaded yet, skipping modal translation update');
             return;
         }
@@ -650,9 +683,12 @@ class Cart {
         
         // Автоматически переводим все элементы с атрибутом data-translate
         const elementsToTranslate = document.querySelectorAll('[data-translate]');
+        console.log('🛒 Cart: Found', elementsToTranslate.length, 'elements to translate');
+        
         elementsToTranslate.forEach(element => {
             const key = element.getAttribute('data-translate');
             const translation = this.t(key);
+            console.log(`🛒 Cart: Translating '${key}' to '${translation}'`);
             if (translation && translation !== key) {
                 element.textContent = translation;
             }
@@ -660,9 +696,12 @@ class Cart {
         
         // Автоматически переводим все placeholder'ы с атрибутом data-translate-placeholder
         const inputsToTranslate = document.querySelectorAll('[data-translate-placeholder]');
+        console.log('🛒 Cart: Found', inputsToTranslate.length, 'inputs to translate');
+        
         inputsToTranslate.forEach(input => {
             const key = input.getAttribute('data-translate-placeholder');
             const translation = this.t(key);
+            console.log(`🛒 Cart: Translating placeholder '${key}' to '${translation}'`);
             if (translation && translation !== key) {
                 input.placeholder = translation;
             }
@@ -676,11 +715,22 @@ class Cart {
         modal.classList.remove('modal-hidden');
         overlay.classList.remove('overlay-hidden');
         
-        // Обновляем переводы модального окна при открытии
-        this.updateCartModalTranslations();
+        // Принудительно загружаем переводы при открытии корзины
+        this.forceLoadTranslations();
         
         // Bind modal events
         this.bindModalEvents();
+    }
+    
+    async forceLoadTranslations() {
+        // Если переводы не загружены, загружаем их принудительно
+        if (!this.translations || Object.keys(this.translations).length === 0) {
+            console.log('🛒 Cart: Force loading translations for modal');
+            await this.loadTranslations();
+        }
+        
+        // Обновляем переводы модального окна
+        this.updateCartModalTranslations();
     }
 
     hideModal() {
