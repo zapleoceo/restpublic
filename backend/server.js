@@ -15,7 +15,7 @@ const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/user');
 
 const app = express();
-const PORT = process.env.PORT || 3002;
+const PORT = process.env.PORT || 3003;
 
 // Rate limiting configuration
 const limiter = rateLimit({
@@ -50,7 +50,7 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // CORS configuration
 const corsOptions = {
-  origin: process.env.CORS_ORIGIN || 'https://northrepublic.me',
+  origin: process.env.CORS_ORIGIN || 'https://veranda.my',
   credentials: true,
   optionsSuccessStatus: 200
 };

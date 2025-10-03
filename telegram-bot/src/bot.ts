@@ -40,8 +40,21 @@ bot.command('start', async (ctx) => {
 
   // Проверяем тип чата
   if (ctx.chat?.type === 'private') {
-    if (startPayload === 'auth') {
-      // Режим авторизации из приложения
+    if (startPayload && startPayload.startsWith('auth_')) {
+      // Режим авторизации из приложения с sessionToken
+      const sessionToken = startPayload.replace('auth_', '');
+      console.log(`🔐 Авторизация через Telegram с токеном: ${sessionToken}`);
+      console.log(`🔐 Текущая сессия перед установкой:`, ctx.session);
+
+      await ctx.reply(
+        '🔐 Для авторизации в приложении, пожалуйста, поделитесь своим контактом:',
+        authKeyboard
+      );
+
+      ctx.session = { authMode: true, returnUrl: sessionToken };
+      console.log(`🔐 Сессия после установки:`, ctx.session);
+    } else if (startPayload === 'auth') {
+      // Режим авторизации из приложения без токена
       console.log(`🔐 Авторизация через Telegram`);
       console.log(`🔐 Текущая сессия перед установкой:`, ctx.session);
 
@@ -119,12 +132,19 @@ bot.on('contact', async (ctx) => {
     try {
       // Отправляем данные на backend
       const backendUrl = process.env.BACKEND_URL || 'https://veranda.my';
+      
+      // Используем sessionToken из сессии или генерируем новый
+      let sessionToken = session.returnUrl;
+      if (sessionToken === 'auth' || sessionToken === 'start' || sessionToken === 'button_auth') {
+        sessionToken = Date.now().toString(36) + Math.random().toString(36).substr(2);
+      }
+      
       const requestData = {
         phone: contact.phone_number,
         name: contact.first_name,
         lastName: contact.last_name || '',
         birthday: '',
-        sessionToken: session.returnUrl || ''
+        sessionToken: sessionToken
       };
       
       console.log(`🚀 Отправляем данные на backend:`, {
@@ -150,7 +170,7 @@ bot.on('contact', async (ctx) => {
 
       if (result.success) {
         // Создаем клавиатуру с кнопкой возврата в приложение
-        const returnUrl = result.redirectUrl || 'https://veranda.my/menu2.php?auth=success&session=' + result.sessionToken;
+        const returnUrl = result.redirectUrl || 'https://veranda.my/menu2.php?auth=success&session=' + sessionToken;
         const returnKeyboard = Markup.inlineKeyboard([
           [Markup.button.url('🔗 Вернуться в приложение', returnUrl)]
         ]);
