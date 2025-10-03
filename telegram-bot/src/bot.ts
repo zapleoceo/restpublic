@@ -148,11 +148,11 @@ bot.on('contact', async (ctx) => {
       };
       
       console.log(`🚀 Отправляем данные на backend:`, {
-        url: `${backendUrl}/api/auth/telegram-callback`,
+        url: `${backendUrl}/auth/telegram-callback`,
         data: requestData
       });
       
-      const response = await fetch(`${backendUrl}/api/auth/telegram-callback`, { 
+      const response = await fetch(`${backendUrl}/auth/telegram-callback`, { 
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
