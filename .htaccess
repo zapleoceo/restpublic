@@ -1,0 +1,36 @@
+RewriteEngine On
+
+# Обработка /menu без .php
+RewriteRule ^menu$ menu.php [L]
+
+# Обработка /menu2 без .php
+RewriteRule ^menu2$ menu2.php [L]
+
+# Обработка API
+RewriteRule ^api/language/change$ api/language/change.php [L]
+
+# Универсальное проксирование API запросов на Node.js backend
+RewriteCond %{REQUEST_URI} ^/api/(poster|menu|cache|tables)/.*$
+RewriteRule ^api/(.*)$ http://localhost:3003/api/$1 [P,L]
+
+# Обработка /admin без .php
+RewriteRule ^admin$ admin/index.php [L]
+RewriteRule ^admin/$ admin/index.php [L]
+
+# Обработка разделов админки (4 основных раздела)
+RewriteRule ^admin/pages$ admin/pages/index.php [L]
+RewriteRule ^admin/pages/$ admin/pages/index.php [L]
+RewriteRule ^admin/users$ admin/users/index.php [L]
+RewriteRule ^admin/users/$ admin/users/index.php [L]
+RewriteRule ^admin/database$ admin/database/index.php [L]
+RewriteRule ^admin/database/$ admin/database/index.php [L]
+
+# Компоненты (доступны через главную страницу)
+RewriteRule ^admin/sepay$ admin/sepay/index.php [L]
+RewriteRule ^admin/sepay/$ admin/sepay/index.php [L]
+RewriteRule ^admin/logs$ admin/logs/index.php [L]
+RewriteRule ^admin/logs/$ admin/logs/index.php [L]
+RewriteRule ^admin/images$ admin/images/index.php [L]
+RewriteRule ^admin/images/$ admin/images/index.php [L]
+RewriteRule ^admin/settings$ admin/settings/index.php [L]
+RewriteRule ^admin/settings/$ admin/settings/index.php [L]
