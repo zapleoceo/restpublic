@@ -904,54 +904,89 @@ if ($menu_loaded) {
             }
 
             bindEvents() {
+                // Проверяем, что элементы существуют перед добавлением event listeners
+                const elements = {
+                    authIcon: document.getElementById('authIcon'),
+                    authLoginBtn: document.getElementById('authLoginBtn'),
+                    authProfileBtn: document.getElementById('authProfileBtn'),
+                    authOrdersBtn: document.getElementById('authOrdersBtn'),
+                    authLogoutBtn: document.getElementById('authLogoutBtn'),
+                    authModalClose: document.getElementById('authModalClose'),
+                    profileModalClose: document.getElementById('profileModalClose'),
+                    ordersModalClose: document.getElementById('ordersModalClose'),
+                    modalOverlay: document.getElementById('modalOverlay')
+                };
+
+                // Проверяем, какие элементы не найдены
+                const missingElements = Object.entries(elements)
+                    .filter(([key, element]) => !element)
+                    .map(([key]) => key);
+
+                if (missingElements.length > 0) {
+                    console.warn('AuthSystem: Missing elements:', missingElements);
+                }
+
                 // Auth icon click
-                document.getElementById('authIcon').addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    this.toggleAuthDropdown();
-                });
+                if (elements.authIcon) {
+                    elements.authIcon.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        this.toggleAuthDropdown();
+                    });
+                }
 
                 // Auth dropdown items
-                document.getElementById('authLoginBtn').addEventListener('click', (e) => {
-                    e.preventDefault();
-                    this.openAuthModal();
-                    this.closeAuthDropdown();
-                });
+                if (elements.authLoginBtn) {
+                    elements.authLoginBtn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        this.openAuthModal();
+                        this.closeAuthDropdown();
+                    });
+                }
 
-                document.getElementById('authProfileBtn').addEventListener('click', (e) => {
-                    e.preventDefault();
-                    this.openProfileModal();
-                    this.closeAuthDropdown();
-                });
+                if (elements.authProfileBtn) {
+                    elements.authProfileBtn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        this.openProfileModal();
+                        this.closeAuthDropdown();
+                    });
+                }
 
-                document.getElementById('authOrdersBtn').addEventListener('click', (e) => {
-                    e.preventDefault();
-                    this.openOrdersModal();
-                    this.closeAuthDropdown();
-                });
+                if (elements.authOrdersBtn) {
+                    elements.authOrdersBtn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        this.openOrdersModal();
+                        this.closeAuthDropdown();
+                    });
+                }
 
-                document.getElementById('authLogoutBtn').addEventListener('click', (e) => {
-                    e.preventDefault();
-                    this.logout();
-                    this.closeAuthDropdown();
-                });
+                if (elements.authLogoutBtn) {
+                    elements.authLogoutBtn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        this.logout();
+                        this.closeAuthDropdown();
+                    });
+                }
 
-                // Telegram auth button
-                document.getElementById('telegramAuthBtn').addEventListener('click', () => {
-                    this.authenticateWithTelegram();
-                });
+                // Telegram auth button (теперь обрабатывается через onclick в HTML)
 
                 // Modal close buttons
-                document.getElementById('authModalClose').addEventListener('click', () => {
-                    this.closeAuthModal();
-                });
+                if (elements.authModalClose) {
+                    elements.authModalClose.addEventListener('click', () => {
+                        this.closeAuthModal();
+                    });
+                }
 
-                document.getElementById('profileModalClose').addEventListener('click', () => {
-                    this.closeProfileModal();
-                });
+                if (elements.profileModalClose) {
+                    elements.profileModalClose.addEventListener('click', () => {
+                        this.closeProfileModal();
+                    });
+                }
 
-                document.getElementById('ordersModalClose').addEventListener('click', () => {
-                    this.closeOrdersModal();
-                });
+                if (elements.ordersModalClose) {
+                    elements.ordersModalClose.addEventListener('click', () => {
+                        this.closeOrdersModal();
+                    });
+                }
 
                 // Close dropdown when clicking outside
                 document.addEventListener('click', (e) => {
@@ -961,9 +996,11 @@ if ($menu_loaded) {
                 });
 
                 // Close modals when clicking overlay
-                document.getElementById('modalOverlay').addEventListener('click', () => {
-                    this.closeAllModals();
-                });
+                if (elements.modalOverlay) {
+                    elements.modalOverlay.addEventListener('click', () => {
+                        this.closeAllModals();
+                    });
+                }
             }
 
             toggleAuthDropdown() {
