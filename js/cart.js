@@ -58,6 +58,11 @@ class Cart {
             console.log('🛒 Cart: Reloaded translations:', this.translations);
             // Обновляем отображение корзины с новыми переводами
             this.updateCartDisplay();
+            // Обновляем переводы модального окна корзины, если оно открыто
+            const cartModal = document.getElementById('cartModal');
+            if (cartModal && !cartModal.classList.contains('modal-hidden')) {
+                this.updateCartModalTranslations();
+            }
         }
     }
 
@@ -591,6 +596,9 @@ class Cart {
         const cartItemsList = document.getElementById('cartItemsList');
         const cartTotalAmount = document.getElementById('cartTotalAmount');
         
+        // Обновляем статичные элементы модального окна с переводами
+        this.updateCartModalTranslations();
+        
         // Фильтруем товары с количеством > 0
         const visibleItems = this.items.filter(item => item.quantity > 0);
         
@@ -625,6 +633,92 @@ class Cart {
 
         if (cartTotalAmount) {
             cartTotalAmount.textContent = `${this.formatNumber(this.getTotal())} ₫`;
+        }
+    }
+
+    // Обновление переводов в модальном окне корзины
+    updateCartModalTranslations() {
+        // Заголовок модального окна
+        const modalTitle = document.querySelector('#cartModal .modal-header h2');
+        if (modalTitle) {
+            modalTitle.textContent = this.t('your_order', 'Ваш заказ');
+        }
+
+        // Типы заказов
+        const orderTypeLabels = document.querySelectorAll('.order-type-label');
+        if (orderTypeLabels.length >= 3) {
+            orderTypeLabels[0].textContent = this.t('for_table', 'На столик');
+            orderTypeLabels[1].textContent = this.t('takeaway', 'С собой');
+            orderTypeLabels[2].textContent = this.t('delivery', 'Доставка');
+        }
+
+        // Итого
+        const totalLabel = document.querySelector('.cart-total .total-row span:first-child');
+        if (totalLabel) {
+            totalLabel.textContent = this.t('total', 'Итого:');
+        }
+
+        // Поля формы
+        const nameLabel = document.querySelector('label[for="customerName"]');
+        if (nameLabel) {
+            nameLabel.textContent = this.t('enter_name', 'Ваше имя');
+        }
+
+        const nameInput = document.getElementById('customerName');
+        if (nameInput) {
+            nameInput.placeholder = this.t('enter_name_placeholder', 'Введите ваше имя');
+        }
+
+        const phoneLabel = document.querySelector('label[for="customerPhone"]');
+        if (phoneLabel) {
+            phoneLabel.textContent = this.t('phone', 'Телефон');
+        }
+
+        const phoneInput = document.getElementById('customerPhone');
+        if (phoneInput) {
+            phoneInput.placeholder = this.t('phone_placeholder', '+');
+        }
+
+        const tableLabel = document.querySelector('label[for="tableNumber"]');
+        if (tableLabel) {
+            tableLabel.textContent = this.t('table', 'Стол');
+        }
+
+        // Поля для доставки
+        const addressLabel = document.querySelector('label[for="deliveryAddress"]');
+        if (addressLabel) {
+            addressLabel.textContent = this.t('delivery_address', 'Адрес доставки (ссылка на Google карту)');
+        }
+
+        const addressInput = document.getElementById('deliveryAddress');
+        if (addressInput) {
+            addressInput.placeholder = this.t('delivery_address_placeholder', 'https://maps.google.com/...');
+        }
+
+        const timeLabel = document.querySelector('label[for="deliveryTime"]');
+        if (timeLabel) {
+            timeLabel.textContent = this.t('delivery_time', 'Время доставки');
+        }
+
+        const commentLabel = document.querySelector('label[for="deliveryComment"]');
+        if (commentLabel) {
+            commentLabel.textContent = this.t('comment', 'Комментарий');
+        }
+
+        const commentTextarea = document.getElementById('deliveryComment');
+        if (commentTextarea) {
+            commentTextarea.placeholder = this.t('comment_placeholder', 'Сюда можно написать все, что вы хотели бы, чтобы мы учли');
+        }
+
+        // Кнопки
+        const cancelBtn = document.getElementById('cartModalCancel');
+        if (cancelBtn) {
+            cancelBtn.textContent = this.t('cancel', 'Отмена');
+        }
+
+        const submitBtn = document.getElementById('cartModalSubmit');
+        if (submitBtn) {
+            submitBtn.textContent = this.t('place_order', 'Оформить заказ');
         }
     }
 
