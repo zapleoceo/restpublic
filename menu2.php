@@ -6,6 +6,10 @@ if (file_exists(__DIR__ . '/.env')) {
     $dotenv->load();
 }
 
+// Load translation service
+require_once __DIR__ . '/classes/TranslationService.php';
+$translationService = new TranslationService();
+
 // Load category translator
 require_once __DIR__ . '/category-translator.php';
 
@@ -356,7 +360,7 @@ if ($menu_loaded) {
                 <!-- Page Title -->
                 <div class="row">
                     <div class="column xl-12">
-                        <h1 class="text-display-title page-title">Наше меню v2</h1>
+                        <h1 class="text-display-title page-title"><?php echo $translationService->get('menu.title_v2', 'Наше меню v2'); ?></h1>
                     </div>
                 </div>
 
@@ -399,19 +403,19 @@ if ($menu_loaded) {
                                         <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
                                             <path d="M12,21.35L10.55,20.03C5.4,15.36 2,12.27 2,8.5C2,5.41 4.42,3 7.5,3C9.24,3 10.91,3.81 12,5.08C13.09,3.81 14.76,3 16.5,3C19.58,3 22,5.41 22,8.5C22,12.27 18.6,15.36 13.45,20.03L12,21.35Z"/>
                                         </svg>
-                                        Популярные
+                                        <?php echo $translationService->get('menu.sort_popular', 'Популярные'); ?>
                                     </button>
                                     <button class="sort-dropdown__item" data-sort="price">
                                         <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
                                             <path d="M7,15H9C9,16.08 10.37,17 12,17C13.63,17 15,16.08 15,15C15,13.9 13.96,13.5 11.76,12.97C9.64,12.44 7,11.78 7,9C7,7.21 8.47,5.69 10.5,5.18V3H13.5V5.18C15.53,5.69 17,7.21 17,9H15C15,7.92 13.63,7 12,7C10.37,7 9,7.92 9,9C9,10.1 10.04,10.5 12.24,11.03C14.36,11.56 17,12.22 17,15C17,16.79 15.53,18.31 13.5,18.82V21H10.5V18.82C8.47,18.31 7,16.79 7,15Z"/>
                                         </svg>
-                                        По цене
+                                        <?php echo $translationService->get('menu.sort_price', 'По цене'); ?>
                                     </button>
                                     <button class="sort-dropdown__item" data-sort="alphabet">
                                         <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
                                             <path d="M14,17H7v-2h7V17z M17,13H7v-2h10V13z M17,9H7V7h10V9z M3,5V3h18v2H3z"/>
                                         </svg>
-                                        А-Я
+                                        <?php echo $translationService->get('menu.sort_alphabet', 'А-Я'); ?>
                                     </button>
                                 </div>
                             </div>
