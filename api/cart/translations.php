@@ -13,7 +13,19 @@ require_once __DIR__ . '/../../classes/TranslationService.php';
 
 try {
     $translationService = new TranslationService();
-    $currentLanguage = $translationService->getLanguage();
+    
+    // Принудительно получаем язык из сессии или cookie
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
+    
+    // Проверяем язык из сессии
+    if (isset($_SESSION['language'])) {
+        $currentLanguage = $_SESSION['language'];
+        $translationService->currentLanguage = $currentLanguage;
+    } else {
+        $currentLanguage = $translationService->getLanguage();
+    }
     
     // Логируем текущий язык для отладки
     error_log("Cart translations API: Current language = " . $currentLanguage);
@@ -32,9 +44,10 @@ try {
         $generalTranslations
     );
     
-    // Если переводы не найдены, создаем дефолтные на текущем языке
-    if (empty($allTranslations)) {
-        $allTranslations = getDefaultTranslations($currentLanguage);
+    // Если переводы не найдены или их мало, дополняем дефолтными на текущем языке
+    if (empty($allTranslations) || count($allTranslations) < 10) {
+        $defaultTranslations = getDefaultTranslations($currentLanguage);
+        $allTranslations = array_merge($allTranslations, $defaultTranslations);
     }
     
     // Логируем количество переводов для отладки

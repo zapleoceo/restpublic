@@ -5,7 +5,7 @@ class TranslationService {
     private $client;
     private $db;
     private $textsCollection;
-    private $currentLanguage;
+    public $currentLanguage;
     
     public function __construct() {
         try {
