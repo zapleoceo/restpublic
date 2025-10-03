@@ -354,7 +354,18 @@ class MenuCache {
                 'Виски Кола' => 'Whiskey Cola',
                 'Горячий чай' => 'Hot Tea',
                 'Кофе 3в1' => 'Coffee 3in1',
-                'Кофе молоко лимон' => 'Coffee Milk Lemon'
+                'Кофе молоко лимон' => 'Coffee Milk Lemon',
+                'киноа пашот боул' => 'Quinoa Poached Bowl',
+                'Креветка в ананасе' => 'Shrimp in Pineapple',
+                'Креветка манго боул' => 'Shrimp Mango Bowl',
+                'креветка темпура' => 'Shrimp Tempura',
+                'Креветки гриль' => 'Grilled Shrimp',
+                'Куриный шашлык' => 'Chicken Shashlik',
+                'Хот-дог баварский' => 'Bavarian Hot Dog',
+                'Хот-дог сырный' => 'Cheesy Hot Dog',
+                'Шакшука' => 'Shakshuka',
+                'Кофе молоко гренадин' => 'Coffee with milk and grenadine',
+                'Кофе молоко малина' => 'Coffee with milk and raspberry'
             ],
             'vi' => [
                 '7 ап' => '7 Up',
@@ -401,7 +412,18 @@ class MenuCache {
                 'Виски Кола' => 'Whiskey Cola',
                 'Горячий чай' => 'Trà nóng',
                 'Кофе 3в1' => 'Cà phê 3in1',
-                'Кофе молоко лимон' => 'Cà phê sữa chanh'
+                'Кофе молоко лимон' => 'Cà phê sữa chanh',
+                'киноа пашот боул' => 'Bát quinoa luộc',
+                'Креветка в ананасе' => 'Tôm trong dứa',
+                'Креветка манго боул' => 'Bát tôm xoài',
+                'креветка темпура' => 'Tôm tempura',
+                'Креветки гриль' => 'Tôm nướng',
+                'Куриный шашлык' => 'Thịt gà nướng xiên',
+                'Хот-дог баварский' => 'Hot dog Bavaria',
+                'Хот-дог сырный' => 'Hot dog phô mai',
+                'Шакшука' => 'Shakshuka',
+                'Кофе молоко гренадин' => 'Cà phê sữa grenadine',
+                'Кофе молоко малина' => 'Cà phê sữa mâm xôi'
             ]
         ];
         

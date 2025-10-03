@@ -704,6 +704,26 @@ if ($menu_loaded) {
     <script src="js/menu.js"></script>
     
     <style>
+    /* Стили для подсветки полей при ошибке валидации */
+    .validation-error {
+        animation: validationBlink 0.5s ease-in-out 6; /* 3 мерцания (6 полупериодов) */
+        border-color: #ff6b6b !important;
+        box-shadow: 0 0 0 2px rgba(255, 107, 107, 0.2) !important;
+    }
+    
+    @keyframes validationBlink {
+        0%, 100% { 
+            border-color: #ff6b6b;
+            box-shadow: 0 0 0 2px rgba(255, 107, 107, 0.2);
+        }
+        50% { 
+            border-color: #ff9999;
+            box-shadow: 0 0 0 4px rgba(255, 107, 107, 0.3);
+        }
+    }
+    </style>
+    
+    <style>
         /* Стили для оригинальной цены в cart-total (зачеркнутая) */
         .cart-total .original-price {
             color: #999;

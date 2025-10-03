@@ -51,6 +51,20 @@ class Cart {
         return fallback || key;
     }
 
+    // Подсветка поля при ошибке валидации
+    highlightField(fieldId, duration = 3000) {
+        const field = document.getElementById(fieldId);
+        if (!field) return;
+
+        // Добавляем класс для подсветки
+        field.classList.add('validation-error');
+        
+        // Убираем подсветку через указанное время
+        setTimeout(() => {
+            field.classList.remove('validation-error');
+        }, duration);
+    }
+
     bindEvents() {
         // Cart icon click
         document.getElementById('cartIcon')?.addEventListener('click', () => {
@@ -792,17 +806,20 @@ class Cart {
         
         if (!name) {
             this.showToast(this.t('enter_name', 'Введите ваше имя'), 'error');
+            this.highlightField('customerName');
             return false;
         }
         
         if (!phone) {
             this.showToast(this.t('enter_phone', 'Введите номер телефона'), 'error');
+            this.highlightField('customerPhone');
             return false;
         }
         
         // Проверяем валидность телефона
         if (phone.length < 8 || !phone.startsWith('+')) {
             this.showToast(this.t('enter_correct_phone', 'Введите корректный номер телефона'), 'error');
+            this.highlightField('customerPhone');
             return false;
         }
         
@@ -811,6 +828,7 @@ class Cart {
             
             if (!table) {
                 this.showToast(this.t('select_table', 'Выберите номер стола'), 'error');
+                this.highlightField('tableNumber');
                 return false;
             }
         } else if (orderType === 'takeaway') {
@@ -821,11 +839,13 @@ class Cart {
             
             if (!address) {
                 this.showToast(this.t('enter_address', 'Введите адрес доставки'), 'error');
+                this.highlightField('deliveryAddress');
                 return false;
             }
             
             if (!deliveryTime) {
                 this.showToast(this.t('select_delivery_time', 'Выберите время доставки'), 'error');
+                this.highlightField('deliveryTime');
                 return false;
             }
         }
