@@ -16,11 +16,11 @@ MongoClient.connect(MONGODB_URL)
     console.error('❌ MongoDB connection failed for auth routes:', err);
   });
 
-// Check authentication status
+// Check authentication status (for both /status and /api/auth/status)
 router.get('/status', async (req, res) => {
   try {
     const sessionToken = req.headers['x-session-token'] || req.query.sessionToken;
-    
+
     if (!sessionToken) {
       return res.json({
         success: true,
@@ -61,6 +61,15 @@ router.get('/status', async (req, res) => {
       error: 'Internal server error'
     });
   }
+});
+
+// Alias for API endpoint
+router.get('/', async (req, res) => {
+  // Redirect to /status for backward compatibility
+  req.url = '/status';
+  router.handle(req, res);
+});
+
 });
 
 // Logout
