@@ -29,14 +29,18 @@ try {
 ?>
 
 <!-- Events Widget -->
+<?php
+require_once __DIR__ . '/../classes/TranslationService.php';
+$translationService = new TranslationService();
+?>
 <div class="events-widget">
     <div class="events-header">
-        <h2 class="events-title">Предстоящие события</h2>
+        <h2 class="events-title"><?php echo $translationService->get('events.upcoming_title', 'Предстоящие события'); ?></h2>
     </div>
     
     <?php if (empty($events)): ?>
         <div class="events-empty">
-            <p>Скоро здесь появятся интересные события!</p>
+            <p><?php echo $translationService->get('events.no_events', 'Скоро здесь появятся интересные события!'); ?></p>
         </div>
     <?php else: ?>
         <div class="events-list">
@@ -75,7 +79,7 @@ try {
                             <div class="event-link">
                                 <a href="<?php echo htmlspecialchars($event['description_link']); ?>" 
                                    target="_blank" class="btn btn-outline">
-                                    Подробнее
+                                    <?php echo $translationService->get('events.more_details', 'Подробнее'); ?>
                                 </a>
                             </div>
                         <?php endif; ?>
