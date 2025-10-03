@@ -245,12 +245,12 @@ class Cart {
                 discountInfo.textContent = `-${clientDiscount}% скидка для вас`;
                 discountInfo.style.color = '#4CAF50'; // Зеленый цвет для активной скидки
             } else {
-                discountInfo.textContent = '-20% на первый заказ каждому новому гостю';
-                discountInfo.style.color = '#666'; // Серый цвет для стандартной скидки
+                // Скидка удалена
+                discountInfo.style.display = 'none';
             }
         } else {
-            discountInfo.textContent = '-20% на первый заказ каждому новому гостю';
-            discountInfo.style.color = '#666';
+            // Скидка удалена
+            discountInfo.style.display = 'none';
         }
     }
 
@@ -1250,9 +1250,8 @@ class Cart {
         const totalPaidSum = userData.total_payed_sum || 0;
         
         if (totalPaidSum === 0) {
-            // Новый клиент - применяем скидку 20% (акция ID 1)
-            this.applyDiscount(1, '-20% на первый заказ каждому новому гостю');
-            this.showDiscountText(true);
+            // Скидка удалена - не применяем автоматическую скидку
+            this.showDiscountText(false);
         } else {
             // Существующий клиент - скрываем текст скидки
             this.showDiscountText(false);
@@ -1444,11 +1443,8 @@ class Cart {
         if (cartTotal) {
             const discountInfo = document.createElement('div');
             discountInfo.className = 'discount-info';
-            discountInfo.innerHTML = `
-                <div style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 4px; padding: 8px; margin-top: 8px; font-size: 12px; color: #856404;">
-                    💡 -20% на первый заказ каждому новому гостю
-                </div>
-            `;
+            // Скидка удалена
+            discountInfo.style.display = 'none';
             cartTotal.appendChild(discountInfo);
         }
     }

@@ -638,9 +638,7 @@ if ($menu_loaded) {
             </div>
             
             <div class="modal-footer">
-                <div class="discount-info">
-                    <span class="discount-text">-20% на первый заказ каждому новому гостю</span>
-                </div>
+                <!-- Скидка удалена -->
             </div>
         </div>
     </div>
@@ -1465,6 +1463,46 @@ if ($menu_loaded) {
 
     <!-- Modal Overlay -->
     <div id="modalOverlay" class="modal-overlay overlay-hidden"></div>
+
+    <script>
+    // Установка переводов для кнопок добавления в корзину
+    document.addEventListener('DOMContentLoaded', function() {
+        // Получаем текущий язык из URL или cookie
+        const currentLang = getCurrentLanguage();
+        
+        // Переводы для кнопки "заказать"
+        const translations = {
+            'ru': 'заказать',
+            'en': 'order', 
+            'vi': 'đặt hàng'
+        };
+        
+        // Устанавливаем атрибут data-hover-text для всех кнопок добавления в корзину
+        const addToCartButtons = document.querySelectorAll('.add-to-cart-btn');
+        addToCartButtons.forEach(button => {
+            button.setAttribute('data-hover-text', translations[currentLang] || translations['ru']);
+        });
+        
+        // Функция для получения текущего языка
+        function getCurrentLanguage() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const langFromUrl = urlParams.get('lang');
+            if (langFromUrl && ['ru', 'en', 'vi'].includes(langFromUrl)) {
+                return langFromUrl;
+            }
+            
+            const langFromCookie = document.cookie
+                .split('; ')
+                .find(row => row.startsWith('language='))
+                ?.split('=')[1];
+            if (langFromCookie && ['ru', 'en', 'vi'].includes(langFromCookie)) {
+                return langFromCookie;
+            }
+            
+            return 'ru'; // По умолчанию русский
+        }
+    });
+    </script>
 
 </body>
 </html>

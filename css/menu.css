@@ -492,7 +492,7 @@
 }
 
 .add-to-cart-btn:hover::after {
-    content: 'заказать';
+    content: attr(data-hover-text);
     position: absolute;
     top: 50%;
     left: 50%;
@@ -514,7 +514,7 @@
 }
 
 .menu-list__item:hover .add-to-cart-btn::after {
-    content: 'заказать';
+    content: attr(data-hover-text);
     position: absolute;
     top: 50%;
     left: 50%;
