@@ -70,8 +70,6 @@ router.get('/', async (req, res) => {
   router.handle(req, res);
 });
 
-});
-
 // Logout
 router.post('/logout', async (req, res) => {
   try {
