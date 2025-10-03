@@ -699,6 +699,7 @@ if ($menu_loaded) {
         });
     </script>
     
+    <script src="js/cart-translations.js"></script>
     <script src="js/cart.js"></script>
     <script src="js/menu.js"></script>
     

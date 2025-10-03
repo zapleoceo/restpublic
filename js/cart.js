@@ -11,6 +11,8 @@ class Cart {
         // Флаг для предотвращения дублирования заказов
         this.isSubmittingOrder = false;
 
+        // Инициализируем переводы
+        this.translations = null;
         this.init();
     }
     
@@ -29,9 +31,24 @@ class Cart {
         return await apiCall();
     }
     
-    init() {
+    async init() {
+        // Загружаем переводы
+        await this.loadTranslations();
         this.bindEvents();
         this.updateCartDisplay();
+    }
+
+    async loadTranslations() {
+        if (window.cartTranslations) {
+            this.translations = await window.cartTranslations.load();
+        }
+    }
+
+    t(key, fallback = null) {
+        if (this.translations && this.translations[key]) {
+            return this.translations[key];
+        }
+        return fallback || key;
     }
 
     bindEvents() {
@@ -485,7 +502,7 @@ class Cart {
 
     async toggleCart() {
         if (this.items.length === 0) {
-            this.showToast('Корзина пуста', 'info');
+            this.showToast(this.t('cart_empty', 'Корзина пуста'), 'info');
             return;
         }
         await this.showCartModal();
@@ -546,7 +563,7 @@ class Cart {
         
         if (visibleItems.length === 0) {
             if (cartItemsList) {
-                cartItemsList.innerHTML = '<p class="cart-empty-message">Корзина пуста</p>';
+                cartItemsList.innerHTML = `<p class="cart-empty-message">${this.t('cart_empty', 'Корзина пуста')}</p>`;
             }
             if (cartTotalAmount) {
                 cartTotalAmount.textContent = '0 ₫';
@@ -711,7 +728,7 @@ class Cart {
             // Не добавляем fallback столы - только из MongoDB
             const option = document.createElement('option');
             option.value = '';
-            option.textContent = 'Столы не найдены';
+            option.textContent = this.t('tables_not_found', 'Столы не найдены');
             option.disabled = true;
             select.appendChild(option);
         }
@@ -760,7 +777,7 @@ class Cart {
         
         if (selectedTime < oneHourFromNow) {
             input.setCustomValidity('Время доставки должно быть не менее чем через час');
-            this.showToast('Мы не успеем так быстро, но постараемся!', 'warning');
+            this.showToast(this.t('delivery_time_too_soon', 'Мы не успеем так быстро, но постараемся!'), 'warning');
         } else {
             input.setCustomValidity('');
         }
@@ -774,18 +791,18 @@ class Cart {
         const phone = document.getElementById('customerPhone').value.trim();
         
         if (!name) {
-            this.showToast('Введите ваше имя', 'error');
+            this.showToast(this.t('enter_name', 'Введите ваше имя'), 'error');
             return false;
         }
         
         if (!phone) {
-            this.showToast('Введите номер телефона', 'error');
+            this.showToast(this.t('enter_phone', 'Введите номер телефона'), 'error');
             return false;
         }
         
         // Проверяем валидность телефона
         if (phone.length < 8 || !phone.startsWith('+')) {
-            this.showToast('Введите корректный номер телефона', 'error');
+            this.showToast(this.t('enter_correct_phone', 'Введите корректный номер телефона'), 'error');
             return false;
         }
         
@@ -793,7 +810,7 @@ class Cart {
             const table = document.getElementById('tableNumber').value;
             
             if (!table) {
-                this.showToast('Выберите номер стола', 'error');
+                this.showToast(this.t('select_table', 'Выберите номер стола'), 'error');
                 return false;
             }
         } else if (orderType === 'takeaway') {
@@ -803,12 +820,12 @@ class Cart {
             const deliveryTime = document.getElementById('deliveryTime').value;
             
             if (!address) {
-                this.showToast('Введите адрес доставки', 'error');
+                this.showToast(this.t('enter_address', 'Введите адрес доставки'), 'error');
                 return false;
             }
             
             if (!deliveryTime) {
-                this.showToast('Выберите время доставки', 'error');
+                this.showToast(this.t('select_delivery_time', 'Выберите время доставки'), 'error');
                 return false;
             }
         }
@@ -826,7 +843,7 @@ class Cart {
         this.isSubmittingOrder = true;
 
         if (this.items.length === 0) {
-            this.showToast('Корзина пуста', 'error');
+            this.showToast(this.t('cart_empty', 'Корзина пуста'), 'error');
             this.isSubmittingOrder = false;
             return;
         }
@@ -926,7 +943,7 @@ class Cart {
         }
 
         try {
-            this.showToast('Отправляем заказ...', 'info');
+            this.showToast(this.t('sending_order', 'Отправляем заказ...'), 'info');
             
             // Используем основной домен для API запросов
             const apiUrl = window.location.hostname === 'localhost' ? 'http://localhost:3003' : '';
@@ -941,7 +958,7 @@ class Cart {
 
             if (response.ok) {
                 const result = await response.json();
-                this.showToast('Заказ успешно отправлен!', 'success');
+                this.showToast(this.t('order_success', 'Заказ успешно отправлен!'), 'success');
                 
                 // Сохраняем данные клиента для будущих заказов
                 this.saveCustomerData(name, phone);
@@ -951,11 +968,11 @@ class Cart {
                 console.log('Order created:', result);
             } else {
                 const error = await response.json();
-                this.showToast(`Ошибка: ${error.message}`, 'error');
+                this.showToast(`${this.t('order_error', 'Ошибка при отправке заказа')}: ${error.message}`, 'error');
             }
         } catch (error) {
             console.error('Order submission error:', error);
-            this.showToast('Ошибка при отправке заказа', 'error');
+            this.showToast(this.t('order_error', 'Ошибка при отправке заказа'), 'error');
         } finally {
             // Сбрасываем флаг в любом случае
             this.isSubmittingOrder = false;
@@ -1102,7 +1119,7 @@ class Cart {
 
                 if (!Array.isArray(productsArray)) {
                     console.error('❌ productsArray is not an array:', productsArray);
-                    this.showToast('Ошибка загрузки цен товаров', 'error');
+                    this.showToast(this.t('price_load_error', 'Ошибка загрузки цен товаров'), 'error');
                     return;
                 }
 
@@ -1370,7 +1387,7 @@ class Cart {
     async addToExistingOrder(transactionId) {
         // Добавляем товары к существующему заказу
         try {
-            this.showToast('Добавляем товары к существующему заказу...', 'info');
+            this.showToast(this.t('adding_to_existing_order', 'Добавляем товары к существующему заказу...'), 'info');
             
             const apiUrl = window.location.hostname === 'localhost' ? 'http://localhost:3003' : 'https://veranda.my';
             
@@ -1462,13 +1479,13 @@ class Cart {
                 }
             }
             
-            this.showToast('Товары успешно добавлены к существующему заказу!', 'success');
+            this.showToast(this.t('added_to_existing_order', 'Товары успешно добавлены к существующему заказу!'), 'success');
             this.clearCart();
             this.hideModal();
             
         } catch (error) {
             console.error('Error adding to existing order:', error);
-            this.showToast('Ошибка при добавлении товаров к заказу', 'error');
+            this.showToast(this.t('error_adding_to_existing_order', 'Ошибка при добавлении товаров к заказу'), 'error');
         }
     }
 
