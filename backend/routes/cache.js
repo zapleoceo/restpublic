@@ -5,8 +5,9 @@ const { MongoClient } = require('mongodb');
 
 // Подключение к MongoDB
 const mongoUrl = process.env.MONGODB_URL || 'mongodb://localhost:27017';
-const dbName = 'northrepublic';
+const dbName = process.env.MONGODB_DB_NAME || 'northrepublic';
 const collectionName = 'menu';
+const API_PORT = process.env.PORT || 3002;
 
 // Endpoint для обновления кэша меню
 router.post('/update-menu', async (req, res) => {
@@ -16,7 +17,7 @@ router.post('/update-menu', async (req, res) => {
         
         // Получаем данные от нашего API (который уже работает)
         const authToken = process.env.API_AUTH_TOKEN;
-        const apiResponse = await axios.get('http://127.0.0.1:3002/api/menu', {
+        const apiResponse = await axios.get(`http://127.0.0.1:${API_PORT}/api/menu`, {
             timeout: 30000,
             headers: {
                 'X-API-Token': authToken
@@ -51,7 +52,7 @@ router.post('/update-menu', async (req, res) => {
         console.log('🔄 Загрузка списка столов...');
         try {
             // Получаем столы через наш API
-            const tablesResponse = await axios.get('http://127.0.0.1:3002/api/menu/tables', {
+            const tablesResponse = await axios.get(`http://127.0.0.1:${API_PORT}/api/menu/tables`, {
                 timeout: 15000,
                 headers: {
                     'X-API-Token': authToken
