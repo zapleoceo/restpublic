@@ -1088,7 +1088,7 @@ if ($menu_loaded) {
                 }
 
                 // Check if user is authenticated
-                fetch('/api/auth/status', {
+                fetch('/auth/status', {
                     headers: {
                         'X-Session-Token': this.sessionToken
                     }

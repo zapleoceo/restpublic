@@ -160,7 +160,20 @@ bot.on('contact', async (ctx) => {
         body: JSON.stringify(requestData)
       });
 
-      const result = await response.json() as any;
+      console.log(`📡 Response status: ${response.status}`);
+      console.log(`📡 Response headers:`, response.headers.raw());
+      
+      const responseText = await response.text();
+      console.log(`📡 Response body:`, responseText);
+      
+      let result;
+      try {
+        result = JSON.parse(responseText);
+      } catch (parseError) {
+        console.error(`❌ JSON parse error:`, parseError);
+        console.error(`❌ Response text:`, responseText);
+        throw new Error(`Invalid JSON response: ${responseText.substring(0, 100)}...`);
+      }
       
       console.log(`📥 Ответ от backend:`, {
         status: response.status,
