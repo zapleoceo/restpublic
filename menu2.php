@@ -452,6 +452,30 @@ if ($menu_loaded) {
                                                 data-sort-order="<?php echo $translatedProduct['sort_order'] ?? 0; ?>"
                                                 data-popularity="<?php echo $translatedProduct['sales_count'] ?? 0; ?>"
                                                 data-product-id="<?php echo $translatedProduct['product_id'] ?? 0; ?>">
+                                                
+                                                <!-- Product Image Thumbnail -->
+                                                <div class="menu-list__item-image">
+                                                    <?php 
+                                                    $photo = $translatedProduct['photo'] ?? '';
+                                                    $photoOrigin = $translatedProduct['photo_origin'] ?? $photo;
+                                                    if ($photo): 
+                                                        $thumbnailUrl = 'https://joinposter.com' . $photo;
+                                                        $fullImageUrl = 'https://joinposter.com' . $photoOrigin;
+                                                    ?>
+                                                        <img src="<?php echo htmlspecialchars($thumbnailUrl); ?>" 
+                                                             alt="<?php echo htmlspecialchars($translatedProduct['product_name'] ?? 'Блюдо'); ?>"
+                                                             class="product-thumbnail"
+                                                             data-full-image="<?php echo htmlspecialchars($fullImageUrl); ?>"
+                                                             title="Нажмите для увеличения">
+                                                    <?php else: ?>
+                                                        <div class="product-thumbnail-placeholder">
+                                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                                                <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
+                                                            </svg>
+                                                        </div>
+                                                    <?php endif; ?>
+                                                </div>
+                                                
                                                 <div class="menu-list__item-desc">
                                                     <h4><?php echo htmlspecialchars($translatedProduct['product_name'] ?? 'Без названия'); ?></h4>
                                                     <?php if (!empty($translatedProduct['description'])): ?>
@@ -512,6 +536,12 @@ if ($menu_loaded) {
         <!-- Footer -->
         <?php include 'components/footer.php'; ?>
         
+    </div>
+
+    <!-- Image Modal -->
+    <div id="imageModal" class="image-modal">
+        <span class="image-modal-close">&times;</span>
+        <img id="modalImage" src="" alt="">
     </div>
 
     <!-- Cart Modal -->
@@ -625,6 +655,51 @@ if ($menu_loaded) {
         // API Configuration
         window.API_TOKEN = '<?php echo $_ENV['API_AUTH_TOKEN'] ?? ''; ?>';
     </script>
+    
+    <script>
+        // Image Modal functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const imageModal = document.getElementById('imageModal');
+            const modalImage = document.getElementById('modalImage');
+            const modalClose = document.querySelector('.image-modal-close');
+            const thumbnails = document.querySelectorAll('.product-thumbnail');
+            
+            // Open modal on thumbnail click
+            thumbnails.forEach(thumbnail => {
+                thumbnail.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const fullImageUrl = this.getAttribute('data-full-image');
+                    if (fullImageUrl) {
+                        modalImage.src = fullImageUrl;
+                        modalImage.alt = this.alt;
+                        imageModal.classList.add('active');
+                        document.body.style.overflow = 'hidden';
+                    }
+                });
+            });
+            
+            // Close modal
+            function closeModal() {
+                imageModal.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+            
+            modalClose.addEventListener('click', closeModal);
+            imageModal.addEventListener('click', function(e) {
+                if (e.target === imageModal) {
+                    closeModal();
+                }
+            });
+            
+            // Close on Escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && imageModal.classList.contains('active')) {
+                    closeModal();
+                }
+            });
+        });
+    </script>
+    
     <script src="js/cart.js"></script>
     <script src="js/menu.js"></script>
     
@@ -645,6 +720,104 @@ if ($menu_loaded) {
         .cart-total .total-final {
             font-weight: bold;
             font-size: 1.1em;
+        }
+        
+        /* Product Image Styles */
+        .menu-list__item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .menu-list__item-image {
+            flex-shrink: 0;
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #f5f5f5;
+        }
+        
+        .product-thumbnail {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        
+        .product-thumbnail:hover {
+            transform: scale(1.05);
+        }
+        
+        .product-thumbnail-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ccc;
+            background: #f8f8f8;
+        }
+        
+        .menu-list__item-desc {
+            flex: 1;
+        }
+        
+        .menu-list__item-actions {
+            flex-shrink: 0;
+        }
+        
+        /* Image Modal */
+        .image-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            cursor: pointer;
+        }
+        
+        .image-modal.active {
+            display: flex;
+        }
+        
+        .image-modal img {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        
+        .image-modal-close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: white;
+            font-size: 30px;
+            cursor: pointer;
+            z-index: 10001;
+        }
+        
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            .menu-list__item-image {
+                width: 60px;
+                height: 60px;
+            }
+            
+            .menu-list__item {
+                gap: 0.75rem;
+            }
         }
 
         /* Стили для заказов */
