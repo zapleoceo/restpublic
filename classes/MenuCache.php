@@ -9,7 +9,7 @@ class MenuCache {
     public function __construct() {
         try {
             $mongodbUrl = $_ENV['MONGODB_URL'] ?? 'mongodb://localhost:27017';
-            $dbName = $_ENV['MONGODB_DB_NAME'] ?? 'northrepublic';
+            $dbName = $_ENV['MONGODB_DB_NAME'] ?? 'veranda';
             
             $this->client = new MongoDB\Client($mongodbUrl);
             $this->db = $this->client->$dbName;
@@ -247,9 +247,8 @@ class MenuCache {
         try {
             // Асинхронный запрос к нашему API для обновления кэша
             $ch = curl_init();
-            $apiUrl = $_ENV['CORS_ORIGIN'] ?? 'https://northrepublic.me';
-            $port = $_ENV['PORT'] ?? '3002';
-            curl_setopt($ch, CURLOPT_URL, $apiUrl . ':' . $port . '/api/cache/update-menu');
+            $apiUrl = $_ENV['BACKEND_URL'] ?? 'http://localhost:3003';
+            curl_setopt($ch, CURLOPT_URL, $apiUrl . '/api/cache/update-menu');
             curl_setopt($ch, CURLOPT_POST, true);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($ch, CURLOPT_TIMEOUT, 10); // Увеличиваем таймаут

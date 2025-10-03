@@ -17,7 +17,7 @@ class RateLimiter
             
             $mongodbUrl = $_ENV['MONGODB_URL'] ?? 'mongodb://localhost:27017';
             $client = new MongoDB\Client($mongodbUrl);
-            $dbName = $_ENV['MONGODB_DB_NAME'] ?? 'northrepublic';
+            $dbName = $_ENV['MONGODB_DB_NAME'] ?? 'veranda';
             $this->db = $client->$dbName;
             $this->collection = $this->db->rate_limits;
         } catch (Exception $e) {

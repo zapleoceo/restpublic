@@ -18,7 +18,7 @@ class SePayTransactionService {
             
             $mongodbUrl = $_ENV['MONGODB_URL'] ?? 'mongodb://localhost:27017';
             $client = new Client($mongodbUrl);
-            $dbName = $_ENV['MONGODB_DB_NAME'] ?? 'northrepublic';
+            $dbName = $_ENV['MONGODB_DB_NAME'] ?? 'veranda';
             $database = $client->selectDatabase($dbName);
             $this->collection = $database->selectCollection('sepay_transactions');
         } catch (Exception $e) {

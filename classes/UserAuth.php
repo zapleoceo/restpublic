@@ -23,7 +23,7 @@ class UserAuth {
                 }
                 
                 $mongodbUrl = $_ENV['MONGODB_URL'] ?? 'mongodb://localhost:27017';
-                $dbName = $_ENV['MONGODB_DB_NAME'] ?? 'northrepublic';
+                $dbName = $_ENV['MONGODB_DB_NAME'] ?? 'veranda';
                 
                 $client = new MongoDB\Client($mongodbUrl);
                 $this->db = $client->selectDatabase($dbName);

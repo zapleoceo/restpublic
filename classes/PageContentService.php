@@ -19,7 +19,7 @@ class PageContentService {
         try {
             // Подключение к MongoDB
             $mongodbUrl = $_ENV['MONGODB_URL'] ?? 'mongodb://localhost:27017';
-            $dbName = $_ENV['MONGODB_DB_NAME'] ?? 'northrepublic';
+            $dbName = $_ENV['MONGODB_DB_NAME'] ?? 'veranda';
             
             $this->client = new MongoDB\Client($mongodbUrl);
             $this->db = $this->client->selectDatabase($dbName);
