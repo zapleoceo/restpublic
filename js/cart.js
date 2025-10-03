@@ -648,88 +648,25 @@ class Cart {
         
         console.log('🛒 Cart: Updating cart modal translations with:', this.translations);
         
-        // Заголовок модального окна
-        const modalTitle = document.querySelector('#cartModal .modal-header h2');
-        if (modalTitle) {
-            modalTitle.textContent = this.t('your_order', 'Ваш заказ');
-        }
-
-        // Типы заказов
-        const orderTypeLabels = document.querySelectorAll('.order-type-label');
-        if (orderTypeLabels.length >= 3) {
-            orderTypeLabels[0].textContent = this.t('for_table', 'На столик');
-            orderTypeLabels[1].textContent = this.t('takeaway', 'С собой');
-            orderTypeLabels[2].textContent = this.t('delivery', 'Доставка');
-        }
-
-        // Итого
-        const totalLabel = document.querySelector('.cart-total .total-row span:first-child');
-        if (totalLabel) {
-            totalLabel.textContent = this.t('total', 'Итого:');
-        }
-
-        // Поля формы
-        const nameLabel = document.querySelector('label[for="customerName"]');
-        if (nameLabel) {
-            nameLabel.textContent = this.t('enter_name', 'Ваше имя');
-        }
-
-        const nameInput = document.getElementById('customerName');
-        if (nameInput) {
-            nameInput.placeholder = this.t('enter_name_placeholder', 'Введите ваше имя');
-        }
-
-        const phoneLabel = document.querySelector('label[for="customerPhone"]');
-        if (phoneLabel) {
-            phoneLabel.textContent = this.t('phone', 'Телефон');
-        }
-
-        const phoneInput = document.getElementById('customerPhone');
-        if (phoneInput) {
-            phoneInput.placeholder = this.t('phone_placeholder', '+');
-        }
-
-        const tableLabel = document.querySelector('label[for="tableNumber"]');
-        if (tableLabel) {
-            tableLabel.textContent = this.t('table', 'Стол');
-        }
-
-        // Поля для доставки
-        const addressLabel = document.querySelector('label[for="deliveryAddress"]');
-        if (addressLabel) {
-            addressLabel.textContent = this.t('delivery_address', 'Адрес доставки (ссылка на Google карту)');
-        }
-
-        const addressInput = document.getElementById('deliveryAddress');
-        if (addressInput) {
-            addressInput.placeholder = this.t('delivery_address_placeholder', 'https://maps.google.com/...');
-        }
-
-        const timeLabel = document.querySelector('label[for="deliveryTime"]');
-        if (timeLabel) {
-            timeLabel.textContent = this.t('delivery_time', 'Время доставки');
-        }
-
-        const commentLabel = document.querySelector('label[for="deliveryComment"]');
-        if (commentLabel) {
-            commentLabel.textContent = this.t('comment', 'Комментарий');
-        }
-
-        const commentTextarea = document.getElementById('deliveryComment');
-        if (commentTextarea) {
-            commentTextarea.placeholder = this.t('comment_placeholder', 'Сюда можно написать все, что вы хотели бы, чтобы мы учли');
-        }
-
-        // Кнопки
-        const cancelBtn = document.getElementById('cartModalCancel');
-        if (cancelBtn) {
-            cancelBtn.textContent = this.t('cancel', 'Отмена');
-        }
-
-        const submitBtn = document.getElementById('cartModalSubmit');
-        if (submitBtn) {
-            submitBtn.textContent = this.t('place_order', 'Оформить заказ');
-        }
+        // Автоматически переводим все элементы с атрибутом data-translate
+        const elementsToTranslate = document.querySelectorAll('[data-translate]');
+        elementsToTranslate.forEach(element => {
+            const key = element.getAttribute('data-translate');
+            const translation = this.t(key);
+            if (translation && translation !== key) {
+                element.textContent = translation;
+            }
+        });
+        
+        // Автоматически переводим все placeholder'ы с атрибутом data-translate-placeholder
+        const inputsToTranslate = document.querySelectorAll('[data-translate-placeholder]');
+        inputsToTranslate.forEach(input => {
+            const key = input.getAttribute('data-translate-placeholder');
+            const translation = this.t(key);
+            if (translation && translation !== key) {
+                input.placeholder = translation;
+            }
+        });
     }
 
     showModal() {

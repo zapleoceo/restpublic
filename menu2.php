@@ -551,19 +551,19 @@ if ($menu_loaded) {
     <div id="cartModal" class="modal modal-hidden">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>Ваш заказ</h2>
+                <h2 data-translate="your_order">Loading...</h2>
                 <div class="order-type-options">
                     <label class="order-type-option">
                         <input type="radio" name="orderType" value="table" checked>
-                        <span class="order-type-label">На столик</span>
+                        <span class="order-type-label" data-translate="for_table">Loading...</span>
                     </label>
                     <label class="order-type-option">
                         <input type="radio" name="orderType" value="takeaway">
-                        <span class="order-type-label">С собой</span>
+                        <span class="order-type-label" data-translate="takeaway">Loading...</span>
                     </label>
                     <label class="order-type-option">
                         <input type="radio" name="orderType" value="delivery">
-                        <span class="order-type-label">Доставка</span>
+                        <span class="order-type-label" data-translate="delivery">Loading...</span>
                     </label>
                 </div>
                 <button class="modal-close" id="cartModalClose">&times;</button>
@@ -575,7 +575,7 @@ if ($menu_loaded) {
                 </div>
                 <div class="cart-total">
                     <div class="total-row">
-                        <span>Итого:</span>
+                        <span data-translate="total">Loading...</span>
                         <span class="total-amount" id="cartTotalAmount">0 ₫</span>
                     </div>
                 </div>
@@ -585,15 +585,15 @@ if ($menu_loaded) {
                     <!-- Общие поля для всех типов заказов -->
                     <div class="form-row form-row-three">
                         <div class="form-group form-group-name">
-                            <label for="customerName">Ваше имя</label>
-                            <input type="text" id="customerName" name="customerName" placeholder="Введите ваше имя" required>
+                            <label for="customerName" data-translate="enter_name">Loading...</label>
+                            <input type="text" id="customerName" name="customerName" data-translate-placeholder="enter_name_placeholder" placeholder="Loading..." required>
                         </div>
                         <div class="form-group form-group-phone">
-                            <label for="customerPhone">Телефон</label>
-                            <input type="tel" id="customerPhone" name="customerPhone" placeholder="+" required>
+                            <label for="customerPhone" data-translate="phone">Loading...</label>
+                            <input type="tel" id="customerPhone" name="customerPhone" data-translate-placeholder="phone_placeholder" placeholder="Loading..." required>
                         </div>
                         <div class="form-group form-group-table" id="tableFieldGroup">
-                            <label for="tableNumber">Стол</label>
+                            <label for="tableNumber" data-translate="table">Loading...</label>
                             <select id="tableNumber" name="tableNumber" required>
                                 <option value=""></option>
                                 <!-- Table options will be populated here -->
@@ -604,40 +604,40 @@ if ($menu_loaded) {
                     <!-- Table Order Fields -->
                     <div class="order-field-group" id="tableOrderFields">
                         <div class="form-group">
-                            <label for="tableComment">Комментарий</label>
-                            <textarea id="tableComment" name="tableComment" rows="3" placeholder="Сюда можно написать все, что вы хотели бы, чтобы мы учли"></textarea>
+                            <label for="tableComment" data-translate="comment">Loading...</label>
+                            <textarea id="tableComment" name="tableComment" rows="3" data-translate-placeholder="comment_placeholder" placeholder="Loading..."></textarea>
                         </div>
                     </div>
 
                     <!-- Takeaway Order Fields -->
                     <div class="order-field-group" id="takeawayOrderFields" style="display: none;">
                         <div class="form-group">
-                            <label for="takeawayComment">Комментарий</label>
-                            <textarea id="takeawayComment" name="takeawayComment" rows="3" placeholder="Сюда можно написать все, что вы хотели бы, чтобы мы учли"></textarea>
+                            <label for="takeawayComment" data-translate="comment">Loading...</label>
+                            <textarea id="takeawayComment" name="takeawayComment" rows="3" data-translate-placeholder="comment_placeholder" placeholder="Loading..."></textarea>
                         </div>
                     </div>
 
                     <!-- Delivery Order Fields -->
                     <div class="order-field-group" id="deliveryOrderFields" style="display: none;">
                         <div class="form-group">
-                            <label for="deliveryAddress">Адрес доставки (ссылка на Google карту)</label>
-                            <input type="url" id="deliveryAddress" name="deliveryAddress" placeholder="https://maps.google.com/..." required>
+                            <label for="deliveryAddress" data-translate="delivery_address">Loading...</label>
+                            <input type="url" id="deliveryAddress" name="deliveryAddress" data-translate-placeholder="delivery_address_placeholder" placeholder="Loading..." required>
                         </div>
                         <div class="form-group">
-                            <label for="deliveryTime">Время доставки</label>
+                            <label for="deliveryTime" data-translate="delivery_time">Loading...</label>
                             <input type="datetime-local" id="deliveryTime" name="deliveryTime" required>
                         </div>
                         <div class="form-group">
-                            <label for="deliveryComment">Комментарий</label>
-                            <textarea id="deliveryComment" name="deliveryComment" rows="3" placeholder="Сюда можно написать все, что вы хотели бы, чтобы мы учли"></textarea>
+                            <label for="deliveryComment" data-translate="comment">Loading...</label>
+                            <textarea id="deliveryComment" name="deliveryComment" rows="3" data-translate-placeholder="comment_placeholder" placeholder="Loading..."></textarea>
                         </div>
                     </div>
                 </div>
             </div>
             
             <div class="modal-buttons">
-                <button class="btn btn-secondary" id="cartModalCancel">Отмена</button>
-                <button class="btn btn-primary" id="cartModalSubmit">Оформить заказ</button>
+                <button class="btn btn-secondary" id="cartModalCancel" data-translate="cancel">Loading...</button>
+                <button class="btn btn-primary" id="cartModalSubmit" data-translate="place_order">Loading...</button>
             </div>
             
             <div class="modal-footer">
