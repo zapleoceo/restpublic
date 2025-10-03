@@ -106,7 +106,7 @@ bot.on('contact', async (ctx) => {
   if (session?.authMode) {
     try {
       // Отправляем данные на backend
-      const backendUrl = process.env.BACKEND_URL || 'https://northrepublic.me';
+      const backendUrl = process.env.BACKEND_URL || 'https://veranda.my';
       const requestData = {
         phone: contact.phone_number,
         name: contact.first_name,
@@ -139,7 +139,7 @@ bot.on('contact', async (ctx) => {
       if (result.success) {
         // Создаем клавиатуру с кнопкой возврата в приложение
         const returnKeyboard = Markup.inlineKeyboard([
-          [Markup.button.url('🔗 Вернуться в приложение', result.redirectUrl || 'https://northrepublic.me')]                                                      
+          [Markup.button.url('🔗 Вернуться в приложение', result.redirectUrl || 'https://veranda.my')]                                                      
         ]);
 
         await ctx.reply(

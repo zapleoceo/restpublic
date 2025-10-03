@@ -15,7 +15,7 @@ if (file_exists(__DIR__ . '/.env')) {
 // Обновляем кеш меню при заходе на главную страницу (в фоновом режиме, реже)
 function updateMenuCacheAsync() {
     try {
-        $cacheUrl = ($_ENV['BACKEND_URL'] ?? 'http://localhost:3002') . '/api/cache/update-menu';
+        $cacheUrl = ($_ENV['BACKEND_URL'] ?? 'http://localhost:3003') . '/api/cache/update-menu';
         
         // Создаем контекст для асинхронного запроса
         $context = stream_context_create([
@@ -110,7 +110,7 @@ try {
         $products = $menuData ? $menuData['products'] : [];
         
         // API configuration for popular products
-        $api_base_url = ($_ENV['BACKEND_URL'] ?? 'http://localhost:3002') . '/api';
+        $api_base_url = ($_ENV['BACKEND_URL'] ?? 'http://localhost:3003') . '/api';
         $context = stream_context_create([
             'http' => [
                 'timeout' => 10,

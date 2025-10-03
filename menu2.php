@@ -11,7 +11,7 @@ require_once __DIR__ . '/category-translator.php';
 
 // Обновляем кеш меню при заходе на страницу (в фоновом режиме)
 function updateMenuCacheAsync() {
-    $cacheUrl = 'http://localhost:3002/api/cache/update-menu';
+    $cacheUrl = 'http://localhost:3003/api/cache/update-menu';
     
     // Создаем контекст для асинхронного запроса
     $context = stream_context_create([
@@ -71,7 +71,7 @@ try {
             $menu_loaded = !empty($categories) && !empty($products);
             
             // API configuration for popular products
-            $api_base_url = 'http://localhost:3002/api';
+            $api_base_url = 'http://localhost:3003/api';
             $context = stream_context_create([
                 'http' => [
                     'timeout' => 10,
@@ -140,7 +140,7 @@ try {
     error_log("MongoDB not available, trying API fallback: " . $e->getMessage());
     
     // Fallback to API if MongoDB fails
-    $api_base_url = 'https://northrepublic.me:3002/api';
+    $api_base_url = 'http://localhost:3003/api';
     
 function fetchFromAPI($endpoint) {
     global $api_base_url;

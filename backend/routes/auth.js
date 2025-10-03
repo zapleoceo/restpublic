@@ -180,7 +180,7 @@ router.post('/telegram-callback', async (req, res) => {
     );
 
     // Return redirect URL for Telegram bot
-    const redirectUrl = `https://northrepublic.me/menu2.php?auth=success&session=${sessionToken}`;
+    const redirectUrl = `https://veranda.my/menu2.php?auth=success&session=${sessionToken}`;
     
     const responseData = {
       success: true,
