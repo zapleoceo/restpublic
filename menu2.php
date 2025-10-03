@@ -1395,12 +1395,10 @@ if ($menu_loaded) {
             
             <div class="modal-body">
                 <div class="auth-providers">
-                    <button class="auth-provider-btn" id="telegramAuthBtn">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="m20.665 3.717-17.73 6.837c-1.21.486-1.203 1.161-.222 1.462l4.552 1.42 10.532-6.645c.498-.303.953-.14.579.192l-8.533 7.701h-.002l.002.001-.314 4.692c.46 0 .663-.211.921-.46l2.211-2.15 4.599 3.397c.848.467 1.457.227 1.668-.785l3.019-14.228c.309-1.239-.473-1.8-1.282-1.434z"/>
-                        </svg>
-                        <span>Telegram</span>
-                    </button>
+                    <div class="telegram-widget-container">
+                        <!-- Telegram авторизация виджет -->
+                        <script async src="https://telegram.org/js/telegram-widget.js?22" data-telegram-login="RestPublic_bot" data-size="medium" data-onauth="onTelegramAuth(user)" data-request-access="write"></script>
+                    </div>
                     
                     <button class="auth-provider-btn auth-provider-btn--disabled" disabled>
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
@@ -1503,6 +1501,50 @@ if ($menu_loaded) {
             return 'ru'; // По умолчанию русский
         }
     });
+
+    // Telegram авторизация
+    function onTelegramAuth(user) {
+        console.log('Telegram auth data:', user);
+
+        // Отправляем данные на backend для создания сессии
+        fetch('/api/auth/telegram-widget', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-API-Token': window.API_TOKEN
+            },
+            body: JSON.stringify({
+                id: user.id,
+                first_name: user.first_name,
+                last_name: user.last_name || '',
+                username: user.username || '',
+                photo_url: user.photo_url || '',
+                auth_date: user.auth_date,
+                hash: user.hash
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Auth response:', data);
+            if (data.success) {
+                // Сохраняем сессию и обновляем интерфейс
+                localStorage.setItem('sessionToken', data.sessionToken);
+                window.authSystem.loadUserData();
+
+                // Показываем сообщение об успешной авторизации
+                alert('Вы успешно авторизованы!');
+
+                // Обновляем интерфейс
+                location.reload();
+            } else {
+                alert('Ошибка авторизации: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Auth error:', error);
+            alert('Ошибка подключения к серверу');
+        });
+    }
     </script>
 
 </body>

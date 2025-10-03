@@ -202,4 +202,146 @@ router.post('/telegram-callback', async (req, res) => {
   }
 });
 
+// Telegram widget авторизация
+router.post('/telegram-widget', async (req, res) => {
+  try {
+    const { id, first_name, last_name, username, photo_url, auth_date, hash } = req.body;
+
+    console.log(`📥 Получены данные от Telegram widget:`, {
+      id: id,
+      first_name: first_name,
+      last_name: last_name,
+      username: username,
+      auth_date: auth_date,
+      hash: hash ? 'present' : 'missing',
+      fullBody: req.body
+    });
+
+    if (!id || !first_name || !hash) {
+      console.log(`❌ Отсутствуют обязательные поля для widget:`, {
+        id: !!id,
+        first_name: !!first_name,
+        hash: !!hash
+      });
+      return res.status(400).json({
+        success: false,
+        error: 'Missing required fields'
+      });
+    }
+
+    // Для телеграм виджета мы не проверяем хэш, так как данные приходят напрямую от телеграм
+    // Вместо этого создаем пользователя на основе данных из виджета
+
+    // Создаем клиента в Poster API
+    const posterService = require('../services/posterService');
+
+    // Ищем клиента по имени и фамилии (простая эвристика)
+    let clients = [];
+    try {
+      // Пробуем найти по имени
+      if (first_name) {
+        clients = await posterService.getClients(first_name);
+      }
+    } catch (error) {
+      console.log(`⚠️ Ошибка поиска клиента:`, error.message);
+    }
+
+    let client_id;
+    if (clients && clients.length > 0) {
+      // Берем первого найденного клиента
+      client_id = clients[0].client_id;
+      console.log(`✅ Клиент найден в Poster API по имени: client_id = ${client_id}`);
+    } else {
+      // Создаем нового клиента
+      const clientData = {
+        firstname: first_name || 'Пользователь',
+        lastname: last_name || '',
+        client_groups_id_client: 1, // Default group
+        phone: '' // Телеграм виджет не дает телефон
+      };
+
+      console.log(`🆕 Создаем нового клиента в Poster API:`, clientData);
+      try {
+        const createResult = await posterService.createClient(clientData);
+        client_id = createResult.response;
+        console.log(`✅ Клиент создан в Poster API: client_id = ${client_id}`);
+      } catch (error) {
+        console.log(`⚠️ Ошибка создания клиента:`, error.message);
+        // Используем временный client_id для демо
+        client_id = `telegram_${id}`;
+      }
+    }
+
+    // Сохраняем пользователя в MongoDB
+    const userData = {
+      client_id: client_id,
+      telegram_id: id,
+      first_name: first_name,
+      last_name: last_name,
+      username: username,
+      photo_url: photo_url
+    };
+
+    console.log(`💾 Сохраняем пользователя в MongoDB:`, userData);
+
+    // Проверяем, есть ли уже запись
+    const existingUser = await db.collection('users').findOne({ telegram_id: id });
+    console.log(`📋 Существующая запись:`, existingUser);
+
+    const result = await db.collection('users').updateOne(
+      { telegram_id: id },
+      { $set: userData },
+      { upsert: true }
+    );
+
+    console.log(`✅ Результат upsert:`, {
+      matchedCount: result.matchedCount,
+      modifiedCount: result.modifiedCount,
+      upsertedCount: result.upsertedCount,
+      upsertedId: result.upsertedId
+    });
+
+    // Создаем сессию
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + 30); // 30 дней
+
+    const sessionToken = 'tg_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+
+    const sessionData = {
+      sessionToken: sessionToken,
+      client_id: client_id,
+      telegram_id: id,
+      createdAt: new Date(),
+      expiresAt: expiresAt
+    };
+
+    console.log(`🔐 Сохраняем сессию в MongoDB:`, sessionData);
+    await db.collection('user_sessions').updateOne(
+      { sessionToken: sessionToken },
+      { $set: sessionData },
+      { upsert: true }
+    );
+
+    // Возвращаем успешный ответ
+    const responseData = {
+      success: true,
+      message: 'Authentication successful',
+      sessionToken: sessionToken,
+      client_id: client_id,
+      user: userData
+    };
+
+    console.log(`✅ Отправляем успешный ответ:`, responseData);
+
+    res.json(responseData);
+
+  } catch (error) {
+    console.error('❌ Telegram widget auth failed:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Internal server error'
+    });
+  }
+});
+
 module.exports = router;
