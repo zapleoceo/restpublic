@@ -131,7 +131,7 @@ bot.on('contact', async (ctx) => {
   if (session && session.returnUrl) {
     try {
       // Отправляем данные на backend
-      const backendUrl = process.env.BACKEND_URL || 'https://veranda.my';
+      const backendUrl = process.env.BACKEND_URL || 'https://veranda.my:3003';
       
       // Используем sessionToken из сессии или генерируем новый
       let sessionToken = session.returnUrl;
