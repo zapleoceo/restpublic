@@ -739,14 +739,17 @@ if ($menu_loaded) {
             border-radius: 8px;
             overflow: hidden;
             background: #f5f5f5;
+            position: relative;
         }
         
         .product-thumbnail {
             width: 100%;
             height: 100%;
             object-fit: cover;
+            object-position: center;
             cursor: pointer;
             transition: transform 0.3s ease;
+            display: block;
         }
         
         .product-thumbnail:hover {
@@ -761,6 +764,22 @@ if ($menu_loaded) {
             justify-content: center;
             color: #ccc;
             background: #f8f8f8;
+        }
+        
+        /* Дополнительные стили для правильного позиционирования изображений */
+        .product-thumbnail {
+            min-width: 100%;
+            min-height: 100%;
+            max-width: none;
+            max-height: none;
+        }
+        
+        /* Убираем любые отступы и поля */
+        .menu-list__item-image img {
+            margin: 0;
+            padding: 0;
+            border: none;
+            outline: none;
         }
         
         .menu-list__item-desc {
