@@ -69,6 +69,9 @@ try {
         $menuCache = new MenuCache();
         $menuData = $menuCache->getMenu();
         
+        // Получаем текущий язык для перевода блюд
+        $currentLanguage = $translationService->getLanguage();
+        
         if ($menuData) {
             $categories = $menuData['categories'] ?? [];
             $products = $menuData['products'] ?? [];
@@ -293,6 +296,11 @@ if ($menu_loaded) {
                     
                     <!-- Header Actions -->
                     <div class="header-actions">
+                        <!-- Language Switcher -->
+                        <div class="header-language">
+                            <?php include 'components/language-switcher.php'; ?>
+                        </div>
+                        
                         <!-- Authorization Icon -->
                         <div class="header-auth">
                             <button class="auth-icon" id="authIcon" title="Авторизация">
@@ -435,30 +443,33 @@ if ($menu_loaded) {
                             ?>
                                 <div class="products-grid">
                                     <ul class="menu-list">
-                                        <?php foreach ($category_products as $product): ?>
+                                        <?php foreach ($category_products as $product): 
+                                            // Переводим продукт на текущий язык
+                                            $translatedProduct = $menuCache->translateProduct($product, $currentLanguage);
+                                        ?>
                                             <li class="menu-list__item" 
-                                                data-product-name="<?php echo htmlspecialchars($product['product_name'] ?? 'Без названия'); ?>"
-                                                data-price="<?php echo $product['price_normalized'] ?? $product['price'] ?? 0; ?>"
-                                                data-sort-order="<?php echo $product['sort_order'] ?? 0; ?>"
-                                                data-popularity="<?php echo $product['sales_count'] ?? 0; ?>"
-                                                data-product-id="<?php echo $product['product_id'] ?? 0; ?>">
+                                                data-product-name="<?php echo htmlspecialchars($translatedProduct['product_name'] ?? 'Без названия'); ?>"
+                                                data-price="<?php echo $translatedProduct['price_normalized'] ?? $translatedProduct['price'] ?? 0; ?>"
+                                                data-sort-order="<?php echo $translatedProduct['sort_order'] ?? 0; ?>"
+                                                data-popularity="<?php echo $translatedProduct['sales_count'] ?? 0; ?>"
+                                                data-product-id="<?php echo $translatedProduct['product_id'] ?? 0; ?>">
                                                 <div class="menu-list__item-desc">
-                                                    <h4><?php echo htmlspecialchars($product['product_name'] ?? 'Без названия'); ?></h4>
-                                                    <?php if (!empty($product['description'])): ?>
-                                                        <p><?php echo htmlspecialchars($product['description']); ?></p>
+                                                    <h4><?php echo htmlspecialchars($translatedProduct['product_name'] ?? 'Без названия'); ?></h4>
+                                                    <?php if (!empty($translatedProduct['description'])): ?>
+                                                        <p><?php echo htmlspecialchars($translatedProduct['description']); ?></p>
                                                     <?php endif; ?>
                                                 </div>
                                                 <div class="menu-list__item-actions">
                                                     <div class="menu-list__item-price">
-                                                        <?php echo number_format($product['price_normalized'] ?? $product['price'] ?? 0, 0, ',', ' '); ?> ₫
+                                                        <?php echo number_format($translatedProduct['price_normalized'] ?? $translatedProduct['price'] ?? 0, 0, ',', ' '); ?> ₫
                                                     </div>
                                                     <div class="add-to-cart-wrapper">
                                                         <button class="add-to-cart-btn" 
                                                                 data-product='<?php echo json_encode([
-                                                                    'id' => $product['product_id'] ?? 0,
-                                                                    'name' => $product['product_name'] ?? 'Без названия',
-                                                                    'price' => $product['price_normalized'] ?? $product['price'] ?? 0,
-                                                                    'image' => $product['image_url'] ?? ''
+                                                                    'id' => $translatedProduct['product_id'] ?? 0,
+                                                                    'name' => $translatedProduct['product_name'] ?? 'Без названия',
+                                                                    'price' => $translatedProduct['price_normalized'] ?? $translatedProduct['price'] ?? 0,
+                                                                    'image' => $translatedProduct['image_url'] ?? ''
                                                                 ]); ?>'
                                                                 title="Добавить в корзину">
                                                             <span class="add-text">+</span>
