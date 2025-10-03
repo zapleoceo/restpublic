@@ -58,6 +58,9 @@ bot.command('start', async (ctx) => {
         '🔐 Добро пожаловать! Для авторизации нажмите кнопку ниже:',
         mainKeyboard
       );
+
+      // Устанавливаем сессию для авторизации
+      ctx.session = { authMode: false, returnUrl: 'start' };
     }
   } else {
     // В группах игнорируем команду /start
@@ -79,7 +82,7 @@ bot.hears('📱 Авторизоваться', async (ctx) => {
     );
 
     // Устанавливаем режим авторизации и returnUrl
-    ctx.session = { authMode: true, returnUrl: 'button_auth' };
+    ctx.session = { ...ctx.session, authMode: true, returnUrl: 'button_auth' };
     console.log(`🔐 Сессия после установки кнопки:`, ctx.session);
   } else {
     // В группах игнорируем
@@ -111,8 +114,8 @@ bot.on('contact', async (ctx) => {
     returnUrl: session?.returnUrl
   });
 
-  // Проверяем, что контакт получен и сессия существует
-  if (session && (session.authMode || session.returnUrl)) {
+  // Проверяем, что контакт получен и сессия существует (авторизация через любой путь)
+  if (session && session.returnUrl) {
     try {
       // Отправляем данные на backend
       const backendUrl = process.env.BACKEND_URL || 'https://veranda.my';
