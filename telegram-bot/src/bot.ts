@@ -53,7 +53,7 @@ bot.command('start', async (ctx) => {
       ctx.session = { authMode: true, returnUrl: 'auth' };
       console.log(`🔐 Сессия после установки:`, ctx.session);
     } else {
-      // Обычный режим
+      // Обычный режим - тоже готовим к авторизации
       await ctx.reply(
         '🔐 Добро пожаловать! Для авторизации нажмите кнопку ниже:',
         mainKeyboard
@@ -105,7 +105,8 @@ bot.on('contact', async (ctx) => {
     returnUrl: session?.returnUrl
   });
 
-  if (session?.authMode) {
+  // Проверяем, что контакт получен и сессия существует
+  if (session && (session.authMode || session.returnUrl)) {
     try {
       // Отправляем данные на backend
       const backendUrl = process.env.BACKEND_URL || 'https://veranda.my';
