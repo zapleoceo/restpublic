@@ -5,9 +5,12 @@ class Cart {
         if (!Array.isArray(this.items)) {
             this.items = [];
         }
-        
+
         // Защита от флуда удалена - мгновенные обновления
-        
+
+        // Флаг для предотвращения дублирования заказов
+        this.isSubmittingOrder = false;
+
         this.init();
     }
     
@@ -814,12 +817,22 @@ class Cart {
     }
 
     async submitOrder() {
+        // Защита от повторных отправок
+        if (this.isSubmittingOrder) {
+            console.log('⚠️ Order submission already in progress, ignoring duplicate request');
+            return;
+        }
+
+        this.isSubmittingOrder = true;
+
         if (this.items.length === 0) {
             this.showToast('Корзина пуста', 'error');
+            this.isSubmittingOrder = false;
             return;
         }
 
         if (!this.validateOrderForm()) {
+            this.isSubmittingOrder = false;
             return;
         }
 
@@ -943,6 +956,9 @@ class Cart {
         } catch (error) {
             console.error('Order submission error:', error);
             this.showToast('Ошибка при отправке заказа', 'error');
+        } finally {
+            // Сбрасываем флаг в любом случае
+            this.isSubmittingOrder = false;
         }
     }
 
