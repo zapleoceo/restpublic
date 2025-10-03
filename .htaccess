@@ -14,6 +14,9 @@ RewriteRule ^api/auth/status$ api/auth/status.php [L]
 RewriteRule ^api/auth/telegram-callback$ api/auth/telegram-callback.php [L]
 RewriteRule ^api/auth/telegram-widget$ api/auth/telegram-widget.php [L]
 
+# Проксирование auth запросов на Node.js backend
+RewriteRule ^auth/(.*)$ http://localhost:3003/auth/$1 [P,L]
+
 # Универсальное проксирование API запросов на Node.js backend
 RewriteCond %{REQUEST_URI} ^/api/(poster|menu|cache|tables)/.*$
 RewriteRule ^api/(.*)$ http://localhost:3003/api/$1 [P,L]
