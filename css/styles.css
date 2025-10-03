@@ -4362,7 +4362,7 @@ td:last-child {
     font-family  : var(--type-body);
     margin-top   : 0;
     margin-bottom: var(--vspace-0_25);
-    font-size    : var(--type-size-all-caps);
+    font-size    : var(--text-base);
 }
 
 .menu-list__item p {
@@ -4465,7 +4465,7 @@ td:last-child {
     }
 
     .menu-list__item h4 {
-        font-size: var(--type-size-all-caps);
+        font-size: var(--text-base);
     }
 }
 
