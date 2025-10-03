@@ -296,13 +296,12 @@ if ($menu_loaded) {
                     
                     <!-- Header Actions -->
                     <div class="header-actions">
-                        <!-- Language Switcher -->
-                        <div class="header-language">
-                            <?php include 'components/language-switcher.php'; ?>
-                        </div>
-                        
-                        <!-- Authorization Icon -->
+                        <!-- Authorization Icon with Language Switcher -->
                         <div class="header-auth">
+                            <!-- Language Switcher -->
+                            <div class="header-language">
+                                <?php include 'components/language-switcher.php'; ?>
+                            </div>
                             <button class="auth-icon" id="authIcon" title="Авторизация">
                                 <img src="images/icons/auth-gray.png" alt="Авторизация" class="auth-icon-img">
                             </button>

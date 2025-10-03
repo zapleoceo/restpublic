@@ -64,6 +64,20 @@
     position: relative;
 }
 
+/* Header auth with language switcher */
+.header-auth {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.header-auth .header-language {
+    position: static;
+    transform: none;
+    opacity: 1;
+    visibility: visible;
+}
+
 .auth-icon,
 .cart-icon {
     width: 40px;
@@ -608,6 +622,17 @@
         width: 18px;
         height: 18px;
         font-size: 0.7rem;
+    }
+    
+    /* Mobile: keep language switcher and auth button together */
+    .header-auth {
+        gap: 0.5rem;
+    }
+    
+    .header-auth .header-language .language-switcher__current {
+        padding: 0.3rem 0.5rem;
+        font-size: var(--text-xs);
+        min-width: 40px;
     }
 }
 
