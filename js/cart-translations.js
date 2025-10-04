@@ -120,6 +120,13 @@ console.log('🌐 CartTranslations: Class initialized, methods available:', {
     t: typeof window.cartTranslations.t
 });
 
+// Принудительно инициализируем переводы сразу
+window.cartTranslations.load().then(() => {
+    console.log('🌐 CartTranslations: Initial load completed');
+}).catch(error => {
+    console.error('🌐 CartTranslations: Initial load failed:', error);
+});
+
 // Автоматическая загрузка переводов при инициализации
 document.addEventListener('DOMContentLoaded', async function() {
     console.log('🌐 CartTranslations: Auto-loading translations...');

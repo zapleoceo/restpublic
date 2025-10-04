@@ -673,9 +673,18 @@ class Cart {
 
     // Обновление переводов в модальном окне корзины
     updateCartModalTranslations() {
-        // Убеждаемся, что переводы загружены
+        // Если переводы не загружены, пытаемся загрузить их
         if (!this.translations || Object.keys(this.translations).length === 0) {
-            console.log('🛒 Cart: Translations not loaded yet, skipping modal translation update');
+            console.log('🛒 Cart: Translations not loaded yet, attempting to load...');
+            this.loadTranslations().then(() => {
+                console.log('🛒 Cart: Translations loaded, retrying modal update');
+                this.updateCartModalTranslations();
+            }).catch(error => {
+                console.error('🛒 Cart: Failed to load translations:', error);
+                // Используем дефолтные переводы
+                this.setDefaultTranslations();
+                this.updateCartModalTranslations();
+            });
             return;
         }
         

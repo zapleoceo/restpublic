@@ -734,9 +734,13 @@ if ($menu_loaded) {
                     console.log('🌐 CartTranslations getCurrentLanguage method not available yet');
                 }
                 
-                await window.cartTranslations.reload();
-                console.log('🌐 CartTranslations reloaded, language:', window.cartTranslations.language);
-                console.log('🌐 CartTranslations translations:', window.cartTranslations.translations);
+                if (window.cartTranslations.reload) {
+                    await window.cartTranslations.reload();
+                    console.log('🌐 CartTranslations reloaded, language:', window.cartTranslations.language);
+                    console.log('🌐 CartTranslations translations:', window.cartTranslations.translations);
+                } else {
+                    console.log('🌐 CartTranslations reload method not available yet');
+                }
             }, 500);
         }
         
@@ -747,6 +751,12 @@ if ($menu_loaded) {
                 if (window.cart.reloadTranslations) {
                     await window.cart.reloadTranslations();
                     console.log('🛒 Cart translations reloaded');
+                }
+                
+                // Принудительно обновляем переводы модального окна корзины
+                if (window.cart.updateCartModalTranslations) {
+                    window.cart.updateCartModalTranslations();
+                    console.log('🛒 Cart modal translations updated');
                 }
             }, 1000);
         }
