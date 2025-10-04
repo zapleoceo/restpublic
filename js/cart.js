@@ -46,6 +46,12 @@ class Cart {
             // Повторно обновляем переводы модального окна после перезагрузки
             this.updateCartModalTranslations();
         }, 100);
+        
+        // Дополнительная попытка обновления переводов через 2 секунды
+        setTimeout(() => {
+            console.log('🛒 Cart: Final attempt to update modal translations');
+            this.updateCartModalTranslations();
+        }, 2000);
     }
 
     async loadTranslations() {
@@ -102,8 +108,11 @@ class Cart {
     }
 
     t(key, fallback = null) {
+        console.log(`🛒 Cart: Looking for translation key '${key}'`);
+        console.log(`🛒 Cart: Available translations:`, this.translations);
+        
         if (this.translations && this.translations[key]) {
-            console.log(`🛒 Cart: Translation for '${key}':`, this.translations[key]);
+            console.log(`🛒 Cart: Found translation for '${key}':`, this.translations[key]);
             return this.translations[key];
         }
         console.warn(`🛒 Cart: Missing translation for '${key}', using fallback:`, fallback || key);
@@ -694,12 +703,15 @@ class Cart {
         const elementsToTranslate = document.querySelectorAll('[data-translate]');
         console.log('🛒 Cart: Found', elementsToTranslate.length, 'elements to translate');
         
-        elementsToTranslate.forEach(element => {
+        elementsToTranslate.forEach((element, index) => {
             const key = element.getAttribute('data-translate');
             const translation = this.t(key);
-            console.log(`🛒 Cart: Translating '${key}' to '${translation}'`);
+            console.log(`🛒 Cart: Element ${index}: '${key}' -> '${translation}' (current text: '${element.textContent}')`);
             if (translation && translation !== key) {
                 element.textContent = translation;
+                console.log(`🛒 Cart: Updated element ${index} text to: '${element.textContent}'`);
+            } else {
+                console.warn(`🛒 Cart: No translation found for key '${key}'`);
             }
         });
         
