@@ -116,10 +116,11 @@ class PosterService {
       if (product.hidden === "1") return false;
       
       // Check visibility in spots according to Poster API documentation
-      if (product.spots && Array.isArray(product.spots)) {
+      if (product.spots && Array.isArray(product.spots) && product.spots.length > 0) {
         const hasVisibleSpot = product.spots.some(spot => spot.visible === "1" || spot.visible === 1);
         if (!hasVisibleSpot) return false;
       }
+      // If no spots, product is visible by default
       
       return true;
     });
@@ -137,10 +138,11 @@ class PosterService {
       if (product.hidden === "1") return false;
       
       // Check visibility in spots according to Poster API documentation
-      if (product.spots && Array.isArray(product.spots)) {
+      if (product.spots && Array.isArray(product.spots) && product.spots.length > 0) {
         const hasVisibleSpot = product.spots.some(spot => spot.visible === "1" || spot.visible === 1);
         if (!hasVisibleSpot) return false;
       }
+      // If no spots, product is visible by default
       
       // Check if product belongs to the specified category
       return product.menu_category_id === categoryId;
