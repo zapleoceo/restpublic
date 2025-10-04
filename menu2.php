@@ -782,7 +782,7 @@ if ($menu_loaded) {
         display: none !important;
     }
     
-    /* Выравнивание элементов в header-actions */
+    /* Выравнивание элементов в header-actions - все в одну строку по центру */
     .header-actions {
         display: flex;
         align-items: center;
@@ -801,6 +801,8 @@ if ($menu_loaded) {
         opacity: 1 !important;
         visibility: visible !important;
         margin: 0 !important;
+        display: flex;
+        align-items: center;
     }
     
     .header-cart {
@@ -808,8 +810,8 @@ if ($menu_loaded) {
         align-items: center;
     }
     
-    /* Мобильная адаптация */
-    @media (max-width: 900px) {
+    /* Мобильная адаптация - только для очень маленьких экранов */
+    @media (max-width: 768px) {
         .header-actions {
             flex-direction: column;
             align-items: flex-end;
