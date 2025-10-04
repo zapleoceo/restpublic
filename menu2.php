@@ -376,6 +376,11 @@ if ($menu_loaded) {
 
                 <!-- Mobile Category Navigation -->
                 <nav class="header-nav mobile-nav-hidden" id="mobileCategoryNav">
+                    <!-- Крестик закрытия -->
+                    <button class="mobile-menu-close" id="mobileMenuClose" title="Закрыть меню">
+                        <span class="sr-only">Закрыть меню</span>
+                    </button>
+                    
                     <!-- Categories List -->
                     <ul class="header-nav__links">
                         <?php if ($menu_loaded && !empty($categories)): ?>
@@ -389,6 +394,9 @@ if ($menu_loaded) {
                         <?php endif; ?>
                     </ul>
                 </nav>
+                
+                <!-- Mobile Menu Overlay -->
+                <div class="mobile-menu-overlay" id="mobileMenuOverlay"></div>
 
                 <!-- Category Navigation -->
                 <?php if ($menu_loaded && !empty($categories)): ?>
@@ -707,6 +715,54 @@ if ($menu_loaded) {
     <script src="js/menu.js"></script>
     
     <script>
+    // Mobile Menu Management
+    document.addEventListener('DOMContentLoaded', function() {
+        const mobileToggle = document.getElementById('mobileCategoryToggle');
+        const mobileNav = document.getElementById('mobileCategoryNav');
+        const mobileClose = document.getElementById('mobileMenuClose');
+        const mobileOverlay = document.getElementById('mobileMenuOverlay');
+        
+        if (!mobileToggle || !mobileNav || !mobileClose || !mobileOverlay) return;
+        
+        // Открытие мобильного меню
+        mobileToggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            openMobileMenu();
+        });
+        
+        // Закрытие мобильного меню
+        mobileClose.addEventListener('click', function(e) {
+            e.preventDefault();
+            closeMobileMenu();
+        });
+        
+        // Закрытие по клику на оверлей
+        mobileOverlay.addEventListener('click', function() {
+            closeMobileMenu();
+        });
+        
+        // Закрытие по Escape
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && !mobileNav.classList.contains('mobile-nav-hidden')) {
+                closeMobileMenu();
+            }
+        });
+        
+        function openMobileMenu() {
+            mobileNav.classList.remove('mobile-nav-hidden');
+            mobileOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeMobileMenu() {
+            mobileNav.classList.add('mobile-nav-hidden');
+            mobileOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+    });
+    </script>
+    
+    <script>
     // Отладочная информация для переводов корзины
     document.addEventListener('DOMContentLoaded', function() {
         console.log('🌐 Page loaded, checking language and translations...');
@@ -795,6 +851,70 @@ if ($menu_loaded) {
         opacity: 1 !important;
         visibility: visible !important;
         margin: 0 !important;
+    }
+    
+    /* Мобильное меню - затемнение фона и крестик закрытия */
+    .mobile-menu-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.6); /* 60% затемнение */
+        z-index: 9998;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+    }
+    
+    .mobile-menu-overlay.active {
+        opacity: 1;
+        visibility: visible;
+    }
+    
+    .header-nav {
+        position: relative;
+        z-index: 9999;
+    }
+    
+    .header-nav .mobile-menu-close {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        width: 40px;
+        height: 40px;
+        background: rgba(255, 255, 255, 0.9);
+        border: none;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10000;
+        transition: all 0.3s ease;
+    }
+    
+    .header-nav .mobile-menu-close:hover {
+        background: rgba(255, 255, 255, 1);
+        transform: scale(1.1);
+    }
+    
+    .header-nav .mobile-menu-close::before,
+    .header-nav .mobile-menu-close::after {
+        content: '';
+        position: absolute;
+        width: 20px;
+        height: 2px;
+        background: #333;
+        border-radius: 1px;
+    }
+    
+    .header-nav .mobile-menu-close::before {
+        transform: rotate(45deg);
+    }
+    
+    .header-nav .mobile-menu-close::after {
+        transform: rotate(-45deg);
     }
     
     /* Стили для подсветки полей при ошибке валидации */
