@@ -773,8 +773,12 @@ if ($menu_loaded) {
     </script>
     
     <style>
-    /* Скрываем иконку авторизации на странице menu2 */
-    .header-auth {
+    /* Скрываем только иконку авторизации, но оставляем переключатель языка */
+    .header-auth .auth-icon {
+        display: none !important;
+    }
+    
+    .header-auth .auth-dropdown {
         display: none !important;
     }
     
