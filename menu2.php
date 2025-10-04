@@ -389,9 +389,6 @@ if ($menu_loaded) {
                         <?php endif; ?>
                     </ul>
                 </nav>
-                
-                <!-- Mobile Menu Overlay -->
-                <div class="mobile-menu-overlay" id="mobileMenuOverlay"></div>
 
                 <!-- Category Navigation -->
                 <?php if ($menu_loaded && !empty($categories)): ?>
@@ -709,46 +706,6 @@ if ($menu_loaded) {
     <script src="js/cart.js"></script>
     <script src="js/menu.js"></script>
     
-    <script>
-    // Mobile Menu Management
-    document.addEventListener('DOMContentLoaded', function() {
-        const mobileToggle = document.getElementById('mobileCategoryToggle');
-        const mobileNav = document.getElementById('mobileCategoryNav');
-        const mobileOverlay = document.getElementById('mobileMenuOverlay');
-        
-        if (!mobileToggle || !mobileNav || !mobileOverlay) return;
-        
-        // Открытие мобильного меню
-        mobileToggle.addEventListener('click', function(e) {
-            e.preventDefault();
-            openMobileMenu();
-        });
-        
-        // Закрытие по клику на оверлей
-        mobileOverlay.addEventListener('click', function() {
-            closeMobileMenu();
-        });
-        
-        // Закрытие по Escape
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape' && !mobileNav.classList.contains('mobile-nav-hidden')) {
-                closeMobileMenu();
-            }
-        });
-        
-        function openMobileMenu() {
-            mobileNav.classList.remove('mobile-nav-hidden');
-            mobileOverlay.classList.add('active');
-            document.body.style.overflow = 'hidden';
-        }
-        
-        function closeMobileMenu() {
-            mobileNav.classList.add('mobile-nav-hidden');
-            mobileOverlay.classList.remove('active');
-            document.body.style.overflow = '';
-        }
-    });
-    </script>
     
     <script>
     // Отладочная информация для переводов корзины
@@ -841,29 +798,6 @@ if ($menu_loaded) {
         margin: 0 !important;
     }
     
-    /* Мобильное меню - затемнение фона и крестик закрытия */
-    .mobile-menu-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.6); /* 60% затемнение */
-        z-index: 9998;
-        opacity: 0;
-        visibility: hidden;
-        transition: all 0.3s ease;
-    }
-    
-    .mobile-menu-overlay.active {
-        opacity: 1;
-        visibility: visible;
-    }
-    
-    .header-nav {
-        position: relative;
-        z-index: 9999;
-    }
     
     /* Стили для подсветки полей при ошибке валидации */
     .validation-error {
