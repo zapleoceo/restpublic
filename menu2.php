@@ -810,6 +810,61 @@ if ($menu_loaded) {
         align-items: center;
     }
     
+    /* Специальные стили для иконок - унифицируем высоту и выравнивание */
+    .language-switcher__current,
+    .cart-icon,
+    .auth-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 40px; /* Фиксированная высота для всех иконок */
+        min-width: 40px;
+    }
+    
+    .language-switcher__current {
+        padding: 0.5rem 0.75rem;
+        height: auto;
+        min-height: 40px;
+    }
+    
+    .cart-icon {
+        position: relative;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .cart-icon:hover {
+        background: rgba(0, 0, 0, 0.05);
+    }
+    
+    .cart-icon-img {
+        width: 24px;
+        height: 24px;
+        object-fit: contain;
+    }
+    
+    .cart-count {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        background: #d4af37;
+        color: white;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: bold;
+        min-width: 20px;
+    }
+    
     /* Мобильная адаптация - только для очень маленьких экранов */
     @media (max-width: 768px) {
         .header-actions {
@@ -832,6 +887,71 @@ if ($menu_loaded) {
             opacity: 1 !important;
             visibility: visible !important;
             margin: 0 !important;
+        }
+        
+        /* Мобильные стили для иконок */
+        .language-switcher__current,
+        .cart-icon,
+        .auth-icon {
+            height: 36px;
+            min-width: 36px;
+        }
+        
+        .language-switcher__current {
+            min-height: 36px;
+            padding: 0.4rem 0.6rem;
+        }
+        
+        .cart-icon {
+            width: 36px;
+            height: 36px;
+        }
+        
+        .cart-icon-img {
+            width: 22px;
+            height: 22px;
+        }
+        
+        .cart-count {
+            width: 18px;
+            height: 18px;
+            font-size: 11px;
+        }
+    }
+    
+    /* Дополнительная адаптация для очень маленьких экранов */
+    @media (max-width: 480px) {
+        .header-actions {
+            gap: 0.25rem;
+        }
+        
+        .language-switcher__current,
+        .cart-icon,
+        .auth-icon {
+            height: 32px;
+            min-width: 32px;
+        }
+        
+        .language-switcher__current {
+            min-height: 32px;
+            padding: 0.3rem 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .cart-icon {
+            width: 32px;
+            height: 32px;
+        }
+        
+        .cart-icon-img {
+            width: 20px;
+            height: 20px;
+        }
+        
+        .cart-count {
+            width: 16px;
+            height: 16px;
+            font-size: 10px;
         }
     }
     
