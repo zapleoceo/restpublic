@@ -376,11 +376,6 @@ if ($menu_loaded) {
 
                 <!-- Mobile Category Navigation -->
                 <nav class="header-nav mobile-nav-hidden" id="mobileCategoryNav">
-                    <!-- Крестик закрытия -->
-                    <button class="mobile-menu-close" id="mobileMenuClose" title="Закрыть меню">
-                        <span class="sr-only">Закрыть меню</span>
-                    </button>
-                    
                     <!-- Categories List -->
                     <ul class="header-nav__links">
                         <?php if ($menu_loaded && !empty($categories)): ?>
@@ -490,7 +485,7 @@ if ($menu_loaded) {
                                                 <div class="menu-list__item-desc">
                                                     <h4><?php echo htmlspecialchars($translatedProduct['product_name'] ?? 'Без названия'); ?></h4>
                                                     <?php if (!empty($translatedProduct['description'])): ?>
-                                                        <p><?php echo htmlspecialchars($translatedProduct['description']); ?></p>
+                                                        <p class="product-description"><?php echo htmlspecialchars($translatedProduct['description']); ?></p>
                                                     <?php endif; ?>
                                                 </div>
                                                 <div class="menu-list__item-actions">
@@ -719,21 +714,14 @@ if ($menu_loaded) {
     document.addEventListener('DOMContentLoaded', function() {
         const mobileToggle = document.getElementById('mobileCategoryToggle');
         const mobileNav = document.getElementById('mobileCategoryNav');
-        const mobileClose = document.getElementById('mobileMenuClose');
         const mobileOverlay = document.getElementById('mobileMenuOverlay');
         
-        if (!mobileToggle || !mobileNav || !mobileClose || !mobileOverlay) return;
+        if (!mobileToggle || !mobileNav || !mobileOverlay) return;
         
         // Открытие мобильного меню
         mobileToggle.addEventListener('click', function(e) {
             e.preventDefault();
             openMobileMenu();
-        });
-        
-        // Закрытие мобильного меню
-        mobileClose.addEventListener('click', function(e) {
-            e.preventDefault();
-            closeMobileMenu();
         });
         
         // Закрытие по клику на оверлей
@@ -877,46 +865,6 @@ if ($menu_loaded) {
         z-index: 9999;
     }
     
-    .header-nav .mobile-menu-close {
-        position: absolute;
-        top: 1rem;
-        right: 1rem;
-        width: 40px;
-        height: 40px;
-        background: rgba(255, 255, 255, 0.9);
-        border: none;
-        border-radius: 50%;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 10000;
-        transition: all 0.3s ease;
-    }
-    
-    .header-nav .mobile-menu-close:hover {
-        background: rgba(255, 255, 255, 1);
-        transform: scale(1.1);
-    }
-    
-    .header-nav .mobile-menu-close::before,
-    .header-nav .mobile-menu-close::after {
-        content: '';
-        position: absolute;
-        width: 20px;
-        height: 2px;
-        background: #333;
-        border-radius: 1px;
-    }
-    
-    .header-nav .mobile-menu-close::before {
-        transform: rotate(45deg);
-    }
-    
-    .header-nav .mobile-menu-close::after {
-        transform: rotate(-45deg);
-    }
-    
     /* Стили для подсветки полей при ошибке валидации */
     .validation-error {
         animation: validationBlink 0.5s ease-in-out 6; /* 3 мерцания (6 полупериодов) */
@@ -1019,6 +967,14 @@ if ($menu_loaded) {
             flex: 1;
         }
         
+        .product-description {
+            font-size: 14px;
+            color: #666;
+            margin: 8px 0 0 0;
+            line-height: 1.4;
+            font-style: italic;
+        }
+        
         .menu-list__item-actions {
             flex-shrink: 0;
         }
@@ -1069,6 +1025,20 @@ if ($menu_loaded) {
             
             .menu-list__item {
                 gap: 0.75rem;
+            }
+            
+            .product-description {
+                font-size: 12px;
+                margin: 6px 0 0 0;
+                line-height: 1.3;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .product-description {
+                font-size: 11px;
+                margin: 4px 0 0 0;
+                line-height: 1.2;
             }
         }
 

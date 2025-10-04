@@ -292,8 +292,12 @@ class MenuCache {
             }
         }
         
-        // Переводим описание продукта
-        if (isset($product['description'])) {
+        // Переводим описание продукта - используем многоязычные описания
+        $descriptionField = 'description_' . $language;
+        if (isset($product[$descriptionField])) {
+            $translatedProduct['description'] = $product[$descriptionField];
+        } elseif (isset($product['description'])) {
+            // Fallback на старое описание с автоматическим переводом
             $translatedDescription = $this->autoTranslateProductDescription($product['description'], $language);
             if ($translatedDescription && $translatedDescription !== $product['description']) {
                 $translatedProduct['description'] = $translatedDescription;
