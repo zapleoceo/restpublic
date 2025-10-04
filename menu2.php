@@ -782,6 +782,57 @@ if ($menu_loaded) {
         display: none !important;
     }
     
+    /* Выравнивание элементов в header-actions */
+    .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    
+    .header-auth {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .header-language {
+        position: static !important;
+        transform: none !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        margin: 0 !important;
+    }
+    
+    .header-cart {
+        display: flex;
+        align-items: center;
+    }
+    
+    /* Мобильная адаптация */
+    @media (max-width: 900px) {
+        .header-actions {
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 0.5rem;
+        }
+        
+        .header-auth {
+            order: 1;
+        }
+        
+        .header-cart {
+            order: 2;
+        }
+        
+        .header-language {
+            position: static !important;
+            transform: none !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+            margin: 0 !important;
+        }
+    }
+    
     /* Стили для подсветки полей при ошибке валидации */
     .validation-error {
         animation: validationBlink 0.5s ease-in-out 6; /* 3 мерцания (6 полупериодов) */
