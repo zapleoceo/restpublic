@@ -727,8 +727,12 @@ if ($menu_loaded) {
         if (window.cartTranslations) {
             console.log('🌐 CartTranslations available');
             setTimeout(async () => {
-                const currentLang = window.cartTranslations.getCurrentLanguage();
-                console.log('🌐 CartTranslations current language:', currentLang);
+                if (window.cartTranslations.getCurrentLanguage) {
+                    const currentLang = window.cartTranslations.getCurrentLanguage();
+                    console.log('🌐 CartTranslations current language:', currentLang);
+                } else {
+                    console.log('🌐 CartTranslations getCurrentLanguage method not available yet');
+                }
                 
                 await window.cartTranslations.reload();
                 console.log('🌐 CartTranslations reloaded, language:', window.cartTranslations.language);

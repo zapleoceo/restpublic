@@ -112,6 +112,14 @@ class CartTranslations {
 // Глобальный экземпляр
 window.cartTranslations = new CartTranslations();
 
+// Проверяем, что все методы доступны
+console.log('🌐 CartTranslations: Class initialized, methods available:', {
+    load: typeof window.cartTranslations.load,
+    reload: typeof window.cartTranslations.reload,
+    getCurrentLanguage: typeof window.cartTranslations.getCurrentLanguage,
+    t: typeof window.cartTranslations.t
+});
+
 // Автоматическая загрузка переводов при инициализации
 document.addEventListener('DOMContentLoaded', async function() {
     console.log('🌐 CartTranslations: Auto-loading translations...');
