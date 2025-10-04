@@ -123,6 +123,7 @@ console.log('🌐 CartTranslations: Class initialized, methods available:', {
 // Принудительно инициализируем переводы сразу
 window.cartTranslations.load().then(() => {
     console.log('🌐 CartTranslations: Initial load completed');
+    console.log('🌐 CartTranslations: Translations loaded:', Object.keys(window.cartTranslations.translations).length);
 }).catch(error => {
     console.error('🌐 CartTranslations: Initial load failed:', error);
 });

@@ -726,22 +726,31 @@ if ($menu_loaded) {
         // Проверяем переводы корзины
         if (window.cartTranslations) {
             console.log('🌐 CartTranslations available');
-            setTimeout(async () => {
-                if (window.cartTranslations.getCurrentLanguage) {
-                    const currentLang = window.cartTranslations.getCurrentLanguage();
-                    console.log('🌐 CartTranslations current language:', currentLang);
-                } else {
-                    console.log('🌐 CartTranslations getCurrentLanguage method not available yet');
+            // Ждем, пока методы будут доступны
+            const waitForMethods = async () => {
+                let attempts = 0;
+                while (attempts < 20) {
+                    if (window.cartTranslations.getCurrentLanguage && window.cartTranslations.reload) {
+                        console.log('🌐 CartTranslations methods are ready');
+                        const currentLang = window.cartTranslations.getCurrentLanguage();
+                        console.log('🌐 CartTranslations current language:', currentLang);
+                        await window.cartTranslations.reload();
+                        console.log('🌐 CartTranslations reloaded, language:', window.cartTranslations.language);
+                        console.log('🌐 CartTranslations translations:', window.cartTranslations.translations);
+                        
+                        // Принудительно обновляем переводы корзины
+                        if (window.cart && window.cart.updateCartModalTranslations) {
+                            console.log('🛒 Forcing cart modal translation update');
+                            window.cart.updateCartModalTranslations();
+                        }
+                        return;
+                    }
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                    attempts++;
                 }
-                
-                if (window.cartTranslations.reload) {
-                    await window.cartTranslations.reload();
-                    console.log('🌐 CartTranslations reloaded, language:', window.cartTranslations.language);
-                    console.log('🌐 CartTranslations translations:', window.cartTranslations.translations);
-                } else {
-                    console.log('🌐 CartTranslations reload method not available yet');
-                }
-            }, 500);
+                console.log('🌐 CartTranslations methods not ready after 2 seconds');
+            };
+            waitForMethods();
         }
         
         // Проверяем корзину
@@ -764,6 +773,11 @@ if ($menu_loaded) {
     </script>
     
     <style>
+    /* Скрываем иконку авторизации на странице menu2 */
+    .header-auth {
+        display: none !important;
+    }
+    
     /* Стили для подсветки полей при ошибке валидации */
     .validation-error {
         animation: validationBlink 0.5s ease-in-out 6; /* 3 мерцания (6 полупериодов) */
