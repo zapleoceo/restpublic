@@ -109,8 +109,24 @@ class PosterService {
     
     console.log(`📥 Raw products from Poster API:`, products);
     console.log(`📋 Retrieved ${products.length} products`);
-    console.log('Sample products:', products.slice(0, 3));
-    return products;
+    
+    // Filter out hidden products and products with no visible spots
+    const visibleProducts = products.filter(product => {
+      // Check if product is not hidden
+      if (product.hidden === "1") return false;
+      
+      // Check visibility in spots according to Poster API documentation
+      if (product.spots && Array.isArray(product.spots)) {
+        const hasVisibleSpot = product.spots.some(spot => spot.visible === "1" || spot.visible === 1);
+        if (!hasVisibleSpot) return false;
+      }
+      
+      return true;
+    });
+    
+    console.log(`✅ Filtered to ${visibleProducts.length} visible products`);
+    console.log('Sample visible products:', visibleProducts.slice(0, 3));
+    return visibleProducts;
   }
 
   // Get products by category
@@ -122,7 +138,7 @@ class PosterService {
       
       // Check visibility in spots according to Poster API documentation
       if (product.spots && Array.isArray(product.spots)) {
-        const hasVisibleSpot = product.spots.some(spot => spot.visible !== "0");
+        const hasVisibleSpot = product.spots.some(spot => spot.visible === "1" || spot.visible === 1);
         if (!hasVisibleSpot) return false;
       }
       
@@ -170,7 +186,7 @@ class PosterService {
         .filter(product => {
           if (product.hidden === "1") return false;
           if (product.spots && Array.isArray(product.spots)) {
-            const hasVisibleSpot = product.spots.some(spot => spot.visible !== "0");
+            const hasVisibleSpot = product.spots.some(spot => spot.visible === "1" || spot.visible === 1);
             if (!hasVisibleSpot) return false;
           }
           return true;
@@ -200,7 +216,7 @@ class PosterService {
         .filter(product => {
           if (product.hidden === "1") return false;
           if (product.spots && Array.isArray(product.spots)) {
-            const hasVisibleSpot = product.spots.some(spot => spot.visible !== "0");
+            const hasVisibleSpot = product.spots.some(spot => spot.visible === "1" || spot.visible === 1);
             if (!hasVisibleSpot) return false;
           }
           return true;
