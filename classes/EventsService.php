@@ -10,7 +10,7 @@ class EventsService {
     public function __construct() {
         try {
             $mongodbUrl = $_ENV['MONGODB_URL'] ?? 'mongodb://localhost:27017';
-            $dbName = $_ENV['MONGODB_DB_NAME'] ?? 'veranda';
+            $dbName = $_ENV['MONGODB_DB_NAME'] ?? 'northrepublic';
             
             $this->client = new MongoDB\Client($mongodbUrl);
             $this->db = $this->client->$dbName;
