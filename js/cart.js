@@ -918,21 +918,17 @@ class Cart {
         const hallSelect = document.getElementById('hallSelect');
         if (!hallGroup || !hallSelect) return;
 
-        // Если залов нет — скрываем селект
-        if (!halls || halls.length === 0) {
-            hallGroup.style.display = 'none';
-            hallSelect.innerHTML = '<option value=""></option>';
-            return;
-        }
-
+        // Селект зала показываем всегда. Если залов нет — оставляем пустую опцию
         hallGroup.style.display = '';
-        hallSelect.innerHTML = '<option value=""></option>';
-        halls.forEach(h => {
-            const option = document.createElement('option');
-            option.value = h.hall_id;
-            option.textContent = h.hall_name || `Зал ${h.hall_id}`;
-            hallSelect.appendChild(option);
-        });
+        hallSelect.innerHTML = '<option value="">Все залы</option>';
+        if (halls && halls.length > 0) {
+            halls.forEach(h => {
+                const option = document.createElement('option');
+                option.value = h.hall_id;
+                option.textContent = h.hall_name || `Зал ${h.hall_id}`;
+                hallSelect.appendChild(option);
+            });
+        }
     }
 
     populateTableSelect(tables) {

@@ -592,7 +592,7 @@ if ($menu_loaded) {
                             <label for="customerPhone" data-translate="phone">Loading...</label>
                             <input type="tel" id="customerPhone" name="customerPhone" data-translate-placeholder="phone_placeholder" placeholder="Loading..." required>
                         </div>
-                        <div class="form-group form-group-hall" id="hallFieldGroup" style="display: none;">
+                        <div class="form-group form-group-hall" id="hallFieldGroup">
                             <label for="hallSelect">Зал</label>
                             <select id="hallSelect" name="hallSelect">
                                 <option value=""></option>
