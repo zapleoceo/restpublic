@@ -52,6 +52,10 @@ class Cart {
             console.log('🛒 Cart: Final attempt to update modal translations');
             this.updateCartModalTranslations();
         }, 2000);
+
+        // Кэш залов и столов
+        this.allTables = [];
+        this.halls = [];
     }
 
     async loadTranslations() {
@@ -783,13 +787,22 @@ class Cart {
         document.querySelectorAll('input[name="orderType"]').forEach(radio => {
             radio.addEventListener('change', (e) => {
                 this.toggleOrderFields(e.target.value);
+                this.updatePhoneVisibility(e.target.value);
+                if (e.target.value === 'delivery') {
+                    this.ensureVietnamPhone();
+                }
             });
         });
 
         // Phone validation for unified phone field
         document.getElementById('customerPhone')?.addEventListener('input', (e) => {
-            this.applyPhoneMask(e.target);
-            this.validatePhone(e.target);
+            const orderType = document.querySelector('input[name="orderType"]:checked').value;
+            if (orderType === 'delivery') {
+                this.applyVietnamMask(e.target);
+                this.validateVietnamPhone(e.target);
+            } else {
+                this.applyPhoneMask(e.target);
+            }
         });
         
         // Предотвращаем удаление + в начале
@@ -811,6 +824,20 @@ class Cart {
 
         // Load tables when modal opens
         this.loadTables();
+
+        // Hall change
+        document.getElementById('hallSelect')?.addEventListener('change', (e) => {
+            const hallId = e.target.value || null;
+            const filtered = hallId ? this.allTables.filter(t => String(t.hall_id || '') === String(hallId)) : this.allTables;
+            this.populateTableSelect(filtered);
+        });
+
+        // Инициализация видимости телефона при первом открытии
+        const initialType = document.querySelector('input[name="orderType"]:checked').value;
+        this.updatePhoneVisibility(initialType);
+        if (initialType === 'delivery') {
+            this.ensureVietnamPhone();
+        }
     }
 
     toggleOrderFields(orderType) {
@@ -836,6 +863,28 @@ class Cart {
         }
     }
 
+    updatePhoneVisibility(orderType) {
+        const phoneGroup = document.querySelector('.form-group-phone');
+        const phoneInput = document.getElementById('customerPhone');
+        const isGuest = !(window.authSystem && window.authSystem.isAuthenticated);
+        if (!phoneGroup || !phoneInput) return;
+
+        if (orderType === 'delivery') {
+            phoneGroup.style.display = '';
+            phoneInput.required = true;
+        } else {
+            if (isGuest) {
+                phoneGroup.style.display = 'none';
+                phoneInput.required = false;
+                phoneInput.value = '';
+                phoneInput.setCustomValidity('');
+            } else {
+                phoneGroup.style.display = '';
+                phoneInput.required = false;
+            }
+        }
+    }
+
     async loadTables() {
         try {
             // Используем PHP API для загрузки столов
@@ -844,7 +893,16 @@ class Cart {
             if (response.ok) {
                 const data = await response.json();
                 console.log('Tables loaded from MongoDB:', data);
-                this.populateTableSelect(data.tables);
+                this.allTables = Array.isArray(data.tables) ? data.tables : [];
+                this.halls = Array.isArray(data.halls) ? data.halls : [];
+
+                // Инициализация залов
+                this.populateHallSelect(this.halls);
+                // Первичная отрисовка столов (без фильтра или с текущим залом)
+                const hallSelect = document.getElementById('hallSelect');
+                const currentHall = hallSelect ? hallSelect.value : '';
+                const filtered = currentHall ? this.allTables.filter(t => String(t.hall_id || '') === String(currentHall)) : this.allTables;
+                this.populateTableSelect(filtered);
             } else {
                 console.warn('Failed to load tables from MongoDB, using fallback');
                 this.populateTableSelect([]);
@@ -853,6 +911,28 @@ class Cart {
             console.error('Error loading tables:', error);
             this.populateTableSelect([]);
         }
+    }
+
+    populateHallSelect(halls) {
+        const hallGroup = document.getElementById('hallFieldGroup');
+        const hallSelect = document.getElementById('hallSelect');
+        if (!hallGroup || !hallSelect) return;
+
+        // Если залов нет — скрываем селект
+        if (!halls || halls.length === 0) {
+            hallGroup.style.display = 'none';
+            hallSelect.innerHTML = '<option value=""></option>';
+            return;
+        }
+
+        hallGroup.style.display = '';
+        hallSelect.innerHTML = '<option value=""></option>';
+        halls.forEach(h => {
+            const option = document.createElement('option');
+            option.value = h.hall_id;
+            option.textContent = h.hall_name || `Зал ${h.hall_id}`;
+            hallSelect.appendChild(option);
+        });
     }
 
     populateTableSelect(tables) {
@@ -907,6 +987,40 @@ class Cart {
         input.value = value;
     }
 
+    // Маска для VN номера: фиксируем +84 и оставляем только цифры после префикса
+    applyVietnamMask(input) {
+        let value = input.value || '';
+        // Всегда начинаем с +84
+        if (!value.startsWith('+84')) {
+            // Удаляем все нецифры и префиксы, затем добавляем +84
+            const digits = value.replace(/\D/g, '');
+            // Если пользователь ввел 84 в начале без +
+            if (digits.startsWith('84')) {
+                value = '+84' + digits.slice(2);
+            } else {
+                value = '+84' + digits;
+            }
+        } else {
+            // Сохраняем +84 и цифры далее
+            value = '+84' + value.slice(3).replace(/\D/g, '');
+        }
+        // Ограничиваем длину: +84 и еще до 10 цифр
+        if (value.length > 13) {
+            value = value.slice(0, 13);
+        }
+        input.value = value;
+    }
+
+    validateVietnamPhone(input) {
+        const phone = input.value || '';
+        const vnPattern = /^\+84\d{9,10}$/;
+        if (!vnPattern.test(phone)) {
+            input.setCustomValidity('Введите номер во вьетнамском формате: +84XXXXXXXXX');
+        } else {
+            input.setCustomValidity('');
+        }
+    }
+
     validatePhone(input) {
         const phone = input.value;
         
@@ -944,17 +1058,28 @@ class Cart {
             return false;
         }
         
-        if (!phone) {
-            this.showToast(this.t('enter_phone', 'Введите номер телефона'), 'error');
-            this.highlightField('customerPhone');
-            return false;
-        }
-        
-        // Проверяем валидность телефона
-        if (phone.length < 8 || !phone.startsWith('+')) {
-            this.showToast(this.t('enter_correct_phone', 'Введите корректный номер телефона'), 'error');
-            this.highlightField('customerPhone');
-            return false;
+        const isGuest = !(window.authSystem && window.authSystem.isAuthenticated);
+        if (orderType === 'delivery') {
+            if (!phone) {
+                this.showToast(this.t('enter_phone', 'Введите номер телефона'), 'error');
+                this.highlightField('customerPhone');
+                return false;
+            }
+            // Валидация VN номера
+            const vnPattern = /^\+84\d{9,10}$/;
+            if (!vnPattern.test(phone)) {
+                this.showToast(this.t('enter_correct_phone', 'Введите корректный номер телефона (VN: +84)'), 'error');
+                this.highlightField('customerPhone');
+                return false;
+            }
+        } else {
+            // Для гостей вне доставки — телефон не обязателен и не валидируем
+            if (!isGuest) {
+                // Для авторизованных оставляем мягкую проверку, но не блокируем отсутствие
+                if (phone && (phone.length < 8 || !phone.startsWith('+'))) {
+                    this.showToast(this.t('enter_correct_phone', 'Введите корректный номер телефона'), 'warning');
+                }
+            }
         }
         
         if (orderType === 'table') {
@@ -1053,6 +1178,15 @@ class Cart {
             }
         }
 
+        // Если гость — присваиваем client_id = 71
+        if (!(window.authSystem && window.authSystem.isAuthenticated)) {
+            orderData.client_id = 71;
+            // Для не-доставки допускаем пустой телефон
+            if (orderType !== 'delivery') {
+                orderData.phone = '';
+            }
+        }
+
         // Добавляем promotion_id если есть скидка
         if (this.promotionId) {
             orderData.promotion_id = this.promotionId;
@@ -1142,7 +1276,7 @@ class Cart {
             const table = document.getElementById('tableNumber').value;
             const comment = document.getElementById('tableComment').value.trim();
             
-            let commentText = `Заказ на столик. Имя: ${name}, Телефон: ${phone}, Стол: ${table}`;
+            let commentText = `Заказ на столик. Имя: ${name}, Стол: ${table}`;
             if (comment) {
                 commentText += `. Комментарий: ${comment}`;
             }
@@ -1150,7 +1284,7 @@ class Cart {
         } else if (orderType === 'takeaway') {
             const comment = document.getElementById('takeawayComment').value.trim();
             
-            let commentText = `Заказ с собой. Имя: ${name}, Телефон: ${phone}`;
+            let commentText = `Заказ с собой. Имя: ${name}`;
             if (comment) {
                 commentText += `. Комментарий: ${comment}`;
             }

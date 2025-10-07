@@ -41,17 +41,45 @@ try {
     $tablesDoc = $menuCollection->findOne(['_id' => 'current_tables']);
     
     $formattedTables = [];
+    $hallsMap = [];
     
     if ($tablesDoc && isset($tablesDoc['tables'])) {
         // Форматируем столы для frontend
         foreach ($tablesDoc['tables'] as $table) {
-            $formattedTables[] = [
+            // Пытаемся определить зал из различных возможных полей
+            $hallId = $table['hall_id']
+                ?? $table['zone_id']
+                ?? $table['spot_id']
+                ?? null;
+            $hallName = $table['hall_name']
+                ?? $table['zone_name']
+                ?? $table['spot_name']
+                ?? ($table['hall'] ?? null);
+
+            $formatted = [
                 'id' => $table['poster_table_id'] ?? uniqid(),
                 'table_id' => $table['poster_table_id'] ?? uniqid(),
                 'name' => $table['name'] ?? 'Стол ' . ($table['poster_table_id'] ?? ''),
-                'capacity' => 2, // По умолчанию
-                'status' => 'available'
+                'capacity' => (int)($table['capacity'] ?? 2),
+                'status' => $table['status'] ?? 'available'
             ];
+
+            if ($hallId !== null) {
+                $formatted['hall_id'] = (string)$hallId;
+            }
+            if ($hallName) {
+                $formatted['hall_name'] = (string)$hallName;
+            }
+
+            // Копим список залов
+            if ($hallId !== null) {
+                $hallsMap[(string)$hallId] = [
+                    'hall_id' => (string)$hallId,
+                    'hall_name' => $hallName ? (string)$hallName : ('Зал ' . (string)$hallId)
+                ];
+            }
+
+            $formattedTables[] = $formatted;
         }
         
         // Сортируем столы: сначала числовые, потом буквенные
@@ -83,11 +111,19 @@ try {
         });
     }
     
-    echo json_encode([
+    $response = [
         'success' => true,
         'tables' => $formattedTables,
         'count' => count($formattedTables)
-    ]);
+    ];
+    if (!empty($hallsMap)) {
+        // Отсортируем залы по имени для стабильности
+        $halls = array_values($hallsMap);
+        usort($halls, function($a, $b) { return strcmp($a['hall_name'], $b['hall_name']); });
+        $response['halls'] = $halls;
+    }
+
+    echo json_encode($response);
     
 } catch (Exception $e) {
     error_log("Tables API Error: " . $e->getMessage());
