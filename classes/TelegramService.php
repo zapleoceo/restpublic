@@ -4,6 +4,7 @@ class TelegramService {
     private $botToken;
     private $apiUrl;
     private $chatIds;
+    private $logFile;
     
     public function __construct() {
         // Загружаем переменные окружения из .env файла
@@ -40,6 +41,16 @@ class TelegramService {
         if (empty($this->botToken)) {
             throw new Exception('TELEGRAM_BOT_TOKEN не установлен');
         }
+
+        // Файл для логирования отправок сообщений
+        $this->logFile = __DIR__ . '/../logs/telegram-sender.log';
+    }
+
+    private function log($message) {
+        $timestamp = date('Y-m-d H:i:s');
+        $line = '[' . $timestamp . '] ' . $message . "\n";
+        // Используем error_log с параметром 3 (append to file)
+        @error_log($line, 3, $this->logFile);
     }
     
     /**
@@ -71,22 +82,23 @@ class TelegramService {
         curl_close($ch);
         
         if ($error) {
-            error_log("TelegramService: cURL Error: " . $error);
+            $this->log("❌ sendMessage cURL error (chat $chatId): " . $error);
             return false;
         }
         
         if ($httpCode !== 200) {
-            error_log("TelegramService: HTTP Error: " . $httpCode . " Response: " . $response);
+            $this->log("❌ sendMessage HTTP $httpCode (chat $chatId) response: " . $response);
             return false;
         }
         
         $result = json_decode($response, true);
         
         if (!$result['ok']) {
-            error_log("TelegramService: API Error: " . $response);
+            $this->log("❌ sendMessage API error (chat $chatId): " . $response);
             return false;
         }
         
+        $this->log("✅ Message sent to chat $chatId, message_id: " . ($result['result']['message_id'] ?? 'n/a'));
         return true;
     }
     
@@ -229,22 +241,23 @@ class TelegramService {
         curl_close($ch);
         
         if ($error) {
-            error_log("TelegramService: cURL Error: " . $error);
+            $this->log("❌ sendMessageToTopic cURL error (chat $chatId, topic $topicId): " . $error);
             return false;
         }
         
         if ($httpCode !== 200) {
-            error_log("TelegramService: HTTP Error: " . $httpCode . " Response: " . $response);
+            $this->log("❌ sendMessageToTopic HTTP $httpCode (chat $chatId, topic $topicId) response: " . $response);
             return false;
         }
         
         $result = json_decode($response, true);
         
         if (!$result['ok']) {
-            error_log("TelegramService: API Error: " . $response);
+            $this->log("❌ sendMessageToTopic API error (chat $chatId, topic $topicId): " . $response);
             return false;
         }
         
+        $this->log("✅ Topic message sent to chat $chatId, topic $topicId, message_id: " . ($result['result']['message_id'] ?? 'n/a'));
         return true;
     }
     
