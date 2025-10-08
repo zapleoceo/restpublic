@@ -1,5 +1,5 @@
 {
-  "name": "northrepublic-backend",
+  "name": "veranda-backend",
   "version": "1.0.36",
   "description": "Backend API for North Republic website",
   "main": "server.js",

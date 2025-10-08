@@ -11,14 +11,14 @@ php admin/init-admin.php
 ```
 
 ### 2. Первый вход
-- URL: `https://northrepublic.me/admin/`
+- URL: `https://veranda.my/admin/`
 - Логин: `zapleosoft`
 - Пароль: `admin123` (временно, до настройки Telegram)
 
 ### 3. Инициализация текстов
 ```bash
 # Добавьте базовые тексты сайта
-https://northrepublic.me/admin/texts/init-texts.php
+https://veranda.my/admin/texts/init-texts.php
 ```
 
 ## 📋 Функциональность

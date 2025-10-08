@@ -31,7 +31,7 @@ npm run pm2:start
 
 ```env
 TELEGRAM_BOT_TOKEN=your_bot_token
-BACKEND_URL=https://northrepublic.me
+BACKEND_URL=https://veranda.my
 NOTIFICATION_CHAT_IDS=chat_id_1,chat_id_2
 NOTIFICATION_CHECK_INTERVAL=30
 ```

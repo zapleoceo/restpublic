@@ -339,7 +339,7 @@ try {
     }
     
     echo "\n🎉 Инициализация контента страниц завершена!\n";
-    echo "📝 Проверьте страницу: https://northrepublic.me/index_new.php\n";
+    echo "📝 Проверьте страницу: https://veranda.my/index_new.php\n";
     
 } catch (Exception $e) {
     echo "❌ Ошибка: " . $e->getMessage() . "\n";

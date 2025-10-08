@@ -113,7 +113,7 @@ if (!defined('ADMIN_LAYOUT_LOADED')) {
                             </div>
                             <div class="user-details">
                                 <div class="user-name"><?php echo htmlspecialchars($_SESSION['admin_username'] ?? 'Admin'); ?></div>
-                                <div class="user-email"><?php echo htmlspecialchars($_SESSION['admin_email'] ?? 'admin@northrepublic.me'); ?></div>
+                                <div class="user-email"><?php echo htmlspecialchars($_SESSION['admin_email'] ?? 'admin@veranda.my'); ?></div>
                             </div>
                         </div>
 

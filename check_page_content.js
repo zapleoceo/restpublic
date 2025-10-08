@@ -3,10 +3,10 @@
 print('=== ПРОВЕРКА КОНТЕНТА СТРАНИЦ ===');
 
 // Подключаемся к базе данных
-const northrepublicDB = db.getSiblingDB('northrepublic');
+const verandaDB = db.getSiblingDB('veranda');
 
 print('\n--- Коллекция page_content ---');
-const pageContent = northrepublicDB.getCollection('page_content');
+const pageContent = verandaDB.getCollection('page_content');
 print('Количество документов:', pageContent.countDocuments());
 
 // Показываем все страницы
