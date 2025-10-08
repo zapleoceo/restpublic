@@ -1,5 +1,5 @@
 {
-  "name": "northrepublic-telegram-bot",
+  "name": "veranda-telegram-bot",
   "version": "1.0.0",
   "description": "Telegram bot for North Republic restaurant - moved from goodzone",
   "main": "dist/bot.js",
@@ -9,9 +9,9 @@
     "start": "node dist/bot.js",
     "dev": "tsx src/bot.ts",
     "pm2:start": "pm2 start ecosystem.config.js",
-    "pm2:stop": "pm2 stop northrepublic-telegram-bot",
-    "pm2:restart": "pm2 restart northrepublic-telegram-bot",
-    "pm2:logs": "pm2 logs northrepublic-telegram-bot"
+    "pm2:stop": "pm2 stop veranda-telegram-bot",
+    "pm2:restart": "pm2 restart veranda-telegram-bot",
+    "pm2:logs": "pm2 logs veranda-telegram-bot"
   },
   "dependencies": {
     "telegraf": "^4.15.6",

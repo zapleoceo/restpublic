@@ -13,7 +13,7 @@ if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true
 
         $mongodbUrl = $_ENV['MONGODB_URL'] ?? 'mongodb://localhost:27017';
         $client = new MongoDB\Client($mongodbUrl);
-        $db = $client->northrepublic;
+        $db = $client->selectDatabase($_ENV['MONGODB_DB_NAME'] ?? 'veranda');
         $logsCollection = $db->admin_logs;
         
         $logEntry = [

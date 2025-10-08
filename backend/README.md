@@ -68,7 +68,7 @@ POST /api/menu/cache/clear       # Очистка кэша
 | `POSTER_API_TOKEN` | Токен Poster API | - |
 | `POSTER_API_BASE_URL` | Базовый URL Poster API | https://joinposter.com/api |
 | `CACHE_TTL` | Время жизни кэша (мс) | 300000 (5 мин) |
-| `CORS_ORIGIN` | Разрешенный origin | https://northrepublic.me |
+| `CORS_ORIGIN` | Разрешенный origin | https://veranda.my |
 
 ### Кэширование
 
@@ -114,7 +114,7 @@ POST /api/menu/cache/clear       # Очистка кэша
 ## 🔒 Безопасность
 
 - Токен Poster API хранится только на сервере
-- CORS настроен только для домена northrepublic.me
+- CORS настроен только для домена veranda.my
 - Все запросы к Poster API проходят через backend
 - Helmet.js для защиты заголовков
 
@@ -134,20 +134,20 @@ POST /api/menu/cache/clear       # Очистка кэша
 
 ### PM2
 ```bash
-pm2 start server.js --name northrepublic-backend
+pm2 start server.js --name veranda-backend
 pm2 save
 pm2 startup
 ```
 
 ### Docker (опционально)
 ```bash
-docker build -t northrepublic-backend .
-docker run -p 3002:3002 northrepublic-backend
+docker build -t veranda-backend .
+docker run -p 3002:3002 veranda-backend
 ```
 
 ## 📞 Поддержка
 
 При возникновении проблем:
-1. Проверьте логи: `pm2 logs northrepublic-backend`
+1. Проверьте логи: `pm2 logs veranda-backend`
 2. Проверьте статус: `pm2 status`
-3. Перезапустите: `pm2 restart northrepublic-backend`
+3. Перезапустите: `pm2 restart veranda-backend`

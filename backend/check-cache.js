@@ -4,7 +4,7 @@ async function checkCache() {
   const client = new MongoClient(process.env.MONGODB_URL || 'mongodb://localhost:27017');
   try {
     await client.connect();
-    const db = client.db('northrepublic');
+    const db = client.db('veranda');
     const menuCollection = db.collection('menu');
     const settingsCollection = db.collection('settings');
     
