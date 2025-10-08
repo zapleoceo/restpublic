@@ -23,7 +23,7 @@ router.get('/list', requireAuth, async (req, res) => {
     console.log('📡 Getting tables from MongoDB...');
     
     const mongodbUrl = process.env.MONGODB_URL || 'mongodb://localhost:27017';
-    const dbName = process.env.MONGODB_DB_NAME || 'northrepublic';
+    const dbName = process.env.MONGODB_DB_NAME || 'veranda';
     
     const client = new MongoClient(mongodbUrl);
     await client.connect();

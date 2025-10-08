@@ -222,7 +222,7 @@ ob_start();
                             
                             // Подключаемся к MongoDB для получения столов
                             $client = new MongoDB\Client($_ENV['MONGODB_URL'] ?? 'mongodb://localhost:27017');
-                            $db = $client->selectDatabase($_ENV['MONGODB_DB_NAME'] ?? 'northrepublic');
+                            $db = $client->selectDatabase($_ENV['MONGODB_DB_NAME'] ?? 'veranda');
                             $menuCollection = $db->selectCollection('menu');
                             
                             $tablesDoc = $menuCollection->findOne(['_id' => 'current_tables']);

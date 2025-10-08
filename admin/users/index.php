@@ -44,11 +44,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 $error = 'Имя пользователя и пароль обязательны';
             } else {
                 $createdBy = $_SESSION['admin_username'] ?? 'admin';
-                if ($authManager->createUser($username, $password, $email, $role, $createdBy)) {
+                $createResult = $authManager->createUser($username, $password, $email, $role, $createdBy);
+                if (is_array($createResult) && ($createResult['success'] ?? false) === true) {
                     $success = 'Пользователь успешно создан!';
                     $users = $authManager->getAllUsers(); // Обновляем список
                 } else {
-                    $error = 'Ошибка при создании пользователя';
+                    $errorMessage = is_array($createResult) ? ($createResult['error'] ?? 'Ошибка при создании пользователя') : 'Ошибка при создании пользователя';
+                    $error = $errorMessage;
                 }
             }
             break;

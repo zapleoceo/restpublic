@@ -17,7 +17,7 @@ class Logger {
             if (class_exists('MongoDB\Client')) {
                 $mongodbUrl = $_ENV['MONGODB_URL'] ?? 'mongodb://localhost:27017';
                 $client = new MongoDB\Client($mongodbUrl);
-                $dbName = $_ENV['MONGODB_DB_NAME'] ?? 'northrepublic';
+                $dbName = $_ENV['MONGODB_DB_NAME'] ?? 'veranda';
                 $this->db = $client->selectDatabase($dbName);
                 $this->logsCollection = $this->db->selectCollection('admin_logs');
                 $this->useMongoDB = true;
