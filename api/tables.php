@@ -39,6 +39,14 @@ try {
     
     // Получаем столы из документа current_tables
     $tablesDoc = $menuCollection->findOne(['_id' => 'current_tables']);
+    error_log("DEBUG: Document _id: " . ($tablesDoc['_id'] ?? 'NOT SET'));
+    error_log("DEBUG: Document updated_at: " . json_encode($tablesDoc['updated_at'] ?? 'NOT SET'));
+    error_log("DEBUG: Document halls count: " . (isset($tablesDoc['halls']) ? count($tablesDoc['halls']) : 0));
+    if (isset($tablesDoc['halls']) && is_array($tablesDoc['halls'])) {
+        foreach ($tablesDoc['halls'] as $h) {
+            error_log("DEBUG: Hall from MongoDB: hall_id=" . ($h['hall_id'] ?? 'NO ID') . ", hall_name=" . ($h['hall_name'] ?? 'NO NAME'));
+        }
+    }
     
     $formattedTables = [];
     $hallsMap = [];
