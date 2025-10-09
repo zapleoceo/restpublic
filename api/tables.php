@@ -48,6 +48,9 @@ try {
         }
     }
     
+    // Дополнительная проверка - выводим весь документ
+    error_log("DEBUG: Full document halls: " . json_encode($tablesDoc['halls'] ?? 'NOT SET', JSON_UNESCAPED_UNICODE));
+    
     $formattedTables = [];
     $hallsMap = [];
     
