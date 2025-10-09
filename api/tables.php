@@ -39,17 +39,6 @@ try {
     
     // Получаем столы из документа current_tables
     $tablesDoc = $menuCollection->findOne(['_id' => 'current_tables']);
-    error_log("DEBUG: Document _id: " . ($tablesDoc['_id'] ?? 'NOT SET'));
-    error_log("DEBUG: Document updated_at: " . json_encode($tablesDoc['updated_at'] ?? 'NOT SET'));
-    error_log("DEBUG: Document halls count: " . (isset($tablesDoc['halls']) ? count($tablesDoc['halls']) : 0));
-    if (isset($tablesDoc['halls']) && is_array($tablesDoc['halls'])) {
-        foreach ($tablesDoc['halls'] as $h) {
-            error_log("DEBUG: Hall from MongoDB: hall_id=" . ($h['hall_id'] ?? 'NO ID') . ", hall_name=" . ($h['hall_name'] ?? 'NO NAME'));
-        }
-    }
-    
-    // Дополнительная проверка - выводим весь документ
-    error_log("DEBUG: Full document halls: " . json_encode($tablesDoc['halls'] ?? 'NOT SET', JSON_UNESCAPED_UNICODE));
     
     $formattedTables = [];
     $hallsMap = [];
@@ -130,22 +119,7 @@ try {
     ];
     
     // Получаем залы из MongoDB (приходят из Poster API через getSpotTablesHalls)
-    error_log("DEBUG: tablesDoc halls: " . json_encode($tablesDoc['halls'] ?? 'NOT SET'));
-    error_log("DEBUG: tablesDoc updated_at: " . ($tablesDoc['updated_at'] ?? 'NOT SET'));
-    
-    // Детальная проверка условий
-    $hasHallsInMongo = isset($tablesDoc['halls']);
-    $isHallsArray = is_array($tablesDoc['halls'] ?? null);
-    $isHallsNotEmpty = !empty($tablesDoc['halls'] ?? null);
-    
-    error_log("DEBUG: hasHallsInMongo: " . ($hasHallsInMongo ? 'true' : 'false'));
-    error_log("DEBUG: isHallsArray: " . ($isHallsArray ? 'true' : 'false'));
-    error_log("DEBUG: isHallsNotEmpty: " . ($isHallsNotEmpty ? 'true' : 'false'));
-    error_log("DEBUG: halls type: " . gettype($tablesDoc['halls'] ?? null));
-    error_log("DEBUG: halls var_dump: " . var_export($tablesDoc['halls'] ?? null, true));
-    
-    if ($hasHallsInMongo && $isHallsNotEmpty) {
-        error_log("DEBUG: Using halls from MongoDB");
+    if (isset($tablesDoc['halls']) && !empty($tablesDoc['halls'])) {
         // Преобразуем BSONArray в обычный PHP массив
         $hallsArray = [];
         foreach ($tablesDoc['halls'] as $hall) {
@@ -154,16 +128,13 @@ try {
                 'hall_name' => (string)$hall['hall_name']
             ];
         }
-        error_log("DEBUG: Halls data: " . json_encode($hallsArray));
         $response['halls'] = $hallsArray;
     } elseif (!empty($hallsMap)) {
-        error_log("DEBUG: Using halls from hallsMap");
         // Если залов нет в MongoDB, используем извлеченные из столов
         $halls = array_values($hallsMap);
         usort($halls, function($a, $b) { return strcmp($a['hall_name'], $b['hall_name']); });
         $response['halls'] = $halls;
     } else {
-        error_log("DEBUG: No halls found, returning empty array");
         // Если залов вообще нет, возвращаем пустой массив
         $response['halls'] = [];
     }
