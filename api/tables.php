@@ -135,13 +135,7 @@ try {
     
     // Названия залов теперь приходят из Poster API через getSpotTablesHalls
     
-    // Если залов нет в MongoDB, используем fallback
-    if (empty($response['halls'])) {
-        $response['halls'] = [
-            ['hall_id' => '1', 'hall_name' => 'Сцена'],
-            ['hall_id' => '2', 'hall_name' => 'Veranda']
-        ];
-    }
+    // Залы должны приходить из MongoDB (из Poster API)
 
     echo json_encode($response);
     
