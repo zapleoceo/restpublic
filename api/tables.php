@@ -114,7 +114,8 @@ try {
     $response = [
         'success' => true,
         'tables' => $formattedTables,
-        'count' => count($formattedTables)
+        'count' => count($formattedTables),
+        'updated_at' => isset($tablesDoc['updated_at']) ? $tablesDoc['updated_at']->toDateTime()->format('Y-m-d H:i:s') : null
     ];
     
     // Получаем залы из MongoDB (приходят из Poster API через getSpotTablesHalls)
