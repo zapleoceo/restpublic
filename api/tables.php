@@ -119,9 +119,11 @@ try {
     
     // Получаем залы из MongoDB (приходят из Poster API через getSpotTablesHalls)
     error_log("DEBUG: tablesDoc halls: " . json_encode($tablesDoc['halls'] ?? 'NOT SET'));
+    error_log("DEBUG: tablesDoc updated_at: " . ($tablesDoc['updated_at'] ?? 'NOT SET'));
     
     if (isset($tablesDoc['halls']) && is_array($tablesDoc['halls']) && !empty($tablesDoc['halls'])) {
         error_log("DEBUG: Using halls from MongoDB");
+        error_log("DEBUG: Halls data: " . json_encode($tablesDoc['halls']));
         $response['halls'] = $tablesDoc['halls'];
     } elseif (!empty($hallsMap)) {
         error_log("DEBUG: Using halls from hallsMap");
