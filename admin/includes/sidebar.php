@@ -159,7 +159,7 @@ $menu_items = [
             </div>
         </div>
     </div>
-
-    <!-- Mobile Overlay -->
-    <div class="admin-sidebar-overlay" id="sidebar-overlay"></div>
 </nav>
+
+<!-- Mobile Overlay - вынесен за пределы сайдбара -->
+<div class="admin-sidebar-overlay" id="sidebar-overlay"></div>
