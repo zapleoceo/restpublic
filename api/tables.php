@@ -147,7 +147,13 @@ try {
     if ($hasHallsInMongo && $isHallsNotEmpty) {
         error_log("DEBUG: Using halls from MongoDB");
         // Преобразуем BSONArray в обычный PHP массив
-        $hallsArray = $tablesDoc['halls']->toArray();
+        $hallsArray = [];
+        foreach ($tablesDoc['halls'] as $hall) {
+            $hallsArray[] = [
+                'hall_id' => (string)$hall['hall_id'],
+                'hall_name' => (string)$hall['hall_name']
+            ];
+        }
         error_log("DEBUG: Halls data: " . json_encode($hallsArray));
         $response['halls'] = $hallsArray;
     } elseif (!empty($hallsMap)) {
