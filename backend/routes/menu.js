@@ -173,13 +173,42 @@ router.get('/tables', async (req, res) => {
       .filter(table => table.is_deleted === 0)
       .map(table => ({
         name: table.table_num,
-        poster_table_id: table.table_id
+        poster_table_id: table.table_id,
+        // Добавляем информацию о зале
+        hall_id: table.hall_id || table.zone_id || table.spot_id || null,
+        hall_name: table.hall_name || table.zone_name || table.spot_name || null,
+        capacity: table.capacity || 2,
+        status: 'available'
       }));
     
+    // Создаем список уникальных залов
+    const hallsMap = new Map();
+    activeTables.forEach(table => {
+      if (table.hall_id) {
+        hallsMap.set(table.hall_id, {
+          hall_id: table.hall_id,
+          hall_name: table.hall_name || `Зал ${table.hall_id}`
+        });
+      }
+    });
+    
+    let halls = Array.from(hallsMap.values());
+    
+    // Если залов нет, создаем дефолтные залы
+    if (halls.length === 0) {
+      console.log('⚠️ No halls found in Poster API, creating default halls');
+      halls = [
+        { hall_id: '1', hall_name: 'Основной зал' },
+        { hall_id: '2', hall_name: 'VIP зал' }
+      ];
+    }
+    
     console.log(`✅ Active tables processed: ${activeTables.length}`);
+    console.log(`✅ Halls found: ${halls.length}`);
     
     res.json({
       tables: activeTables,
+      halls: halls,
       count: activeTables.length,
       timestamp: new Date().toISOString()
     });

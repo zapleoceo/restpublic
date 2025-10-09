@@ -62,12 +62,13 @@ router.post('/update-menu', async (req, res) => {
             if (tablesResponse.status === 200) {
                 const tablesData = tablesResponse.data;
                 
-                // Сохраняем столы в отдельный документ
+                // Сохраняем столы и залы в отдельный документ
                 const tablesResult = await collection.replaceOne(
                     { _id: 'current_tables' },
                     {
                         _id: 'current_tables',
                         tables: tablesData.tables || [],
+                        halls: tablesData.halls || [], // Добавляем залы
                         updated_at: new Date(),
                         count: tablesData.count || 0
                     },
@@ -75,6 +76,7 @@ router.post('/update-menu', async (req, res) => {
                 );
                 
                 console.log(`✅ Столы загружены. Количество: ${tablesData.count || 0}`);
+                console.log(`✅ Залы загружены. Количество: ${tablesData.halls ? tablesData.halls.length : 0}`);
             } else {
                 throw new Error(`Tables API вернул код: ${tablesResponse.status}`);
             }

@@ -116,11 +116,29 @@ try {
         'tables' => $formattedTables,
         'count' => count($formattedTables)
     ];
-    if (!empty($hallsMap)) {
-        // Отсортируем залы по имени для стабильности
+    
+    // Сначала пытаемся получить залы из MongoDB
+    if (isset($tablesDoc['halls']) && is_array($tablesDoc['halls']) && !empty($tablesDoc['halls'])) {
+        $response['halls'] = $tablesDoc['halls'];
+    } elseif (!empty($hallsMap)) {
+        // Если залов нет в MongoDB, используем извлеченные из столов
         $halls = array_values($hallsMap);
         usort($halls, function($a, $b) { return strcmp($a['hall_name'], $b['hall_name']); });
         $response['halls'] = $halls;
+    } else {
+        // Если залов вообще нет, создаем дефолтные
+        $response['halls'] = [
+            ['hall_id' => '1', 'hall_name' => 'Основной зал'],
+            ['hall_id' => '2', 'hall_name' => 'VIP зал']
+        ];
+    }
+    
+    // ВРЕМЕННОЕ ИСПРАВЛЕНИЕ: всегда добавляем дефолтные залы
+    if (empty($response['halls'])) {
+        $response['halls'] = [
+            ['hall_id' => '1', 'hall_name' => 'Основной зал'],
+            ['hall_id' => '2', 'hall_name' => 'VIP зал']
+        ];
     }
 
     echo json_encode($response);
