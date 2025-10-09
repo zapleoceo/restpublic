@@ -133,7 +133,16 @@ try {
     error_log("DEBUG: tablesDoc halls: " . json_encode($tablesDoc['halls'] ?? 'NOT SET'));
     error_log("DEBUG: tablesDoc updated_at: " . ($tablesDoc['updated_at'] ?? 'NOT SET'));
     
-    if (isset($tablesDoc['halls']) && is_array($tablesDoc['halls']) && !empty($tablesDoc['halls'])) {
+    // Детальная проверка условий
+    $hasHallsInMongo = isset($tablesDoc['halls']);
+    $isHallsArray = is_array($tablesDoc['halls'] ?? null);
+    $isHallsNotEmpty = !empty($tablesDoc['halls'] ?? null);
+    
+    error_log("DEBUG: hasHallsInMongo: " . ($hasHallsInMongo ? 'true' : 'false'));
+    error_log("DEBUG: isHallsArray: " . ($isHallsArray ? 'true' : 'false'));
+    error_log("DEBUG: isHallsNotEmpty: " . ($isHallsNotEmpty ? 'true' : 'false'));
+    
+    if ($hasHallsInMongo && $isHallsArray && $isHallsNotEmpty) {
         error_log("DEBUG: Using halls from MongoDB");
         error_log("DEBUG: Halls data: " . json_encode($tablesDoc['halls']));
         $response['halls'] = $tablesDoc['halls'];
