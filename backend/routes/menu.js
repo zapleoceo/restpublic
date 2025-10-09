@@ -201,6 +201,18 @@ router.get('/tables', async (req, res) => {
         { hall_id: '1', hall_name: 'Основной зал' },
         { hall_id: '2', hall_name: 'VIP зал' }
       ];
+    } else {
+      // Маппинг реальных названий залов (настраивается вручную)
+      const hallNamesMapping = {
+        '1': 'Основной зал',  // Замените на реальное название
+        '2': 'VIP зал'        // Замените на реальное название
+      };
+      
+      // Обновляем названия залов согласно маппингу
+      halls = halls.map(hall => ({
+        ...hall,
+        hall_name: hallNamesMapping[hall.hall_id] || hall.hall_name || `Зал ${hall.hall_id}`
+      }));
     }
     
     console.log(`✅ Active tables processed: ${activeTables.length}`);
