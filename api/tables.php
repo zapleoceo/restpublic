@@ -144,10 +144,12 @@ try {
     error_log("DEBUG: halls type: " . gettype($tablesDoc['halls'] ?? null));
     error_log("DEBUG: halls var_dump: " . var_export($tablesDoc['halls'] ?? null, true));
     
-    if ($hasHallsInMongo && $isHallsArray && $isHallsNotEmpty) {
+    if ($hasHallsInMongo && $isHallsNotEmpty) {
         error_log("DEBUG: Using halls from MongoDB");
-        error_log("DEBUG: Halls data: " . json_encode($tablesDoc['halls']));
-        $response['halls'] = $tablesDoc['halls'];
+        // Преобразуем BSONArray в обычный PHP массив
+        $hallsArray = $tablesDoc['halls']->toArray();
+        error_log("DEBUG: Halls data: " . json_encode($hallsArray));
+        $response['halls'] = $hallsArray;
     } elseif (!empty($hallsMap)) {
         error_log("DEBUG: Using halls from hallsMap");
         // Если залов нет в MongoDB, используем извлеченные из столов
