@@ -110,8 +110,8 @@ try {
     echo "\n📄 Добавление индексов для page_content...\n";
     $pageContentCollection = $db->selectCollection('page_content');
     
-    // Составной индекс по странице и секции
-    $result = $pageContentCollection->createIndex(['page' => 1, 'section' => 1], ['unique' => true]);
+    // Составной индекс по странице и секции (НЕ уникальный, т.к. могут быть дубликаты)
+    $result = $pageContentCollection->createIndex(['page' => 1, 'section' => 1]);
     echo "  ✅ Составной индекс по 'page' + 'section': {$result}\n";
     
     // ===== ВЫВОД ВСЕХ ИНДЕКСОВ =====
