@@ -135,11 +135,11 @@ try {
     
     // Названия залов теперь приходят из Poster API через getSpotTablesHalls
     
-    // ВРЕМЕННОЕ ИСПРАВЛЕНИЕ: всегда добавляем дефолтные залы
+    // Если залов нет в MongoDB, используем fallback
     if (empty($response['halls'])) {
         $response['halls'] = [
-            ['hall_id' => '1', 'hall_name' => 'Основной зал'],
-            ['hall_id' => '2', 'hall_name' => 'VIP зал']
+            ['hall_id' => '1', 'hall_name' => 'Сцена'],
+            ['hall_id' => '2', 'hall_name' => 'Veranda']
         ];
     }
 
