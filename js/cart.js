@@ -923,9 +923,10 @@ class Cart {
         hallSelect.innerHTML = '<option value="">Все залы</option>';
         if (halls && halls.length > 0) {
             halls.forEach(h => {
+                if (!h.hall_name) return; // не добавляем без названия
                 const option = document.createElement('option');
                 option.value = h.hall_id;
-                option.textContent = h.hall_name || `Зал ${h.hall_id}`;
+                option.textContent = h.hall_name; // только реальные названия из Poster API
                 hallSelect.appendChild(option);
             });
         }
