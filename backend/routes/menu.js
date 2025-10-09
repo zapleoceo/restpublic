@@ -164,9 +164,16 @@ router.get('/products/:productId', async (req, res) => {
 // Get tables list
 router.get('/tables', async (req, res) => {
   try {
-    console.log('🔄 Starting tables fetch...');
-    const tables = await posterService.getTables();
+    console.log('🔄 Starting tables and halls fetch...');
+    
+    // Получаем столы и залы параллельно
+    const [tables, halls] = await Promise.all([
+      posterService.getTables(),
+      posterService.getHalls()
+    ]);
+    
     console.log(`✅ Tables fetched: ${tables.length}`);
+    console.log(`✅ Halls fetched: ${halls.length}`);
     
     // Фильтруем только активные столы и преобразуем в нужный формат
     const activeTables = tables
@@ -174,53 +181,31 @@ router.get('/tables', async (req, res) => {
       .map(table => ({
         name: table.table_num,
         poster_table_id: table.table_id,
-        // Добавляем информацию о зале
-        hall_id: table.hall_id || table.zone_id || table.spot_id || null,
-        hall_name: table.hall_name || table.zone_name || table.spot_name || null,
+        hall_id: table.hall_id || null,
         capacity: table.capacity || 2,
         status: 'available'
       }));
     
-    // Создаем список уникальных залов
+    // Создаем маппинг залов из API
     const hallsMap = new Map();
-    activeTables.forEach(table => {
-      if (table.hall_id) {
-        hallsMap.set(table.hall_id, {
-          hall_id: table.hall_id,
-          hall_name: table.hall_name || `Зал ${table.hall_id}`
+    halls.forEach(hall => {
+      if (hall.delete === '0') { // Только активные залы
+        hallsMap.set(hall.hall_id, {
+          hall_id: hall.hall_id,
+          hall_name: hall.hall_name
         });
       }
     });
     
-    let halls = Array.from(hallsMap.values());
-    
-    // Если залов нет, создаем дефолтные залы
-    if (halls.length === 0) {
-      console.log('⚠️ No halls found in Poster API, creating default halls');
-      halls = [
-        { hall_id: '1', hall_name: 'Основной зал' },
-        { hall_id: '2', hall_name: 'VIP зал' }
-      ];
-    } else {
-      // Маппинг реальных названий залов (настраивается вручную)
-      const hallNamesMapping = {
-        '1': 'Основной зал',  // Замените на реальное название
-        '2': 'VIP зал'        // Замените на реальное название
-      };
-      
-      // Обновляем названия залов согласно маппингу
-      halls = halls.map(hall => ({
-        ...hall,
-        hall_name: hallNamesMapping[hall.hall_id] || hall.hall_name || `Зал ${hall.hall_id}`
-      }));
-    }
+    // Преобразуем в массив
+    const hallsList = Array.from(hallsMap.values());
     
     console.log(`✅ Active tables processed: ${activeTables.length}`);
-    console.log(`✅ Halls found: ${halls.length}`);
+    console.log(`✅ Active halls processed: ${hallsList.length}`);
     
     res.json({
       tables: activeTables,
-      halls: halls,
+      halls: hallsList,
       count: activeTables.length,
       timestamp: new Date().toISOString()
     });

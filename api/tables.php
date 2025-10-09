@@ -133,20 +133,7 @@ try {
         ];
     }
     
-    // Маппинг реальных названий залов (настраивается вручную)
-    $hallNamesMapping = [
-        '1' => 'Основной зал',  // Замените на реальное название
-        '2' => 'VIP зал'        // Замените на реальное название
-    ];
-    
-    // Обновляем названия залов согласно маппингу
-    if (isset($response['halls'])) {
-        foreach ($response['halls'] as &$hall) {
-            if (isset($hallNamesMapping[$hall['hall_id']])) {
-                $hall['hall_name'] = $hallNamesMapping[$hall['hall_id']];
-            }
-        }
-    }
+    // Названия залов теперь приходят из Poster API через getSpotTablesHalls
     
     // ВРЕМЕННОЕ ИСПРАВЛЕНИЕ: всегда добавляем дефолтные залы
     if (empty($response['halls'])) {
