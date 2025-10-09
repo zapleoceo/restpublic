@@ -63,21 +63,29 @@ router.post('/update-menu', async (req, res) => {
                 const tablesData = tablesResponse.data;
                 
                 // Сохраняем столы и залы в отдельный документ
+                console.log('🔍 Before save - Залы:', JSON.stringify(tablesData.halls, null, 2));
+                
+                const docToSave = {
+                    _id: 'current_tables',
+                    tables: tablesData.tables || [],
+                    halls: tablesData.halls || [], // Добавляем залы
+                    updated_at: new Date(),
+                    count: tablesData.count || 0
+                };
+                
                 const tablesResult = await collection.replaceOne(
                     { _id: 'current_tables' },
-                    {
-                        _id: 'current_tables',
-                        tables: tablesData.tables || [],
-                        halls: tablesData.halls || [], // Добавляем залы
-                        updated_at: new Date(),
-                        count: tablesData.count || 0
-                    },
+                    docToSave,
                     { upsert: true }
                 );
                 
                 console.log(`✅ Столы загружены. Количество: ${tablesData.count || 0}`);
                 console.log(`✅ Залы загружены. Количество: ${tablesData.halls ? tablesData.halls.length : 0}`);
-                console.log('🔍 Залы:', JSON.stringify(tablesData.halls, null, 2));
+                console.log('🔍 After save - Залы:', JSON.stringify(tablesData.halls, null, 2));
+                
+                // Проверяем, что сохранилось
+                const saved = await collection.findOne({ _id: 'current_tables' });
+                console.log('🔍 Verified in DB - Залы:', JSON.stringify(saved.halls, null, 2));
             } else {
                 throw new Error(`Tables API вернул код: ${tablesResponse.status}`);
             }
