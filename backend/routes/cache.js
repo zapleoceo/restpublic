@@ -106,6 +106,29 @@ router.post('/update-menu', async (req, res) => {
             { upsert: true }
         );
         
+        // Очистка устаревших данных: удаляем старые записи логов обновлений (старше 30 дней)
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+        
+        const cacheLogsCollection = db.collection('cache_update_logs');
+        const deletedLogs = await cacheLogsCollection.deleteMany({
+            timestamp: { $lt: thirtyDaysAgo }
+        });
+        
+        if (deletedLogs.deletedCount > 0) {
+            console.log(`🗑️ Удалено ${deletedLogs.deletedCount} устаревших записей логов обновления кэша`);
+        }
+        
+        // Логируем успешное обновление
+        await cacheLogsCollection.insertOne({
+            timestamp: new Date(),
+            status: 'success',
+            message: 'Cache updated successfully',
+            categoriesCount: menuData.categories?.length || 0,
+            productsCount: menuData.products?.length || 0,
+            tablesCount: tablesData?.count || 0
+        });
+        
         console.log(`✅ Кэш обновлен. Модифицировано записей: ${result.modifiedCount}`);
         
         res.json({
@@ -117,6 +140,24 @@ router.post('/update-menu', async (req, res) => {
         
     } catch (error) {
         console.error('❌ Ошибка обновления кэша:', error.message);
+        
+        // Логируем ошибку в MongoDB
+        try {
+            if (client) {
+                const db = client.db(dbName);
+                const cacheLogsCollection = db.collection('cache_update_logs');
+                await cacheLogsCollection.insertOne({
+                    timestamp: new Date(),
+                    status: 'error',
+                    message: 'Cache update failed',
+                    error: error.message,
+                    stack: error.stack
+                });
+            }
+        } catch (logError) {
+            console.error('❌ Не удалось записать ошибку в лог:', logError.message);
+        }
+        
         res.status(500).json({
             success: false,
             message: 'Ошибка обновления кэша',

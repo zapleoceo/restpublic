@@ -117,7 +117,12 @@ function getDefaultTranslations($language) {
                 'cancel' => 'Отмена',
                 'place_order' => 'Оформить заказ',
                 'enter_name_placeholder' => 'Введите ваше имя',
-                'phone_placeholder' => '+'
+                'phone_placeholder' => '+',
+                'hall' => 'Зал',
+                'my_orders' => 'Мои заказы',
+                'select_hall_option' => 'Все залы',
+                'select_table_option' => 'Выберите стол',
+                'loading_prices' => 'Загрузка цен...'
             ],
             'en' => [
                 'cart_empty' => 'Cart is empty',
@@ -151,7 +156,12 @@ function getDefaultTranslations($language) {
                 'cancel' => 'Cancel',
                 'place_order' => 'Place Order',
                 'enter_name_placeholder' => 'Enter your name',
-                'phone_placeholder' => '+'
+                'phone_placeholder' => '+',
+                'hall' => 'Hall',
+                'my_orders' => 'My Orders',
+                'select_hall_option' => 'All halls',
+                'select_table_option' => 'Select table',
+                'loading_prices' => 'Loading prices...'
             ],
             'vi' => [
                 'cart_empty' => 'Giỏ hàng trống',
@@ -185,7 +195,12 @@ function getDefaultTranslations($language) {
                 'cancel' => 'Hủy',
                 'place_order' => 'Đặt hàng',
                 'enter_name_placeholder' => 'Nhập tên của bạn',
-                'phone_placeholder' => '+'
+                'phone_placeholder' => '+',
+                'hall' => 'Phòng',
+                'my_orders' => 'Đơn hàng của tôi',
+                'select_hall_option' => 'Tất cả các phòng',
+                'select_table_option' => 'Chọn bàn',
+                'loading_prices' => 'Đang tải giá...'
             ]
     ];
     
