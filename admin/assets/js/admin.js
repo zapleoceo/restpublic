@@ -31,7 +31,7 @@ class AdminPanel {
         }
 
         // Sidebar overlay
-        const sidebarOverlay = document.getElementById('sidebar-overlay');
+        const sidebarOverlay = document.querySelector('.admin-sidebar-overlay');
         if (sidebarOverlay) {
             sidebarOverlay.addEventListener('click', () => this.closeSidebar());
         }
@@ -63,7 +63,7 @@ class AdminPanel {
     toggleSidebar() {
         this.sidebarOpen = !this.sidebarOpen;
         const sidebar = document.getElementById('admin-sidebar');
-        const overlay = document.getElementById('sidebar-overlay');
+        const overlay = document.querySelector('.admin-sidebar-overlay');
 
         if (sidebar && overlay) {
             sidebar.classList.toggle('open', this.sidebarOpen);
@@ -78,7 +78,7 @@ class AdminPanel {
     closeSidebar() {
         this.sidebarOpen = false;
         const sidebar = document.getElementById('admin-sidebar');
-        const overlay = document.getElementById('sidebar-overlay');
+        const overlay = document.querySelector('.admin-sidebar-overlay');
 
         if (sidebar && overlay) {
             sidebar.classList.remove('open');
@@ -377,7 +377,7 @@ function addEventListeners() {
     }
     
     // Обработчик для оверлея
-    const overlay = document.querySelector('.sidebar-overlay');
+    const overlay = document.querySelector('.admin-sidebar-overlay');
     if (overlay) {
         overlay.addEventListener('click', closeMobileMenu);
         overlay.addEventListener('touchstart', closeMobileMenu);
@@ -427,7 +427,7 @@ function initComponents() {
 function toggleMobileMenu() {
     console.log('toggleMobileMenu вызвана');
     const sidebar = document.querySelector('.admin-sidebar');
-    const overlay = document.querySelector('.sidebar-overlay');
+    const overlay = document.querySelector('.admin-sidebar-overlay');
     
     if (sidebar && overlay) {
         sidebar.classList.toggle('open');
@@ -441,7 +441,7 @@ function toggleMobileMenu() {
 function closeMobileMenu() {
     console.log('closeMobileMenu вызвана');
     const sidebar = document.querySelector('.admin-sidebar');
-    const overlay = document.querySelector('.sidebar-overlay');
+    const overlay = document.querySelector('.admin-sidebar-overlay');
     
     if (sidebar && overlay) {
         sidebar.classList.remove('open');
