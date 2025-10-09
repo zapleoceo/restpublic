@@ -141,6 +141,8 @@ try {
     error_log("DEBUG: hasHallsInMongo: " . ($hasHallsInMongo ? 'true' : 'false'));
     error_log("DEBUG: isHallsArray: " . ($isHallsArray ? 'true' : 'false'));
     error_log("DEBUG: isHallsNotEmpty: " . ($isHallsNotEmpty ? 'true' : 'false'));
+    error_log("DEBUG: halls type: " . gettype($tablesDoc['halls'] ?? null));
+    error_log("DEBUG: halls var_dump: " . var_export($tablesDoc['halls'] ?? null, true));
     
     if ($hasHallsInMongo && $isHallsArray && $isHallsNotEmpty) {
         error_log("DEBUG: Using halls from MongoDB");
