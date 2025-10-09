@@ -77,6 +77,7 @@ router.post('/update-menu', async (req, res) => {
                 
                 console.log(`✅ Столы загружены. Количество: ${tablesData.count || 0}`);
                 console.log(`✅ Залы загружены. Количество: ${tablesData.halls ? tablesData.halls.length : 0}`);
+                console.log('🔍 Залы:', JSON.stringify(tablesData.halls, null, 2));
             } else {
                 throw new Error(`Tables API вернул код: ${tablesResponse.status}`);
             }
