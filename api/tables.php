@@ -117,25 +117,23 @@ try {
         'count' => count($formattedTables)
     ];
     
-    // Сначала пытаемся получить залы из MongoDB
+    // Получаем залы из MongoDB (приходят из Poster API через getSpotTablesHalls)
+    error_log("DEBUG: tablesDoc halls: " . json_encode($tablesDoc['halls'] ?? 'NOT SET'));
+    
     if (isset($tablesDoc['halls']) && is_array($tablesDoc['halls']) && !empty($tablesDoc['halls'])) {
+        error_log("DEBUG: Using halls from MongoDB");
         $response['halls'] = $tablesDoc['halls'];
     } elseif (!empty($hallsMap)) {
+        error_log("DEBUG: Using halls from hallsMap");
         // Если залов нет в MongoDB, используем извлеченные из столов
         $halls = array_values($hallsMap);
         usort($halls, function($a, $b) { return strcmp($a['hall_name'], $b['hall_name']); });
         $response['halls'] = $halls;
     } else {
-        // Если залов вообще нет, создаем дефолтные
-        $response['halls'] = [
-            ['hall_id' => '1', 'hall_name' => 'Основной зал'],
-            ['hall_id' => '2', 'hall_name' => 'VIP зал']
-        ];
+        error_log("DEBUG: No halls found, returning empty array");
+        // Если залов вообще нет, возвращаем пустой массив
+        $response['halls'] = [];
     }
-    
-    // Названия залов теперь приходят из Poster API через getSpotTablesHalls
-    
-    // Залы должны приходить из MongoDB (из Poster API)
 
     echo json_encode($response);
     
