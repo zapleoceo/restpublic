@@ -96,9 +96,9 @@ try {
                     $categoryId = (string)($category['category_id']);
                     $products_by_category[$categoryId] = [];
                     
-                    // Try to get popular products from API (sorted by real sales)
+                    // Try to get products from API
                     try {
-                        $api_url = $api_base_url . '/menu/products-by-category/' . $categoryId;
+                        $api_url = $api_base_url . '/menu/categories/' . $categoryId . '/products';
                         $api_response = @file_get_contents($api_url, false, $context);
                         
                         if ($api_response !== false) {
