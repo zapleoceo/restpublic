@@ -57,73 +57,75 @@ if ($shouldUpdateCache) {
     file_put_contents($cacheUpdateFile, time());
 }
 
-// Load menu from MongoDB cache for fast rendering
+// Load menu data directly from API
 $categories = [];
 $products = [];
 $products_by_category = [];
 $menu_loaded = false;
 
 try {
-    if (class_exists('MongoDB\Client')) {
-        require_once __DIR__ . '/classes/MenuCache.php';
-        $menuCache = new MenuCache();
-        $menuData = $menuCache->getMenu();
+    // Получаем текущий язык для перевода блюд
+    $currentLanguage = $translationService->getLanguage();
+    
+    // Логируем текущий язык для отладки
+    error_log("Menu3: Current language = " . $currentLanguage);
+    
+    // API configuration
+    $api_base_url = ($_ENV['BACKEND_URL'] ?? 'http://localhost:3003') . '/api';
+    $context = stream_context_create([
+        'http' => [
+            'timeout' => 10,
+            'method' => 'GET',
+            'header' => 'Content-Type: application/json'
+        ]
+    ]);
+    
+    // Get categories from API
+    try {
+        $categories_url = $api_base_url . '/menu/categories';
+        $categories_response = @file_get_contents($categories_url, false, $context);
         
-        // Получаем текущий язык для перевода блюд
-        $currentLanguage = $translationService->getLanguage();
-        
-        // Логируем текущий язык для отладки
-        error_log("Menu3: Current language = " . $currentLanguage);
-        
-        if ($menuData) {
-            $categories = $menuData['categories'] ?? [];
-            $products = $menuData['products'] ?? [];
-            $menu_loaded = !empty($categories) && !empty($products);
-            
-            // API configuration for popular products
-            $api_base_url = ($_ENV['BACKEND_URL'] ?? 'http://localhost:3003') . '/api';
-            $context = stream_context_create([
-                'http' => [
-                    'timeout' => 10,
-                    'method' => 'GET',
-                    'header' => 'Content-Type: application/json'
-                ]
-            ]);
-            
-            // Get all products by category from API
-            if ($categories) {
-                foreach ($categories as $category) {
-                    $categoryId = (string)($category['category_id']);
-                    $products_by_category[$categoryId] = [];
-                    
-                    // Try to get products from API
-                    try {
-                        $api_url = $api_base_url . '/menu/categories/' . $categoryId . '/products';
-                        $api_response = @file_get_contents($api_url, false, $context);
-                        
-                        if ($api_response !== false) {
-                            $api_data = json_decode($api_response, true);
-                            if (isset($api_data['products']) && is_array($api_data['products'])) {
-                                $products_by_category[$categoryId] = $api_data['products'];
-                                error_log("Menu3: Loaded " . count($api_data['products']) . " products for category " . $categoryId . " from API");
-                            }
-                        }
-                    } catch (Exception $e) {
-                        error_log("Menu3: API error for category " . $categoryId . ": " . $e->getMessage());
-                    }
-                    
-                    // Fallback to cache if API failed
-                    if (empty($products_by_category[$categoryId]) && !empty($products)) {
-                        foreach ($products as $product) {
-                            if ((string)($product['category_id'] ?? '') === $categoryId) {
-                                $products_by_category[$categoryId][] = $product;
-                            }
-                        }
-                        error_log("Menu3: Fallback to cache for category " . $categoryId . ": " . count($products_by_category[$categoryId]) . " products");
-                    }
-                }
+        if ($categories_response !== false) {
+            $categories_data = json_decode($categories_response, true);
+            if (isset($categories_data['categories']) && is_array($categories_data['categories'])) {
+                $categories = $categories_data['categories'];
+                error_log("Menu3: Loaded " . count($categories) . " categories from API");
             }
         }
+    } catch (Exception $e) {
+        error_log("Menu3: Categories API error: " . $e->getMessage());
+    }
+    
+    // Get all products by category from API
+    if ($categories) {
+        foreach ($categories as $category) {
+            $categoryId = (string)($category['category_id']);
+            $products_by_category[$categoryId] = [];
+            
+            // Try to get products from API
+            try {
+                $api_url = $api_base_url . '/menu/categories/' . $categoryId . '/products';
+                $api_response = @file_get_contents($api_url, false, $context);
+                
+                if ($api_response !== false) {
+                    $api_data = json_decode($api_response, true);
+                    if (isset($api_data['products']) && is_array($api_data['products'])) {
+                        $products_by_category[$categoryId] = $api_data['products'];
+                        error_log("Menu3: Loaded " . count($api_data['products']) . " products for category " . $categoryId . " from API");
+                    }
+                }
+            } catch (Exception $e) {
+                error_log("Menu3: API error for category " . $categoryId . ": " . $e->getMessage());
+            }
+        }
+        
+        // Check if we have any products
+        $totalProducts = 0;
+        foreach ($products_by_category as $categoryProducts) {
+            $totalProducts += count($categoryProducts);
+        }
+        $menu_loaded = !empty($categories) && $totalProducts > 0;
+        error_log("Menu3: Total products loaded: " . $totalProducts);
     }
 } catch (Exception $e) {
     error_log("Menu3: Error loading menu: " . $e->getMessage());
@@ -132,6 +134,80 @@ try {
 // Helper function for safe HTML output
 function safeHtml($value, $default = '') {
     return htmlspecialchars($value ?? $default, ENT_QUOTES, 'UTF-8');
+}
+
+// Simple translation functions for products
+function translateProductName($name, $language) {
+    // Простой словарь переводов для названий продуктов
+    $translations = [
+        'ru' => $name, // Русский - исходный язык
+        'en' => [
+            'Шаурма' => 'Shawarma',
+            'Салат' => 'Salad',
+            'Пиво' => 'Beer',
+            'Кофе' => 'Coffee',
+            'Чай' => 'Tea',
+            'Кальян' => 'Hookah',
+            'Креветка' => 'Shrimp',
+            'Куриный' => 'Chicken',
+            'Свиной' => 'Pork',
+            'Суп' => 'Soup',
+            'Картошка' => 'Potato',
+            'Сырники' => 'Cheese pancakes',
+            'Шакшука' => 'Shakshuka',
+            'Тунец' => 'Tuna',
+            'Рикота' => 'Ricotta',
+            'Киноа' => 'Quinoa',
+            'Смузи' => 'Smoothie',
+            'Эспрессо' => 'Espresso',
+            'Ром' => 'Rum',
+            'Самбука' => 'Sambuca',
+            'Лимончелло' => 'Limoncello'
+        ],
+        'vi' => [
+            'Шаурма' => 'Shawarma',
+            'Салат' => 'Salad',
+            'Пиво' => 'Bia',
+            'Кофе' => 'Cà phê',
+            'Чай' => 'Trà',
+            'Кальян' => 'Shisha',
+            'Креветка' => 'Tôm',
+            'Куриный' => 'Gà',
+            'Свиной' => 'Heo',
+            'Суп' => 'Canh',
+            'Картошка' => 'Khoai tây',
+            'Сырники' => 'Bánh phô mai',
+            'Шакшука' => 'Shakshuka',
+            'Тунец' => 'Cá ngừ',
+            'Рикота' => 'Ricotta',
+            'Киноа' => 'Quinoa',
+            'Смузи' => 'Sinh tố',
+            'Эспрессо' => 'Espresso',
+            'Ром' => 'Rum',
+            'Самбука' => 'Sambuca',
+            'Лимончелло' => 'Limoncello'
+        ]
+    ];
+    
+    if ($language === 'ru') {
+        return $name;
+    }
+    
+    if (isset($translations[$language])) {
+        foreach ($translations[$language] as $ru => $translated) {
+            if (strpos($name, $ru) !== false) {
+                return str_replace($ru, $translated, $name);
+            }
+        }
+    }
+    
+    return $name; // Fallback to original name
+}
+
+function translateProductDescription($description, $language) {
+    // Для описаний пока возвращаем оригинал
+    // В будущем можно добавить более сложную логику перевода
+    return $description;
 }
 
 // getCurrentLanguage() function is already defined in category-translator.php
@@ -454,7 +530,15 @@ function safeHtml($value, $default = '') {
                                     if ($currentLanguage !== 'ru' && !empty($categoryProducts)) {
                                         $translatedProducts = [];
                                         foreach ($categoryProducts as $product) {
-                                            $translatedProducts[] = $menuCache->translateProduct($product, $currentLanguage);
+                                            // Простой перевод названий продуктов
+                                            $translatedProduct = $product;
+                                            if (isset($product['product_name'])) {
+                                                $translatedProduct['product_name'] = translateProductName($product['product_name'], $currentLanguage);
+                                            }
+                                            if (isset($product['description'])) {
+                                                $translatedProduct['description'] = translateProductDescription($product['description'], $currentLanguage);
+                                            }
+                                            $translatedProducts[] = $translatedProduct;
                                         }
                                         $categoryProducts = $translatedProducts;
                                     }
