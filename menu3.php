@@ -139,11 +139,7 @@ function safeHtml($value, $default = '') {
     return htmlspecialchars($value ?? $default, ENT_QUOTES, 'UTF-8');
 }
 
-// Helper function to get current language
-function getCurrentLanguage() {
-    global $translationService;
-    return $translationService->getLanguage();
-}
+// getCurrentLanguage() function is already defined in category-translator.php
 ?>
 
 <!DOCTYPE html>
