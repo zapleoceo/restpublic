@@ -98,41 +98,36 @@ try {
                     
                     // Try to get popular products from API (sorted by real sales)
                     try {
-                        $authToken = $_ENV['API_AUTH_TOKEN'] ?? 'nr_api_2024_7f8a9b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0u1v2w3x4y5z6';
-                        $popularUrl = $api_base_url . '/menu/categories/' . $categoryId . '/popular?limit=50&token=' . urlencode($authToken);
-                        $popularResponse = @file_get_contents($popularUrl, false, $context);
+                        $api_url = $api_base_url . '/menu/products-by-category/' . $categoryId;
+                        $api_response = @file_get_contents($api_url, false, $context);
                         
-                        if ($popularResponse !== false) {
-                            $popularData = json_decode($popularResponse, true);
-                            if ($popularData && isset($popularData['popular_products'])) {
-                                $products_by_category[$categoryId] = $popularData['popular_products'];
-                            } else {
-                                error_log("Invalid API response for category {$categoryId}: " . substr($popularResponse, 0, 200));
-                                $products_by_category[$categoryId] = [];
+                        if ($api_response !== false) {
+                            $api_data = json_decode($api_response, true);
+                            if (isset($api_data['products']) && is_array($api_data['products'])) {
+                                $products_by_category[$categoryId] = $api_data['products'];
+                                error_log("Menu3: Loaded " . count($api_data['products']) . " products for category " . $categoryId . " from API");
                             }
-                        } else {
-                            error_log("Failed to fetch popular products for category {$categoryId}");
-                            $products_by_category[$categoryId] = [];
                         }
                     } catch (Exception $e) {
-                        error_log("API error for category {$categoryId}: " . $e->getMessage());
-                        // Fallback to empty array if API fails
-                        $products_by_category[$categoryId] = [];
+                        error_log("Menu3: API error for category " . $categoryId . ": " . $e->getMessage());
+                    }
+                    
+                    // Fallback to cache if API failed
+                    if (empty($products_by_category[$categoryId]) && !empty($products)) {
+                        foreach ($products as $product) {
+                            if ((string)($product['category_id'] ?? '') === $categoryId) {
+                                $products_by_category[$categoryId][] = $product;
+                            }
+                        }
+                        error_log("Menu3: Fallback to cache for category " . $categoryId . ": " . count($products_by_category[$categoryId]) . " products");
                     }
                 }
             }
         }
     }
 } catch (Exception $e) {
-    error_log("Menu loading error: " . $e->getMessage());
-    // Fallback: ensure we have empty arrays to prevent errors
-    $categories = [];
-    $products = [];
-    $products_by_category = [];
+    error_log("Menu3: Error loading menu: " . $e->getMessage());
 }
-
-// Get current language
-$currentLanguage = $translationService->getLanguage();
 
 // Helper function for safe HTML output
 function safeHtml($value, $default = '') {
@@ -145,57 +140,49 @@ function safeHtml($value, $default = '') {
 <!DOCTYPE html>
 <html lang="<?php echo $currentLanguage; ?>" class="no-js">
 <head>
-    <!--- basic page needs
-    ================================================== -->
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?php echo safeHtml($translationService->get('menu.title_v3', 'Наше меню v3')); ?> - Veranda</title>
-    <meta name="description" content="<?php echo safeHtml($translationService->get('menu.description_v3', 'Полное меню ресторана Veranda в Нячанге')); ?>">
-    <meta name="keywords" content="меню, ресторан, Нячанг, Veranda, еда, напитки">
-    <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://veranda.my/menu3.php">
-
-    <script>
-        document.documentElement.classList.remove('no-js');
-        document.documentElement.classList.add('js');
-    </script>
-
-    <!-- CSS
-    ================================================== -->
+    <meta name="description" content="<?php echo safeHtml($translationService->get('menu.description', 'Меню ресторана Veranda в Нячанге')); ?>">
+    <meta name="author" content="Veranda">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    
+    <!-- CSS -->
     <link rel="stylesheet" href="css/vendor.css">
     <link rel="stylesheet" href="css/styles.css">
-    <link rel="stylesheet" href="css/custom.css">
     <link rel="stylesheet" href="css/menu.css">
     
-    <!-- Preload critical resources -->
-    <link rel="preload" href="fonts/MinionPro-Regular.otf" as="font" type="font/otf" crossorigin>
-    <link rel="preload" href="js/main.js" as="script">
-    
+    <!-- Menu3 specific styles -->
     <style>
-        /* Menu3 specific styles */
+        /* Menu3 Layout Styles */
         .menu3-container {
             display: flex;
-            min-height: 100vh;
-            background: #fafafa;
+            min-height: calc(100vh - 200px);
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+            gap: 2rem;
         }
         
+        /* Categories Sidebar */
         .menu3-categories {
             width: 300px;
-            background: white;
-            border-right: 1px solid #e0e0e0;
-            overflow-y: auto;
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 1.5rem;
+            height: fit-content;
             position: sticky;
-            top: 0;
-            height: 100vh;
+            top: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
         
         .menu3-categories h2 {
-            padding: 20px;
-            margin: 0;
-            background: #f5f5f5;
-            border-bottom: 1px solid #e0e0e0;
-            font-size: 18px;
+            margin: 0 0 1.5rem 0;
+            color: #252322;
+            font-size: 1.5rem;
             font-weight: 600;
+            border-bottom: 2px solid #b88746;
+            padding-bottom: 0.5rem;
         }
         
         .menu3-category-list {
@@ -205,360 +192,336 @@ function safeHtml($value, $default = '') {
         }
         
         .menu3-category-item {
-            border-bottom: 1px solid #f0f0f0;
+            margin-bottom: 0.5rem;
         }
         
         .menu3-category-link {
             display: block;
-            padding: 16px 20px;
+            padding: 1rem 1.25rem;
+            color: #666;
             text-decoration: none;
-            color: #333;
+            border-radius: 8px;
             transition: all 0.3s ease;
+            font-weight: 500;
             border-left: 3px solid transparent;
         }
         
         .menu3-category-link:hover {
-            background: #f8f8f8;
-            color: #1976d2;
+            background: #e9ecef;
+            color: #252322;
+            border-left-color: #b88746;
         }
         
         .menu3-category-link.active {
-            background: #e3f2fd;
-            color: #1976d2;
-            border-left-color: #1976d2;
-            font-weight: 600;
+            background: #252322;
+            color: white;
+            border-left-color: #b88746;
         }
         
+        /* Products Content */
         .menu3-products {
             flex: 1;
-            padding: 20px;
             overflow-y: auto;
+            max-height: calc(100vh - 200px);
         }
         
         .menu3-products h1 {
-            margin: 0 0 30px 0;
-            font-size: 28px;
-            color: #333;
+            margin: 0 0 2rem 0;
+            color: #252322;
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-align: center;
         }
         
         .menu3-category-section {
-            margin-bottom: 40px;
+            margin-bottom: 3rem;
         }
         
         .menu3-category-title {
-            font-size: 24px;
+            color: #252322;
+            font-size: 2rem;
             font-weight: 600;
-            color: #1976d2;
-            margin: 0 0 20px 0;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #1976d2;
+            margin: 0 0 1.5rem 0;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #b88746;
         }
         
         .menu3-products-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
+            gap: 1.5rem;
         }
         
         .menu3-product-card {
             background: white;
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
         
         .menu3-product-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
-        }
-        
-        .menu3-product-name {
-            font-size: 18px;
-            font-weight: 600;
-            color: #333;
-            margin: 0 0 8px 0;
-        }
-        
-        .menu3-product-description {
-            color: #666;
-            font-size: 14px;
-            margin: 0 0 12px 0;
-            line-height: 1.4;
-        }
-        
-        .menu3-product-price {
-            font-size: 20px;
-            font-weight: 700;
-            color: #1976d2;
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
         }
         
         .menu3-product-image {
             width: 100%;
             height: 200px;
             object-fit: cover;
-            border-radius: 6px;
-            margin-bottom: 15px;
+            border-radius: 8px;
+            margin-bottom: 1rem;
         }
         
-        /* Loading state */
-        .menu3-loading {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 200px;
+        .menu3-product-name {
+            color: #252322;
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 0 0 0.5rem 0;
+        }
+        
+        .menu3-product-description {
             color: #666;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin: 0 0 1rem 0;
         }
         
-        /* Empty state */
-        .menu3-empty {
+        .menu3-product-price {
+            color: #b88746;
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-align: right;
+        }
+        
+        /* Loading and Empty States */
+        .menu3-loading, .menu3-empty {
             text-align: center;
-            padding: 40px 20px;
+            padding: 4rem 2rem;
             color: #666;
         }
         
-        /* Responsive */
+        .menu3-loading p, .menu3-empty h2 {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+        }
+        
+        .menu3-empty p {
+            font-size: 1rem;
+            color: #999;
+        }
+        
+        /* Responsive Design */
         @media (max-width: 768px) {
             .menu3-container {
                 flex-direction: column;
+                padding: 1rem;
+                gap: 1rem;
             }
             
             .menu3-categories {
                 width: 100%;
-                height: auto;
-                position: relative;
-                border-right: none;
-                border-bottom: 1px solid #e0e0e0;
-                max-height: 200px;
-            }
-            
-            .menu3-categories h2 {
-                padding: 15px 20px;
-                font-size: 16px;
+                position: static;
+                order: 2;
             }
             
             .menu3-category-list {
                 display: flex;
                 overflow-x: auto;
-                padding: 10px;
-                scrollbar-width: thin;
-            }
-            
-            .menu3-category-list::-webkit-scrollbar {
-                height: 4px;
-            }
-            
-            .menu3-category-list::-webkit-scrollbar-track {
-                background: #f1f1f1;
-            }
-            
-            .menu3-category-list::-webkit-scrollbar-thumb {
-                background: #c1c1c1;
-                border-radius: 2px;
+                gap: 0.5rem;
+                padding-bottom: 0.5rem;
             }
             
             .menu3-category-item {
                 flex-shrink: 0;
-                border-bottom: none;
-                border-right: 1px solid #f0f0f0;
+                margin-bottom: 0;
             }
             
             .menu3-category-link {
                 white-space: nowrap;
-                padding: 12px 16px;
-                font-size: 14px;
+                padding: 0.75rem 1rem;
+                border-left: none;
+                border-bottom: 3px solid transparent;
+            }
+            
+            .menu3-category-link:hover,
+            .menu3-category-link.active {
+                border-left: none;
+                border-bottom-color: #b88746;
             }
             
             .menu3-products {
-                padding: 15px;
+                order: 1;
+                max-height: none;
             }
             
             .menu3-products h1 {
-                font-size: 24px;
-                margin-bottom: 20px;
-            }
-            
-            .menu3-category-title {
-                font-size: 20px;
-                margin-bottom: 15px;
+                font-size: 2rem;
             }
             
             .menu3-products-grid {
                 grid-template-columns: 1fr;
-                gap: 15px;
+                gap: 1rem;
             }
             
-            .menu3-product-card {
-                padding: 15px;
-            }
-            
-            .menu3-product-name {
-                font-size: 16px;
-            }
-            
-            .menu3-product-price {
-                font-size: 18px;
+            .menu3-category-title {
+                font-size: 1.5rem;
             }
         }
         
         @media (max-width: 480px) {
-            .menu3-products {
-                padding: 10px;
+            .menu3-container {
+                padding: 0.5rem;
             }
             
-            .menu3-products h1 {
-                font-size: 20px;
-            }
-            
-            .menu3-category-title {
-                font-size: 18px;
+            .menu3-categories {
+                padding: 1rem;
             }
             
             .menu3-product-card {
-                padding: 12px;
+                padding: 1rem;
+            }
+            
+            .menu3-product-image {
+                height: 150px;
             }
         }
     </style>
-
-    <!-- favicons
-    ================================================== -->
-    <link rel="icon" type="image/svg+xml" href="template/favicon.svg">
-    <link rel="apple-touch-icon" sizes="180x180" href="template/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="template/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="template/favicon-16x16.png">
-    <link rel="manifest" href="template/site.webmanifest">
 </head>
 
 <body id="top">
-    
     <!-- Header -->
     <?php include 'components/header.php'; ?>
 
-    <!-- Menu3 Container -->
-    <div class="menu3-container">
-        <!-- Categories Sidebar -->
-        <div class="menu3-categories">
-            <h2><?php echo safeHtml($translationService->get('menu.categories', 'Категории')); ?></h2>
-            <ul class="menu3-category-list" id="category-list">
-                <?php if (!empty($categories)): ?>
-                    <?php foreach ($categories as $index => $category): ?>
-                        <li class="menu3-category-item">
-                            <a href="#" 
-                               class="menu3-category-link <?php echo $index === 0 ? 'active' : ''; ?>"
-                               data-category-id="<?php echo htmlspecialchars($category['category_id']); ?>">
-                                <?php echo htmlspecialchars(translateCategoryName($category['category_name'] ?? $category['name'] ?? 'Без названия', getCurrentLanguage())); ?>
-                            </a>
-                        </li>
-                    <?php endforeach; ?>
-                <?php else: ?>
-                    <li class="menu3-category-item">
-                        <span class="menu3-category-link" style="color: #e74c3c; font-style: italic;">
-                            <?php echo safeHtml($translationService->get('menu.error', 'Меню недоступно')); ?>
-                        </span>
-                    </li>
-                <?php endif; ?>
-            </ul>
-        </div>
+    <!-- Main Content -->
+    <section class="s-content">
+        <div class="container">
+            <div class="menu3-container">
+                <!-- Categories Sidebar -->
+                <div class="menu3-categories">
+                    <h2><?php echo safeHtml($translationService->get('menu.categories', 'Категории')); ?></h2>
+                    <ul class="menu3-category-list" id="category-list">
+                        <?php if (!empty($categories)): ?>
+                            <?php foreach ($categories as $index => $category): ?>
+                                <li class="menu3-category-item">
+                                    <a href="#" 
+                                       class="menu3-category-link <?php echo $index === 0 ? 'active' : ''; ?>"
+                                       data-category-id="<?php echo htmlspecialchars($category['category_id']); ?>">
+                                        <?php echo htmlspecialchars(translateCategoryName($category['category_name'] ?? $category['name'] ?? 'Без названия', getCurrentLanguage())); ?>
+                                    </a>
+                                </li>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <li class="menu3-category-item">
+                                <span style="color: #e74c3c; font-style: italic;">
+                                    <?php echo safeHtml($translationService->get('menu.no_categories', 'Нет категорий')); ?>
+                                </span>
+                            </li>
+                        <?php endif; ?>
+                    </ul>
+                </div>
 
-        <!-- Products Content -->
-        <div class="menu3-products">
-            <h1><?php echo safeHtml($translationService->get('menu.title_v3', 'Наше меню v3')); ?></h1>
-            
-            <div id="products-content">
-                <?php if (!$menu_loaded): ?>
-                    <div class="menu3-loading">
-                        <div>
-                            <p><?php echo safeHtml($translationService->get('menu.loading', 'Загрузка меню...')); ?></p>
-                        </div>
-                    </div>
-                <?php elseif (!empty($categories) && !empty($products_by_category)): ?>
-                    <?php 
-                    $hasProducts = false;
-                    foreach ($categories as $category) {
-                        $categoryId = (string)($category['category_id']);
-                        if (!empty($products_by_category[$categoryId])) {
-                            $hasProducts = true;
-                            break;
-                        }
-                    }
-                    ?>
+                <!-- Products Content -->
+                <div class="menu3-products">
+                    <h1><?php echo safeHtml($translationService->get('menu.title_v3', 'Наше меню v3')); ?></h1>
                     
-                    <?php if ($hasProducts): ?>
-                        <?php foreach ($categories as $index => $category): ?>
+                    <div id="products-content">
+                        <?php if (!$menu_loaded): ?>
+                            <div class="menu3-loading">
+                                <div>
+                                    <p><?php echo safeHtml($translationService->get('menu.loading', 'Загрузка меню...')); ?></p>
+                                </div>
+                            </div>
+                        <?php elseif (!empty($categories) && !empty($products_by_category)): ?>
                             <?php 
-                            $categoryId = (string)($category['category_id']);
-                            $categoryProducts = $products_by_category[$categoryId] ?? [];
-                            
-                            // Применяем автоматический перевод для продуктов
-                            if ($currentLanguage !== 'ru' && !empty($categoryProducts)) {
-                                $translatedProducts = [];
-                                foreach ($categoryProducts as $product) {
-                                    $translatedProducts[] = $menuCache->translateProduct($product, $currentLanguage);
+                            $hasProducts = false;
+                            foreach ($categories as $category) {
+                                $categoryId = (string)($category['category_id']);
+                                if (!empty($products_by_category[$categoryId])) {
+                                    $hasProducts = true;
+                                    break;
                                 }
-                                $categoryProducts = $translatedProducts;
                             }
                             ?>
                             
-                            <?php if (!empty($categoryProducts)): ?>
-                                <div class="menu3-category-section" data-category-id="<?php echo htmlspecialchars($category['category_id']); ?>">
-                                    <h2 class="menu3-category-title">
-                                        <?php echo htmlspecialchars(translateCategoryName($category['category_name'] ?? $category['name'] ?? 'Без названия', getCurrentLanguage())); ?>
-                                    </h2>
+                            <?php if ($hasProducts): ?>
+                                <?php foreach ($categories as $index => $category): ?>
+                                    <?php 
+                                    $categoryId = (string)($category['category_id']);
+                                    $categoryProducts = $products_by_category[$categoryId] ?? [];
                                     
-                                    <div class="menu3-products-grid">
-                                        <?php foreach ($categoryProducts as $product): ?>
-                                            <div class="menu3-product-card">
-                                                <?php if (!empty($product['image_url'])): ?>
-                                                    <img src="<?php echo htmlspecialchars($product['image_url']); ?>" 
-                                                         alt="<?php echo htmlspecialchars($product['product_name'] ?? $product['name'] ?? ''); ?>"
-                                                         class="menu3-product-image"
-                                                         loading="lazy"
-                                                         onerror="this.style.display='none'">
-                                                <?php endif; ?>
-                                                
-                                                <h3 class="menu3-product-name">
-                                                    <?php echo htmlspecialchars($product['product_name'] ?? $product['name'] ?? 'Без названия'); ?>
-                                                </h3>
-                                                
-                                                <?php if (!empty($product['description'])): ?>
-                                                    <p class="menu3-product-description">
-                                                        <?php echo htmlspecialchars($product['description']); ?>
-                                                    </p>
-                                                <?php endif; ?>
-                                                
-                                                <div class="menu3-product-price">
-                                                    <?php echo number_format($product['price_normalized'] ?? $product['price'] ?? 0, 0, ',', ' '); ?> ₫
-                                                </div>
+                                    // Применяем автоматический перевод для продуктов
+                                    if ($currentLanguage !== 'ru' && !empty($categoryProducts)) {
+                                        $translatedProducts = [];
+                                        foreach ($categoryProducts as $product) {
+                                            $translatedProducts[] = $menuCache->translateProduct($product, $currentLanguage);
+                                        }
+                                        $categoryProducts = $translatedProducts;
+                                    }
+                                    ?>
+                                    
+                                    <?php if (!empty($categoryProducts)): ?>
+                                        <div class="menu3-category-section" data-category-id="<?php echo htmlspecialchars($category['category_id']); ?>">
+                                            <h2 class="menu3-category-title">
+                                                <?php echo htmlspecialchars(translateCategoryName($category['category_name'] ?? $category['name'] ?? 'Без названия', getCurrentLanguage())); ?>
+                                            </h2>
+                                            
+                                            <div class="menu3-products-grid">
+                                                <?php foreach ($categoryProducts as $product): ?>
+                                                    <div class="menu3-product-card">
+                                                        <?php if (!empty($product['image_url'])): ?>
+                                                            <img src="<?php echo htmlspecialchars($product['image_url']); ?>" 
+                                                                 alt="<?php echo htmlspecialchars($product['product_name'] ?? $product['name'] ?? ''); ?>"
+                                                                 class="menu3-product-image"
+                                                                 loading="lazy"
+                                                                 onerror="this.style.display='none'">
+                                                        <?php endif; ?>
+                                                        
+                                                        <h3 class="menu3-product-name">
+                                                            <?php echo htmlspecialchars($product['product_name'] ?? $product['name'] ?? 'Без названия'); ?>
+                                                        </h3>
+                                                        
+                                                        <?php if (!empty($product['description'])): ?>
+                                                            <p class="menu3-product-description">
+                                                                <?php echo htmlspecialchars($product['description']); ?>
+                                                            </p>
+                                                        <?php endif; ?>
+                                                        
+                                                        <div class="menu3-product-price">
+                                                            <?php echo number_format($product['price_normalized'] ?? $product['price'] ?? 0, 0, ',', ' '); ?> ₫
+                                                        </div>
+                                                    </div>
+                                                <?php endforeach; ?>
                                             </div>
-                                        <?php endforeach; ?>
-                                    </div>
+                                        </div>
+                                    <?php endif; ?>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <div class="menu3-empty">
+                                    <h2><?php echo safeHtml($translationService->get('menu.empty', 'Меню пусто')); ?></h2>
+                                    <p><?php echo safeHtml($translationService->get('menu.empty_description', 'В данный момент в меню нет доступных блюд.')); ?></p>
                                 </div>
                             <?php endif; ?>
-                        <?php endforeach; ?>
-                    <?php else: ?>
-                        <div class="menu3-empty">
-                            <h2><?php echo safeHtml($translationService->get('menu.empty', 'Меню пусто')); ?></h2>
-                            <p><?php echo safeHtml($translationService->get('menu.empty_description', 'В данный момент в меню нет доступных блюд.')); ?></p>
-                        </div>
-                    <?php endif; ?>
-                <?php else: ?>
-                    <div class="menu3-empty">
-                        <h2><?php echo safeHtml($translationService->get('menu.error', 'Меню недоступно')); ?></h2>
-                        <p><?php echo safeHtml($translationService->get('menu.unavailable', 'Меню временно недоступно. Попробуйте позже.')); ?></p>
+                        <?php else: ?>
+                            <div class="menu3-empty">
+                                <h2><?php echo safeHtml($translationService->get('menu.error', 'Меню недоступно')); ?></h2>
+                                <p><?php echo safeHtml($translationService->get('menu.unavailable', 'Меню временно недоступно. Попробуйте позже.')); ?></p>
+                            </div>
+                        <?php endif; ?>
                     </div>
-                <?php endif; ?>
+                </div>
             </div>
         </div>
-    </div>
+    </section>
 
     <!-- Footer -->
     <?php include 'components/footer.php'; ?>
 
-    <!-- JavaScript
-    ================================================== -->
-    <script src="js/plugins.js" defer></script>
-    <script src="js/main.js" defer></script>
+    <!-- JavaScript -->
+    <script src="js/plugins.js"></script>
+    <script src="js/main.js"></script>
     
+    <!-- Menu3 specific JavaScript -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const categoryLinks = document.querySelectorAll('.menu3-category-link');
@@ -675,6 +638,5 @@ function safeHtml($value, $default = '') {
             });
         });
     </script>
-
 </body>
 </html>
