@@ -765,6 +765,18 @@ class Cart {
         modal.classList.add('modal-hidden');
         overlay.classList.add('overlay-hidden');
         
+        // Сбрасываем флаг отправки при закрытии модалки
+        this.isSubmittingOrder = false;
+        
+        // Разблокируем кнопку на всякий случай
+        const submitBtn = document.getElementById('cartModalSubmit');
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.style.opacity = '1';
+            submitBtn.style.cursor = 'pointer';
+            submitBtn.textContent = this.t('place_order', 'Оформить заказ');
+        }
+        
         // Удаляем товары с количеством 0 при закрытии корзины
         this.cleanupZeroQuantityItems();
     }
@@ -920,12 +932,13 @@ class Cart {
 
         // Селект зала показываем всегда. Если залов нет — оставляем пустую опцию
         hallGroup.style.display = '';
-        hallSelect.innerHTML = '<option value="">Все залы</option>';
+        hallSelect.innerHTML = `<option value="">${this.t('select_hall_option', 'Все залы')}</option>`;
         if (halls && halls.length > 0) {
             halls.forEach(h => {
+                if (!h.hall_name) return; // не добавляем без названия
                 const option = document.createElement('option');
                 option.value = h.hall_id;
-                option.textContent = h.hall_name || `Зал ${h.hall_id}`;
+                option.textContent = h.hall_name; // только реальные названия из Poster API
                 hallSelect.appendChild(option);
             });
         }
@@ -936,7 +949,7 @@ class Cart {
         if (!select) return;
 
         // Clear existing options except the first one
-        select.innerHTML = '<option value=""></option>';
+        select.innerHTML = `<option value="">${this.t('select_table_option', 'Выберите стол')}</option>`;
         
         if (tables && tables.length > 0) {
             tables.forEach(table => {
@@ -1116,15 +1129,37 @@ class Cart {
         }
 
         this.isSubmittingOrder = true;
+        
+        // Блокируем кнопку и показываем индикатор загрузки
+        const submitBtn = document.getElementById('cartModalSubmit');
+        const originalBtnText = submitBtn ? submitBtn.textContent : '';
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.style.opacity = '0.6';
+            submitBtn.style.cursor = 'not-allowed';
+            submitBtn.innerHTML = '<span style="display: inline-block; width: 12px; height: 12px; border: 2px solid #fff; border-radius: 50%; border-top-color: transparent; animation: spin 0.6s linear infinite; margin-right: 8px;"></span>' + this.t('sending_order', 'Отправляем заказ...');
+        }
 
         if (this.items.length === 0) {
             this.showToast(this.t('cart_empty', 'Корзина пуста'), 'error');
             this.isSubmittingOrder = false;
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.style.opacity = '1';
+                submitBtn.style.cursor = 'pointer';
+                submitBtn.textContent = originalBtnText;
+            }
             return;
         }
 
         if (!this.validateOrderForm()) {
             this.isSubmittingOrder = false;
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.style.opacity = '1';
+                submitBtn.style.cursor = 'pointer';
+                submitBtn.textContent = originalBtnText;
+            }
             return;
         }
 
@@ -1258,19 +1293,34 @@ class Cart {
             console.error('Order submission error:', error);
             this.showToast(this.t('order_error', 'Ошибка при отправке заказа'), 'error');
         } finally {
-            // Сбрасываем флаг в любом случае
+            // Сбрасываем флаг и разблокируем кнопку
             this.isSubmittingOrder = false;
+            const submitBtn = document.getElementById('cartModalSubmit');
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.style.opacity = '1';
+                submitBtn.style.cursor = 'pointer';
+                submitBtn.textContent = this.t('place_order', 'Оформить заказ');
+            }
         }
+    }
+
+    // Sanitize текст для предотвращения XSS
+    sanitizeText(text) {
+        if (!text) return '';
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
     }
 
     getOrderComment(orderType) {
         // Используем единые поля для имени и телефона
-        const name = document.getElementById('customerName').value.trim();
-        const phone = document.getElementById('customerPhone').value.trim();
+        const name = this.sanitizeText(document.getElementById('customerName').value.trim());
+        const phone = this.sanitizeText(document.getElementById('customerPhone').value.trim());
         
         if (orderType === 'table') {
-            const table = document.getElementById('tableNumber').value;
-            const comment = document.getElementById('tableComment').value.trim();
+            const table = this.sanitizeText(document.getElementById('tableNumber').value);
+            const comment = this.sanitizeText(document.getElementById('tableComment').value.trim());
             
             let commentText = `Заказ на столик. Имя: ${name}, Стол: ${table}`;
             if (comment) {
@@ -1278,7 +1328,7 @@ class Cart {
             }
             return commentText;
         } else if (orderType === 'takeaway') {
-            const comment = document.getElementById('takeawayComment').value.trim();
+            const comment = this.sanitizeText(document.getElementById('takeawayComment').value.trim());
             
             let commentText = `Заказ с собой. Имя: ${name}`;
             if (comment) {
@@ -1286,9 +1336,9 @@ class Cart {
             }
             return commentText;
         } else if (orderType === 'delivery') {
-            const address = document.getElementById('deliveryAddress').value.trim();
-            const deliveryTime = document.getElementById('deliveryTime').value;
-            const comment = document.getElementById('deliveryComment').value.trim();
+            const address = this.sanitizeText(document.getElementById('deliveryAddress').value.trim());
+            const deliveryTime = this.sanitizeText(document.getElementById('deliveryTime').value);
+            const comment = this.sanitizeText(document.getElementById('deliveryComment').value.trim());
             
             let commentText = `Заказ на доставку. Имя: ${name}, Телефон: ${phone}, Адрес: ${address}, Время: ${deliveryTime}`;
             if (comment) {
@@ -1373,6 +1423,14 @@ class Cart {
             }
             
             console.log('💰 Loading current prices from Poster API...');
+            
+            // Показываем loading индикатор
+            const submitBtn = document.getElementById('cartModalSubmit');
+            const originalBtnText = submitBtn ? submitBtn.textContent : '';
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.textContent = this.t('loading_prices', 'Загрузка цен...');
+            }
             
             // Убеждаемся, что данные пользователя загружены
             if (window.authSystem && window.authSystem.isAuthenticated && !window.authSystem.userData) {
@@ -1489,6 +1547,13 @@ class Cart {
             }
         } catch (error) {
             console.error('❌ Error loading prices from Poster API:', error);
+        } finally {
+            // Убираем loading индикатор
+            const submitBtn = document.getElementById('cartModalSubmit');
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.textContent = this.t('place_order', 'Оформить заказ');
+            }
         }
     }
 

@@ -164,22 +164,48 @@ router.get('/products/:productId', async (req, res) => {
 // Get tables list
 router.get('/tables', async (req, res) => {
   try {
-    console.log('🔄 Starting tables fetch...');
-    const tables = await posterService.getTables();
+    console.log('🔄 Starting tables and halls fetch...');
+    
+    // Получаем столы и залы параллельно
+    const [tables, halls] = await Promise.all([
+      posterService.getTables(),
+      posterService.getHalls()
+    ]);
+    
     console.log(`✅ Tables fetched: ${tables.length}`);
+    console.log(`✅ Halls fetched: ${halls.length}`);
     
     // Фильтруем только активные столы и преобразуем в нужный формат
     const activeTables = tables
       .filter(table => table.is_deleted === 0)
       .map(table => ({
         name: table.table_num,
-        poster_table_id: table.table_id
+        poster_table_id: table.table_id,
+        hall_id: table.hall_id || null,
+        capacity: table.capacity || 2,
+        status: 'available'
       }));
     
+    // Создаем маппинг залов из API
+    const hallsMap = new Map();
+    halls.forEach(hall => {
+      if (hall.delete === '0') { // Только активные залы
+        hallsMap.set(hall.hall_id, {
+          hall_id: hall.hall_id,
+          hall_name: hall.hall_name
+        });
+      }
+    });
+    
+    // Преобразуем в массив
+    const hallsList = Array.from(hallsMap.values());
+    
     console.log(`✅ Active tables processed: ${activeTables.length}`);
+    console.log(`✅ Active halls processed: ${hallsList.length}`);
     
     res.json({
       tables: activeTables,
+      halls: hallsList,
       count: activeTables.length,
       timestamp: new Date().toISOString()
     });

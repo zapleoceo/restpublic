@@ -114,13 +114,29 @@ try {
     $response = [
         'success' => true,
         'tables' => $formattedTables,
-        'count' => count($formattedTables)
+        'count' => count($formattedTables),
+        'updated_at' => isset($tablesDoc['updated_at']) ? $tablesDoc['updated_at']->toDateTime()->format('Y-m-d H:i:s') : null
     ];
-    if (!empty($hallsMap)) {
-        // Отсортируем залы по имени для стабильности
+    
+    // Получаем залы из MongoDB (приходят из Poster API через getSpotTablesHalls)
+    if (isset($tablesDoc['halls']) && !empty($tablesDoc['halls'])) {
+        // Преобразуем BSONArray в обычный PHP массив
+        $hallsArray = [];
+        foreach ($tablesDoc['halls'] as $hall) {
+            $hallsArray[] = [
+                'hall_id' => (string)$hall['hall_id'],
+                'hall_name' => (string)$hall['hall_name']
+            ];
+        }
+        $response['halls'] = $hallsArray;
+    } elseif (!empty($hallsMap)) {
+        // Если залов нет в MongoDB, используем извлеченные из столов
         $halls = array_values($hallsMap);
         usort($halls, function($a, $b) { return strcmp($a['hall_name'], $b['hall_name']); });
         $response['halls'] = $halls;
+    } else {
+        // Если залов вообще нет, возвращаем пустой массив
+        $response['halls'] = [];
     }
 
     echo json_encode($response);

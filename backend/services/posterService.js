@@ -283,6 +283,21 @@ class PosterService {
     }
   }
 
+  // Get halls list with names
+  async getHalls() {
+    console.log(`🔍 getHalls() called`);
+    try {
+      const halls = await this.makeRequest('spots.getSpotTablesHalls');
+      console.log(`📥 Raw halls from Poster API:`, halls);
+      console.log(`📋 Retrieved ${halls.length} halls`);
+      return halls;
+    } catch (error) {
+      console.error('Error getting halls:', error);
+      // Return empty array if halls API is not available
+      return [];
+    }
+  }
+
   // Create incoming order
   async createIncomingOrder(orderData) {
     console.log(`🔍 createIncomingOrder() called with data:`, orderData);

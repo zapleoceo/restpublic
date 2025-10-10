@@ -593,15 +593,15 @@ if ($menu_loaded) {
                             <input type="tel" id="customerPhone" name="customerPhone" data-translate-placeholder="phone_placeholder" placeholder="Loading..." required>
                         </div>
                         <div class="form-group form-group-hall" id="hallFieldGroup">
-                            <label for="hallSelect">Зал</label>
+                            <label for="hallSelect" data-translate="hall">Loading...</label>
                             <select id="hallSelect" name="hallSelect">
-                                <option value=""></option>
+                                <option value="" data-translate="select_hall_option">Loading...</option>
                             </select>
                         </div>
                         <div class="form-group form-group-table" id="tableFieldGroup">
                             <label for="tableNumber" data-translate="table">Loading...</label>
                             <select id="tableNumber" name="tableNumber" required>
-                                <option value=""></option>
+                                <option value="" data-translate="select_table_option">Loading...</option>
                                 <!-- Table options will be populated here -->
                             </select>
                         </div>
@@ -821,6 +821,12 @@ if ($menu_loaded) {
             border-color: #ff9999;
             box-shadow: 0 0 0 4px rgba(255, 107, 107, 0.3);
         }
+    }
+    
+    /* Анимация спиннера для кнопки загрузки */
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
     }
     </style>
     
@@ -1638,7 +1644,7 @@ if ($menu_loaded) {
     <div id="ordersModal" class="modal modal-hidden">
         <div class="modal-content orders-modal-content">
             <div class="modal-header">
-                <h2>Мои заказы</h2>
+                <h2 data-translate="my_orders">Loading...</h2>
                 <button class="modal-close" id="ordersModalClose">&times;</button>
             </div>
             

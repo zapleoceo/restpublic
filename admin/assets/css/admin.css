@@ -553,6 +553,7 @@ body {
     z-index: 1000;
     display: flex;
     flex-direction: column;
+    pointer-events: auto;
 }
 
 .admin-sidebar-content {
@@ -729,7 +730,8 @@ body {
     width: 100%;
     height: 100%;
     background: rgba(0, 0, 0, 0.5);
-    z-index: 999;
+    z-index: 998;
+    pointer-events: auto;
 }
 
 /* Кнопка меню скрыта по умолчанию */
@@ -737,10 +739,7 @@ body {
     display: none;
 }
 
-/* Оверлей скрыт по умолчанию */
-.sidebar-overlay {
-    display: none;
-}
+/* Оверлей скрыт по умолчанию - удален дублирующий класс */
 
 .sidebar-menu {
     list-style: none;
@@ -1177,21 +1176,7 @@ body {
         background-color: rgba(0, 0, 0, 0.1);
     }
     
-    /* Оверлей для закрытия меню */
-    .sidebar-overlay {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.5);
-        z-index: 998;
-    }
-    
-    .sidebar-overlay.active {
-        display: block;
-    }
+    /* Оверлей для закрытия меню - используем admin-sidebar-overlay */
     
     /* Горизонтальный скролл для таблиц */
     .table-container {
