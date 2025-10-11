@@ -23,7 +23,7 @@ class MenuCache {
     /**
      * Получить меню из кэша с автоматическим обновлением
      */
-    public function getMenu($maxAgeMinutes = 30) {
+    public function getMenu($maxAgeMinutes = 10) {
         try {
             $menu = $this->menuCollection->findOne(['_id' => 'current_menu']);
             
@@ -158,7 +158,7 @@ class MenuCache {
     /**
      * Проверить, нужно ли обновить кэш
      */
-    public function needsUpdate($maxAgeMinutes = 30) {
+    public function needsUpdate($maxAgeMinutes = 10) {
         try {
             $menu = $this->menuCollection->findOne(['_id' => 'current_menu']);
             

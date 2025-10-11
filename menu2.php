@@ -67,7 +67,7 @@ try {
     if (class_exists('MongoDB\Client')) {
         require_once __DIR__ . '/classes/MenuCache.php';
         $menuCache = new MenuCache();
-        $menuData = $menuCache->getMenu();
+        $menuData = $menuCache->getMenu(10); // 10 minutes cache refresh
         
         // Получаем текущий язык для перевода блюд
         $currentLanguage = $translationService->getLanguage();

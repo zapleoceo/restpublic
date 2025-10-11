@@ -57,7 +57,7 @@ if ($shouldUpdateCache) {
     file_put_contents($cacheUpdateFile, time());
 }
 
-// Load menu data directly from API
+// Load menu data using MenuCache with 10-minute refresh
 $categories = [];
 $products = [];
 $products_by_category = [];
@@ -70,62 +70,28 @@ try {
     // Логируем текущий язык для отладки
     error_log("Menu3: Current language = " . $currentLanguage);
     
-    // API configuration
-    $api_base_url = ($_ENV['BACKEND_URL'] ?? 'http://localhost:3003') . '/api';
-    $context = stream_context_create([
-        'http' => [
-            'timeout' => 10,
-            'method' => 'GET',
-            'header' => 'Content-Type: application/json'
-        ]
-    ]);
+    // Use MenuCache with 10-minute refresh interval
+    require_once __DIR__ . '/classes/MenuCache.php';
+    $menuCache = new MenuCache();
+    $menuData = $menuCache->getMenu(10); // 10 minutes cache refresh
     
-    // Get categories from API
-    try {
-        $categories_url = $api_base_url . '/menu/categories';
-        $categories_response = @file_get_contents($categories_url, false, $context);
+    if ($menuData) {
+        $categories = $menuData['categories'] ?? [];
+        $products = $menuData['products'] ?? [];
         
-        if ($categories_response !== false) {
-            $categories_data = json_decode($categories_response, true);
-            if (isset($categories_data['categories']) && is_array($categories_data['categories'])) {
-                $categories = $categories_data['categories'];
-                error_log("Menu3: Loaded " . count($categories) . " categories from API");
+        // Group products by category
+        foreach ($products as $product) {
+            $categoryId = (string)($product['menu_category_id'] ?? $product['category_id'] ?? '');
+            if (!isset($products_by_category[$categoryId])) {
+                $products_by_category[$categoryId] = [];
             }
-        }
-    } catch (Exception $e) {
-        error_log("Menu3: Categories API error: " . $e->getMessage());
-    }
-    
-    // Get all products by category from API
-    if ($categories) {
-        foreach ($categories as $category) {
-            $categoryId = (string)($category['category_id']);
-            $products_by_category[$categoryId] = [];
-            
-            // Try to get products from API
-            try {
-                $api_url = $api_base_url . '/menu/categories/' . $categoryId . '/products';
-                $api_response = @file_get_contents($api_url, false, $context);
-                
-                if ($api_response !== false) {
-                    $api_data = json_decode($api_response, true);
-                    if (isset($api_data['products']) && is_array($api_data['products'])) {
-                        $products_by_category[$categoryId] = $api_data['products'];
-                        error_log("Menu3: Loaded " . count($api_data['products']) . " products for category " . $categoryId . " from API");
-                    }
-                }
-            } catch (Exception $e) {
-                error_log("Menu3: API error for category " . $categoryId . ": " . $e->getMessage());
-            }
+            $products_by_category[$categoryId][] = $product;
         }
         
-        // Check if we have any products
-        $totalProducts = 0;
-        foreach ($products_by_category as $categoryProducts) {
-            $totalProducts += count($categoryProducts);
-        }
-        $menu_loaded = !empty($categories) && $totalProducts > 0;
-        error_log("Menu3: Total products loaded: " . $totalProducts);
+        $menu_loaded = !empty($categories) && !empty($products);
+        error_log("Menu3: Loaded " . count($categories) . " categories and " . count($products) . " products from cache");
+    } else {
+        error_log("Menu3: No menu data available from cache");
     }
 } catch (Exception $e) {
     error_log("Menu3: Error loading menu: " . $e->getMessage());
