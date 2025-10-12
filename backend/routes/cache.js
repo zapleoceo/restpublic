@@ -12,6 +12,7 @@ const API_PORT = process.env.PORT || 3002;
 // Endpoint для обновления кэша меню
 router.post('/update-menu', async (req, res) => {
     let client;
+    let tablesData = null;
     try {
         console.log('🔄 Обновление кэша меню...');
         
@@ -60,7 +61,7 @@ router.post('/update-menu', async (req, res) => {
             });
             
             if (tablesResponse.status === 200) {
-                const tablesData = tablesResponse.data;
+                tablesData = tablesResponse.data;
                 
                 // Сохраняем столы и залы в отдельный документ
                 console.log('🔍 Before save - Залы:', JSON.stringify(tablesData.halls, null, 2));
@@ -126,7 +127,8 @@ router.post('/update-menu', async (req, res) => {
             message: 'Cache updated successfully',
             categoriesCount: menuData.categories?.length || 0,
             productsCount: menuData.products?.length || 0,
-            tablesCount: tablesData?.count || 0
+            tablesCount: tablesData?.count || 0,
+            hallsCount: tablesData?.halls?.length || 0
         });
         
         console.log(`✅ Кэш обновлен. Модифицировано записей: ${result.modifiedCount}`);
