@@ -92,7 +92,9 @@
     cursor: pointer;
     border: 1px solid var(--card-border, #e9ecef);
     transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    min-height: 120px;
+    height: 120px;
+    display: flex;
+    flex-direction: column;
 }
 
 .calendar-event:hover {
@@ -102,7 +104,9 @@
 
 /* Event Image Container */
 .calendar-event__image-container {
-    position: relative;
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
     overflow: hidden;
@@ -272,6 +276,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    height: 120px;
 }
 
 .calendar-event.empty-day::before {
@@ -518,7 +523,7 @@
     }
     
     .calendar-event {
-        min-height: 100px;
+        height: 100px;
     }
     
     .calendar-event__title {
@@ -597,7 +602,7 @@
     }
     
     .calendar-event {
-        min-height: 80px;
+        height: 80px;
     }
     
     .calendar-event__title {
