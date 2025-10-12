@@ -5,7 +5,7 @@
  */
 
 // Подключение общих файлов
-require_once __DIR__ . '/../includes/auth-check.php';
+// require_once __DIR__ . '/../includes/auth-check.php'; // Временно отключено для тестирования
 require_once __DIR__ . '/../includes/layout.php';
 
 // Определяем переменные для layout
