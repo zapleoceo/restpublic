@@ -238,9 +238,9 @@ try {
     
     // Добавляем ингредиенты в правильном формате для Poster API
     foreach ($positive_leftovers as $index => $item) {
-        $moving_data["ingredients[{$index}][ingredient_id]"] = $item['ingredient_id'];
-        $moving_data["ingredients[{$index}][amount]"] = $item['quantity'];
-        $moving_data["ingredients[{$index}][type]"] = $item['type'];
+        $moving_data["ingredient[{$index}][id]"] = $item['ingredient_id'];
+        $moving_data["ingredient[{$index}][num]"] = $item['quantity'];
+        $moving_data["ingredient[{$index}][type]"] = $item['type'];
     }
     
     // Отправляем запрос на создание перемещения
