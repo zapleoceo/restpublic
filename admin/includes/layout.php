@@ -40,6 +40,7 @@ function getCurrentSection() {
         'database' => 'database',
         'events' => 'events',
         'sepay' => 'sepay',
+        'storage' => 'storage',
         'settings' => 'settings',
         'logs' => 'logs',
         'health' => 'health'
