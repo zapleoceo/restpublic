@@ -6,12 +6,16 @@ if (file_exists(__DIR__ . '/.env')) {
     $dotenv->load();
 }
 
+// Load translation service
+require_once __DIR__ . '/classes/TranslationService.php';
+$translationService = new TranslationService();
+
 // Load category translator
 require_once __DIR__ . '/category-translator.php';
 
 // Обновляем кеш меню при заходе на страницу (в фоновом режиме)
 function updateMenuCacheAsync() {
-    $cacheUrl = 'http://localhost:3003/api/cache/update-menu';
+    $cacheUrl = ($_ENV['BACKEND_URL'] ?? 'http://localhost:3003') . '/api/cache/update-menu';
     
     // Создаем контекст для асинхронного запроса
     $context = stream_context_create([
@@ -63,7 +67,13 @@ try {
     if (class_exists('MongoDB\Client')) {
         require_once __DIR__ . '/classes/MenuCache.php';
         $menuCache = new MenuCache();
-        $menuData = $menuCache->getMenu();
+        $menuData = $menuCache->getMenu(10); // 10 minutes cache refresh
+        
+        // Получаем текущий язык для перевода блюд
+        $currentLanguage = $translationService->getLanguage();
+        
+        // Логируем текущий язык для отладки
+        error_log("Menu2: Current language = " . $currentLanguage);
         
         if ($menuData) {
             $categories = $menuData['categories'] ?? [];
@@ -71,7 +81,7 @@ try {
             $menu_loaded = !empty($categories) && !empty($products);
             
             // API configuration for popular products
-            $api_base_url = 'http://localhost:3003/api';
+            $api_base_url = ($_ENV['BACKEND_URL'] ?? 'http://localhost:3003') . '/api';
             $context = stream_context_create([
                 'http' => [
                     'timeout' => 10,
@@ -140,14 +150,14 @@ try {
     error_log("MongoDB not available, trying API fallback: " . $e->getMessage());
     
     // Fallback to API if MongoDB fails
-    $api_base_url = 'http://localhost:3003/api';
+    $api_base_url = ($_ENV['BACKEND_URL'] ?? 'http://localhost:3003') . '/api';
     
 function fetchFromAPI($endpoint) {
     global $api_base_url;
     $url = $api_base_url . $endpoint;
     
     // Добавляем токен авторизации
-    $authToken = $_ENV['API_AUTH_TOKEN'] ?? 'nr_api_2024_7f8a9b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0u1v2w3x4y5z6';
+    $authToken = $_ENV['API_AUTH_TOKEN'] ?? getenv('API_AUTH_TOKEN');
     $url .= (strpos($url, '?') !== false ? '&' : '?') . 'token=' . urlencode($authToken);
     
     $context = stream_context_create([
@@ -250,6 +260,9 @@ if ($menu_loaded) {
     <link rel="stylesheet" href="css/vendor.css">
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="css/custom.css">
+    <link rel="stylesheet" href="css/menu.css">
+    <link rel="stylesheet" href="css/cart-modal.css">
+    <link rel="stylesheet" href="css/auth-modal.css">
 
     <!-- Favicons -->
     <link rel="icon" type="image/svg+xml" href="template/favicon.svg">
@@ -258,366 +271,6 @@ if ($menu_loaded) {
     <link rel="icon" type="image/png" sizes="16x16" href="template/favicon-16x16.png">
     <link rel="manifest" href="template/site.webmanifest">
 
-    <style>
-        /* Menu page specific styles */
-        .menu-page {
-            padding-top: 2rem;
-        }
-        
-        .menu-categories {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1rem;
-            margin-bottom: 3rem;
-            justify-content: center;
-        }
-        
-        .category-btn {
-            padding: 0.75rem 1.5rem;
-            background: transparent;
-            border: 2px solid transparent;
-            border-radius: 25px;
-            color: var(--color-text-dark);
-            text-decoration: none;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-        
-        .category-btn:hover {
-            background: #252322;
-            color: var(--color-white);
-            border-color: #252322;
-        }
-
-        .category-btn.active {
-            background: #252322;
-            color: var(--color-white);
-            border-color: #b88746ff;
-        }
-        
-        .s-header__content {
-            position: relative;
-        }
-        
-        .s-header__block {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            position: relative;
-        }
-        
-        /* Mobile menu toggle - positioned outside s-header__block */
-        .header-menu-toggle {
-            --toggle-block-width: 44px;
-            --toggle-line-width : 28px;
-            --toggle-line-height: 1px;
-
-            display             : none !important;
-            width               : var(--toggle-block-width) !important;
-            height              : var(--toggle-block-width) !important;
-            position            : absolute !important;
-            top                 : 50% !important;
-            right               : calc(var(--gutter, 1rem) * 2) !important;
-            transform           : translateY(-50%) !important;
-            background          : transparent !important;
-            border              : none !important;
-            cursor              : pointer !important;
-            z-index             : 1001 !important;
-            padding             : 0 !important;
-            margin              : 0 !important;
-        }
-
-        .header-menu-toggle span {
-            display         : block;
-            background-color: var(--color-white, #ffffff);
-            width           : var(--toggle-line-width);
-            height          : var(--toggle-line-height);
-            margin-top      : -1px;
-            font            : 0/0 a;
-            text-shadow     : none;
-            color           : transparent;
-            transition      : all 0.3s ease;
-            position        : absolute;
-            right           : calc((var(--toggle-block-width) - var(--toggle-line-width)) / 2);
-            top             : 50%;
-            bottom          : auto;
-            left            : auto;
-            border          : none;
-            outline         : none;
-        }
-
-        .header-menu-toggle span::before,
-        .header-menu-toggle span::after {
-            content         : "";
-            width           : 100%;
-            height          : 100%;
-            background-color: var(--color-white, #ffffff);
-            transition      : all 0.3s ease;
-            position        : absolute;
-            left            : 0;
-            border          : none;
-            outline         : none;
-        }
-
-        .header-menu-toggle span::before {
-            top: -8px;
-        }
-
-        .header-menu-toggle span::after {
-            bottom: -8px;
-        }
-
-        /* is clicked */
-        .header-menu-toggle.is-clicked span {
-            background-color: transparent;
-            transition      : all 0.3s ease;
-        }
-
-        .header-menu-toggle.is-clicked span::before,
-        .header-menu-toggle.is-clicked span::after {
-            background-color: var(--color-white, #ffffff);
-            transition      : all 0.3s ease;
-        }
-
-        .header-menu-toggle.is-clicked span::before {
-            top      : 0;
-            transform: rotate(45deg);
-        }
-
-        .header-menu-toggle.is-clicked span::after {
-            bottom   : 0;
-            transform: rotate(-45deg);
-        }
-        
-        /* Remove any focus/hover backgrounds */
-        .header-menu-toggle:focus,
-        .header-menu-toggle:hover,
-        .header-menu-toggle:active {
-            background: transparent !important;
-            border: none !important;
-            outline: none !important;
-            box-shadow: none !important;
-        }
-        
-        /* Mobile header-nav styles */
-        .header-nav {
-            display: none;
-            width: 100%;
-            background-color: var(--color-bg, #1a1a1a);
-            box-shadow: var(--shadow-medium, 0 4px 6px rgba(0,0,0,0.1));
-            border-bottom: 1px solid var(--color-bg-neutral-dark, #333);
-            padding-top: 80px;
-            padding-right: calc(var(--gutter, 1rem) * 2 + 0.2rem);
-            padding-left: calc(var(--gutter, 1rem) * 2 + 0.2rem);
-            padding-bottom: var(--vspace-1_5, 2rem);
-            margin: 0;
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: 999;
-            transform: scaleY(0);
-            transform-origin: center top;
-            opacity: 0;
-            transition: all 0.3s ease-in-out;
-        }
-        
-        
-        .header-nav__links {
-            display: block;
-            padding-left: 0;
-            margin: 0 0 var(--vspace-1_5, 2rem) 0;
-            transform: translateY(-2rem);
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease-in-out;
-        }
-        
-        .header-nav__links a {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-family: var(--type-body);
-            font-weight: 500;
-            color: var(--color-text-light);
-            padding: var(--vspace-1) var(--vspace-1);
-            margin-bottom: 0.5rem;
-            border-radius: var(--border-radius);
-            background-color: var(--color-bg-neutral-dark);
-            font-size: var(--text-base);
-            transition-property: color, background-color;
-            transition-duration: 0.3s;
-            text-decoration: none;
-            width: 100%;
-        }
-        
-        .header-nav__links a:focus,
-        .header-nav__links a:hover {
-            color: var(--color-white);
-            background-color: var(--color-bg-primary);
-        }
-        
-        .header-nav__links .current a {
-            color: var(--color-white);
-            background-color: #b88746ff;
-        }
-        
-        /* Menu open animations (like header-nav) */
-        .menu-is-open .header-nav {
-            transform: scaleY(1);
-            transition: transform 0.3s var(--ease-quick-out);
-            transition-delay: 0s;
-        }
-        
-        .menu-is-open .header-nav__links {
-            transform: translateY(0);
-            opacity: 1;
-            visibility: visible;
-            transition: all 0.6s var(--ease-quick-out);
-            transition-delay: 0.3s;
-        }
-        
-        .menu-section {
-            margin-bottom: 4rem;
-        }
-        
-        .menu-section h2 {
-            font-size: 2.5rem;
-            color: var(--color-bg-primary);
-            margin-bottom: 2rem;
-            text-align: center;
-            font-family: var(--font-2);
-        }
-        
-        .products-grid {
-            margin-top: 2rem;
-        }
-        
-        .menu-list {
-            list-style: none;
-            margin-left: 0;
-        }
-        
-        .menu-list__item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: var(--vspace-1);
-            border-radius: var(--border-radius);
-            margin-bottom: 1rem;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-        
-        .menu-list__item:nth-child(odd) {
-            background-color: var(--color-bg-neutral-dark);
-        }
-        
-        .menu-list__item:hover {
-            background-color: var(--color-bg-primary);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        }
-        
-        .menu-list__item:hover h4 {
-            color: var(--color-white);
-        }
-        
-        .menu-list__item:hover p {
-            color: var(--color-white);
-        }
-        
-        .menu-list__item:hover .menu-list__item-price {
-            color: var(--color-white);
-        }
-        
-        .menu-list__item h4 {
-            font-family: var(--type-body);
-            margin-top: 0;
-            margin-bottom: var(--vspace-0_25);
-            color: var(--color-text-dark);
-        }
-        
-        .menu-list__item p {
-            font-weight: 300;
-            font-size: var(--text-sm);
-            line-height: var(--vspace-0_75);
-            margin-bottom: var(--vspace-1);
-            color: var(--color-text-light);
-        }
-        
-        .menu-list__item-desc {
-            max-width: min(100%, 90rem);
-            padding-right: calc(var(--gutter) * 2);
-        }
-        
-        .menu-list__item-price {
-            font-family: var(--type-body);
-            font-weight: 500;
-            font-size: var(--text-base);
-            padding-right: 0.2rem;
-            color: var(--color-bg-primary);
-        }
-        
-        .menu-list__item-price span {
-            font-size: 0.8em;
-            position: relative;
-            bottom: 0.2em;
-            left: -1px;
-        }
-        
-        .no-products {
-            text-align: center;
-            padding: 3rem;
-            color: var(--color-text-light);
-        }
-        
-        .no-products h3 {
-            margin-bottom: 1rem;
-            color: var(--color-text-dark);
-        }
-        
-        @media (max-width: 900px) {
-            .header-menu-toggle {
-                display: block !important;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .menu-page {
-                padding-top: 1rem;
-            }
-            
-            .menu-categories {
-                display: none; /* Hide desktop categories on mobile */
-            }
-            
-            .products-grid {
-                grid-template-columns: 1fr;
-                gap: 1.5rem;
-            }
-            
-            .menu-section h2 {
-                font-size: 2rem;
-            }
-            
-            .sort-controls {
-                margin-top: 1rem;
-                padding: 0.3rem;
-                gap: 0.3rem;
-            }
-            
-            .sort-btn {
-                padding: 0.3rem 0.6rem;
-                font-size: 0.8rem;
-            }
-            
-            .sort-btn svg {
-                width: 12px;
-                height: 12px;
-            }
-        }
-    </style>
 </head>
 
 <body id="top">
@@ -643,6 +296,65 @@ if ($menu_loaded) {
                             <img src="images/logo_2_options.svg" alt="Veranda - restaurant & bar in Nha Trang">
                         </a>
                     </div>
+                    
+                    <!-- Header Actions -->
+                    <div class="header-actions">
+                        <!-- Authorization Icon with Language Switcher -->
+                        <div class="header-auth">
+                            <!-- Language Switcher -->
+                            <div class="header-language">
+                                <?php include 'components/language-switcher.php'; ?>
+                            </div>
+                            <button class="auth-icon" id="authIcon" title="Авторизация">
+                                <img src="images/icons/auth-gray.png" alt="Авторизация" class="auth-icon-img">
+                            </button>
+                            
+                            <!-- Auth Dropdown Menu -->
+                            <div class="auth-dropdown" id="authDropdown">
+                                <div class="auth-dropdown__content">
+                                    <!-- For non-authenticated users -->
+                                    <div class="auth-dropdown__guest" id="authGuestMenu">
+                                        <a href="#" class="auth-dropdown__item" id="authLoginBtn">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M11 7L9.6 8.4l2.6 2.6H2v2h10.2l-2.6 2.6L11 17l5-5-5-5zm9 12h-8v2h8c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-8v2h8v14z"/>
+                                            </svg>
+                                            Войти
+                                        </a>
+                                    </div>
+                                    
+                                    <!-- For authenticated users -->
+                                    <div class="auth-dropdown__user" id="authUserMenu" style="display: none;">
+                                        <a href="#" class="auth-dropdown__item" id="authProfileBtn">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                                            </svg>
+                                            Профиль
+                                        </a>
+                                        <a href="#" class="auth-dropdown__item" id="authOrdersBtn">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M7 4V2C7 1.45 7.45 1 8 1H16C16.55 1 17 1.45 17 2V4H20C20.55 4 21 4.45 21 5S20.55 6 20 6H19V19C19 20.1 18.1 21 17 21H7C5.9 21 5 20.1 5 19V6H4C3.45 6 3 5.55 3 5S3.45 4 4 4H7ZM9 3V4H15V3H9ZM7 6V19H17V6H7Z"/>
+                                            </svg>
+                                            Заказы
+                                        </a>
+                                        <a href="#" class="auth-dropdown__item" id="authLogoutBtn">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5-5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
+                                            </svg>
+                                            Выйти
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Cart Icon -->
+                        <div class="header-cart">
+                            <button class="cart-icon" id="cartIcon" title="Корзина">
+                                <img src="images/icons/cart gray.png" alt="Корзина" class="cart-icon-img">
+                                <span class="cart-count cart-count-hidden" id="cartCount">0</span>
+                            </button>
+                        </div>
+                    </div>
                 </div>
                 
                 <!-- Mobile Category Toggle -->
@@ -658,12 +370,12 @@ if ($menu_loaded) {
                 <!-- Page Title -->
                 <div class="row">
                     <div class="column xl-12">
-                        <h1 class="text-display-title" style="text-align: center; margin-bottom: 3rem;">Наше меню</h1>
+                        <h1 class="text-display-title page-title"><?php echo $translationService->get('menu.title_v2', 'Наше меню v2'); ?></h1>
                     </div>
                 </div>
 
                 <!-- Mobile Category Navigation -->
-                <nav class="header-nav" id="mobileCategoryNav">
+                <nav class="header-nav mobile-nav-hidden" id="mobileCategoryNav">
                     <!-- Categories List -->
                     <ul class="header-nav__links">
                         <?php if ($menu_loaded && !empty($categories)): ?>
@@ -701,19 +413,19 @@ if ($menu_loaded) {
                                         <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
                                             <path d="M12,21.35L10.55,20.03C5.4,15.36 2,12.27 2,8.5C2,5.41 4.42,3 7.5,3C9.24,3 10.91,3.81 12,5.08C13.09,3.81 14.76,3 16.5,3C19.58,3 22,5.41 22,8.5C22,12.27 18.6,15.36 13.45,20.03L12,21.35Z"/>
                                         </svg>
-                                        Популярные
+                                        <?php echo $translationService->get('menu.sort_popular', 'Популярные'); ?>
                                     </button>
                                     <button class="sort-dropdown__item" data-sort="price">
                                         <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
                                             <path d="M7,15H9C9,16.08 10.37,17 12,17C13.63,17 15,16.08 15,15C15,13.9 13.96,13.5 11.76,12.97C9.64,12.44 7,11.78 7,9C7,7.21 8.47,5.69 10.5,5.18V3H13.5V5.18C15.53,5.69 17,7.21 17,9H15C15,7.92 13.63,7 12,7C10.37,7 9,7.92 9,9C9,10.1 10.04,10.5 12.24,11.03C14.36,11.56 17,12.22 17,15C17,16.79 15.53,18.31 13.5,18.82V21H10.5V18.82C8.47,18.31 7,16.79 7,15Z"/>
                                         </svg>
-                                        По цене
+                                        <?php echo $translationService->get('menu.sort_price', 'По цене'); ?>
                                     </button>
                                     <button class="sort-dropdown__item" data-sort="alphabet">
                                         <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
                                             <path d="M14,17H7v-2h7V17z M17,13H7v-2h10V13z M17,9H7V7h10V9z M3,5V3h18v2H3z"/>
                                         </svg>
-                                        А-Я
+                                        <?php echo $translationService->get('menu.sort_alphabet', 'А-Я'); ?>
                                     </button>
                                 </div>
                             </div>
@@ -725,7 +437,7 @@ if ($menu_loaded) {
                 <!-- Menu Sections -->
                 <?php if ($menu_loaded && !empty($categories)): ?>
                     <?php foreach ($categories as $index => $category): ?>
-                        <div class="menu-section <?php echo $index === 0 ? 'active' : ''; ?>" data-category="<?php echo htmlspecialchars($category['category_id']); ?>" style="<?php echo $index === 0 ? '' : 'display: none;'; ?>">
+                        <div class="menu-section <?php echo $index === 0 ? 'active' : 'menu-section-hidden'; ?>" data-category="<?php echo htmlspecialchars($category['category_id']); ?>">
                             
                             <?php 
                             $category_products = $products_by_category[$category['category_id']] ?? [];
@@ -733,21 +445,62 @@ if ($menu_loaded) {
                             ?>
                                 <div class="products-grid">
                                     <ul class="menu-list">
-                                        <?php foreach ($category_products as $product): ?>
+                                        <?php foreach ($category_products as $product): 
+                                            // Переводим продукт на текущий язык
+                                            $translatedProduct = $menuCache->translateProduct($product, $currentLanguage);
+                                        ?>
                                             <li class="menu-list__item" 
-                                                data-product-name="<?php echo htmlspecialchars($product['product_name'] ?? 'Без названия'); ?>"
-                                                data-price="<?php echo $product['price_normalized'] ?? $product['price'] ?? 0; ?>"
-                                                data-sort-order="<?php echo $product['sort_order'] ?? 0; ?>"
-                                                data-popularity="<?php echo $product['sales_count'] ?? 0; ?>"
-                                                data-product-id="<?php echo $product['product_id'] ?? 0; ?>">
-                                                <div class="menu-list__item-desc">
-                                                    <h4><?php echo htmlspecialchars($product['product_name'] ?? 'Без названия'); ?></h4>
-                                                    <?php if (!empty($product['description'])): ?>
-                                                        <p><?php echo htmlspecialchars($product['description']); ?></p>
+                                                data-product-name="<?php echo htmlspecialchars($translatedProduct['product_name'] ?? 'Без названия'); ?>"
+                                                data-price="<?php echo $translatedProduct['price_normalized'] ?? $translatedProduct['price'] ?? 0; ?>"
+                                                data-sort-order="<?php echo $translatedProduct['sort_order'] ?? 0; ?>"
+                                                data-popularity="<?php echo $translatedProduct['sales_count'] ?? 0; ?>"
+                                                data-product-id="<?php echo $translatedProduct['product_id'] ?? 0; ?>">
+                                                
+                                                <!-- Product Image Thumbnail -->
+                                                <div class="menu-list__item-image">
+                                                    <?php 
+                                                    $photo = $translatedProduct['photo'] ?? '';
+                                                    $photoOrigin = $translatedProduct['photo_origin'] ?? $photo;
+                                                    if ($photo): 
+                                                        $thumbnailUrl = 'https://joinposter.com' . $photo;
+                                                        $fullImageUrl = 'https://joinposter.com' . $photoOrigin;
+                                                    ?>
+                                                        <img src="<?php echo htmlspecialchars($thumbnailUrl); ?>" 
+                                                             alt="<?php echo htmlspecialchars($translatedProduct['product_name'] ?? 'Блюдо'); ?>"
+                                                             class="product-thumbnail"
+                                                             data-full-image="<?php echo htmlspecialchars($fullImageUrl); ?>"
+                                                             title="Нажмите для увеличения">
+                                                    <?php else: ?>
+                                                        <div class="product-thumbnail-placeholder">
+                                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                                                <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
+                                                            </svg>
+                                                        </div>
                                                     <?php endif; ?>
                                                 </div>
-                                                <div class="menu-list__item-price">
-                                                    <?php echo number_format($product['price_normalized'] ?? $product['price'] ?? 0, 0, ',', ' '); ?> ₫
+                                                
+                                                <div class="menu-list__item-desc">
+                                                    <h4><?php echo htmlspecialchars($translatedProduct['product_name'] ?? 'Без названия'); ?></h4>
+                                                    <?php if (!empty($translatedProduct['description'])): ?>
+                                                        <p class="product-description"><?php echo htmlspecialchars($translatedProduct['description']); ?></p>
+                                                    <?php endif; ?>
+                                                </div>
+                                                <div class="menu-list__item-actions">
+                                                    <div class="menu-list__item-price">
+                                                        <?php echo number_format($translatedProduct['price_normalized'] ?? $translatedProduct['price'] ?? 0, 0, ',', ' '); ?> ₫
+                                                    </div>
+                                                    <div class="add-to-cart-wrapper">
+                                                        <button class="add-to-cart-btn" 
+                                                                data-product='<?php echo json_encode([
+                                                                    'id' => $translatedProduct['product_id'] ?? 0,
+                                                                    'name' => $translatedProduct['product_name'] ?? 'Без названия',
+                                                                    'price' => $translatedProduct['price_normalized'] ?? $translatedProduct['price'] ?? 0,
+                                                                    'image' => $translatedProduct['image_url'] ?? ''
+                                                                ]); ?>'
+                                                                title="Добавить в корзину">
+                                                            <span class="add-text">+</span>
+                                                        </button>
+                                                    </div>
                                                 </div>
                                             </li>
                                         <?php endforeach; ?>
@@ -763,9 +516,9 @@ if ($menu_loaded) {
                     <?php endforeach; ?>
                 <?php else: ?>
                     <!-- Error message when menu data is not loaded -->
-                    <div class="menu-section" style="text-align: center; padding: 4rem 0;">
-                        <h2 style="color: var(--color-text-dark); margin-bottom: 2rem;">Упс, что-то с меню не так</h2>
-                        <p style="color: var(--color-text-light); font-size: 1.2rem; margin-bottom: 2rem;">
+                    <div class="menu-section error-section">
+                        <h2 class="error-title">Упс, что-то с меню не так</h2>
+                        <p class="error-text">
                             К сожалению, меню временно недоступно. Попробуйте обновить страницу или зайти позже.
                         </p>
                         <button onclick="window.location.reload()" class="btn btn--primary">
@@ -775,7 +528,7 @@ if ($menu_loaded) {
                 <?php endif; ?>
 
                 <!-- Back to Home -->
-                <div class="row" style="margin-top: 4rem; text-align: center;">
+                <div class="row back-to-home">
                     <div class="column xl-12">
                         <a href="/" class="btn btn--primary">Вернуться на главную</a>
                     </div>
@@ -786,469 +539,1231 @@ if ($menu_loaded) {
         <!-- Footer -->
         <?php include 'components/footer.php'; ?>
         
-        <!-- Cart Component -->
-        <?php include 'components/cart.php'; ?>
     </div>
 
+    <!-- Image Modal -->
+    <div id="imageModal" class="image-modal">
+        <span class="image-modal-close">&times;</span>
+        <img id="modalImage" src="" alt="">
+    </div>
+
+    <!-- Cart Modal -->
+    <div id="cartModal" class="modal modal-hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 data-translate="your_order">Loading...</h2>
+                <div class="order-type-options">
+                    <label class="order-type-option">
+                        <input type="radio" name="orderType" value="table" checked>
+                        <span class="order-type-label" data-translate="for_table">Loading...</span>
+                    </label>
+                    <label class="order-type-option">
+                        <input type="radio" name="orderType" value="takeaway">
+                        <span class="order-type-label" data-translate="takeaway">Loading...</span>
+                    </label>
+                    <label class="order-type-option">
+                        <input type="radio" name="orderType" value="delivery">
+                        <span class="order-type-label" data-translate="delivery">Loading...</span>
+                    </label>
+                </div>
+                <button class="modal-close" id="cartModalClose">&times;</button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="cart-items-list" id="cartItemsList">
+                    <!-- Cart items will be populated here -->
+                </div>
+                <div class="cart-total">
+                    <div class="total-row">
+                        <span data-translate="total">Loading...</span>
+                        <span class="total-amount" id="cartTotalAmount">0 ₫</span>
+                    </div>
+                </div>
+
+                <!-- Order Fields -->
+                <div class="order-fields" id="orderFields">
+                    <!-- Общие поля для всех типов заказов -->
+                    <div class="form-row form-row-three">
+                        <div class="form-group form-group-name">
+                            <label for="customerName" data-translate="enter_name">Loading...</label>
+                            <input type="text" id="customerName" name="customerName" data-translate-placeholder="enter_name_placeholder" placeholder="Loading..." required>
+                        </div>
+                        <div class="form-group form-group-phone">
+                            <label for="customerPhone" data-translate="phone">Loading...</label>
+                            <input type="tel" id="customerPhone" name="customerPhone" data-translate-placeholder="phone_placeholder" placeholder="Loading..." required>
+                        </div>
+                        <div class="form-group form-group-hall" id="hallFieldGroup">
+                            <label for="hallSelect" data-translate="hall">Loading...</label>
+                            <select id="hallSelect" name="hallSelect">
+                                <option value="" data-translate="select_hall_option">Loading...</option>
+                            </select>
+                        </div>
+                        <div class="form-group form-group-table" id="tableFieldGroup">
+                            <label for="tableNumber" data-translate="table">Loading...</label>
+                            <select id="tableNumber" name="tableNumber" required>
+                                <option value="" data-translate="select_table_option">Loading...</option>
+                                <!-- Table options will be populated here -->
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Table Order Fields -->
+                    <div class="order-field-group" id="tableOrderFields">
+                        <div class="form-group">
+                            <label for="tableComment" data-translate="comment">Loading...</label>
+                            <textarea id="tableComment" name="tableComment" rows="3" data-translate-placeholder="comment_placeholder" placeholder="Loading..."></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Takeaway Order Fields -->
+                    <div class="order-field-group" id="takeawayOrderFields" style="display: none;">
+                        <div class="form-group">
+                            <label for="takeawayComment" data-translate="comment">Loading...</label>
+                            <textarea id="takeawayComment" name="takeawayComment" rows="3" data-translate-placeholder="comment_placeholder" placeholder="Loading..."></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Delivery Order Fields -->
+                    <div class="order-field-group" id="deliveryOrderFields" style="display: none;">
+                        <div class="form-group">
+                            <label for="deliveryAddress" data-translate="delivery_address">Loading...</label>
+                            <input type="url" id="deliveryAddress" name="deliveryAddress" data-translate-placeholder="delivery_address_placeholder" placeholder="Loading..." required>
+                        </div>
+                        <div class="form-group">
+                            <label for="deliveryTime" data-translate="delivery_time">Loading...</label>
+                            <input type="datetime-local" id="deliveryTime" name="deliveryTime" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="deliveryComment" data-translate="comment">Loading...</label>
+                            <textarea id="deliveryComment" name="deliveryComment" rows="3" data-translate-placeholder="comment_placeholder" placeholder="Loading..."></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="modal-buttons">
+                <button class="btn btn-secondary" id="cartModalCancel" data-translate="cancel">Loading...</button>
+                <button class="btn btn-primary" id="cartModalSubmit" data-translate="place_order">Loading...</button>
+            </div>
+            
+            <div class="modal-footer">
+                <!-- Скидка удалена -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Overlay -->
+    <div id="modalOverlay" class="modal-overlay overlay-hidden"></div>
+
     <!-- JavaScript -->
+    <script src="js/plugins.js"></script>
     <script src="js/main.js"></script>
     
+    <script>
+        // API Configuration
+        window.API_TOKEN = '<?php echo $_ENV['API_AUTH_TOKEN'] ?? ''; ?>';
+    </script>
+    
+    <script>
+        // Image Modal functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const imageModal = document.getElementById('imageModal');
+            const modalImage = document.getElementById('modalImage');
+            const modalClose = document.querySelector('.image-modal-close');
+            const thumbnails = document.querySelectorAll('.product-thumbnail');
+            
+            // Open modal on thumbnail click
+            thumbnails.forEach(thumbnail => {
+                thumbnail.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const fullImageUrl = this.getAttribute('data-full-image');
+                    if (fullImageUrl) {
+                        modalImage.src = fullImageUrl;
+                        modalImage.alt = this.alt;
+                        imageModal.classList.add('active');
+                        document.body.style.overflow = 'hidden';
+                    }
+                });
+            });
+            
+            // Close modal
+            function closeModal() {
+                imageModal.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+            
+            modalClose.addEventListener('click', closeModal);
+            imageModal.addEventListener('click', function(e) {
+                if (e.target === imageModal) {
+                    closeModal();
+                }
+            });
+            
+            // Close on Escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && imageModal.classList.contains('active')) {
+                    closeModal();
+                }
+            });
+        });
+    </script>
+    
+    <script src="js/cart-translations.js"></script>
+    <script src="js/cart.js"></script>
+    <script src="js/menu.js"></script>
+    
+    
+    <script>
+    // Отладочная информация для переводов корзины
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('🌐 Page loaded, checking language and translations...');
+        
+        // Проверяем текущий язык
+        const urlParams = new URLSearchParams(window.location.search);
+        const langFromUrl = urlParams.get('lang');
+        console.log('🌐 Language from URL:', langFromUrl);
+        
+        // Проверяем cookie
+        const langFromCookie = document.cookie
+            .split('; ')
+            .find(row => row.startsWith('language='))
+            ?.split('=')[1];
+        console.log('🌐 Language from cookie:', langFromCookie);
+        
+        // Проверяем переводы корзины
+        if (window.cartTranslations) {
+            console.log('🌐 CartTranslations available');
+            // Ждем, пока методы будут доступны
+            const waitForMethods = async () => {
+                let attempts = 0;
+                while (attempts < 20) {
+                    if (window.cartTranslations.getCurrentLanguage && window.cartTranslations.reload) {
+                        console.log('🌐 CartTranslations methods are ready');
+                        const currentLang = window.cartTranslations.getCurrentLanguage();
+                        console.log('🌐 CartTranslations current language:', currentLang);
+                        await window.cartTranslations.reload();
+                        console.log('🌐 CartTranslations reloaded, language:', window.cartTranslations.language);
+                        console.log('🌐 CartTranslations translations:', window.cartTranslations.translations);
+                        
+                        // Принудительно обновляем переводы корзины
+                        if (window.cart && window.cart.updateCartModalTranslations) {
+                            console.log('🛒 Forcing cart modal translation update');
+                            window.cart.updateCartModalTranslations();
+                        }
+                        return;
+                    }
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                    attempts++;
+                }
+                console.log('🌐 CartTranslations methods not ready after 2 seconds');
+            };
+            waitForMethods();
+        }
+        
+        // Проверяем корзину
+        if (window.cart) {
+            console.log('🛒 Cart available');
+            setTimeout(async () => {
+                if (window.cart.reloadTranslations) {
+                    await window.cart.reloadTranslations();
+                    console.log('🛒 Cart translations reloaded');
+                }
+                
+                // Принудительно обновляем переводы модального окна корзины
+                if (window.cart.updateCartModalTranslations) {
+                    window.cart.updateCartModalTranslations();
+                    console.log('🛒 Cart modal translations updated');
+                }
+            }, 1000);
+        }
+    });
+    </script>
+    
     <style>
-        /* Анимации появления блюд */
+    /* Скрываем только иконку авторизации, но оставляем переключатель языка */
+    .header-auth .auth-icon {
+        display: none !important;
+    }
+    
+    .header-auth .auth-dropdown {
+        display: none !important;
+    }
+    
+    /* Простое выравнивание элементов в header-actions */
+    .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    
+    .header-language {
+        position: static !important;
+        transform: none !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        margin: 0 !important;
+    }
+    
+    
+    /* Стили для подсветки полей при ошибке валидации */
+    .validation-error {
+        animation: validationBlink 0.5s ease-in-out 6; /* 3 мерцания (6 полупериодов) */
+        border-color: #ff6b6b !important;
+        box-shadow: 0 0 0 2px rgba(255, 107, 107, 0.2) !important;
+    }
+    
+    @keyframes validationBlink {
+        0%, 100% { 
+            border-color: #ff6b6b;
+            box-shadow: 0 0 0 2px rgba(255, 107, 107, 0.2);
+        }
+        50% { 
+            border-color: #ff9999;
+            box-shadow: 0 0 0 4px rgba(255, 107, 107, 0.3);
+        }
+    }
+    
+    /* Анимация спиннера для кнопки загрузки */
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    </style>
+    
+    <style>
+        /* Стили для оригинальной цены в cart-total (зачеркнутая) */
+        .cart-total .original-price {
+            color: #999;
+            text-decoration: line-through;
+        }
+        
+        /* Стили для скидки в cart-total */
+        .cart-total .discount-row {
+            color: #b88746ff;
+            font-weight: 500;
+            font-size: 14px;
+        }
+        
+        .cart-total .total-final {
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        
+        /* Product Image Styles */
         .menu-list__item {
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.6s var(--ease-smooth-in-out);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
         }
         
-        .menu-list__item.animate-in {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        
-        .menu-section {
-            opacity: 0;
-            transform: translateY(30px);
-            transition: all 0.8s var(--ease-smooth-in-out);
-        }
-        
-        .menu-section.animate-in {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        
-        .category-btn {
-            transition: all 0.3s var(--ease-smooth-in-out);
-        }
-        
-        /* Sort Controls - Minimal Design */
-        .sort-controls {
+        .menu-list__item-image {
+            flex-shrink: 0;
+            width: 80px;
+            height: 80px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 0.5rem;
-            margin-top: 2rem;
-            padding: 0.5rem;
-            background: var(--color-bg-neutral-dark);
-            border-radius: 25px;
-            flex-wrap: wrap;
-        }
-        
-        .sort-btn {
-            display: flex;
-            align-items: center;
-            gap: 0.3rem;
-            padding: 0.4rem 0.8rem;
-            background: transparent;
-            border: none;
-            border-radius: 20px;
-            color: var(--color-text-light);
-            font-size: var(--text-sm);
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            min-width: auto;
-        }
-        
-        .sort-btn:hover {
-            background: var(--color-bg-primary);
-            color: var(--color-white);
-        }
-        
-        .sort-btn.active {
-            background: var(--color-bg-primary);
-            color: var(--color-white);
-        }
-        
-        .sort-btn svg {
-            width: 14px;
-            height: 14px;
-            fill: currentColor;
-        }
-        
-        /* Sort Dropdown Styles - Minimal */
-        .sort-dropdown {
-            position: relative;
-            display: inline-block;
-            margin-left: 1rem;
-        }
-        
-        .sort-dropdown__trigger {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 40px;
-            height: 40px;
-            background: transparent;
-            border: 2px solid transparent;
-            border-radius: 50%;
-            color: var(--color-text-dark);
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .sort-dropdown__trigger:hover {
-            background: #252322;
-            color: var(--color-white);
-            border-color: #252322;
-        }
-        
-        .sort-dropdown__icon {
-            width: 16px;
-            height: 16px;
-            fill: currentColor;
-        }
-        
-        .sort-dropdown__menu {
-            position: absolute;
-            top: 100%;
-            right: 0;
-            background: var(--color-bg-neutral-dark);
-            border: 1px solid var(--color-border);
             border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(-10px);
-            transition: all 0.3s ease;
-            z-index: 1000;
-            min-width: 180px;
-            margin-top: 0.5rem;
+            overflow: hidden;
+            background: #f5f5f5;
+            position: relative;
         }
         
-        .sort-dropdown:hover .sort-dropdown__menu {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
+        .product-thumbnail {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            display: block;
         }
         
-        .sort-dropdown__item {
+        .product-thumbnail:hover {
+            transform: scale(1.05);
+        }
+        
+        .product-thumbnail-placeholder {
+            width: 100%;
+            height: 100%;
             display: flex;
             align-items: center;
-            gap: 0.5rem;
-            width: 100%;
-            padding: 0.75rem 1rem;
-            background: none;
+            justify-content: center;
+            color: #ccc;
+            background: #f8f8f8;
+        }
+        
+        /* Дополнительные стили для правильного позиционирования изображений */
+        .product-thumbnail {
+            min-width: 100%;
+            min-height: 100%;
+            max-width: none;
+            max-height: none;
+        }
+        
+        /* Убираем любые отступы и поля */
+        .menu-list__item-image img {
+            margin: 0;
+            padding: 0;
             border: none;
-            color: var(--color-text);
-            font-size: var(--text-sm);
-            font-weight: 500;
+            outline: none;
+        }
+        
+        .menu-list__item-desc {
+            flex: 1;
+        }
+        
+        .product-description {
+            font-size: 14px;
+            color: #666;
+            margin: 8px 0 0 0;
+            line-height: 1.4;
+            font-style: italic;
+        }
+        
+        .menu-list__item-actions {
+            flex-shrink: 0;
+        }
+        
+        /* Image Modal */
+        .image-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
             cursor: pointer;
-            transition: all 0.3s ease;
-            text-align: left;
         }
         
-        .sort-dropdown__item:first-child {
-            border-radius: 8px 8px 0 0;
+        .image-modal.active {
+            display: flex;
         }
         
-        .sort-dropdown__item:last-child {
-            border-radius: 0 0 8px 8px;
+        .image-modal img {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         }
         
-        .sort-dropdown__item:hover {
-            background: var(--color-bg-primary);
-            color: var(--color-white);
-        }
-        
-        .sort-dropdown__item.active {
-            background: var(--color-bg-primary);
-            color: var(--color-white);
-        }
-        
-        .sort-dropdown__item svg {
-            width: 14px;
-            height: 14px;
-            fill: currentColor;
+        .image-modal-close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: white;
+            font-size: 30px;
+            cursor: pointer;
+            z-index: 10001;
         }
         
         /* Mobile responsive */
         @media (max-width: 768px) {
-            .sort-dropdown {
-                margin-left: 0.5rem;
-                margin-top: 0;
+            .menu-list__item-image {
+                width: 60px;
+                height: 60px;
             }
             
-            .sort-dropdown__trigger {
-                width: 36px;
-                height: 36px;
+            .menu-list__item {
+                gap: 0.75rem;
             }
             
-            .sort-dropdown__icon {
-                width: 14px;
-                height: 14px;
-            }
-            
-            .sort-dropdown__menu {
-                right: 0;
-                left: auto;
-                min-width: 160px;
+            .product-description {
+                font-size: 12px;
+                margin: 6px 0 0 0;
+                line-height: 1.3;
             }
         }
+        
+        @media (max-width: 480px) {
+            .product-description {
+                font-size: 11px;
+                margin: 4px 0 0 0;
+                line-height: 1.2;
+            }
+        }
+
+        /* Стили для заказов */
+        .order-item {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+            background: #fff;
+        }
+
+        .order-info h4 {
+            margin: 0 0 12px 0;
+            color: #333;
+        }
+
+        .order-info p {
+            margin: 4px 0;
+            color: #666;
+        }
+
+        .order-products {
+            margin-top: 12px;
+        }
+
+        .order-products ul {
+            margin: 8px 0 0 0;
+            padding-left: 20px;
+        }
+
+        .order-products li {
+            margin: 4px 0;
+            color: #666;
+        }
+
+        .status-paid {
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .status-unpaid {
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        .status-partial {
+            color: #ffc107;
+            font-weight: bold;
+        }
     </style>
-    
+
+    <!-- Auth System JavaScript -->
     <script>
-        // Category filtering with animations
-        document.addEventListener('DOMContentLoaded', function() {
-            const categoryBtns = document.querySelectorAll('.category-btn, .header-nav__links a');
-            const menuSections = document.querySelectorAll('.menu-section');
-            const mobileToggle = document.getElementById('mobileCategoryToggle');
-            const mobileNav = document.getElementById('mobileCategoryNav');
-            
-            console.log('Elements found:');
-            console.log('- mobileToggle:', mobileToggle);
-            console.log('- mobileNav:', mobileNav);
-            console.log('- categoryBtns:', categoryBtns.length);
-            console.log('- menuSections:', menuSections.length);
-            
-            // Mobile category navigation functionality (like header-nav)
-            if (mobileToggle) {
-                console.log('Mobile toggle button found:', mobileToggle);
-                mobileToggle.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    console.log('Mobile toggle clicked!');
-                    
-                    // Toggle button state
-                    const isOpen = mobileNav.style.display === 'block';
-                    
-                    if (isOpen) {
-                        // Close menu with animation
-                        const links = mobileNav.querySelector('.header-nav__links');
-                        if (links) {
-                            links.style.transform = 'translateY(-2rem)';
-                            links.style.opacity = '0';
-                            links.style.visibility = 'hidden';
-                        }
-                        
-                        mobileNav.style.transform = 'scaleY(0)';
-                        mobileNav.style.opacity = '0';
-                        mobileToggle.classList.remove('is-clicked');
-                        document.body.classList.remove('menu-is-open');
-                        
-                        setTimeout(() => {
-                            mobileNav.style.display = 'none';
-                        }, 300);
-                    } else {
-                        // Open menu with animation
-                        mobileNav.style.display = 'block';
-                        mobileNav.style.transform = 'scaleY(0)';
-                        mobileNav.style.opacity = '0';
-                        mobileToggle.classList.add('is-clicked');
-                        document.body.classList.add('menu-is-open');
-                        
-                        // Trigger animation
-                        setTimeout(() => {
-                            mobileNav.style.transform = 'scaleY(1)';
-                            mobileNav.style.opacity = '1';
-                            
-                            // Animate links
-                            const links = mobileNav.querySelector('.header-nav__links');
-                            if (links) {
-                                setTimeout(() => {
-                                    links.style.transform = 'translateY(0)';
-                                    links.style.opacity = '1';
-                                    links.style.visibility = 'visible';
-                                }, 150);
-                            }
-                        }, 10);
-                    }
-                    
-                    console.log('Button is-clicked:', mobileToggle.classList.contains('is-clicked'));
-                    console.log('Menu display:', mobileNav.style.display);
-                });
-            } else {
-                console.error('Mobile toggle button not found!');
-            }
-            
-            // Set initial active state
-            if (categoryBtns.length > 0) {
-                categoryBtns[0].classList.add('active');
-            }
-            if (menuSections.length > 0) {
-                menuSections.forEach((section, index) => {
-                    if (index === 0) {
-                        section.style.display = 'block';
-                        section.classList.add('active');
-                        // Анимация появления первой секции
-                        setTimeout(() => {
-                            section.classList.add('animate-in');
-                            animateMenuItems(section);
-                        }, 100);
-                    } else {
-                        section.style.display = 'none';
-                    }
-                });
+        // Auth System
+        class AuthSystem {
+            constructor() {
+                this.isAuthenticated = false;
+                this.userData = null;
+                this.sessionToken = localStorage.getItem('auth_session_token');
+                this.init();
             }
 
-            categoryBtns.forEach(btn => {
-                btn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const category = this.dataset.category;
-                    const li = this.closest('li');
-                    
-                    // Update active button
-                    categoryBtns.forEach(b => {
-                        b.classList.remove('active');
-                        const parentLi = b.closest('li');
-                        if (parentLi) {
-                            parentLi.classList.remove('current');
-                        }
+            init() {
+                this.bindEvents();
+                this.checkAuthStatus();
+            }
+
+            bindEvents() {
+                // Проверяем, что элементы существуют перед добавлением event listeners
+                const elements = {
+                    authIcon: document.getElementById('authIcon'),
+                    authLoginBtn: document.getElementById('authLoginBtn'),
+                    authProfileBtn: document.getElementById('authProfileBtn'),
+                    authOrdersBtn: document.getElementById('authOrdersBtn'),
+                    authLogoutBtn: document.getElementById('authLogoutBtn'),
+                    authModalClose: document.getElementById('authModalClose'),
+                    profileModalClose: document.getElementById('profileModalClose'),
+                    ordersModalClose: document.getElementById('ordersModalClose'),
+                    modalOverlay: document.getElementById('modalOverlay')
+                };
+
+                // Проверяем, какие элементы не найдены
+                const missingElements = Object.entries(elements)
+                    .filter(([key, element]) => !element)
+                    .map(([key]) => key);
+
+                if (missingElements.length > 0) {
+                    console.warn('AuthSystem: Missing elements:', missingElements);
+                }
+
+                // Auth icon click
+                if (elements.authIcon) {
+                    elements.authIcon.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        this.toggleAuthDropdown();
                     });
-                    this.classList.add('active');
-                    if (li) {
-                        li.classList.add('current');
+                }
+
+                // Auth dropdown items
+                if (elements.authLoginBtn) {
+                    elements.authLoginBtn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        this.openAuthModal();
+                        this.closeAuthDropdown();
+                    });
+                }
+
+                if (elements.authProfileBtn) {
+                    elements.authProfileBtn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        this.openProfileModal();
+                        this.closeAuthDropdown();
+                    });
+                }
+
+                if (elements.authOrdersBtn) {
+                    elements.authOrdersBtn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        this.openOrdersModal();
+                        this.closeAuthDropdown();
+                    });
+                }
+
+                if (elements.authLogoutBtn) {
+                    elements.authLogoutBtn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        this.logout();
+                        this.closeAuthDropdown();
+                    });
+                }
+
+                // Telegram auth button (теперь обрабатывается через onclick в HTML)
+
+                // Modal close buttons
+                if (elements.authModalClose) {
+                    elements.authModalClose.addEventListener('click', () => {
+                        this.closeAuthModal();
+                    });
+                }
+
+                if (elements.profileModalClose) {
+                    elements.profileModalClose.addEventListener('click', () => {
+                        this.closeProfileModal();
+                    });
+                }
+
+                if (elements.ordersModalClose) {
+                    elements.ordersModalClose.addEventListener('click', () => {
+                        this.closeOrdersModal();
+                    });
+                }
+
+                // Close dropdown when clicking outside
+                document.addEventListener('click', (e) => {
+                    if (!e.target.closest('.header-auth')) {
+                        this.closeAuthDropdown();
                     }
-                    
-                    // Close mobile category navigation with animation
-                    const links = mobileNav.querySelector('.header-nav__links');
-                    if (links) {
-                        links.style.transform = 'translateY(-2rem)';
-                        links.style.opacity = '0';
-                        links.style.visibility = 'hidden';
+                });
+
+                // Close modals when clicking overlay
+                if (elements.modalOverlay) {
+                    elements.modalOverlay.addEventListener('click', () => {
+                        this.closeAllModals();
+                    });
+                }
+            }
+
+            toggleAuthDropdown() {
+                const dropdown = document.getElementById('authDropdown');
+                dropdown.classList.toggle('auth-dropdown--active');
+            }
+
+            closeAuthDropdown() {
+                const dropdown = document.getElementById('authDropdown');
+                dropdown.classList.remove('auth-dropdown--active');
+            }
+
+            openAuthModal() {
+                document.getElementById('authModal').classList.remove('modal-hidden');
+                document.getElementById('modalOverlay').classList.remove('overlay-hidden');
+                document.body.style.overflow = 'hidden';
+            }
+
+            closeAuthModal() {
+                document.getElementById('authModal').classList.add('modal-hidden');
+                document.getElementById('modalOverlay').classList.add('overlay-hidden');
+                document.body.style.overflow = '';
+            }
+
+            openProfileModal() {
+                this.loadProfileData();
+                document.getElementById('profileModal').classList.remove('modal-hidden');
+                document.getElementById('modalOverlay').classList.remove('overlay-hidden');
+                document.body.style.overflow = 'hidden';
+            }
+
+            closeProfileModal() {
+                document.getElementById('profileModal').classList.add('modal-hidden');
+                document.getElementById('modalOverlay').classList.add('overlay-hidden');
+                document.body.style.overflow = '';
+            }
+
+            openOrdersModal() {
+                this.loadOrdersData();
+                document.getElementById('ordersModal').classList.remove('modal-hidden');
+                document.getElementById('modalOverlay').classList.remove('overlay-hidden');
+                document.body.style.overflow = 'hidden';
+            }
+
+            closeOrdersModal() {
+                document.getElementById('ordersModal').classList.add('modal-hidden');
+                document.getElementById('modalOverlay').classList.add('overlay-hidden');
+                document.body.style.overflow = '';
+            }
+
+            closeAllModals() {
+                this.closeAuthModal();
+                this.closeProfileModal();
+                this.closeOrdersModal();
+            }
+
+            authenticateWithTelegram() {
+                // Generate unique session token
+                const sessionToken = this.generateSessionToken();
+                this.sessionToken = sessionToken;
+                localStorage.setItem('auth_session_token', sessionToken);
+                
+                // Create Telegram auth URL
+                const telegramUrl = `https://t.me/RestPublic_bot?start=auth_${sessionToken}`;
+                
+                // Open Telegram
+                window.open(telegramUrl, '_blank');
+                
+                // Close auth modal
+                this.closeAuthModal();
+                
+                // Show loading message
+                this.showNotification('Переходим в Telegram для авторизации...', 'info');
+            }
+
+            generateSessionToken() {
+                return Date.now().toString(36) + Math.random().toString(36).substr(2);
+            }
+
+            checkAuthStatus() {
+                if (!this.sessionToken) {
+                    this.isAuthenticated = false;
+                    this.updateAuthUI();
+                    return;
+                }
+
+                // Check if user is authenticated - DISABLED
+                // fetch('/auth_status.php', {
+                //     headers: {
+                //         'X-Session-Token': this.sessionToken
+                //     }
+                // })
+                //     .then(response => response.json())
+                //     .then(data => {
+                //         if (data.success && data.authenticated) {
+                //             this.isAuthenticated = true;
+                //             this.userData = data.user;
+                //             this.updateAuthUI();
+                //         } else {
+                //             this.isAuthenticated = false;
+                //             this.userData = null;
+                //             this.sessionToken = null;
+                //             localStorage.removeItem('auth_session_token');
+                //             this.updateAuthUI();
+                //         }
+                //     })
+                //     .catch(error => {
+                //         console.error('Auth status check failed:', error);
+                //         this.isAuthenticated = false;
+                //         this.updateAuthUI();
+                //     });
+                
+                // Set as not authenticated since auth is disabled
+                this.isAuthenticated = false;
+                this.updateAuthUI();
+            }
+
+            updateAuthUI() {
+                const guestMenu = document.getElementById('authGuestMenu');
+                const userMenu = document.getElementById('authUserMenu');
+                const authIcon = document.querySelector('.auth-icon-img');
+
+                if (this.isAuthenticated) {
+                    guestMenu.style.display = 'none';
+                    userMenu.style.display = 'block';
+                    authIcon.src = 'images/icons/auth-green.png';
+                } else {
+                    guestMenu.style.display = 'block';
+                    userMenu.style.display = 'none';
+                    authIcon.src = 'images/icons/auth-gray.png';
+                }
+            }
+
+            loadProfileData() {
+                if (!this.isAuthenticated || !this.sessionToken) return;
+
+                fetch('/api/user/profile', {
+                    headers: {
+                        'X-Session-Token': this.sessionToken
                     }
-                    
-                    mobileNav.style.transform = 'scaleY(0)';
-                    mobileNav.style.opacity = '0';
-                    mobileToggle.classList.remove('is-clicked');
-                    document.body.classList.remove('menu-is-open');
-                    
-                    setTimeout(() => {
-                        mobileNav.style.display = 'none';
-                    }, 300);
-                    
-                    // Show/hide sections with animation
-                    menuSections.forEach(section => {
-                        if (section.dataset.category === category) {
-                            section.style.display = 'block';
-                            section.classList.add('active');
-                            section.classList.remove('animate-in');
-                            
-                            // Анимация появления секции
-                            setTimeout(() => {
-                                section.classList.add('animate-in');
-                                animateMenuItems(section);
-                            }, 50);
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            this.userData = data.user; // Сохраняем данные для корзины
+                            this.displayProfileData(data.user);
+                            this.fillCartFields(data.user);
                         } else {
-                            section.classList.remove('active');
-                            section.classList.remove('animate-in');
-                            setTimeout(() => {
-                                section.style.display = 'none';
-                            }, 300);
+                            this.showNotification('Ошибка загрузки профиля', 'error');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Profile load failed:', error);
+                        this.showNotification('Ошибка загрузки профиля', 'error');
+                    });
+            }
+
+            async loadUserData() {
+                if (!this.isAuthenticated || !this.sessionToken) return null;
+
+                try {
+                    const response = await fetch('/api/user/profile', {
+                        headers: {
+                            'X-Session-Token': this.sessionToken
                         }
                     });
-                });
-            });
-            
-            // Функция анимации элементов меню
-            function animateMenuItems(section) {
-                const menuItems = section.querySelectorAll('.menu-list__item');
-                menuItems.forEach((item, index) => {
-                    item.classList.remove('animate-in');
-                    setTimeout(() => {
-                        item.classList.add('animate-in');
-                    }, index * 100); // Задержка между элементами
-                });
-            }
-            
-            // Sort functionality - both old sort buttons and new dropdown
-            const sortBtns = document.querySelectorAll('.sort-btn');
-            const sortDropdownItems = document.querySelectorAll('.sort-dropdown__item');
-            
-            // Handle old sort buttons (if they exist)
-            sortBtns.forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const sortType = this.dataset.sort;
                     
-                    // Update active sort button
-                    sortBtns.forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
-                    
-                    // Sort current visible section
-                    const activeSection = document.querySelector('.menu-section.active');
-                    if (activeSection) {
-                        sortMenuItems(activeSection, sortType);
+                    const data = await response.json();
+                    if (data.success) {
+                        this.userData = data.user; // Сохраняем данные для корзины
+                        return data.user;
+                    } else {
+                        console.error('Failed to load user data:', data.message);
+                        return null;
                     }
-                });
-            });
-            
-            // Handle new sort dropdown items
-            sortDropdownItems.forEach(item => {
-                item.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const sortType = this.dataset.sort;
-                    const dropdown = this.closest('.sort-dropdown');
-                    const trigger = dropdown.querySelector('.sort-dropdown__trigger');
-                    const icon = trigger.querySelector('.sort-dropdown__icon');
-                    
-                    // Update active dropdown item
-                    sortDropdownItems.forEach(i => i.classList.remove('active'));
-                    this.classList.add('active');
-                    
-                    // Update trigger icon based on sort type
-                    const sortIcons = {
-                        'popularity': '<path d="M12,21.35L10.55,20.03C5.4,15.36 2,12.27 2,8.5C2,5.41 4.42,3 7.5,3C9.24,3 10.91,3.81 12,5.08C13.09,3.81 14.76,3 16.5,3C19.58,3 22,5.41 22,8.5C22,12.27 18.6,15.36 13.45,20.03L12,21.35Z"/>',
-                        'price': '<path d="M7,15H9C9,16.08 10.37,17 12,17C13.63,17 15,16.08 15,15C15,13.9 13.96,13.5 11.76,12.97C9.64,12.44 7,11.78 7,9C7,7.21 8.47,5.69 10.5,5.18V3H13.5V5.18C15.53,5.69 17,7.21 17,9H15C15,7.92 13.63,7 12,7C10.37,7 9,7.92 9,9C9,10.1 10.04,10.5 12.24,11.03C14.36,11.56 17,12.22 17,15C17,16.79 15.53,18.31 13.5,18.82V21H10.5V18.82C8.47,18.31 7,16.79 7,15Z"/>',
-                        'alphabet': '<path d="M14,17H7v-2h7V17z M17,13H7v-2h10V13z M17,9H7V7h10V9z M3,5V3h18v2H3z"/>'
-                    };
-                    icon.innerHTML = sortIcons[sortType] || sortIcons['popularity'];
-                    
-                    // Sort all menu sections with the selected type
-                    const menuSections = document.querySelectorAll('.menu-section');
-                    menuSections.forEach(section => {
-                        sortMenuItems(section, sortType);
+                } catch (error) {
+                    console.error('User data load failed:', error);
+                    return null;
+                }
+            }
+
+            fillCartFields(user) {
+                // Заполняем поля корзины данными из профиля
+                const nameField = document.getElementById('customerName');
+                const phoneField = document.getElementById('customerPhone');
+                
+                if (nameField && user.firstname && user.lastname) {
+                    nameField.value = `${user.firstname} ${user.lastname}`.trim();
+                }
+                
+                if (phoneField && user.phone) {
+                    phoneField.value = user.phone;
+                }
+            }
+
+            displayProfileData(user) {
+                const profileInfo = document.getElementById('profileInfo');
+                profileInfo.innerHTML = `
+                    <div class="profile-field">
+                        <label>Имя:</label>
+                        <span>${user.firstname || 'Не указано'}</span>
+                    </div>
+                    <div class="profile-field">
+                        <label>Фамилия:</label>
+                        <span>${user.lastname || 'Не указано'}</span>
+                    </div>
+                    <div class="profile-field">
+                        <label>Телефон:</label>
+                        <span>${user.phone || 'Не указано'}</span>
+                    </div>
+                    <div class="profile-field">
+                        <label>Email:</label>
+                        <span>${user.email || 'Не указано'}</span>
+                    </div>
+                    <div class="profile-field">
+                        <label>Скидка:</label>
+                        <span>${user.max_discount || Math.max(user.discount_per || 0, user.client_groups_discount || 0)}%</span>
+                    </div>
+                    <div class="profile-field">
+                        <label>Бонусы:</label>
+                        <span>${user.bonus || 0} ₫</span>
+                    </div>
+                    <div class="profile-field">
+                        <label>Дата регистрации:</label>
+                        <span>${user.date_activale ? new Date(user.date_activale).toLocaleDateString('ru-RU') : 'Не указано'}</span>
+                    </div>
+                    <div class="profile-field">
+                        <label>Общая сумма покупок:</label>
+                        <span>${user.total_payed_sum ? (user.total_payed_sum / 100).toFixed(0) + ' ₫' : '0 ₫'}</span>
+                    </div>
+                    <div class="profile-footer">
+                        <p>Нашли ошибку? <a href="https://t.me/zapleosoft" target="_blank">Свяжитесь с нами</a></p>
+                    </div>
+                `;
+            }
+
+            loadOrdersData() {
+                if (!this.isAuthenticated || !this.sessionToken) return;
+
+                fetch('/api/user/orders', {
+                    headers: {
+                        'X-Session-Token': this.sessionToken
+                    }
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            this.displayOrdersData(data.orders);
+                        } else {
+                            this.showNotification('Ошибка загрузки заказов', 'error');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Orders load failed:', error);
+                        this.showNotification('Ошибка загрузки заказов', 'error');
                     });
-                    
-                    // Close dropdown by removing hover state
-                    dropdown.classList.remove('hover');
-                });
-            });
-            
-            // Function to sort menu items
-            function sortMenuItems(section, sortType) {
-                const menuList = section.querySelector('.menu-list');
-                if (!menuList) return;
-                
-                const items = Array.from(menuList.querySelectorAll('.menu-list__item'));
-                
-                items.sort((a, b) => {
-                    const nameA = a.dataset.productName || a.querySelector('h4').textContent.trim();
-                    const nameB = b.dataset.productName || b.querySelector('h4').textContent.trim();
-                    const priceA = parseFloat(a.dataset.price || a.querySelector('.menu-list__item-price').textContent.replace(/[^\d]/g, ''));
-                    const priceB = parseFloat(b.dataset.price || b.querySelector('.menu-list__item-price').textContent.replace(/[^\d]/g, ''));
-                    const popularityA = parseInt(a.dataset.popularity || a.dataset.sortOrder || 0);
-                    const popularityB = parseInt(b.dataset.popularity || b.dataset.sortOrder || 0);
-                    
-                    switch(sortType) {
-                        case 'alphabet':
-                            // Сортировка по алфавиту от А до Я
-                            return nameA.localeCompare(nameB, 'ru');
-                        case 'price':
-                            // Сортировка по цене - самые дорогие вверху
-                            return priceB - priceA;
-                        case 'popularity':
-                            // Сортировка по популярности - используем data-popularity или data-sort-order
-                            const popA = parseInt(a.dataset.popularity || a.dataset.sortOrder || 0);
-                            const popB = parseInt(b.dataset.popularity || b.dataset.sortOrder || 0);
-                            if (popA !== popB) {
-                                return popB - popA; // Большее значение = более популярный
-                            }
-                            // Если популярность одинаковая, сортируем по цене (дорогие вверху)
-                            return priceB - priceA;
-                        default:
-                            return 0; // Keep original order
-                    }
-                });
-                
-                // Clear and re-append sorted items
-                menuList.innerHTML = '';
-                items.forEach(item => {
-                    menuList.appendChild(item);
-                });
-                
-                // Re-animate items
-                animateMenuItems(section);
             }
-        });
+
+            displayOrdersData(orders) {
+                const ordersList = document.getElementById('ordersList');
+                
+                if (!orders || orders.length === 0) {
+                    ordersList.innerHTML = '<p>У вас нет открытых заказов</p>';
+                    return;
+                }
+
+                ordersList.innerHTML = orders.map(order => {
+                    // Форматируем дату создания заказа (для открытых заказов date_close = 0)
+                    const orderDate = order.date_close_date ? 
+                        new Date(order.date_close_date).toLocaleDateString('ru-RU', {
+                            year: 'numeric',
+                            month: '2-digit',
+                            day: '2-digit',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        }) : 
+                        'Заказ открыт';
+                    
+                    // Форматируем сумму (уже в донгах для dash.getTransactions)
+                    const totalSum = parseFloat(order.sum).toFixed(0);
+                    const paidSum = parseFloat(order.payed_sum).toFixed(0);
+                    
+                    // Для открытых заказов статус всегда "Не оплачен"
+                    const status = 'Не оплачен';
+                    const statusClass = 'status-unpaid';
+                    
+                    // Получаем информацию о столе
+                    const tableInfo = order.table_name ? `Стол: ${order.table_name}` : 
+                                    order.table_id ? `Стол: ${order.table_id}` : 'Доставка';
+                    
+                    // Получаем комментарий к заказу
+                    const comment = order.transaction_comment ? 
+                        `<p><strong>Комментарий:</strong> ${order.transaction_comment}</p>` : '';
+                    
+                    return `
+                        <div class="order-item">
+                            <div class="order-info">
+                                <h4>Заказ #${order.transaction_id}</h4>
+                                <p><strong>Дата:</strong> ${orderDate}</p>
+                                <p><strong>Сумма:</strong> ${totalSum} ₫</p>
+                                <p><strong>Оплачено:</strong> ${paidSum} ₫</p>
+                                <p><strong>Статус:</strong> <span class="${statusClass}">${status}</span></p>
+                                <p><strong>${tableInfo}</strong></p>
+                                ${order.discount > 0 ? `<p><strong>Скидка:</strong> ${order.discount}%</p>` : ''}
+                                ${comment}
+                            </div>
+                            <div class="order-actions">
+                                <button class="btn btn--primary" onclick="authSystem.repeatOrder(${order.transaction_id})">
+                                    Повторить заказ
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            logout() {
+                fetch('/api/auth/logout', { 
+                    method: 'POST',
+                    headers: {
+                        'X-Session-Token': this.sessionToken
+                    }
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            this.isAuthenticated = false;
+                            this.userData = null;
+                            this.sessionToken = null;
+                            localStorage.removeItem('auth_session_token');
+                            this.updateAuthUI();
+                            this.showNotification('Вы вышли из системы', 'success');
+                        } else {
+                            this.showNotification('Ошибка выхода', 'error');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Logout failed:', error);
+                        this.showNotification('Ошибка выхода', 'error');
+                    });
+            }
+
+            showNotification(message, type = 'info') {
+                // Simple notification system
+                const notification = document.createElement('div');
+                notification.className = `notification notification--${type}`;
+                notification.textContent = message;
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    padding: 12px 20px;
+                    border-radius: 4px;
+                    color: white;
+                    z-index: 10000;
+                    font-size: 14px;
+                    max-width: 300px;
+                `;
+
+                // Set background color based on type
+                switch (type) {
+                    case 'success':
+                        notification.style.backgroundColor = '#4CAF50';
+                        break;
+                    case 'error':
+                        notification.style.backgroundColor = '#f44336';
+                        break;
+                    case 'info':
+                    default:
+                        notification.style.backgroundColor = '#2196F3';
+                        break;
+                }
+
+                document.body.appendChild(notification);
+
+                // Remove after 3 seconds
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 3000);
+            }
+        }
+
+        // Initialize auth system when DOM is loaded
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                window.authSystem = new AuthSystem();
+                // Check for auth success in URL after authSystem is initialized
+                checkAuthSuccessInURL();
+            });
+        } else {
+            window.authSystem = new AuthSystem();
+            // Check for auth success in URL after authSystem is initialized
+            checkAuthSuccessInURL();
+        }
+
+        // Function to check for auth success in URL and move session to localStorage
+        function checkAuthSuccessInURL() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const authSuccess = urlParams.get('auth');
+            const sessionToken = urlParams.get('session');
+            
+            if (authSuccess === 'success' && sessionToken) {
+                console.log('🔐 Auth success detected in URL, moving session to localStorage');
+                
+                // Save session token to localStorage
+                localStorage.setItem('auth_session_token', sessionToken);
+                
+                // Clean URL by removing auth parameters
+                const newUrl = window.location.origin + window.location.pathname;
+                window.history.replaceState({}, document.title, newUrl);
+                
+                // Show success notification
+                if (window.authSystem) {
+                    window.authSystem.showNotification('Авторизация успешна!', 'success');
+                    // Check auth status to update UI
+                    window.authSystem.checkAuthStatus();
+                }
+                
+                console.log('✅ Session moved to localStorage and URL cleaned');
+            }
+        }
     </script>
+
+    <!-- Auth Modal -->
+    <div id="authModal" class="modal modal-hidden">
+        <div class="modal-content auth-modal-content">
+            <div class="modal-header">
+                <h2>Авторизация</h2>
+                <button class="modal-close" id="authModalClose">&times;</button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="auth-providers">
+                    <div class="telegram-auth-container" style="display: none;">
+                        <!-- Кнопка авторизации через Telegram -->
+                        <button class="auth-provider-btn" onclick="window.authSystem.authenticateWithTelegram()">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="m20.665 3.717-17.73 6.837c-1.21.486-1.203 1.161-.222 1.462l4.552 1.42 10.532-6.645c.498-.303.953-.14.579.192l-8.533 7.701h-.002l.002.001-.314 4.692c.46 0 .663-.211.921-.46l2.211-2.15 4.599 3.397c.848.467 1.457.227 1.668-.785l3.019-14.228c.309-1.239-.473-1.8-1.282-1.434z"/>
+                            </svg>
+                            <span>Авторизоваться через Telegram</span>
+                        </button>
+                    </div>
+                    
+                    <button class="auth-provider-btn auth-provider-btn--disabled" disabled>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                        </svg>
+                        <span>Google</span>
+                    </button>
+                    
+                    <button class="auth-provider-btn auth-provider-btn--disabled" disabled>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M20,3H4C3.447,3,3,3.448,3,4v16c0,0.552,0.447,1,1,1h8.615v-6.96h-2.338v-2.725h2.338v-2c0-2.325,1.42-3.592,3.5-3.592 c0.699-0.002,1.399,0.034,2.095,0.107v2.42h-1.435c-1.128,0-1.348,0.538-1.348,1.325v1.735h2.697l-0.35,2.725h-2.348V21H20 c0.553,0,1-0.448,1-1V4C21,3.448,20.553,3,20,3z"/>
+                        </svg>
+                        <span>Facebook</span>
+                    </button>
+                    
+                    <button class="auth-provider-btn auth-provider-btn--disabled" disabled>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M18.71,19.5C17.88,20.74 17,21.95 15.66,21.97C14.32,22 13.89,21.18 12.37,21.18C10.84,21.18 10.37,21.95 9.1,22C7.79,22.05 6.8,20.68 5.96,19.47C4.25,17 2.94,12.45 4.7,9.39C5.57,7.87 7.13,6.91 8.82,6.88C10.1,6.86 11.32,7.75 12.11,7.75C12.89,7.75 14.37,6.68 15.92,6.84C16.57,6.87 18.39,7.1 19.56,8.82C19.47,8.88 17.39,10.1 17.41,12.63C17.44,15.65 20.06,16.66 20.09,16.67C20.06,16.74 19.67,18.11 18.71,19.5M13,3.5C13.73,2.67 14.94,2.04 15.94,2C16.07,3.17 15.6,4.35 14.9,5.19C14.21,6.04 13.07,6.7 11.95,6.61C11.8,5.46 12.36,4.26 13,3.5Z"/>
+                        </svg>
+                        <span>Apple</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Modal -->
+    <div id="profileModal" class="modal modal-hidden">
+        <div class="modal-content profile-modal-content">
+            <div class="modal-header">
+                <h2>Профиль</h2>
+                <button class="modal-close" id="profileModalClose">&times;</button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="profile-info" id="profileInfo">
+                    <!-- Profile data will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Orders Modal -->
+    <div id="ordersModal" class="modal modal-hidden">
+        <div class="modal-content orders-modal-content">
+            <div class="modal-header">
+                <h2 data-translate="my_orders">Loading...</h2>
+                <button class="modal-close" id="ordersModalClose">&times;</button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="orders-list" id="ordersList">
+                    <!-- Orders will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Overlay -->
+    <div id="modalOverlay" class="modal-overlay overlay-hidden"></div>
+
+    <script>
+    // Установка переводов для кнопок добавления в корзину
+    document.addEventListener('DOMContentLoaded', function() {
+        // Получаем текущий язык из URL или cookie
+        const currentLang = getCurrentLanguage();
+        
+        // Переводы для кнопки "заказать"
+        const translations = {
+            'ru': 'заказать',
+            'en': 'order', 
+            'vi': 'đặt hàng'
+        };
+        
+        // Устанавливаем атрибут data-hover-text для всех кнопок добавления в корзину
+        const addToCartButtons = document.querySelectorAll('.add-to-cart-btn');
+        addToCartButtons.forEach(button => {
+            button.setAttribute('data-hover-text', translations[currentLang] || translations['ru']);
+        });
+        
+        // Функция для получения текущего языка
+        function getCurrentLanguage() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const langFromUrl = urlParams.get('lang');
+            if (langFromUrl && ['ru', 'en', 'vi'].includes(langFromUrl)) {
+                return langFromUrl;
+            }
+            
+            const langFromCookie = document.cookie
+                .split('; ')
+                .find(row => row.startsWith('language='))
+                ?.split('=')[1];
+            if (langFromCookie && ['ru', 'en', 'vi'].includes(langFromCookie)) {
+                return langFromCookie;
+            }
+            
+            return 'ru'; // По умолчанию русский
+        }
+    });
+
+    // Показать инструкции телеграм авторизации
+    function showTelegramAuth() {
+        // Закрываем модальное окно авторизации
+        document.getElementById('authModal').classList.add('modal-hidden');
+        document.getElementById('modalOverlay').classList.add('overlay-hidden');
+        document.body.style.overflow = '';
+
+        // Показываем инструкции
+        const instructions = `
+            Для авторизации через Telegram:
+
+            1. Напишите боту @RestPublic_bot
+            2. Отправьте команду /start
+            3. Выберите "Авторизоваться"
+            4. Подтвердите авторизацию
+
+            После авторизации вы получите персональные скидки и сможете отслеживать заказы.
+        `;
+
+        alert(instructions);
+    }
+
+    // Старая функция телеграм виджета (оставляем для совместимости)
+    function onTelegramAuth(user) {
+        console.log('Telegram auth data:', user);
+
+        // Отправляем данные на backend для создания сессии
+        fetch('/api/auth/telegram-widget', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-API-Token': window.API_TOKEN
+            },
+            body: JSON.stringify({
+                id: user.id,
+                first_name: user.first_name,
+                last_name: user.last_name || '',
+                username: user.username || '',
+                photo_url: user.photo_url || '',
+                auth_date: user.auth_date,
+                hash: user.hash
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Auth response:', data);
+            if (data.success) {
+                // Сохраняем сессию и обновляем интерфейс
+                localStorage.setItem('sessionToken', data.sessionToken);
+                window.authSystem.loadUserData();
+
+                // Показываем сообщение об успешной авторизации
+                alert('Вы успешно авторизованы!');
+
+                // Обновляем интерфейс
+                location.reload();
+            } else {
+                alert('Ошибка авторизации: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Auth error:', error);
+            alert('Ошибка подключения к серверу');
+        });
+    }
+    </script>
+
 </body>
 </html>
