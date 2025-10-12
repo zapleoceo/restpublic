@@ -1,119 +1,233 @@
+@charset "UTF-8";
+
 /* Events Widget Styles */
-.s-events {
-    --content-padding-top: calc(var(--vspace-2) * 0.7);
-    --content-padding-bottom: calc(var(--vspace-2) * 0.7);
-
-    padding-top: var(--content-padding-top);
-    padding-bottom: var(--content-padding-bottom);
-}
-
 .events-widget {
-    margin-top: calc(var(--vspace-2) * 0.7);
+    background: var(--color-bg, #1e1e1e);
+    padding: var(--vspace-2) 0;
+    margin: var(--vspace-2) 0;
 }
 
-.events-widget__title {
-    font-size: 2.5rem;
-    font-weight: 700;
-    color: var(--text-color);
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    margin-bottom: 30px;
+.events-header {
     text-align: center;
+    margin-bottom: var(--vspace-2);
 }
 
-/* Слайдер дат */
-.dates-swiper {
-    margin-bottom: 20px;
+.events-title {
+    font-family: var(--type-headings);
+    font-size: var(--text-2xl);
+    color: var(--color-text-light, #fff);
+    margin: 0;
+}
+
+.events-empty {
+    text-align: center;
+    padding: var(--vspace-2);
+    color: var(--color-text-muted, #999);
+}
+
+.events-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--vspace-1_5);
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--vspace-1);
+}
+
+.event-item {
+    background: var(--color-bg-light, #2a2a2a);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+}
+
+.event-item:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.event-image {
+    position: relative;
+    height: 200px;
     overflow: hidden;
 }
 
-.dates-swiper .swiper-wrapper {
-    transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+.event-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.event-image-default {
+    width: 100%;
+    height: 100%;
+    background: var(--color-bg-primary, #d4af37);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.event-image-default img.blurred {
+    width: 80px;
+    height: 80px;
+    filter: blur(2px);
+    opacity: 0.7;
+}
+
+.event-content {
+    padding: var(--vspace-1_25);
+}
+
+.event-title {
+    font-family: var(--type-headings);
+    font-size: var(--text-lg);
+    color: var(--color-text-light, #fff);
+    margin: 0 0 var(--vspace-0_75) 0;
+    line-height: 1.3;
+}
+
+.event-details {
+    margin-bottom: var(--vspace-1);
+}
+
+.event-details > div {
+    display: flex;
+    align-items: center;
+    margin-bottom: var(--vspace-0_5);
+    color: var(--color-text-muted, #ccc);
+    font-size: var(--text-sm);
+}
+
+.event-details i {
+    margin-right: var(--vspace-0_5);
+    color: var(--color-bg-primary, #d4af37);
+    width: 16px;
+}
+
+.event-conditions {
+    font-weight: 500;
+    color: var(--color-text-light, #fff) !important;
+}
+
+.event-link {
+    text-align: center;
+}
+
+.btn-outline {
+    display: inline-block;
+    padding: var(--vspace-0_5) var(--vspace-1);
+    background: transparent;
+    border: 2px solid var(--color-bg-primary, #d4af37);
+    color: var(--color-bg-primary, #d4af37);
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-outline:hover {
+    background: var(--color-bg-primary, #d4af37);
+    color: var(--color-text-dark, #333);
+}
+
+/* Events Widget Swiper Styles */
+.events-widget__title {
+    font-family: var(--type-headings);
+    font-size: var(--text-3xl);
+    color: var(--color-text-light, #fff);
+    text-align: center;
+    margin-bottom: var(--vspace-2);
+}
+
+.events-widget__container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--vspace-1);
+}
+
+.dates-swiper {
+    height: 80px;
+    margin-bottom: var(--vspace-1_5);
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--color-bg-light, #2a2a2a);
+    border: 1px solid var(--color-neutral-800, #303231);
 }
 
 .dates-swiper .swiper-slide {
-    width: calc(100% / 14); /* Фиксированная ширина для 14 слайдов */
-    min-width: 0;
-    max-width: none;
-    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     padding: 8px 4px;
-    color: var(--muted-text);
-    background: transparent;
-    border: 1px solid var(--card-border);
-    border-radius: 6px;
     cursor: pointer;
-    font-size: 12px;
-    font-weight: 500;
-    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    user-select: none;
-    position: relative;
-    flex-shrink: 0;
-    box-sizing: border-box;
+    transition: all 0.3s ease;
+    border-radius: 8px;
+    margin: 4px;
+    background: var(--color-neutral-850, #1c1e1d);
+    border: 1px solid var(--color-neutral-800, #303231);
+    min-width: 60px;
+    max-width: 80px;
+    height: 64px;
 }
 
 .dates-swiper .swiper-slide:hover {
-    color: var(--text-color);
-    border-color: var(--accent-color);
+    background: var(--color-neutral-800, #303231);
+    border-color: var(--color-bg-primary, #b88746);
 }
 
 .dates-swiper .swiper-slide.active {
-    background: #b88746ff;
-    color: white;
-    border-color: #b88746ff;
+    background: var(--color-bg-primary, #b88746);
+    border-color: var(--color-bg-primary-dark, #a47652);
+    color: var(--color-bg, #1a1a1a);
     font-weight: 600;
-    font-size: 15px;
-    transform: scale(1.05);
-    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-.dates-swiper .swiper-slide.has-event::after {
-    content: '';
-    position: absolute;
-    bottom: 4px;
-    right: 4px;
-    width: 6px;
-    height: 6px;
-    background: var(--accent-color);
-    border-radius: 50%;
+.dates-swiper .swiper-slide > div:first-child {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 2px;
 }
 
-.dates-swiper .swiper-slide.active.has-event::after {
-    background: var(--bg-color);
+.dates-swiper .swiper-slide > div:last-child {
+    font-size: 10px;
+    opacity: 0.8;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
-/* Слайдер постеров */
 .posters-swiper {
-    height: 375px; /* Увеличили еще на 10px для дополнительных отступов */
+    height: 320px;
+    border-radius: 12px;
     overflow: hidden;
-    position: relative;
-    padding: 15px 0; /* Отступы сверху и снизу для центрирования слайдов */
-}
-
-.posters-swiper .swiper-wrapper {
-    transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    background: var(--color-bg-light, #2a2a2a);
+    border: 1px solid var(--color-neutral-800, #303231);
 }
 
 .posters-swiper .swiper-slide {
-    width: 320px; /* Увеличили для карточек 315×288px */
+    width: 300px;
     height: 100%;
-    flex-shrink: 0;
-    margin-bottom: 10px; /* Отступ между карточками 10px (было 5px) */
+    padding: 0 10px;
+    margin-bottom: 5px;
 }
 
-/* Постер карточка */
 .poster-card {
-    width: 100%;
-    height: 85%; /* Уменьшили карточки до 85% высоты дива */
-    border-radius: 8px;
     position: relative;
+    height: 100%;
+    border-radius: 12px;
     overflow: hidden;
     cursor: pointer;
-    border: 1px solid var(--card-border);
-    margin-top: 10px; /* Отступ сверху 10px (было 5px) */
+    border: 1px solid var(--card-border, #e9ecef);
     transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    background: var(--color-bg, #1a1a1a);
 }
 
-/* Контейнер изображения */
+.poster-card:hover {
+    transform: scale(1.02);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
+
 .poster-card__image-container {
     position: relative;
     width: 100%;
@@ -138,7 +252,6 @@
     filter: grayscale(0.3);
 }
 
-/* Placeholder с спиннером */
 .poster-card__image-placeholder {
     position: absolute;
     top: 0;
@@ -153,8 +266,8 @@
 }
 
 .loading-spinner {
-    width: 24px;
-    height: 24px;
+    width: 20px;
+    height: 20px;
     border: 2px solid #e0e0e0;
     border-top: 2px solid #4fb17d;
     border-radius: 50%;
@@ -166,16 +279,6 @@
     100% { transform: rotate(360deg); }
 }
 
-
-/* Выделенные постеры после клика на дату */
-.poster-card.selected {
-    transform: scale(1.05);
-    border: 3px solid #b88746ff;
-    border-radius: 12px;
-    box-shadow: 0 8px 20px rgba(54, 107, 91, 0.3);
-    transition: all 0.3s ease;
-}
-
 .poster-card__overlay {
     position: absolute;
     bottom: 0;
@@ -185,7 +288,7 @@
     padding: 15px;
     color: white;
     transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    z-index: 2; /* Текст поверх затемнения */
+    z-index: 2;
 }
 
 .poster-card:hover .poster-card__overlay {
@@ -203,7 +306,6 @@
     text-align: center;
 }
 
-/* Затемнение на всю карточку */
 .poster-card:not(.empty-date)::before {
     content: '';
     position: absolute;
@@ -667,4 +769,251 @@
     bottom: 20px;
     left: 20px;
     right: 20px;
+}
+
+/* Event Modal Styles */
+.event-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    backdrop-filter: blur(5px);
+    box-sizing: border-box;
+}
+
+.event-modal__overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(5px);
+}
+
+.event-modal__content {
+    position: relative;
+    background: var(--color-bg, #1a1a1a);
+    border-radius: 16px;
+    max-width: 600px;
+    width: 100%;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.4);
+    border: 1px solid var(--color-neutral-800, #303231);
+    animation: modalSlideIn 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    margin: auto;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-50px) scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.event-modal__close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: var(--color-text-light, #9fa1a1);
+    cursor: pointer;
+    z-index: 10;
+    width: auto;
+    height: auto;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    font-family: var(--type-body, 'Roboto Flex', sans-serif);
+    font-weight: 500;
+}
+
+.event-modal__close:hover {
+    color: var(--color-text-bold, #f0f0f0);
+    transform: scale(1.1);
+}
+
+.event-modal__body {
+    display: flex;
+    flex-direction: column;
+}
+
+.event-modal__image-container {
+    width: 100%;
+    height: 240px;
+    overflow: hidden;
+    border-radius: 16px 16px 0 0;
+    position: relative;
+}
+
+.event-modal__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+.event-modal__info {
+    padding: 32px;
+    background: var(--color-bg, #1a1a1a);
+}
+
+.event-modal__title {
+    font-family: var(--type-headings, 'MinionPro', serif);
+    font-size: 2rem;
+    font-weight: 600;
+    color: var(--color-text-bold, #f0f0f0);
+    margin-bottom: 16px;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+}
+
+.event-modal__date {
+    font-family: var(--type-body, 'Roboto Flex', sans-serif);
+    font-size: 1.1rem;
+    color: var(--color-bg-primary, #b88746);
+    margin-bottom: 20px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.event-modal__description {
+    font-family: var(--type-body, 'Roboto Flex', sans-serif);
+    font-size: 1.1rem;
+    line-height: 1.7;
+    color: var(--color-text, #e0e0e0);
+    margin-bottom: 24px;
+    font-weight: 400;
+}
+
+.event-modal__conditions {
+    font-family: var(--type-body, 'Roboto Flex', sans-serif);
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--color-text, #e0e0e0);
+    margin-bottom: 28px;
+    padding: 20px;
+    background: var(--color-neutral-900, #131414);
+    border-radius: 12px;
+    border-left: 4px solid var(--color-bg-primary, #b88746);
+    border: 1px solid var(--color-neutral-800, #303231);
+}
+
+.event-modal__conditions strong {
+    color: var(--color-bg-primary, #b88746);
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.event-modal__link {
+    display: inline-block;
+    background: var(--color-bg-primary, #b88746);
+    color: var(--color-bg, #1a1a1a);
+    text-decoration: none;
+    padding: 16px 32px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-family: var(--type-body, 'Roboto Flex', sans-serif);
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    text-align: center;
+    border: 1px solid var(--color-bg-primary, #b88746);
+}
+
+.event-modal__link:hover {
+    background: var(--color-bg-primary-dark, #a47652);
+    color: var(--color-text-bold, #f0f0f0);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(184, 135, 70, 0.4);
+    border-color: var(--color-bg-primary-dark, #a47652);
+}
+
+/* Modal responsive */
+@media (max-width: 768px) {
+    .event-modal__content {
+        margin: 16px;
+        max-height: 90vh;
+        max-width: calc(100vw - 32px);
+    }
+    
+    .event-modal__image-container {
+        height: 180px;
+    }
+    
+    .event-modal__info {
+        padding: 24px;
+    }
+    
+    .event-modal__title {
+        font-size: 1.5rem;
+    }
+    
+    .event-modal__date {
+        font-size: 1rem;
+    }
+    
+    .event-modal__description {
+        font-size: 1rem;
+    }
+    
+    .event-modal__conditions {
+        font-size: 0.9rem;
+        padding: 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .event-modal__content {
+        margin: 12px;
+        max-height: 95vh;
+        max-width: calc(100vw - 24px);
+    }
+    
+    .event-modal__image-container {
+        height: 140px;
+    }
+    
+    .event-modal__info {
+        padding: 20px;
+    }
+    
+    .event-modal__title {
+        font-size: 1.3rem;
+    }
+    
+    .event-modal__date {
+        font-size: 0.9rem;
+    }
+    
+    .event-modal__description {
+        font-size: 0.9rem;
+    }
+    
+    .event-modal__conditions {
+        font-size: 0.8rem;
+        padding: 14px;
+    }
+    
+    .event-modal__link {
+        padding: 14px 28px;
+        font-size: 0.9rem;
+    }
 }

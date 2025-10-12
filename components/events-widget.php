@@ -71,7 +71,10 @@ $translationService = new TranslationService();
                             </div>
                             <div class="event-conditions">
                                 <i class="icon-info"></i>
-                                <?php echo htmlspecialchars($event['conditions']); ?>
+                                <?php 
+                                $conditions = htmlspecialchars($event['conditions']);
+                                echo strlen($conditions) > 100 ? substr($conditions, 0, 100) . '...' : $conditions;
+                                ?>
                             </div>
                         </div>
                         

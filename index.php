@@ -1193,8 +1193,111 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                 // DOM уже загружен, но ждем немного для оптимизации
                 setTimeout(initEventsWidget, 100);
             }
+
+            // Event Modal functionality
+            class EventModal {
+                constructor() {
+                    this.modal = document.getElementById('event-modal');
+                    this.closeBtn = this.modal?.querySelector('.event-modal__close');
+                    this.overlay = this.modal?.querySelector('.event-modal__overlay');
+                    this.init();
+                }
+
+                init() {
+                    if (!this.modal) return;
+
+                    // Обработка кликов по событиям
+                    document.addEventListener('click', (e) => {
+                        const eventItem = e.target.closest('.event-item');
+                        if (eventItem) {
+                            e.preventDefault();
+                            this.showEventModal(eventItem);
+                        }
+                    });
+
+                    // Закрытие модального окна
+                    if (this.closeBtn) {
+                        this.closeBtn.addEventListener('click', () => this.hideEventModal());
+                    }
+                    if (this.overlay) {
+                        this.overlay.addEventListener('click', () => this.hideEventModal());
+                    }
+
+                    // Закрытие по Escape
+                    document.addEventListener('keydown', (e) => {
+                        if (e.key === 'Escape' && this.modal.style.display === 'block') {
+                            this.hideEventModal();
+                        }
+                    });
+                }
+
+                showEventModal(eventItem) {
+                    if (!this.modal) return;
+
+                    // Получаем данные события из атрибутов или текста
+                    const title = eventItem.querySelector('.event-title')?.textContent || 'Событие';
+                    const date = eventItem.querySelector('.event-date')?.textContent || '';
+                    const time = eventItem.querySelector('.event-time')?.textContent || '';
+                    const conditions = eventItem.querySelector('.event-conditions')?.textContent || '';
+                    const image = eventItem.querySelector('.event-image img')?.src || '/images/event-default.png';
+                    const link = eventItem.querySelector('.event-link a')?.href || '#';
+
+                    // Заполняем модальное окно
+                    const modalImage = this.modal.querySelector('#modal-event-image');
+                    const modalTitle = this.modal.querySelector('#modal-event-title');
+                    const modalDate = this.modal.querySelector('#modal-event-date');
+                    const modalDescription = this.modal.querySelector('#modal-event-description');
+                    const modalConditions = this.modal.querySelector('#modal-event-conditions');
+                    const modalLink = this.modal.querySelector('#modal-event-link');
+
+                    if (modalImage) modalImage.src = image;
+                    if (modalImage) modalImage.alt = title;
+                    if (modalTitle) modalTitle.textContent = title;
+                    if (modalDate) modalDate.textContent = `${date} ${time}`;
+                    if (modalDescription) modalDescription.textContent = conditions;
+                    if (modalConditions) modalConditions.innerHTML = `<strong>Условия участия:</strong><br>${conditions}`;
+                    if (modalLink) {
+                        modalLink.href = link;
+                        modalLink.style.display = (link && link !== '#') ? 'inline-block' : 'none';
+                    }
+
+                    this.modal.style.display = 'block';
+                    document.body.style.overflow = 'hidden';
+                }
+
+                hideEventModal() {
+                    if (!this.modal) return;
+                    this.modal.style.display = 'none';
+                    document.body.style.overflow = '';
+                }
+            }
+
+            // Инициализируем модальное окно событий
+            new EventModal();
         });
     </script>
+
+    <!-- Event Details Modal -->
+    <div id="event-modal" class="event-modal" style="display: none;">
+        <div class="event-modal__overlay"></div>
+        <div class="event-modal__content">
+            <button class="event-modal__close" aria-label="Закрыть модальное окно">&times;</button>
+            <div class="event-modal__body">
+                <div class="event-modal__image-container">
+                    <img id="modal-event-image" class="event-modal__image" src="" alt="">
+                </div>
+                <div class="event-modal__info">
+                    <h3 id="modal-event-title" class="event-modal__title"></h3>
+                    <div id="modal-event-date" class="event-modal__date"></div>
+                    <div id="modal-event-description" class="event-modal__description"></div>
+                    <div id="modal-event-conditions" class="event-modal__conditions"></div>
+                    <a id="modal-event-link" href="#" class="event-modal__link" target="_blank" rel="noopener noreferrer">
+                        Подробнее
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
 
 </body>
 </html>
