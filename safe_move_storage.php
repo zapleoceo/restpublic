@@ -43,13 +43,13 @@ function makeApiRequest($url, $method = 'GET', $data = null) {
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
     curl_setopt($ch, CURLOPT_TIMEOUT, 30);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, [
-        'Content-Type: application/x-www-form-urlencoded'
-    ]);
     
     if ($method === 'POST' && $data) {
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Content-Type: application/x-www-form-urlencoded'
+        ]);
     }
     
     $response = curl_exec($ch);
@@ -229,22 +229,19 @@ try {
     // Шаг 6: Создаем перемещение
     logMessage("\n🔄 Создаем перемещение...");
     
+    // Подготавливаем данные в правильном формате для Poster API
     $moving_data = [
         'date' => date('Y-m-d H:i:s'),
         'from_storage' => $from_storage_id,
         'to_storage' => $to_storage_id
     ];
     
-    $ingredients = [];
-    foreach ($positive_leftovers as $item) {
-        $ingredients[] = [
-            'id' => $item['ingredient_id'],
-            'type' => $item['type'],
-            'num' => $item['quantity']
-        ];
+    // Добавляем ингредиенты в правильном формате для Poster API
+    foreach ($positive_leftovers as $index => $item) {
+        $moving_data["ingredients[{$index}][ingredient_id]"] = $item['ingredient_id'];
+        $moving_data["ingredients[{$index}][amount]"] = $item['quantity'];
+        $moving_data["ingredients[{$index}][type]"] = $item['type'];
     }
-    
-    $moving_data['ingredient'] = $ingredients;
     
     // Отправляем запрос на создание перемещения
     $create_moving_url = $api_base . '/storage.createMoving?token=' . $api_token;
