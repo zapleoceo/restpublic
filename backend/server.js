@@ -13,6 +13,7 @@ const cacheRoutes = require('./routes/cache');
 const tablesRoutes = require('./routes/tables');
 const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/user');
+const storageRoutes = require('./routes/storage');
 
 const app = express();
 const PORT = process.env.PORT || 3003;
@@ -95,6 +96,7 @@ app.use('/api/poster', apiLimiter, posterRoutes);
 app.use('/api/menu', apiLimiter, menuRoutes);
 app.use('/api/cache', apiLimiter, cacheRoutes);
 app.use('/api/tables', apiLimiter, tablesRoutes);
+app.use('/api/storage', apiLimiter, storageRoutes);
 app.use('/api/auth', authLimiter, authRoutes); // Более мягкий лимит для auth
 app.use('/api/user', apiLimiter, userRoutes);
 

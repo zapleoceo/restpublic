@@ -761,6 +761,40 @@ class PosterService {
       throw new Error(`Failed to change fiscal status: ${error.message}`);
     }
   }
+
+  // Get storage leftovers
+  async getStorageLeftovers(storageId) {
+    try {
+      console.log(`🔍 getStorageLeftovers() called for storage ID: ${storageId}`);
+      const leftovers = await this.makeRequest('storage.getStorageLeftovers', {
+        storage_id: storageId
+      });
+      console.log(`📦 Retrieved ${leftovers.length} leftover items`);
+      return leftovers;
+    } catch (error) {
+      console.error('❌ Error fetching storage leftovers:', error.message);
+      throw error;
+    }
+  }
+
+  // Create storage moving
+  async createMoving(movingData) {
+    try {
+      console.log('🔍 createMoving() called');
+      console.log('📋 Moving data:', {
+        from: movingData.storage_id_from,
+        to: movingData.storage_id_to,
+        products_count: movingData.products?.length || 0
+      });
+      
+      const result = await this.makeRequest('storage.createMoving', movingData);
+      console.log(`✅ Moving created with ID: ${result}`);
+      return result;
+    } catch (error) {
+      console.error('❌ Error creating storage moving:', error.message);
+      throw error;
+    }
+  }
 }
 
 module.exports = new PosterService();
