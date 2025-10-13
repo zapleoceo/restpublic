@@ -127,8 +127,8 @@ router.post('/update-menu', async (req, res) => {
             message: 'Cache updated successfully',
             categoriesCount: menuData.categories?.length || 0,
             productsCount: menuData.products?.length || 0,
-            tablesCount: tablesData?.count || 0,
-            hallsCount: tablesData?.halls?.length || 0
+            tablesCount: (tablesData && tablesData.count) || 0,
+            hallsCount: (tablesData && tablesData.halls) ? tablesData.halls.length : 0
         });
         
         console.log(`✅ Кэш обновлен. Модифицировано записей: ${result.modifiedCount}`);
