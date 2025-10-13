@@ -130,6 +130,16 @@ class CartMenu2 {
         orderTypeInputs.forEach(input => {
             input.addEventListener('change', () => this.updateOrderTypeFields());
         });
+
+        // Обработчик для кнопок добавления в корзину
+        document.addEventListener('click', (e) => {
+            if (e.target.closest('.add-to-cart-btn')) {
+                const btn = e.target.closest('.add-to-cart-btn');
+                const productData = JSON.parse(btn.dataset.product);
+                this.addItem(productData);
+                this.highlightCart();
+            }
+        });
     }
 
     // Показать/скрыть корзину
@@ -151,6 +161,18 @@ class CartMenu2 {
         if (cartSidebar && cartOverlay) {
             cartSidebar.classList.remove('open');
             cartOverlay.classList.remove('active');
+        }
+    }
+
+    // Подсветить корзину при добавлении товара
+    highlightCart() {
+        const cartButton = document.getElementById('cart-button');
+        if (cartButton) {
+            cartButton.style.transform = 'scale(1.1)';
+            cartButton.style.transition = 'transform 0.2s ease';
+            setTimeout(() => {
+                cartButton.style.transform = 'scale(1)';
+            }, 200);
         }
     }
 
