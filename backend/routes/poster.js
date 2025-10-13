@@ -114,6 +114,46 @@ router.post('/orders/create', requireAuth, async (req, res) => {
   }
 });
 
+// Create order (check) using orders.createOrder
+router.post('/orders/create-check', requireAuth, async (req, res) => {
+  try {
+    console.log('📡 Creating order (check)...');
+    const orderData = req.body;
+    
+    // Validate required fields
+    if (!orderData.spotId) {
+      return res.status(400).json({
+        error: 'Invalid order data',
+        message: 'spotId is required'
+      });
+    }
+    if (!orderData.client || !orderData.client.phone) {
+      return res.status(400).json({
+        error: 'Invalid order data',
+        message: 'client.phone is required'
+      });
+    }
+    if (!orderData.products || !Array.isArray(orderData.products) || orderData.products.length === 0) {
+      return res.status(400).json({
+        error: 'Invalid order data',
+        message: 'Products array is required and cannot be empty'
+      });
+    }
+    
+    const result = await posterService.createOrder(orderData);
+    res.json({
+      success: true,
+      order: result
+    });
+  } catch (error) {
+    console.error('Order (check) creation error:', error);
+    res.status(500).json({
+      error: 'Failed to create order (check)',
+      message: error.message
+    });
+  }
+});
+
 // Remove client
 router.post('/clients.removeClient', requireAuth, async (req, res) => {
   try {

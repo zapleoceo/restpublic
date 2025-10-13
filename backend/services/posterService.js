@@ -372,6 +372,94 @@ class PosterService {
     }
   }
 
+  // Create order (check) using orders.createOrder
+  async createOrder(orderData) {
+    console.log(`🔍 createOrder() called with data:`, orderData);
+    
+    try {
+      if (!this.token) {
+        throw new Error('Poster API token not configured');
+      }
+
+      const url = `${this.baseURL}/orders?token=${this.token}`;
+      
+      // Валидация обязательных полей
+      if (!orderData.spotId) {
+        throw new Error('spotId is required');
+      }
+      if (!orderData.client || !orderData.client.phone) {
+        throw new Error('client.phone is required');
+      }
+      if (!orderData.products || orderData.products.length === 0) {
+        throw new Error('products array is required');
+      }
+
+      // Process order data according to Poster API documentation
+      const processedOrderData = {
+        spotId: parseInt(orderData.spotId),
+        tableId: parseInt(orderData.tableId || 1),
+        waiterId: parseInt(orderData.waiterId || 4),
+        guestsCount: parseInt(orderData.guestsCount || 1),
+        serviceMode: parseInt(orderData.serviceMode || 1),
+        autoAccept: orderData.autoAccept || false,
+        client: {
+          firstName: orderData.client.firstName || '',
+          lastName: orderData.client.lastName || '',
+          phone: orderData.client.phone,
+          email: orderData.client.email || '',
+          address: orderData.client.address || {
+            street: '',
+            additionalInfo: '',
+            comment: '',
+            lat: '',
+            lng: ''
+          }
+        },
+        comment: orderData.comment || '',
+        products: orderData.products.map(product => ({
+          id: parseInt(product.id),
+          count: parseFloat(product.count),
+          price: parseFloat(product.price), // Price in major units
+          comment: product.comment || ''
+        }))
+      };
+
+      // Добавляем опциональные поля если они есть
+      if (orderData.delivery) {
+        processedOrderData.delivery = orderData.delivery;
+      }
+      if (orderData.payments) {
+        processedOrderData.payments = orderData.payments;
+      }
+      if (orderData.acquirerPayments) {
+        processedOrderData.acquirerPayments = orderData.acquirerPayments;
+      }
+
+      console.log(`📡 Poster API Request: ${url}`);
+      console.log(`📦 Order data:`, processedOrderData);
+
+      const response = await this.api.post(url, processedOrderData, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      console.log(`📥 Poster API Response:`, response.data);
+      
+      // Проверяем, есть ли ошибка в ответе Poster API
+      if (response.data.error) {
+        console.error(`❌ Poster API returned error:`, response.data.error);
+        throw new Error(`Poster API error: ${response.data.error.message || 'Unknown error'}`);
+      }
+      
+      console.log(`✅ Order created successfully:`, response.data);
+      return response.data;
+    } catch (error) {
+      console.error(`❌ Poster API Error (createOrder):`, error.message);
+      throw new Error(`Failed to create order: ${error.message}`);
+    }
+  }
+
   // Get clients by phone
   async getClients(phone) {
     console.log(`🔍 getClients() called with phone: ${phone}`);
