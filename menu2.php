@@ -370,7 +370,7 @@ if ($menu_loaded) {
                 <!-- Page Title -->
                 <div class="row">
                     <div class="column xl-12">
-                        <h1 class="text-display-title page-title"><?php echo $translationService->get('menu.title_v2', 'Наше меню v2'); ?></h1>
+                        <h1 class="text-display-title page-title"><?php echo $translationService->get('menu.title_v2', 'Наше меню'); ?></h1>
                     </div>
                 </div>
 
