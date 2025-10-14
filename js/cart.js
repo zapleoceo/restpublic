@@ -1316,7 +1316,14 @@ class Cart {
                 // Определяем и логируем номер заказа из разных форматов ответа
                 const orderId = this.extractOrderId(result);
                 console.log('🧾 Order create response:', result);
+                console.log('🧾 Debug paths:', {
+                    order_response: result?.order?.response,
+                    response: result?.response
+                });
                 console.log('🧾 Parsed orderId:', orderId);
+                if (orderId) {
+                    this.showToast(`Номер заказа: ${orderId}`, 'info');
+                }
 
                 // Сохраняем контекст заказа (имя, зал, стол, orderId) в localStorage (3 часа)
                 this.saveOrderContextAfterSuccess(orderId);
