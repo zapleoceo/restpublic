@@ -15,6 +15,33 @@ class Cart {
         this.translations = null;
         this.init();
     }
+
+    // ===== Storage helpers with TTL (default 3 hours) =====
+    setStorageItemWithTTL(key, value, ttlMs = 3 * 60 * 60 * 1000) {
+        try {
+            const record = { value, expiresAt: Date.now() + ttlMs };
+            localStorage.setItem(key, JSON.stringify(record));
+        } catch (e) {
+            console.warn('setStorageItemWithTTL failed:', e);
+        }
+    }
+
+    getStorageItemWithTTL(key) {
+        try {
+            const raw = localStorage.getItem(key);
+            if (!raw) return null;
+            const record = JSON.parse(raw);
+            if (!record || typeof record.expiresAt !== 'number') return null;
+            if (Date.now() > record.expiresAt) {
+                localStorage.removeItem(key);
+                return null;
+            }
+            return record.value;
+        } catch (e) {
+            console.warn('getStorageItemWithTTL failed:', e);
+            return null;
+        }
+    }
     
     // Функция для форматирования чисел с пробелами
     formatNumber(num) {
@@ -598,6 +625,8 @@ class Cart {
         this.populateCartModal();
         this.showModal();
         this.showGuestFields();
+        // Prefill from stored info (name immediately, hall/table after options load)
+        this.prefillOrderFieldsFromStorage();
         
         // Сначала загружаем данные пользователя, если он авторизован
         if (window.authSystem && window.authSystem.isAuthenticated) {
@@ -915,6 +944,8 @@ class Cart {
                 const currentHall = hallSelect ? hallSelect.value : '';
                 const filtered = currentHall ? this.allTables.filter(t => String(t.hall_id || '') === String(currentHall)) : this.allTables;
                 this.populateTableSelect(filtered);
+                // После первичной отрисовки применяем сохраненные hall/table если есть
+                this.applySavedHallAndTable();
             } else {
                 console.warn('Failed to load tables from MongoDB, using fallback');
                 this.populateTableSelect([]);
@@ -1281,6 +1312,10 @@ class Cart {
                 
                 // Сохраняем данные клиента для будущих заказов
                 this.saveCustomerData(name, phone);
+
+                // Сохраняем контекст заказа (имя, зал, стол, orderId) в localStorage (3 часа)
+                const orderId = (result && result.response && result.response.id) || (result && result.order && result.order.response && result.order.response.id) || null;
+                this.saveOrderContextAfterSuccess(orderId);
                 
                 this.clearCart();
                 this.hideModal();
@@ -1633,6 +1668,82 @@ class Cart {
         
         if (phoneField && storedPhone && !phoneField.value) {
             phoneField.value = storedPhone;
+        }
+    }
+
+    // ===== New: Persist order context and prefill back =====
+    saveOrderContextAfterSuccess(orderId) {
+        try {
+            const name = (document.getElementById('customerName')?.value || '').trim();
+            const hallSelect = document.getElementById('hallSelect');
+            const tableSelect = document.getElementById('tableNumber');
+            const hallId = hallSelect && hallSelect.value ? String(hallSelect.value) : '';
+            const hallName = hallSelect && hallSelect.selectedIndex > -1 ? hallSelect.options[hallSelect.selectedIndex].text : '';
+            const tableId = tableSelect && tableSelect.value ? String(tableSelect.value) : '';
+            const tableName = tableSelect && tableSelect.selectedIndex > -1 ? tableSelect.options[tableSelect.selectedIndex].text : '';
+
+            const info = { name, hallId, hallName, tableId, tableName, orderId };
+            this.setStorageItemWithTTL('veranda_order_info', info);
+            console.log('💾 Saved order context (3h TTL):', info);
+        } catch (e) {
+            console.warn('Failed to save order context:', e);
+        }
+    }
+
+    prefillOrderFieldsFromStorage() {
+        const info = this.getStorageItemWithTTL('veranda_order_info');
+        if (!info) return;
+
+        // Имя подставляем сразу
+        const nameField = document.getElementById('customerName');
+        if (nameField && !nameField.value && info.name) {
+            nameField.value = info.name;
+        }
+
+        // Зал и стол — после загрузки опций (loadTables), но на всякий случай пробуем с ретраем
+        let attempts = 0;
+        const tryApply = () => {
+            attempts++;
+            const hallSelect = document.getElementById('hallSelect');
+            const tableSelect = document.getElementById('tableNumber');
+            const hallReady = hallSelect && hallSelect.options && hallSelect.options.length > 1; // есть реальные опции
+            const tableReady = tableSelect && tableSelect.options && tableSelect.options.length > 1;
+
+            if (hallReady) {
+                if (info.hallId) {
+                    hallSelect.value = info.hallId;
+                    hallSelect.dispatchEvent(new Event('change'));
+                }
+                if (tableReady && info.tableId) {
+                    tableSelect.value = info.tableId;
+                }
+                console.log('📥 Prefill completed from storage:', info);
+                return; // удачно
+            }
+            if (attempts < 20) {
+                setTimeout(tryApply, 250);
+            } else {
+                console.warn('Prefill hall/table timed out');
+            }
+        };
+        tryApply();
+    }
+
+    applySavedHallAndTable() {
+        const info = this.getStorageItemWithTTL('veranda_order_info');
+        if (!info) return;
+        const hallSelect = document.getElementById('hallSelect');
+        const tableSelect = document.getElementById('tableNumber');
+        if (hallSelect && info.hallId) {
+            hallSelect.value = info.hallId;
+            hallSelect.dispatchEvent(new Event('change'));
+        }
+        if (tableSelect && info.tableId) {
+            // Небольшая задержка, чтобы таблицы успели перерисоваться после смены зала
+            setTimeout(() => {
+                tableSelect.value = info.tableId;
+                console.log('📥 Applied saved hall/table:', { hallId: info.hallId, hallName: info.hallName, tableId: info.tableId, tableName: info.tableName });
+            }, 200);
         }
     }
 
