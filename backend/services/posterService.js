@@ -680,7 +680,7 @@ class PosterService {
   }
 
   // Add product to transaction
-  async addTransactionProduct(transactionId, productId, count, price) {
+  async addTransactionProduct(transactionId, productId, count, price, spotId = 1, spotTabletId = 1) {
     console.log(`🔍 addTransactionProduct() called with transactionId: ${transactionId}, productId: ${productId}`);
     
     try {
@@ -695,8 +695,10 @@ class PosterService {
         throw new Error('transaction_id, product_id, count, and price are required');
       }
 
-      // Подготавливаем данные для добавления продукта
+      // Подготавливаем данные для добавления продукта согласно Poster API документации
       const processedData = {
+        spot_id: parseInt(spotId),
+        spot_tablet_id: parseInt(spotTabletId),
         transaction_id: parseInt(transactionId),
         product_id: parseInt(productId),
         count: parseFloat(count),

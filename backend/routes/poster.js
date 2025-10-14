@@ -248,7 +248,7 @@ router.get('/transactions.getTransactions', requireAuth, async (req, res) => {
 router.post('/transactions.addTransactionProduct', requireAuth, async (req, res) => {
   try {
     console.log('📡 Adding product to transaction...');
-    const { transaction_id, product_id, count, price } = req.body;
+    const { transaction_id, product_id, count, price, spot_id, spot_tablet_id } = req.body;
     
     if (!transaction_id || !product_id || !count || !price) {
       return res.status(400).json({
@@ -257,7 +257,14 @@ router.post('/transactions.addTransactionProduct', requireAuth, async (req, res)
       });
     }
     
-    const result = await posterService.addTransactionProduct(transaction_id, product_id, count, price);
+    const result = await posterService.addTransactionProduct(
+      transaction_id, 
+      product_id, 
+      count, 
+      price, 
+      spot_id || 1, 
+      spot_tablet_id || 1
+    );
     res.json(result);
   } catch (error) {
     console.error('Add transaction product error:', error);

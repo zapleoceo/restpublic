@@ -16,6 +16,77 @@ class CartMenu2 {
         this.translations = null;
         this.init();
     }
+
+    // ===== Storage helpers with TTL (3 hours) =====
+    setStorageItemWithTTL(key, value, ttlMs) {
+        try {
+            const record = {
+                value,
+                expiresAt: Date.now() + ttlMs
+            };
+            localStorage.setItem(key, JSON.stringify(record));
+        } catch (e) {
+            console.warn('setStorageItemWithTTL failed:', e);
+        }
+    }
+
+    getStorageItemWithTTL(key) {
+        try {
+            const raw = localStorage.getItem(key);
+            if (!raw) return null;
+            const record = JSON.parse(raw);
+            if (!record || typeof record.expiresAt !== 'number') return null;
+            if (Date.now() > record.expiresAt) {
+                localStorage.removeItem(key);
+                return null;
+            }
+            return record.value;
+        } catch (e) {
+            console.warn('getStorageItemWithTTL failed:', e);
+            return null;
+        }
+    }
+
+    // Сохранить мета-данные заказа (имя, зал, стол, номер заказа) на 3 часа
+    saveOrderMetaFromForm(orderId) {
+        const THREE_HOURS_MS = 3 * 60 * 60 * 1000;
+        const name = document.getElementById('customerName')?.value?.trim() || '';
+        const hall = document.getElementById('hallSelect')?.value || '';
+        const table = document.getElementById('tableNumber')?.value || '';
+
+        const orderInfo = {
+            name,
+            hall,
+            table,
+            orderId: orderId ? String(orderId) : (this.currentOrderId ? String(this.currentOrderId) : ''),
+            savedAt: new Date().toISOString()
+        };
+
+        this.setStorageItemWithTTL('veranda_order_info', orderInfo, THREE_HOURS_MS);
+
+        // Логируем в консоль браузера
+        try {
+            console.log('🧾 Saved order info (3h TTL):', orderInfo);
+        } catch (_) {}
+    }
+
+    // Заполнить поля корзины данными из localStorage (если не истек TTL)
+    prefillOrderFieldsFromStorage() {
+        const info = this.getStorageItemWithTTL('veranda_order_info');
+        if (!info) return;
+        const nameField = document.getElementById('customerName');
+        const hallField = document.getElementById('hallSelect');
+        const tableField = document.getElementById('tableNumber');
+
+        if (nameField && !nameField.value) nameField.value = info.name || '';
+        if (hallField && info.hall) hallField.value = info.hall;
+        if (tableField && info.table) tableField.value = info.table;
+
+        // Логируем в консоль браузера
+        try {
+            console.log('📥 Prefilled order form from storage:', info);
+        } catch (_) {}
+    }
     
     // Функция для форматирования чисел с пробелами
     formatNumber(num) {
@@ -53,6 +124,9 @@ class CartMenu2 {
             await this.reloadTranslations();
             this.updateCartModalTranslations();
         }, 2000);
+
+        // Префилд полей заказа из localStorage
+        setTimeout(() => this.prefillOrderFieldsFromStorage(), 0);
     }
 
     // Загрузка переводов
@@ -302,6 +376,8 @@ class CartMenu2 {
         if (modal) {
             modal.classList.remove('modal-hidden');
             this.updateOrderTypeFields();
+            // При открытии модалки — префилд полей, если есть сохраненные данные
+            this.prefillOrderFieldsFromStorage();
         }
     }
 
@@ -349,13 +425,13 @@ class CartMenu2 {
         return true;
     }
 
-    // Проверить открытые чеки для клиента
-    async checkOpenOrders(clientId) {
+    // Проверить, открыт ли конкретный чек
+    async checkIfOrderIsOpen(orderId) {
         try {
             const apiUrl = window.location.hostname === 'localhost' ? 'http://localhost:3003' : '';
             const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
             
-            const response = await fetch(`${apiUrl}/api/proxy.php?path=poster/transactions.getTransactions&client_id=${clientId}&date_from=${today}&date_to=${today}&token=${window.API_TOKEN}`, {
+            const response = await fetch(`${apiUrl}/api/proxy.php?path=poster/transactions.getTransactions&date_from=${today}&date_to=${today}&token=${window.API_TOKEN}`, {
                 method: 'GET',
                 headers: {
                     'X-API-Token': window.API_TOKEN
@@ -363,17 +439,76 @@ class CartMenu2 {
             });
             
             if (response.ok) {
-                const transactions = await response.json();
+                const result = await response.json();
+                console.log('Check order status response:', result);
+                
+                let transactions = [];
+                if (result && result.response && result.response.data) {
+                    transactions = result.response.data;
+                } else if (Array.isArray(result)) {
+                    transactions = result;
+                }
+                
+                // Ищем конкретный чек
+                const order = transactions.find(transaction => 
+                    transaction.transaction_id == orderId
+                );
+                
+                if (order) {
+                    const isOpen = !order.date_close || 
+                                  order.date_close === '' || 
+                                  order.date_close === '0000-00-00 00:00:00' ||
+                                  order.pay_type === 0;
+                    console.log(`Order ${orderId} is ${isOpen ? 'open' : 'closed'}`);
+                    return isOpen;
+                }
+            }
+        } catch (error) {
+            console.warn('Error checking order status:', error);
+        }
+        return false;
+    }
+
+    // Проверить открытые чеки для клиента
+    async checkOpenOrders(clientId) {
+        try {
+            const apiUrl = window.location.hostname === 'localhost' ? 'http://localhost:3003' : '';
+            const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+            
+            // Используем правильный API endpoint для получения чеков
+            const response = await fetch(`${apiUrl}/api/proxy.php?path=poster/transactions.getTransactions&date_from=${today}&date_to=${today}&token=${window.API_TOKEN}`, {
+                method: 'GET',
+                headers: {
+                    'X-API-Token': window.API_TOKEN
+                }
+            });
+            
+            if (response.ok) {
+                const result = await response.json();
+                console.log('Transactions API response:', result);
+                
+                // Проверяем структуру ответа
+                let transactions = [];
+                if (result && result.response && result.response.data) {
+                    transactions = result.response.data;
+                } else if (Array.isArray(result)) {
+                    transactions = result;
+                }
+                
                 console.log('All transactions:', transactions);
                 
-                // Ищем незакрытые заказы (date_close пустое или null)
+                // Ищем незакрытые заказы для конкретного клиента
                 if (Array.isArray(transactions)) {
                     const openOrder = transactions.find(transaction => 
-                        !transaction.date_close || 
-                        transaction.date_close === '' || 
-                        transaction.date_close === '0000-00-00 00:00:00'
+                        transaction.client_id == clientId && (
+                            !transaction.date_close || 
+                            transaction.date_close === '' || 
+                            transaction.date_close === '0000-00-00 00:00:00' ||
+                            transaction.pay_type === 0 // 0 = закрыт без оплаты
+                        )
                     );
                     
+                    console.log('Found open order:', openOrder);
                     return openOrder || null;
                 }
             }
@@ -397,21 +532,31 @@ class CartMenu2 {
                         'X-API-Token': window.API_TOKEN
                     },
                     body: JSON.stringify({
-                        transaction_id: orderId,
+                        spot_id: 1, // ID заведения
+                        spot_tablet_id: 1, // ID кассы
+                        transaction_id: parseInt(orderId),
                         product_id: parseInt(item.id),
                         count: item.quantity,
-                        price: Math.round(item.price * 100) // Convert to minor units
+                        price: Math.round(item.price) // Price in major units (донги)
                     })
                 });
                 
                 if (!response.ok) {
-                    throw new Error(`Failed to add product ${item.name} to order`);
+                    const errorData = await response.json();
+                    console.error('API Error:', errorData);
+                    throw new Error(`Failed to add product ${item.name} to order: ${errorData.message || 'Unknown error'}`);
                 }
+                
+                const result = await response.json();
+                console.log(`Product ${item.name} added to order ${orderId}:`, result);
             }
             
             // Сохраняем номер чека
             this.currentOrderId = orderId;
             this.saveCart();
+
+            // Сохраняем мета-данные заказа (имя, зал, стол, номер заказа)
+            this.saveOrderMetaFromForm(orderId);
             
             this.showToast('Товары успешно добавлены к существующему заказу!', 'success');
             this.clearCart();
@@ -419,7 +564,7 @@ class CartMenu2 {
             
         } catch (error) {
             console.error('Error adding to existing order:', error);
-            this.showToast('Ошибка при добавлении товаров к заказу', 'error');
+            this.showToast('Ошибка при добавлении товаров к заказу: ' + error.message, 'error');
         }
     }
 
@@ -439,24 +584,36 @@ class CartMenu2 {
 
             if (response.ok) {
                 const result = await response.json();
+                console.log('Order creation response:', result);
                 
-                // Сохраняем номер чека
+                // Сохраняем номер чека из ответа
                 if (result.order && result.order.response && result.order.response.id) {
                     this.currentOrderId = result.order.response.id;
                     this.saveCart();
+                    console.log('Order ID saved:', this.currentOrderId);
+                } else if (result.response && result.response.id) {
+                    this.currentOrderId = result.response.id;
+                    this.saveCart();
+                    console.log('Order ID saved (alternative path):', this.currentOrderId);
+                } else {
+                    console.warn('Could not extract order ID from response:', result);
                 }
+
+                // Сохраняем мета-данные заказа (имя, зал, стол, номер заказа)
+                this.saveOrderMetaFromForm(this.currentOrderId);
                 
                 this.showToast('Заказ успешно создан!', 'success');
                 this.clearCart();
                 this.hideModal();
-                console.log('Order created:', result);
+                console.log('Order created successfully:', result);
             } else {
                 const error = await response.json();
+                console.error('Order creation failed:', error);
                 throw new Error(error.message || 'Failed to create order');
             }
         } catch (error) {
             console.error('Order creation error:', error);
-            this.showToast('Ошибка при создании заказа', 'error');
+            this.showToast('Ошибка при создании заказа: ' + error.message, 'error');
         }
     }
 
@@ -538,6 +695,22 @@ class CartMenu2 {
         try {
             this.showToast('Отправляем заказ...', 'info');
             
+            // Проверяем, есть ли уже сохраненный номер чека в сессии
+            if (this.currentOrderId) {
+                console.log('Found existing order ID in session:', this.currentOrderId);
+                // Проверяем, открыт ли этот чек
+                const isOrderOpen = await this.checkIfOrderIsOpen(this.currentOrderId);
+                if (isOrderOpen) {
+                    console.log('Existing order is still open, adding products to it');
+                    await this.addToExistingOrder(this.currentOrderId);
+                    return;
+                } else {
+                    console.log('Existing order is closed, creating new one');
+                    this.currentOrderId = null;
+                    this.saveCart();
+                }
+            }
+            
             // Если пользователь авторизован, проверяем открытые чеки
             if (window.authSystem && window.authSystem.isAuthenticated && window.authSystem.userData) {
                 try {
@@ -554,7 +727,9 @@ class CartMenu2 {
                             const openOrder = await this.checkOpenOrders(clientId);
                             if (openOrder) {
                                 console.log('Found open order:', openOrder);
-                                // Добавляем товары к существующему чеку
+                                // Сохраняем номер чека и добавляем товары к существующему чеку
+                                this.currentOrderId = openOrder.transaction_id;
+                                this.saveCart();
                                 await this.addToExistingOrder(openOrder.transaction_id);
                                 return;
                             }
