@@ -74,18 +74,51 @@ class CartMenu2 {
     prefillOrderFieldsFromStorage() {
         const info = this.getStorageItemWithTTL('veranda_order_info');
         if (!info) return;
-        const nameField = document.getElementById('customerName');
-        const hallField = document.getElementById('hallSelect');
-        const tableField = document.getElementById('tableNumber');
 
-        if (nameField && !nameField.value) nameField.value = info.name || '';
-        if (hallField && info.hall) hallField.value = info.hall;
-        if (tableField && info.table) tableField.value = info.table;
+        const applyValues = () => {
+            const nameField = document.getElementById('customerName');
+            const hallField = document.getElementById('hallSelect');
+            const tableField = document.getElementById('tableNumber');
 
-        // Логируем в консоль браузера
-        try {
-            console.log('📥 Prefilled order form from storage:', info);
-        } catch (_) {}
+            if (nameField && !nameField.value) nameField.value = info.name || '';
+
+            // Устанавливаем hall/table только когда опции подгружены
+            let applied = false;
+            if (hallField && info.hall) {
+                const hasHallOption = Array.from(hallField.options || []).some(o => String(o.value) === String(info.hall));
+                if (hasHallOption) {
+                    hallField.value = info.hall;
+                    applied = true;
+                }
+            }
+
+            if (tableField && info.table) {
+                const hasTableOption = Array.from(tableField.options || []).some(o => String(o.value) === String(info.table));
+                if (hasTableOption) {
+                    tableField.value = info.table;
+                    applied = true;
+                }
+            }
+
+            return applied;
+        };
+
+        // Первая попытка сразу
+        let done = applyValues();
+
+        // Если опции еще не загружены, делаем короткий ретрай до 5 секунд
+        if (!done) {
+            const startedAt = Date.now();
+            const timer = setInterval(() => {
+                done = applyValues();
+                if (done || Date.now() - startedAt > 5000) {
+                    clearInterval(timer);
+                    try { console.log('📥 Prefill completed (retry):', { info, success: done }); } catch(_) {}
+                }
+            }, 150);
+        } else {
+            try { console.log('📥 Prefill completed:', info); } catch(_) {}
+        }
     }
     
     // Функция для форматирования чисел с пробелами
