@@ -1313,13 +1313,16 @@ class Cart {
                 // Сохраняем данные клиента для будущих заказов
                 this.saveCustomerData(name, phone);
 
+                // Определяем и логируем номер заказа из разных форматов ответа
+                const orderId = this.extractOrderId(result);
+                console.log('🧾 Order create response:', result);
+                console.log('🧾 Parsed orderId:', orderId);
+
                 // Сохраняем контекст заказа (имя, зал, стол, orderId) в localStorage (3 часа)
-                const orderId = (result && result.response && result.response.id) || (result && result.order && result.order.response && result.order.response.id) || null;
                 this.saveOrderContextAfterSuccess(orderId);
                 
                 this.clearCart();
                 this.hideModal();
-                console.log('Order created:', result);
             } else {
                 const error = await response.json();
                 this.showToast(`${this.t('order_error', 'Ошибка при отправке заказа')}: ${error.message}`, 'error');
@@ -1338,6 +1341,25 @@ class Cart {
                 submitBtn.textContent = this.t('place_order', 'Оформить заказ');
             }
         }
+    }
+
+    // Извлекает orderId из разных форматов ответа backend/Poster API
+    extractOrderId(result) {
+        if (!result) return null;
+        try {
+            // Вариант 1: наш backend { success, order: { response: { id | incoming_order_id } } }
+            if (result.order && result.order.response) {
+                return result.order.response.id || result.order.response.incoming_order_id || null;
+            }
+            // Вариант 2: прямой ответ Poster { response: { id | incoming_order_id } }
+            if (result.response) {
+                return result.response.id || result.response.incoming_order_id || null;
+            }
+            // Вариант 3: плоско
+            if (result.id) return result.id;
+            if (result.incoming_order_id) return result.incoming_order_id;
+        } catch (_) {}
+        return null;
     }
 
     // Sanitize текст для предотвращения XSS
