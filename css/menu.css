@@ -645,6 +645,57 @@
         display: none; /* Hide desktop categories on mobile */
     }
     
+    /* Mobile Sidebar - Show */
+    .menu-sidebar {
+        display: block !important;
+        position: static;
+        max-height: none;
+        overflow-y: visible;
+        order: 2; /* Show after content on mobile */
+        margin-top: 2rem;
+    }
+    
+    .menu-categories-sidebar {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .category-btn-sidebar {
+        padding: 0.75rem 0.5rem;
+        font-family: "Roboto Flex", sans-serif;
+        font-feature-settings: normal;
+        font-kerning: auto;
+        font-optical-sizing: auto;
+        font-size: 20px;
+        text-align: left;
+        min-height: 44px; /* Touch-friendly */
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        margin: 0;
+        background: transparent;
+        border: 2px solid transparent;
+        border-radius: 8px;
+        color: var(--color-text-dark);
+        text-decoration: none;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    
+    .category-btn-sidebar:hover {
+        background: #f5f5f5;
+        color: var(--color-text-dark);
+        border-color: #e0e0e0;
+    }
+    
+    .category-btn-sidebar.active {
+        background: #252322;
+        color: var(--color-white);
+        border-color: #b88746ff;
+    }
+    
     .products-grid {
         grid-template-columns: 1fr;
         gap: 1.5rem;
@@ -862,7 +913,19 @@
     fill: currentColor;
 }
 
-/* Mobile responsive */
+/* Mobile responsive for small screens */
+@media (max-width: 480px) {
+    .menu-categories-sidebar {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.25rem;
+    }
+    
+    .category-btn-sidebar {
+        padding: 0.5rem 0.5rem;
+        font-size: 18px;
+        min-height: 40px;
+    }
+}
 @media (max-width: 768px) {
     .sort-dropdown {
         margin-left: 0.5rem;
