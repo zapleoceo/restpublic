@@ -7,9 +7,6 @@
 // require_once __DIR__ . '/../vendor/autoload.php'; // Убрано для локального тестирования
 
 class PageContentService {
-    private $client;
-    private $db;
-    private $collection;
     private $currentLanguage;
     private $defaultLanguage = 'ru';
     private $availableLanguages = ['ru', 'en', 'vi'];
@@ -17,14 +14,6 @@ class PageContentService {
 
     public function __construct() {
         try {
-            // Подключение к MongoDB
-            $mongodbUrl = $_ENV['MONGODB_URL'] ?? 'mongodb://localhost:27017';
-            $dbName = $_ENV['MONGODB_DB_NAME'] ?? 'veranda';
-            
-            $this->client = new MongoDB\Client($mongodbUrl);
-            $this->db = $this->client->selectDatabase($dbName);
-            $this->collection = $this->db->page_content;
-            
             // Определяем текущий язык
             $this->currentLanguage = $this->detectLanguage();
             
@@ -137,33 +126,30 @@ class PageContentService {
         $language = $language ?? $this->currentLanguage;
         
         try {
-            $document = $this->collection->findOne([
-                'page' => $page,
-                'language' => $language,
-                'status' => 'published'
+            // Используем backend API вместо прямого подключения к MongoDB
+            $apiBaseUrl = $_ENV['BACKEND_URL'] ?? 'http://localhost:3003';
+            $apiUrl = $apiBaseUrl . '/api/page-content/' . urlencode($page) . '/' . urlencode($language);
+            
+            $context = stream_context_create([
+                'http' => [
+                    'timeout' => 10,
+                    'method' => 'GET',
+                    'header' => 'Content-Type: application/json'
+                ]
             ]);
             
-            if ($document) {
-                return [
-                    'content' => $document['content'] ?? '',
-                    'meta' => $document['meta'] ?? [],
-                    'updated_at' => $document['updated_at'] ?? null
-                ];
-            }
+            $response = @file_get_contents($apiUrl, false, $context);
             
-            // Если не найден опубликованный контент, ищем черновик
-            $draft = $this->collection->findOne([
-                'page' => $page,
-                'language' => $language,
-                'status' => 'draft'
-            ]);
-            
-            if ($draft) {
-                return [
-                    'content' => $draft['content'] ?? '',
-                    'meta' => $draft['meta'] ?? [],
-                    'updated_at' => $draft['updated_at'] ?? null
-                ];
+            if ($response !== false) {
+                $data = json_decode($response, true);
+                
+                if ($data && !isset($data['error'])) {
+                    return [
+                        'content' => $data['content'] ?? '',
+                        'meta' => $data['meta'] ?? [],
+                        'updated_at' => $data['updated_at'] ?? null
+                    ];
+                }
             }
             
             // Если ничего не найдено, возвращаем пустой контент
@@ -184,117 +170,39 @@ class PageContentService {
     }
 
     /**
-     * Сохранение контента страницы (для админки)
+     * Сохранение контента страницы (для админки) - отключено, используется backend API
      */
     public function savePageContent($page, $language, $content, $meta = [], $status = 'draft', $updatedBy = 'admin') {
-        try {
-            $document = [
-                'page' => $page,
-                'language' => $language,
-                'content' => $content,
-                'meta' => array_merge([
-                    'title' => '',
-                    'description' => '',
-                    'keywords' => ''
-                ], $meta),
-                'status' => $status,
-                'updated_at' => new MongoDB\BSON\UTCDateTime(),
-                'updated_by' => $updatedBy
-            ];
-            
-            // Обновляем или создаем запись
-            $result = $this->collection->replaceOne(
-                ['page' => $page, 'language' => $language],
-                $document,
-                ['upsert' => true]
-            );
-            
-            // Кеширование отключено - используется Cloudflare
-            
-            return $result->getUpsertedCount() > 0 || $result->getModifiedCount() > 0;
-            
-        } catch (Exception $e) {
-            error_log("PageContentService savePageContent error: " . $e->getMessage());
-            return false;
-        }
+        // Метод отключен - используется backend API для сохранения
+        error_log("PageContentService savePageContent: Method disabled, use backend API");
+        return false;
     }
 
     /**
-     * Публикация страницы
+     * Публикация страницы - отключено, используется backend API
      */
     public function publishPage($page, $language, $updatedBy = 'admin') {
-        try {
-            // Сначала сохраняем как опубликованную
-            $result = $this->collection->updateOne(
-                ['page' => $page, 'language' => $language],
-                [
-                    '$set' => [
-                        'status' => 'published',
-                        'updated_at' => new MongoDB\BSON\UTCDateTime(),
-                        'updated_by' => $updatedBy
-                    ]
-                ]
-            );
-            
-            // Кеширование отключено - используется Cloudflare
-            
-            return $result->getModifiedCount() > 0;
-            
-        } catch (Exception $e) {
-            error_log("PageContentService publishPage error: " . $e->getMessage());
-            return false;
-        }
+        // Метод отключен - используется backend API для публикации
+        error_log("PageContentService publishPage: Method disabled, use backend API");
+        return false;
     }
 
     /**
-     * Получение списка всех страниц
+     * Получение списка всех страниц - отключено, используется backend API
      */
     public function getAllPages() {
-        try {
-            $pages = $this->collection->distinct('page');
-            return array_values($pages);
-        } catch (Exception $e) {
-            error_log("PageContentService getAllPages error: " . $e->getMessage());
-            return [];
-        }
+        // Метод отключен - используется backend API
+        error_log("PageContentService getAllPages: Method disabled, use backend API");
+        return [];
     }
 
     /**
-     * Получение статистики страниц
+     * Получение статистики страниц - отключено, используется backend API
      */
     public function getPagesStats() {
-        try {
-            $pipeline = [
-                [
-                    '$group' => [
-                        '_id' => ['page' => '$page', 'language' => '$language'],
-                        'status' => ['$first' => '$status'],
-                        'updated_at' => ['$first' => '$updated_at'],
-                        'updated_by' => ['$first' => '$updated_by']
-                    ]
-                ],
-                [
-                    '$group' => [
-                        '_id' => '$_id.page',
-                        'languages' => [
-                            '$push' => [
-                                'language' => '$_id.language',
-                                'status' => '$status',
-                                'updated_at' => '$updated_at',
-                                'updated_by' => '$updated_by'
-                            ]
-                        ]
-                    ]
-                ]
-            ];
-            
-            $result = $this->collection->aggregate($pipeline);
-            return iterator_to_array($result);
-            
-        } catch (Exception $e) {
-            error_log("PageContentService getPagesStats error: " . $e->getMessage());
-            return [];
-        }
+        // Метод отключен - используется backend API
+        error_log("PageContentService getPagesStats: Method disabled, use backend API");
+        return [];
     }
 
 
