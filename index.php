@@ -96,67 +96,95 @@ function getImageAlt($metaKey, $default) {
 
 // No fallback - only database content
 
-// Load menu from MongoDB cache for fast rendering (if available)
-$categories = [];
-$products = [];
-$productsByCategory = [];
+// Load menu from MongoDB cache (DISABLED for static Top-5 block)
+// $categories = $products = $productsByCategory = [];
+// try {
+//     if (class_exists('MongoDB\\Client')) {
+//         require_once __DIR__ . '/classes/MenuCache.php';
+//         $menuCache = new MenuCache();
+//         // Intentionally not loading dynamic menu for homepage Top-5
+//     }
+// } catch (Exception $e) {
+//     error_log("Menu loading error: " . $e->getMessage());
+// }
 
-try {
-    if (class_exists('MongoDB\Client')) {
-        require_once __DIR__ . '/classes/MenuCache.php';
-        $menuCache = new MenuCache();
-        $menuData = $menuCache->getMenu();
-        $categories = $menuData ? $menuData['categories'] : [];
-        $products = $menuData ? $menuData['products'] : [];
-        
-        // API configuration for popular products
-        $api_base_url = ($_ENV['BACKEND_URL'] ?? 'http://localhost:3003') . '/api';
-        $context = stream_context_create([
-            'http' => [
-                'timeout' => 10,
-                'method' => 'GET',
-                'header' => 'Content-Type: application/json'
-            ]
-        ]);
-        
-        // Get popular products by category using real sales data
-        if ($categories) {
-            foreach ($categories as $category) {
-                $categoryId = (string)($category['category_id']);
-                $productsByCategory[$categoryId] = [];
-                
-                // Try to get popular products from API
-                try {
-                    $authToken = $_ENV['API_AUTH_TOKEN'] ?? 'nr_api_2024_7f8a9b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0u1v2w3x4y5z6';
-                    $popularUrl = $api_base_url . '/menu/categories/' . $categoryId . '/popular?limit=5&token=' . urlencode($authToken);
-                    $popularResponse = @file_get_contents($popularUrl, false, $context);
-                    
-                    if ($popularResponse !== false) {
-                        $popularData = json_decode($popularResponse, true);
-                        if ($popularData && isset($popularData['popular_products'])) {
-                            $productsByCategory[$categoryId] = $popularData['popular_products'];
-                        } else {
-                            error_log("Invalid API response for category {$categoryId}: " . substr($popularResponse, 0, 200));
-                            $productsByCategory[$categoryId] = [];
-                        }
-                    } else {
-                        error_log("Failed to fetch popular products for category {$categoryId}");
-                        $productsByCategory[$categoryId] = [];
-                    }
-                } catch (Exception $e) {
-                    error_log("API error for category {$categoryId}: " . $e->getMessage());
-                    // Fallback to empty array if API fails
-                    $productsByCategory[$categoryId] = [];
-                }
-            }
-        }
-    }
-} catch (Exception $e) {
-    error_log("Menu loading error: " . $e->getMessage());
-    // Fallback: ensure we have empty arrays to prevent errors
-    $categories = [];
-    $products = [];
-    $productsByCategory = [];
+// Static Top-5 dishes block (localized)
+$placeholderImage = '/images/event-default.png';
+$topDishes = [
+    [
+        'key' => 'salmon',
+        'names' => [
+            'ru' => 'Стейк лосося',
+            'en' => 'Salmon steak',
+            'vi' => 'Bít tết cá hồi',
+        ],
+        'image' => '/images/MenuTop/salmon.jpg',
+        'descriptions' => [
+            'ru' => '',
+            'en' => '',
+            'vi' => '',
+        ],
+    ],
+    [
+        'key' => 'pashtet',
+        'names' => [
+            'ru' => 'Паштет из печени страуса',
+            'en' => 'Ostrich liver pâté',
+            'vi' => 'Pate gan đà điểu',
+        ],
+        'image' => '/images/MenuTop/pashtet.jpg',
+        'descriptions' => [
+            'ru' => '',
+            'en' => '',
+            'vi' => '',
+        ],
+    ],
+    [
+        'key' => 'shrimp-pineapple',
+        'names' => [
+            'ru' => 'Креветка в ананасе',
+            'en' => 'Shrimp in pineapple',
+            'vi' => 'Tôm trong dứa',
+        ],
+        'image' => '',
+        'descriptions' => [
+            'ru' => '',
+            'en' => '',
+            'vi' => '',
+        ],
+    ],
+    [
+        'key' => 'shawarma',
+        'names' => [
+            'ru' => 'Шаурма',
+            'en' => 'Shawarma',
+            'vi' => 'Shaurma',
+        ],
+        'image' => '',
+        'descriptions' => [
+            'ru' => '',
+            'en' => '',
+            'vi' => '',
+        ],
+    ],
+    [
+        'key' => 'continental-burger',
+        'names' => [
+            'ru' => 'Бургер континенталь',
+            'en' => 'Continental burger',
+            'vi' => 'Burger Continental',
+        ],
+        'image' => '',
+        'descriptions' => [
+            'ru' => '',
+            'en' => '',
+            'vi' => '',
+        ],
+    ],
+];
+
+function getDishText(array $map, string $lang, string $fallback = ''): string {
+    return $map[$lang] ?? ($map['ru'] ?? $fallback);
 }
 
 // Set page title and meta tags from database only
@@ -371,24 +399,19 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
 
                     <nav class="tab-nav">
                         <ul class="tab-nav__list" id="menu-categories">
-                            <?php if (!empty($categories)): ?>
-                                <?php foreach ($categories as $index => $category): ?>
-                                    <li>
-                                        <a href="#" 
-                                           class="<?php echo $index === 0 ? 'active' : ''; ?>"
-                                           data-tab-id="tab-<?php echo htmlspecialchars($category['category_id']); ?>">
-                                            <span><?php echo htmlspecialchars(translateCategoryName($category['category_name'] ?? $category['name'] ?? 'Без названия', getCurrentLanguage())); ?></span>
-                                            <svg clip-rule="evenodd" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="m14.523 18.787s4.501-4.505 6.255-6.26c.146-.146.219-.338.219-.53s-.073-.383-.219-.53c-1.753-1.754-6.255-6.258-6.255-6.258-.144-.145-.334-.217-.524-.217-.193 0-.385.074-.532.221-.293.292-.295.766-.004 1.056l4.978 4.978h-14.692c-.414 0-.75.336-.75.75s.336.75.75.75h14.692l-4.979 4.979c-.289.289-.286.762.006 1.054.148.148.341.222.533.222.19 0 .378-.072.522-.215z" fill-rule="nonzero"/></svg>
-                                        </a>
-                                    </li>
-                                <?php endforeach; ?>
-                            <?php else: ?>
+                            <?php foreach ($topDishes as $index => $dish): ?>
+                                <?php 
+                                    $dishTitle = getDishText($dish['names'], $currentLanguage, '');
+                                ?>
                                 <li>
-                                    <span style="color: #e74c3c; font-style: italic;">
-                                        <?php echo $pageMeta['menu_error'] ?? ''; ?>
-                                    </span>
+                                    <a href="#" 
+                                       class="<?php echo $index === 0 ? 'active' : ''; ?>"
+                                       data-tab-id="tab-dish-<?php echo (int)$index; ?>">
+                                        <span><?php echo htmlspecialchars($dishTitle); ?></span>
+                                        <svg clip-rule="evenodd" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="m14.523 18.787s4.501-4.505 6.255-6.26c.146-.146.219-.338.219-.53s-.073-.383-.219-.53c-1.753-1.754-6.255-6.258-6.255-6.258-.144-.145-.334-.217-.524-.217-.193 0-.385.074-.532.221-.293.292-.295.766-.004 1.056l4.978 4.978h-14.692c-.414 0-.75.336-.75.75s.336.75.75.75h14.692l-4.979 4.979c-.289.289-.286.762.006 1.054.148.148.341.222.533.222.19 0 .378-.072.522-.215z" fill-rule="nonzero"/></svg>
+                                    </a>
                                 </li>
-                            <?php endif; ?>
+                            <?php endforeach; ?>
                         </ul>
                     </nav> <!-- end tab-nav -->
                 </div> <!-- end s-menu__content-start -->
@@ -401,81 +424,35 @@ $pageKeywords = $pageMeta['keywords'] ?? '';
                     </div>
                     
                     <div class="tab-content menu-block" id="menu-content">
-                        <?php if (!empty($categories)): ?>
-                            <?php foreach ($categories as $index => $category): ?>
-                                <?php 
-                                $categoryId = (string)($category['category_id']);
-                                $categoryProducts = $productsByCategory[$categoryId] ?? [];
-                                
-                                // Применяем автоматический перевод для продуктов (оптимизировано)
-                                $topProducts = array_slice($categoryProducts, 0, 5);
-                                if ($currentLanguage !== 'ru') {
-                                    $translatedProducts = [];
-                                    foreach ($topProducts as $product) {
-                                        $translatedProducts[] = $menuCache->translateProduct($product, $currentLanguage);
-                                    }
-                                    $topProducts = $translatedProducts;
-                                }
-                                ?>
-                                <div id="tab-<?php echo htmlspecialchars($category['category_id']); ?>" 
-                                     class="menu-block__group tab-content__item" <?php echo $index === 0 ? 'data-tab-active aria-hidden="false"' : 'aria-hidden="true"'; ?>>
-                                    <h6 class="menu-block__cat-name"><?php echo htmlspecialchars(translateCategoryName($category['category_name'] ?? $category['name'] ?? 'Без названия', getCurrentLanguage())); ?></h6>
-                                    <ul class="menu-list">
-                                        <?php if (!empty($topProducts)): ?>
-                                            <?php foreach ($topProducts as $product): ?>
-                                                <li class="menu-list__item">
-                                                    <div class="menu-list__item-desc">                                            
-                                                        <h4><?php echo htmlspecialchars($product['product_name'] ?? $product['name'] ?? 'Без названия'); ?></h4>
-                                                        <p><?php echo htmlspecialchars($product['description'] ?? ''); ?></p>
-                                                    </div>
-                                                    <div class="menu-list__item-price">
-                                                        <?php echo number_format($product['price_normalized'] ?? $product['price'] ?? 0, 0, ',', ' '); ?> ₫
-                                                    </div>
-                                                </li>
-                                            <?php endforeach; ?>
-                                        <?php else: ?>
-                                            <li class="menu-list__item">
-                                                <div class="menu-list__item-desc">
-                                                    <h4><?php echo $pageMeta['menu_no_items'] ?? ''; ?></h4>
-                                                    <p><?php echo $pageMeta['menu_working_on_it'] ?? ''; ?></p>
-                                                </div>
-                                            </li>
-                                        <?php endif; ?>
-                                    </ul>
-                                </div>
-                            <?php endforeach; ?>
-                        <?php else: ?>
-                            <div class="menu-block__group tab-content__item" data-tab-active aria-hidden="false">
-                                <h6 class="menu-block__cat-name"><?php echo $pageMeta['menu_title'] ?? ''; ?></h6>
+                        <?php foreach ($topDishes as $index => $dish): ?>
+                            <?php 
+                                $dishId = 'tab-dish-' . (int)$index;
+                                $dishTitle = getDishText($dish['names'], $currentLanguage, '');
+                                $dishDesc = getDishText($dish['descriptions'], $currentLanguage, '');
+                                $img = $dish['image'] !== '' ? $dish['image'] : $placeholderImage;
+                            ?>
+                            <div id="<?php echo htmlspecialchars($dishId); ?>" 
+                                 class="menu-block__group tab-content__item" <?php echo $index === 0 ? 'data-tab-active aria-hidden="false"' : 'aria-hidden="true"'; ?>>
+                                <h6 class="menu-block__cat-name"><?php echo htmlspecialchars($dishTitle); ?></h6>
                                 <ul class="menu-list">
                                     <li class="menu-list__item">
-                                        <div class="menu-list__item-desc">
-                                            <h4><?php echo $pageMeta['menu_error'] ?? ''; ?></h4>
-                                            <p><?php echo $pageMeta['menu_unavailable'] ?? ''; ?></p>
+                                        <div class="menu-list__item-desc">                                            
+                                            <h4><?php echo htmlspecialchars($dishTitle); ?></h4>
+                                            <p><?php echo htmlspecialchars($dishDesc); ?></p>
                                         </div>
                                     </li>
                                 </ul>
+                                <div class="menu-block__image" style="margin-top: 1rem;">
+                                    <img src="<?php echo htmlspecialchars($img); ?>" alt="<?php echo htmlspecialchars($dishTitle); ?>" style="max-width: 100%; height: auto;">
+                                </div>
                             </div>
-                        <?php endif; ?>
+                        <?php endforeach; ?>
                     </div> <!-- menu-block -->
                 </div> <!-- end s-menu__content-end -->
             </div> <!-- end s-menu__content -->
             
             <!-- Menu Update Time -->
-            <div class="row s-menu__footer">
-                <div class="column xl-12 text-center">
-                    <?php 
-                    $lastUpdateTime = $menuCache->getLastUpdateTimeFormatted();
-                    if ($lastUpdateTime): 
-                    ?>
-                    <div class="menu-update-time">
-                        <small style="color: #1e1e1e; font-size: 0.75rem; margin-top: 0.5rem; display: block;">
-                            <?php echo safeHtml($pageMeta['menu_updated'] ?? 'Обновлено'); ?>: <?php echo htmlspecialchars($lastUpdateTime); ?> (<?php echo safeHtml($pageMeta['location_nha_trang'] ?? 'Нячанг'); ?>)
-                        </small>
-                    </div>
-                    <?php endif; ?>
-                </div>
-            </div> <!-- end s-menu__footer -->
+            <!-- Dynamic menu footer hidden for static Top-5 -->
         </section> <!-- end s-menu -->
 
         <!-- # events
