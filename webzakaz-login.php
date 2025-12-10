@@ -7,22 +7,6 @@ if (file_exists(__DIR__ . '/.env')) {
 
 
 session_start();
-
-// If already logged in, redirect to main page
-if (isset($_SESSION['webzakaz_cashier_id'])) {
-    header('Location: webzakaz.php');
-    exit();
-}
-
-
-
-// If already logged in, redirect to main page
-if (isset($_SESSION['webzakaz_cashier_id'])) {
-    header('Location: webzakaz.php');
-    exit();
-}
-
-$backendUrl = 'http://localhost:3003';
 $error = '';
 ?>
 <!DOCTYPE html>
@@ -407,6 +391,7 @@ $error = '';
     </script>
 </body>
 </html>
+
 
 
 
