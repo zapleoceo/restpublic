@@ -5,6 +5,7 @@ const compression = require('compression');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
 const slowDown = require('express-slow-down');
+const session = require('express-session');
 require('dotenv').config({ path: '../.env' });
 
 const posterRoutes = require('./routes/poster');
@@ -15,6 +16,10 @@ const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/user');
 const storageRoutes = require('./routes/storage');
 const pageContentRoutes = require('./routes/pageContent');
+const webzakazAuthRoutes = require('./routes/webzakaz/auth');
+const webzakazOrdersRoutes = require('./routes/webzakaz/orders');
+const webzakazMenuRoutes = require('./routes/webzakaz/menu');
+const webzakazHallsRoutes = require('./routes/webzakaz/halls');
 
 const app = express();
 const PORT = process.env.PORT || 3003;
@@ -57,6 +62,19 @@ const corsOptions = {
   optionsSuccessStatus: 200
 };
 app.use(cors(corsOptions));
+
+// Session configuration for WebZakaz
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'veranda_webzakaz_secret_2024',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    maxAge: 8 * 60 * 60 * 1000 // 8 hours
+  },
+  name: 'webzakaz.sid'
+}));
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
@@ -101,6 +119,12 @@ app.use('/api/storage', apiLimiter, storageRoutes);
 app.use('/api/page-content', apiLimiter, pageContentRoutes);
 app.use('/api/auth', authLimiter, authRoutes); // Более мягкий лимит для auth
 app.use('/api/user', apiLimiter, userRoutes);
+
+// WebZakaz routes (with session support)
+app.use('/api/webzakaz/auth', authLimiter, webzakazAuthRoutes);
+app.use('/api/webzakaz/orders', apiLimiter, webzakazOrdersRoutes);
+app.use('/api/webzakaz/menu', apiLimiter, webzakazMenuRoutes);
+app.use('/api/webzakaz/halls', apiLimiter, webzakazHallsRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
