@@ -3,11 +3,43 @@ const router = express.Router();
 const axios = require('axios');
 const { MongoClient } = require('mongodb');
 
-// Подключение к MongoDB
-const mongoUrl = process.env.MONGODB_URL || 'mongodb://localhost:27017';
-const dbName = process.env.MONGODB_DB_NAME || 'veranda';
+// Подключение к MongoDB с fallback
+// Основная БД: veranda2026 (порт 27026)
+// Резервная БД: veranda (порт 27017)
+const PRIMARY_DB_URL = process.env.MONGODB_URL || 'mongodb://localhost:27026';
+const PRIMARY_DB_NAME = process.env.MONGODB_DB_NAME || 'veranda2026';
+const FALLBACK_DB_URL = 'mongodb://localhost:27017';
+const FALLBACK_DB_NAME = 'veranda';
 const collectionName = 'menu';
-const API_PORT = process.env.PORT || 3002;
+const API_PORT = process.env.PORT || 3003;
+
+// Функция подключения с fallback
+async function connectWithFallback() {
+    // Пытаемся подключиться к основной БД
+    try {
+        const client = new MongoClient(PRIMARY_DB_URL);
+        await client.connect();
+        const db = client.db(PRIMARY_DB_NAME);
+        await db.command({ ping: 1 });
+        console.log(`✅ Подключено к основной БД: ${PRIMARY_DB_NAME}`);
+        return { client, db, isPrimary: true, dbName: PRIMARY_DB_NAME };
+    } catch (error) {
+        console.warn(`⚠️ Основная БД недоступна (${PRIMARY_DB_NAME}): ${error.message}`);
+        
+        // Пытаемся подключиться к резервной БД
+        try {
+            const client = new MongoClient(FALLBACK_DB_URL);
+            await client.connect();
+            const db = client.db(FALLBACK_DB_NAME);
+            await db.command({ ping: 1 });
+            console.log(`✅ Подключено к резервной БД: ${FALLBACK_DB_NAME}`);
+            return { client, db, isPrimary: false, dbName: FALLBACK_DB_NAME };
+        } catch (error2) {
+            console.error(`❌ Резервная БД также недоступна: ${error2.message}`);
+            throw new Error(`Обе БД недоступны. Primary: ${error.message}, Fallback: ${error2.message}`);
+        }
+    }
+}
 
 // Endpoint для обновления кэша меню
 router.post('/update-menu', async (req, res) => {
@@ -31,11 +63,38 @@ router.post('/update-menu', async (req, res) => {
         
         const menuData = apiResponse.data;
         
-        // Сохраняем в MongoDB
-        client = new MongoClient(mongoUrl);
-        await client.connect();
-        const db = client.db(dbName);
+        // Сохраняем в MongoDB с fallback
+        const connection = await connectWithFallback();
+        client = connection.client;
+        const db = connection.db;
         const collection = db.collection(collectionName);
+        
+        // Если используем резервную БД, пытаемся также сохранить в основную
+        if (!connection.isPrimary) {
+            try {
+                const primaryClient = new MongoClient(PRIMARY_DB_URL);
+                await primaryClient.connect();
+                const primaryDb = primaryClient.db(PRIMARY_DB_NAME);
+                const primaryCollection = primaryDb.collection(collectionName);
+                
+                await primaryCollection.replaceOne(
+                    { _id: 'current_menu' },
+                    {
+                        _id: 'current_menu',
+                        data: menuData,
+                        updated_at: new Date(),
+                        categories: menuData.categories || [],
+                        products: menuData.products || []
+                    },
+                    { upsert: true }
+                );
+                
+                console.log(`✅ Данные также сохранены в основную БД: ${PRIMARY_DB_NAME}`);
+                await primaryClient.close();
+            } catch (primaryError) {
+                console.warn(`⚠️ Не удалось сохранить в основную БД: ${primaryError.message}`);
+            }
+        }
         
         const result = await collection.replaceOne(
             { _id: 'current_menu' },

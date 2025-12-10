@@ -22,14 +22,17 @@ class UserAuth {
                     $dotenv->load();
                 }
                 
-                $mongodbUrl = $_ENV['MONGODB_URL'] ?? 'mongodb://localhost:27017';
-                $dbName = $_ENV['MONGODB_DB_NAME'] ?? 'veranda';
+                require_once __DIR__ . '/DatabaseConfig.php';
+                list($client, $db, $isPrimary) = DatabaseConfig::connectWithFallback();
                 
-                $client = new MongoDB\Client($mongodbUrl);
-                $this->db = $client->selectDatabase($dbName);
+                $this->db = $db;
                 $this->usersCollection = $this->db->selectCollection('users');
                 $this->sessionsCollection = $this->db->selectCollection('user_sessions');
                 $this->useMongoDB = true;
+                
+                if (!$isPrimary) {
+                    error_log('⚠️ UserAuth: Используется резервная БД');
+                }
             } else {
                 $this->useMongoDB = false;
                 error_log('MongoDB not available, using file system');

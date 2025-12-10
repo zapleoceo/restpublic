@@ -15,12 +15,15 @@ class Logger {
     private function initializeDatabase() {
         try {
             if (class_exists('MongoDB\Client')) {
-                $mongodbUrl = $_ENV['MONGODB_URL'] ?? 'mongodb://localhost:27017';
-                $client = new MongoDB\Client($mongodbUrl);
-                $dbName = $_ENV['MONGODB_DB_NAME'] ?? 'veranda';
-                $this->db = $client->selectDatabase($dbName);
-                $this->logsCollection = $this->db->selectCollection('admin_logs');
+                require_once __DIR__ . '/DatabaseConfig.php';
+                $config = DatabaseConfig::getCollection('admin_logs');
+                $this->db = $config['db'];
+                $this->logsCollection = $config['collection'];
                 $this->useMongoDB = true;
+                
+                if (!$config['isPrimary']) {
+                    error_log('⚠️ Logger: Используется резервная БД');
+                }
             } else {
                 $this->useMongoDB = false;
                 error_log('MongoDB not available, using file system for logging');

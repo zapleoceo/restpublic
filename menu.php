@@ -62,15 +62,14 @@ $categories = [];
 $products = [];
 $products_by_category = [];
 $menu_loaded = false;
+$menuCache = null; // Инициализируем переменную
+$currentLanguage = $translationService->getLanguage(); // Получаем язык заранее
 
 try {
     if (class_exists('MongoDB\Client')) {
         require_once __DIR__ . '/classes/MenuCache.php';
         $menuCache = new MenuCache();
         $menuData = $menuCache->getMenu(10); // 10 minutes cache refresh
-        
-        // Получаем текущий язык для перевода блюд
-        $currentLanguage = $translationService->getLanguage();
         
         // Логируем текущий язык для отладки
         error_log("Menu2: Current language = " . $currentLanguage);
@@ -149,6 +148,14 @@ try {
 } catch (Exception $e) {
     error_log("MongoDB not available, trying API fallback: " . $e->getMessage());
     
+    // Убеждаемся, что переменные определены даже при ошибке
+    if (!$menuCache) {
+        $menuCache = null;
+    }
+    if (!isset($currentLanguage)) {
+        $currentLanguage = $translationService->getLanguage();
+    }
+    
     // Fallback to API if MongoDB fails
     $api_base_url = ($_ENV['BACKEND_URL'] ?? 'http://localhost:3003') . '/api';
     
@@ -178,19 +185,19 @@ function fetchFromAPI($endpoint) {
 }
 
     // Try to fetch from API as fallback
-$menu_data = fetchFromAPI('/menu');
+    $menu_data = fetchFromAPI('/menu');
     if ($menu_data) {
-$categories = $menu_data['categories'] ?? [];
-$products = $menu_data['products'] ?? [];
-$menu_loaded = !empty($categories) && !empty($products);
+        $categories = $menu_data['categories'] ?? [];
+        $products = $menu_data['products'] ?? [];
+        $menu_loaded = !empty($categories) && !empty($products);
 
         // Group products by category and sort by popularity
-if ($menu_loaded) {
-    foreach ($products as $product) {
+        if ($menu_loaded) {
+            foreach ($products as $product) {
                 $category_id = (string)($product['menu_category_id'] ?? $product['category_id'] ?? 'default');
-        if (!isset($products_by_category[$category_id])) {
-            $products_by_category[$category_id] = [];
-        }
+                if (!isset($products_by_category[$category_id])) {
+                    $products_by_category[$category_id] = [];
+                }
                 
                 // Check if product is visible
                 $isVisible = true;
@@ -205,7 +212,7 @@ if ($menu_loaded) {
                 
                 // Only add visible products
                 if ($isVisible) {
-        $products_by_category[$category_id][] = $product;
+                    $products_by_category[$category_id][] = $product;
                 }
             }
             
@@ -446,8 +453,12 @@ if ($menu_loaded) {
                                 <div class="products-grid">
                                     <ul class="menu-list">
                                         <?php foreach ($category_products as $product): 
-                                            // Переводим продукт на текущий язык
-                                            $translatedProduct = $menuCache->translateProduct($product, $currentLanguage);
+                                            // Переводим продукт на текущий язык (если menuCache доступен)
+                                            if ($menuCache) {
+                                                $translatedProduct = $menuCache->translateProduct($product, $currentLanguage);
+                                            } else {
+                                                $translatedProduct = $product; // Fallback без перевода
+                                            }
                                         ?>
                                             <li class="menu-list__item" 
                                                 data-product-name="<?php echo htmlspecialchars($translatedProduct['product_name'] ?? 'Без названия'); ?>"

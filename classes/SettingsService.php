@@ -1,19 +1,24 @@
 <?php
 require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/DatabaseConfig.php';
 
 class SettingsService {
     private $client;
     private $db;
     private $settingsCollection;
+    private $isPrimaryDb;
     
     public function __construct() {
         try {
-            $mongodbUrl = $_ENV['MONGODB_URL'] ?? 'mongodb://localhost:27017';
-            $dbName = $_ENV['MONGODB_DB_NAME'] ?? 'veranda';
+            $config = DatabaseConfig::getCollection('settings');
+            $this->settingsCollection = $config['collection'];
+            $this->client = $config['client'];
+            $this->db = $config['db'];
+            $this->isPrimaryDb = $config['isPrimary'];
             
-            $this->client = new MongoDB\Client($mongodbUrl);
-            $this->db = $this->client->$dbName;
-            $this->settingsCollection = $this->db->settings;
+            if (!$this->isPrimaryDb) {
+                error_log("⚠️ SettingsService: Используется резервная БД");
+            }
         } catch (Exception $e) {
             error_log("Ошибка подключения к MongoDB в SettingsService: " . $e->getMessage());
             throw $e;

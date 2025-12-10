@@ -5,10 +5,10 @@
 require_once __DIR__ . '/../../vendor/autoload.php';
 
 function get_db_connection() {
-    static $client = null;
     static $db = null;
+    static $isPrimary = null;
     
-    if ($client === null) {
+    if ($db === null) {
         try {
             // Загружаем переменные окружения
             if (file_exists(__DIR__ . '/../../.env')) {
@@ -16,10 +16,12 @@ function get_db_connection() {
                 $dotenv->load();
             }
 
-            $mongoUri = $_ENV['MONGODB_URL'] ?? 'mongodb://localhost:27017';
-            $dbName = $_ENV['MONGODB_DB_NAME'] ?? 'veranda';
-            $client = new MongoDB\Client($mongoUri);
-            $db = $client->$dbName;
+            require_once __DIR__ . '/../../classes/DatabaseConfig.php';
+            list($client, $db, $isPrimary) = DatabaseConfig::connectWithFallback();
+            
+            if (!$isPrimary) {
+                error_log('⚠️ Admin DB: Используется резервная БД');
+            }
         } catch (Exception $e) {
             error_log("MongoDB connection error: " . $e->getMessage());
             die("Ошибка подключения к базе данных.");

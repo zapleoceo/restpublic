@@ -1,19 +1,27 @@
 <?php
 require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/DatabaseConfig.php';
 
 class MenuCache {
     private $client;
     private $db;
     private $menuCollection;
+    private $isPrimaryDb;
+    private $dbName;
     
     public function __construct() {
         try {
-            $mongodbUrl = $_ENV['MONGODB_URL'] ?? 'mongodb://localhost:27017';
-            $dbName = $_ENV['MONGODB_DB_NAME'] ?? 'veranda';
+            // Используем конфигурацию с fallback
+            $config = DatabaseConfig::getCollection('menu');
+            $this->menuCollection = $config['collection'];
+            $this->client = $config['client'];
+            $this->db = $config['db'];
+            $this->isPrimaryDb = $config['isPrimary'];
+            $this->dbName = $config['dbName'];
             
-            $this->client = new MongoDB\Client($mongodbUrl);
-            $this->db = $this->client->$dbName;
-            $this->menuCollection = $this->db->menu;
+            if (!$this->isPrimaryDb) {
+                error_log("⚠️ MenuCache: Используется резервная БД {$this->dbName}");
+            }
         } catch (Exception $e) {
             error_log("Ошибка подключения к MongoDB: " . $e->getMessage());
             throw $e;
@@ -21,11 +29,34 @@ class MenuCache {
     }
     
     /**
-     * Получить меню из кэша с автоматическим обновлением
+     * Получить меню из кэша с автоматическим обновлением и fallback
      */
     public function getMenu($maxAgeMinutes = 10) {
         try {
             $menu = $this->menuCollection->findOne(['_id' => 'current_menu']);
+            
+            // Если меню не найдено в текущей БД и мы используем резервную - пробуем основную
+            if (!$menu && !$this->isPrimaryDb) {
+                try {
+                    $primaryConfig = DatabaseConfig::getPrimaryConfig();
+                    $primaryClient = new MongoDB\Client($primaryConfig['url']);
+                    $primaryDb = $primaryClient->selectDatabase($primaryConfig['name']);
+                    $primaryCollection = $primaryDb->selectCollection('menu');
+                    $menu = $primaryCollection->findOne(['_id' => 'current_menu']);
+                    
+                    if ($menu) {
+                        error_log("✅ MenuCache: Меню найдено в основной БД, переключаемся");
+                        // Переключаемся на основную БД
+                        $this->menuCollection = $primaryCollection;
+                        $this->db = $primaryDb;
+                        $this->client = $primaryClient;
+                        $this->isPrimaryDb = true;
+                        $this->dbName = $primaryConfig['name'];
+                    }
+                } catch (Exception $e) {
+                    error_log("⚠️ MenuCache: Не удалось подключиться к основной БД: " . $e->getMessage());
+                }
+            }
             
             // Если кэша нет или он устарел - обновляем в фоне
             if (!$menu || $this->needsUpdate($maxAgeMinutes)) {

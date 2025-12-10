@@ -129,10 +129,26 @@ test-results/
 playwright-report/
 test-results.xml
 
+# Test and check files
+test_*.php
+check_*.php
+*test*.php
+*check*.php
+*debug*.php
+*_test.php
+*_check.php
+*_debug.php
+
 # ===========================================
 # Cursor AI files with secrets
 # ===========================================
-.cursor/
+# Игнорируем только секретные файлы в .cursor, но не всю папку
+.cursor/.ssh/
+.cursor/*.env
+.cursor/*secret*
+.cursor/*key*
+.cursor/*password*
+.cursor/*token*
 
 # ===========================================
 # Project Specific

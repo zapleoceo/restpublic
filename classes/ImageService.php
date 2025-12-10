@@ -12,12 +12,15 @@ class ImageService {
     
     private function connect() {
         try {
-            $mongodbUrl = $_ENV['MONGODB_URL'] ?? 'mongodb://localhost:27017';
-            $dbName = $_ENV['MONGODB_DB_NAME'] ?? 'veranda';
+            require_once __DIR__ . '/DatabaseConfig.php';
+            list($client, $db, $isPrimary) = DatabaseConfig::connectWithFallback();
             
-            $client = new MongoDB\Client($mongodbUrl);
-            $this->database = $client->$dbName;
+            $this->database = $db;
             $this->bucket = $this->database->selectGridFSBucket(['bucketName' => 'event_images']);
+            
+            if (!$isPrimary) {
+                error_log("⚠️ ImageService: Используется резервная БД");
+            }
         } catch (Exception $e) {
             error_log("ImageService connection error: " . $e->getMessage());
             throw $e;

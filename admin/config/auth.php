@@ -30,9 +30,14 @@ define('LOG_ADMIN_ACTIONS', true);
 // Настройки CSRF
 define('CSRF_TOKEN_LIFETIME', 3600); // 1 час
 
-// Настройки базы данных
-define('DB_CONNECTION_STRING', $_ENV['MONGODB_URL'] ?? 'mongodb://localhost:27017');
-define('DB_NAME', $_ENV['MONGODB_DB_NAME'] ?? 'veranda');
+// Настройки базы данных (используется DatabaseConfig с fallback)
+require_once __DIR__ . '/../../classes/DatabaseConfig.php';
+$primaryConfig = DatabaseConfig::getPrimaryConfig();
+$fallbackConfig = DatabaseConfig::getFallbackConfig();
+define('DB_CONNECTION_STRING', $primaryConfig['url']);
+define('DB_NAME', $primaryConfig['name']);
+define('DB_FALLBACK_URL', $fallbackConfig['url']);
+define('DB_FALLBACK_NAME', $fallbackConfig['name']);
 define('USERS_COLLECTION', 'admin_users');
 define('LOGS_COLLECTION', 'admin_logs');
 define('SESSIONS_COLLECTION', 'admin_sessions');
