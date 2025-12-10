@@ -33,7 +33,6 @@ if (!$isLoggedIn) {
 }
 
 // Backend API URL
-$backendUrl = 'http://localhost:3003';
 ?>
 <!DOCTYPE html>
 <html lang="ru">
